@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+  eventstore:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
+    restart: always
+    environment:
+      discovery.type: single-node
+    networks:
+      - overlay
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+networks:
+  overlay:
