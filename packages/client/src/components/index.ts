@@ -1,4 +1,5 @@
 export { default as EndTurnButton } from './EndTurnButton';
+export { default as GameList } from './GameList';
 export { default as Header } from './Header';
 export { default as IntlProvider } from './IntlProvider';
 export { default as Layout } from './Layout';

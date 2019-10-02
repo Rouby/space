@@ -3,6 +3,13 @@ import RouteBuilder from './routeBuilder';
 export { CanGoBackToCloseDrawer } from './routeBuilder';
 
 export default {
+  // Anonymous
+  about: new RouteBuilder('/about').build(),
+
+  // User
+  games: new RouteBuilder('/games').build(),
+
+  // InGame
   overview: new RouteBuilder('/overview').build(),
   galaxy: new RouteBuilder('/galaxy')
     .withSidebar(

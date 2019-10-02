@@ -1,8 +1,12 @@
 import Debug from 'debug';
 import * as uuid from 'uuid/v4';
-import * as WebSocket from 'ws';
+import * as WebSocket from 'isomorphic-ws';
 
 const log = Debug('eventing');
+
+const defaultOptions = {
+  // autoReconnect: true,
+};
 
 export default class Client<
   TRead extends {},
@@ -34,7 +38,17 @@ export default class Client<
     },
   );
 
-  constructor(private readonly address: string) {
+  readonly options: typeof defaultOptions;
+  onauthchange?: (auth: boolean) => void;
+  get authenticated() {
+    return this._authenticated;
+  }
+
+  constructor(
+    private readonly address: string,
+    options?: typeof defaultOptions,
+  ) {
+    this.options = { ...defaultOptions, ...options };
     this.deferredStartup = { resolve: () => {}, reject: () => {} };
     this.websocket = new Promise(
       (resolve, reject) => (this.deferredStartup = { resolve, reject }),
@@ -52,31 +66,76 @@ export default class Client<
       reject: (reason: Error) => void;
     }
   >();
+  private subscriptions = new Map<
+    string,
+    { list: string; onUpdate: (data: {}[], total: number) => void }
+  >();
   private websocket: Promise<WebSocket>;
+  private _authenticated = false;
+
+  async getAuthUrl(redirectUri: string) {
+    log('Generating auth url');
+    return (await this.send({
+      type: 'ssoUrl',
+      payload: redirectUri,
+    })) as string;
+  }
+
+  async exchangeCode(redirectUri: string, code: string) {
+    log('Exchanging code for tokens');
+    const { tokens, error } = await this.send({
+      type: 'ssoCode',
+      payload: { redirectUri, code },
+    });
+    if (error) {
+      throw new Error(error);
+    }
+    return tokens as {
+      idToken: string;
+      accessToken: string;
+      refreshToken: string;
+      expiryDate: number;
+    };
+  }
 
   async setUserToken(token: string) {
-    await this.send({
+    this._authenticated = false;
+    const { authenticated, error } = await this.send({
       type: 'auth',
-      payload: [token],
+      payload: token,
     });
+    if (error || !authenticated) {
+      throw new Error(error || 'Not authenticated.');
+    }
+    this._authenticated = true;
+    this.onauthchange && this.onauthchange(this._authenticated);
   }
 
   async start() {
     const ws = new WebSocket(this.address);
 
-    ws.on('open', () => {
+    ws.onopen = () => {
       log('Connected');
 
       this.deferredStartup.resolve(ws);
-    });
+    };
 
-    ws.on('message', msg => {
-      // log('Message received: %O', msg);
-
+    ws.onmessage = msg => {
       try {
-        const { type, to, payload } = JSON.parse(msg.toString());
+        const { type, to, payload } = JSON.parse(msg.data.toString());
 
         switch (type) {
+          case 'subscription': {
+            const sub = this.subscriptions.get(to);
+            if (sub) {
+              log.extend(sub.list, '@').extend(to)(
+                'New data arrived %o',
+                payload,
+              );
+              sub.onUpdate(payload.result, payload.total);
+            }
+            break;
+          }
           case 'response':
             {
               const { rejected, reason, error } = payload;
@@ -94,15 +153,19 @@ export default class Client<
       } catch (err) {
         // noop
       }
-    });
+    };
 
-    ws.on('close', () => {
+    ws.onclose = () => {
       log('Disconnected');
-    });
+      this._authenticated = false;
+      this.onauthchange && this.onauthchange(this._authenticated);
+    };
 
-    ws.on('error', err => {
+    ws.onerror = err => {
       log('Error %O', err);
-    });
+      this._authenticated = false;
+      this.onauthchange && this.onauthchange(this._authenticated);
+    };
   }
 
   close() {
@@ -112,14 +175,11 @@ export default class Client<
   private async send<T>(data: T) {
     const ws = await this.websocket;
     const msgId = uuid();
-    await new Promise((resolve, reject) =>
-      ws.send(
-        JSON.stringify({
-          ...data,
-          id: msgId,
-        }),
-        err => (err ? reject(err) : resolve()),
-      ),
+    ws.send(
+      JSON.stringify({
+        ...data,
+        id: msgId,
+      }),
     );
     const response = await new Promise((resolve, reject) => {
       this.deferredMessages.set(msgId, { resolve, reject });
@@ -133,18 +193,43 @@ export default class Client<
     return new Proxy(
       {},
       {
-        get: (_, op) => async (query: {}) => {
-          trace('%s %O', op, query);
-          const { result } = await this.send({
-            type: 'request',
-            payload: {
-              listType: list,
-              op,
-              query,
-            },
-          });
-          return result;
-        },
+        get: (_, op) =>
+          op.toString().endsWith('AndSubscribe')
+            ? (query: {}, onUpdate: (list: {}[]) => void) => {
+                const subscriptionId = uuid();
+                trace.extend(subscriptionId)('%s %O', op, query);
+                this.subscriptions.set(subscriptionId, { list, onUpdate });
+                this.send({
+                  type: 'request',
+                  payload: {
+                    listType: list,
+                    op,
+                    query,
+                    subscriptionId,
+                  },
+                });
+                return () => {
+                  this.subscriptions.delete(subscriptionId);
+                  this.send({
+                    type: 'stopSubscription',
+                    payload: {
+                      subscriptionId,
+                    },
+                  });
+                };
+              }
+            : async (query: {}) => {
+                trace('%s %O', op, query);
+                const { result } = await this.send({
+                  type: 'request',
+                  payload: {
+                    listType: list,
+                    op,
+                    query,
+                  },
+                });
+                return result;
+              },
       },
     );
   }

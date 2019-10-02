@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import * as uuid from 'uuid/v4';
-import DomainEvent from './DomainEvent';
-import { StoredEvent } from './StoredEvent';
+import { DomainEvent } from './DomainEvent';
 
 const EventHandlerSymbol = Symbol();
 const CommandHandlerSymbol = Symbol();
@@ -58,16 +57,16 @@ export default abstract class Aggregate<T> {
     this.stateUpdates = [];
   }
 
-  public handle(event: StoredEvent) {
+  public handle(event: DomainEvent) {
     const fn = ((this as {}) as {
       [P in typeof event.constructor.name]?: (evt: DomainEvent) => void;
     })[Aggregate[EventHandlerSymbol][this.constructor.name][event.name]];
     if (fn) {
-      fn.call(this, event.data);
+      fn.call(this, event);
     }
   }
 
-  public replay(events: StoredEvent[]) {
+  public replay(events: DomainEvent[]) {
     this.batchStateUpdate = true;
     for (const event of events) {
       this.handle(event);
@@ -98,8 +97,16 @@ export function Command(config: CommandConfig = {}) {
 
 export class CommandRejected extends Error {}
 
+type EventName<T> = T extends DomainEvent<infer U, any> ? U : never;
+type EventData<T> = T extends DomainEvent<any, infer U> ? U : never;
+
 export type CommandInterface = {
-  events: { publish: (event: DomainEvent) => void };
+  events: {
+    publish: <T extends DomainEvent>(
+      eventName: EventName<T>,
+      event: EventData<T>,
+    ) => void;
+  };
   user: { id: string };
 };
 

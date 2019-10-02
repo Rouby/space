@@ -1,5 +1,5 @@
-import { Users } from './Users';
+import { Games } from './Games';
 
 export default {
-  Users,
+  Games,
 };

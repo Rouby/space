@@ -1,7 +1,7 @@
 import { Drawer } from 'antd';
 import * as React from 'react';
 import { Route, Switch } from 'react-router';
-import routes, { CanGoBackToCloseDrawer } from '../config/routing';
+import routing, { CanGoBackToCloseDrawer } from '../config/routing';
 import { useCurrentRouteConfig, usePathMatch, useStore } from '../hooks';
 import SystemOverview from './SystemOverview';
 
@@ -9,7 +9,7 @@ export default function Sidebar() {
   const closeDrawer = useDrawerCloser();
 
   const drawerOpen = usePathMatch(
-    Object.values(routes).flatMap(route => route.sidebarPathnames),
+    Object.values(routing).flatMap(route => route.sidebarPathnames),
   );
 
   return (
@@ -17,7 +17,7 @@ export default function Sidebar() {
       title={
         <Switch>
           <Route
-            path={routes.galaxy.sidebars.system.pathname}
+            path={routing.galaxy.sidebars.system.pathname}
             render={() => 'System'}
           />
         </Switch>
@@ -30,7 +30,7 @@ export default function Sidebar() {
     >
       <Switch>
         <Route
-          path={routes.galaxy.sidebars.system.pathname}
+          path={routing.galaxy.sidebars.system.pathname}
           component={SystemOverview}
         />
       </Switch>

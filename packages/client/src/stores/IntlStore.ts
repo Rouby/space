@@ -27,10 +27,14 @@ export default class IntlStore {
     }
 
     autorun(async () => {
-      const response = await fetch(`/static/messages/${this.locale}.json`);
-      if (response.ok) {
-        const messages = await response.json();
-        this.translations[this.locale] = messages;
+      try {
+        const response = await fetch(`/static/messages/${this.locale}.json`);
+        if (response.ok) {
+          const messages = await response.json();
+          this.translations[this.locale] = messages;
+        }
+      } catch (err) {
+        console.log(err);
       }
     });
   }

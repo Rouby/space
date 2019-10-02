@@ -1,8 +1,13 @@
 import Debug from 'debug';
 import * as uuid from 'uuid/v4';
 import * as WebSocket from 'ws';
-import { Aggregate, CommandInterface, CommandRejected, List } from '../lib';
-import { StoredEvent } from '../lib/StoredEvent';
+import {
+  Aggregate,
+  CommandInterface,
+  CommandRejected,
+  List,
+  DomainEvent,
+} from '../lib';
 
 const log = Debug('eventing');
 
@@ -11,32 +16,45 @@ export default class Server {
   constructor(
     private options: {
       queue: {
-        publish(event: StoredEvent): void;
+        publish(event: DomainEvent): void;
       };
       events: {
-        subscribe(callback: (event: StoredEvent) => void): void;
+        subscribe(callback: (event: DomainEvent) => void): void;
       };
       store: {
-        load(): Promise<StoredEvent[]>;
-        save(event: StoredEvent): Promise<void>;
+        load(): Promise<DomainEvent[]>;
+        save(event: DomainEvent): Promise<void>;
       };
       aggregates: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [key: string]: new (id?: string, state?: any) => Aggregate<any>;
       };
-      lists: { [key: string]: new () => List<{}> };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      lists: { [key: string]: new () => List<any> };
       auth: {
-        verify: (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ...args: any[]
-        ) => Promise<{ payload: { sub: string } } | undefined>;
+        getUrl: (redirectUri: string) => Promise<string>;
+        exchangeCode: (
+          redirectUri: string,
+          code: string,
+        ) => Promise<{
+          idToken: string;
+          accessToken: string;
+          refreshToken?: string | null;
+          expiryDate: number;
+        }>;
+        verifyToken: (idToken: string) => Promise<{ payload: { sub: string } }>;
       };
     },
   ) {}
 
   private wss: WebSocket.Server | null = null;
-  private events: StoredEvent[] = [];
+  private events: DomainEvent[] = [];
   private clientAuth = new Map<WebSocket, { id: string }>();
+  private subscriptions = new Map<
+    string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { list: List<any>; onUpdate: (data: {}, total: number) => void }
+  >();
 
   async listen(port: number) {
     this.events = await this.options.store.load();
@@ -47,6 +65,9 @@ export default class Server {
 
     this.options.events.subscribe(event => {
       this.events.push(event);
+      [...this.subscriptions.values()].forEach(({ list }) =>
+        list.handle(event),
+      );
     });
 
     this.wss.on('connection', client => {
@@ -62,9 +83,49 @@ export default class Server {
           const { id, type, payload } = JSON.parse(msg.toString());
 
           switch (type) {
+            case 'ssoUrl': {
+              const authUrl = await this.options.auth.getUrl(payload);
+              client.send(
+                JSON.stringify({
+                  type: 'response',
+                  to: id,
+                  payload: authUrl,
+                }),
+              );
+              break;
+            }
+            case 'ssoCode': {
+              try {
+                const tokens = await this.options.auth.exchangeCode(
+                  payload.redirectUri,
+                  payload.code,
+                );
+                client.send(
+                  JSON.stringify({
+                    type: 'response',
+                    to: id,
+                    payload: {
+                      tokens,
+                    },
+                  }),
+                );
+              } catch (error) {
+                trace('Code exchange failed:\n%O', error);
+                client.send(
+                  JSON.stringify({
+                    type: 'response',
+                    to: id,
+                    payload: {
+                      error: error.message,
+                    },
+                  }),
+                );
+              }
+              break;
+            }
             case 'auth': {
               try {
-                const ticket = await this.options.auth.verify(...payload);
+                const ticket = await this.options.auth.verifyToken(payload);
                 if (ticket) {
                   trace('User authenticated');
                   this.clientAuth.set(client, { id: ticket.payload.sub });
@@ -76,28 +137,25 @@ export default class Server {
                     }),
                   );
                 } else {
-                  client.send(
-                    JSON.stringify({
-                      type: 'response',
-                      to: id,
-                      payload: { authenticated: false },
-                    }),
-                  );
+                  throw new Error('No tickets generated.');
                 }
-              } catch (err) {
-                trace('Authenticated failed:\n%O', err);
+              } catch (error) {
+                trace('Authenticated failed:\n%O', error);
                 client.send(
                   JSON.stringify({
                     type: 'response',
                     to: id,
-                    payload: { authenticated: false },
+                    payload: {
+                      authenticated: false,
+                      error: error.message,
+                    },
                   }),
                 );
               }
               break;
             }
             case 'request': {
-              const { listType, op, query } = payload;
+              const { listType, op, query, subscriptionId } = payload;
 
               try {
                 const list = new this.options.lists[listType]();
@@ -115,16 +173,37 @@ export default class Server {
                   return;
                 }
                 list.replay(this.events);
+                const onUpdate = (result: {}, total: number) => {
+                  client.send(
+                    JSON.stringify({
+                      type: 'subscription',
+                      to: subscriptionId,
+                      payload: { result, total },
+                    }),
+                  );
+                };
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const result = await (list as any)[op].call(list, query);
-                // TODO restrict results based on access
-                client.send(
-                  JSON.stringify({
-                    type: 'response',
-                    to: id,
-                    payload: { result },
-                  }),
+                const result = await (list as any)[op].call(
+                  list,
+                  query,
+                  onUpdate,
                 );
+                // TODO restrict results based on access
+                if (subscriptionId) {
+                  this.subscriptions.set(`${clientId}::${subscriptionId}`, {
+                    list,
+                    onUpdate,
+                  });
+                  trace('Subscription started');
+                } else {
+                  client.send(
+                    JSON.stringify({
+                      type: 'response',
+                      to: id,
+                      payload: { result },
+                    }),
+                  );
+                }
               } catch (error) {
                 trace('Unexpected error\n%O', error);
                 client.send(
@@ -138,6 +217,12 @@ export default class Server {
                 );
               }
 
+              break;
+            }
+            case 'stopSubscription': {
+              const { subscriptionId } = payload;
+              this.subscriptions.delete(`${clientId}::${subscriptionId}`);
+              trace('Subscription stopped');
               break;
             }
             case 'command':
@@ -177,13 +262,13 @@ export default class Server {
                 const user = this.clientAuth.get(client)!;
                 const commandInterface: CommandInterface = {
                   events: {
-                    publish: data => {
+                    publish: (name, data) => {
                       const event = {
                         aggregate: {
                           name: aggregateType,
                           id: aggregate.id,
                         },
-                        name: data.constructor.name,
+                        name: name,
                         id: uuid(),
                         data,
                         user,
@@ -255,6 +340,12 @@ export default class Server {
       });
 
       client.on('close', () => {
+        [...this.subscriptions.keys()]
+          .filter(key => key.startsWith(`${clientId}::`))
+          .forEach(key => {
+            this.subscriptions.delete(key);
+            trace('Subscription stopped');
+          });
         trace('Disconnected');
       });
 

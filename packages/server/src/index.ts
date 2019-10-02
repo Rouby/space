@@ -37,10 +37,69 @@ const fsStore = {
   async save(event: {}) {
     this._events.push(event);
     await new Promise((resolve, reject) =>
-      writeFile('./eventlog.json', JSON.stringify(this._events), err =>
+      writeFile('./eventlog.json', JSON.stringify(this._events, null, 2), err =>
         err ? reject() : resolve(),
       ),
     );
+  },
+};
+
+const googleAuth = {
+  async getUrl(redirectUri: string) {
+    return authClient.generateAuthUrl({
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      redirect_uri: redirectUri,
+      scope: ['profile'],
+    });
+  },
+  async exchangeCode(redirectUri: string, code: string) {
+    try {
+      const {
+        tokens: {
+          id_token: idToken,
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          expiry_date: expiryDate,
+        },
+      } = await authClient.getToken({
+        code,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        redirect_uri: redirectUri,
+      });
+      if (idToken && accessToken && expiryDate) {
+        return {
+          idToken,
+          accessToken,
+          refreshToken,
+          expiryDate,
+        };
+      }
+
+      throw new Error('No valid tokens generated.');
+    } catch (err) {
+      throw new Error(
+        (err.response && err.response.data && err.response.data.error) ||
+          err.message,
+      );
+    }
+  },
+  async verifyToken(idToken: string) {
+    try {
+      const ticket = await authClient.verifyIdToken({
+        idToken,
+        audience: `${process.env.GOOGLE_CLIENT_ID}`,
+      });
+      const payload = ticket.getPayload();
+      if (payload) {
+        return { payload };
+      }
+      throw new Error('Could not validate token.');
+    } catch (err) {
+      throw new Error(
+        (err.response && err.response.data && err.response.data.error) ||
+          err.message,
+      );
+    }
   },
 };
 
@@ -50,19 +109,7 @@ new Server({
   store: fsStore,
   aggregates,
   lists,
-  auth: {
-    async verify(idToken: string) {
-      const ticket = await authClient.verifyIdToken({
-        idToken,
-        audience: `${process.env.GOOGLE_CLIENT_ID}`,
-      });
-      const payload = ticket.getPayload();
-      if (payload) {
-        return { payload };
-      }
-      return undefined;
-    },
-  },
+  auth: googleAuth,
 })
   .listen(4000)
   .then(() => {

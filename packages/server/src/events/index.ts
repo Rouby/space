@@ -1,2 +1,1 @@
-export * from './UserSignedIn';
-export * from './UserSignedUp';
+export * from './GameCreated';

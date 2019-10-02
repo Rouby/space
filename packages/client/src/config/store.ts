@@ -1,8 +1,8 @@
 import { RouterStore } from 'mobx-react-router';
-import { IntlStore, GameStore } from '../stores';
+import { IntlStore, GeneralStore } from '../stores';
 
 export default {
   routing: new RouterStore(),
   intl: new IntlStore('en'),
-  game: new GameStore(),
+  general: new GeneralStore(),
 };

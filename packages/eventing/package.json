@@ -5,8 +5,12 @@
   "license": "MIT",
   "dependencies": {
     "debug": "^4.1.1",
+    "isomorphic-ws": "^4.0.1",
     "sift": "^8.5.0",
     "uuid": "^3.3.3",
     "ws": "^7.1.2"
+  },
+  "peerDependencies": {
+    "mobx": "^5.13.0"
   }
 }

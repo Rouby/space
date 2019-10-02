@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl';
 import { createUseStyles } from 'react-jss';
 import { Route, RouteComponentProps, Switch } from 'react-router';
 import { Link } from '../components';
-import routes, { CanGoBackToCloseDrawer } from '../config/routing';
+import routing, { CanGoBackToCloseDrawer } from '../config/routing';
 import { usePathMatch, useStore } from '../hooks';
 import { uncertainToString } from '../utils';
 
@@ -40,7 +40,7 @@ export default function SystemOverview({
         ? () => store.routing.goBack()
         : () =>
             store.routing.replace(
-              routes.galaxy.sidebars.system.link({
+              routing.galaxy.sidebars.system.link({
                 id: match.params.id,
               }),
             ),
@@ -48,7 +48,7 @@ export default function SystemOverview({
   );
 
   const drawerOpen = usePathMatch(
-    Object.values(routes.galaxy.sidebars).flatMap(
+    Object.values(routing.galaxy.sidebars).flatMap(
       route => route.sidebarPathnames,
     ),
   );
@@ -128,7 +128,7 @@ export default function SystemOverview({
         </Timeline.Item>
       </Timeline>
       <Link
-        to={routes.galaxy.sidebars.system.sidebars.build.link(
+        to={routing.galaxy.sidebars.system.sidebars.build.link(
           {
             id: match.params.id,
           },
@@ -141,7 +141,7 @@ export default function SystemOverview({
         title={
           <Switch>
             <Route
-              path={routes.galaxy.sidebars.system.sidebars.build.pathname}
+              path={routing.galaxy.sidebars.system.sidebars.build.pathname}
               render={() => 'Build'}
             />
           </Switch>
@@ -153,7 +153,7 @@ export default function SystemOverview({
       >
         <Switch>
           <Route
-            path={routes.galaxy.sidebars.system.sidebars.build.pathname}
+            path={routing.galaxy.sidebars.system.sidebars.build.pathname}
             render={() => 'Build'}
           />
         </Switch>

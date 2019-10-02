@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Empty, Popover } from 'antd';
 import * as React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Switch } from 'react-router';
 import { Link } from '.';
-import { linkToSystem } from '../config/routing';
+import routing from '../config/routing';
 
 const useStyles = createUseStyles({
   container: {
     position: 'absolute',
-    left: ({ position }: System) => position.x,
-    top: ({ position }: System) => position.y,
+    left: ({ position }: any) => position.x,
+    top: ({ position }: any) => position.y,
   },
   dot: {
     width: 8,
@@ -23,15 +24,18 @@ const useStyles = createUseStyles({
   },
 });
 
-export default function SystemDot(props: System) {
+export default function SystemDot(props: any) {
   const classNames = useStyles(props);
 
   return (
     <Popover title={props.name} content={<Empty />}>
-      <Link to={linkToSystem(props)} className={classNames.container}>
+      <Link
+        to={routing.galaxy.sidebars.system.link(props)}
+        className={classNames.container}
+      >
         <Switch>
           <Route
-            path={linkToSystem(props)}
+            path={routing.galaxy.sidebars.system.link(props).pathname}
             render={() => (
               <div className={[classNames.dot, classNames.active].join(' ')} />
             )}
