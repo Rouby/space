@@ -3,12 +3,23 @@ import { action, observable, runInAction } from 'mobx';
 
 export default class GeneralStore {
   @observable
+  public connected = false;
+
+  @observable
   public authenticated = false;
+
+  @observable
+  public gameId = sessionStorage.getItem('space:gameId');
 
   constructor() {
     eventing.onauthchange = auth => {
       runInAction(() => {
         this.authenticated = auth;
+      });
+    };
+    eventing.onconnectionchange = connected => {
+      runInAction(() => {
+        this.connected = connected;
       });
     };
 
@@ -17,6 +28,14 @@ export default class GeneralStore {
 
   @action.bound
   public async authenticate(idToken: string) {
-    await eventing.setUserToken(idToken);
+    if (!this.authenticated) {
+      await eventing.setUserToken(idToken);
+    }
+  }
+
+  @action.bound
+  public enterGame(gameId: string) {
+    this.gameId = gameId;
+    sessionStorage.setItem('space:gameId', gameId);
   }
 }

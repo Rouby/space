@@ -1,67 +1,12 @@
-import * as React from 'react';
 import { Game } from '@space/server/src/read/Games';
-import eventing from '../config/eventing';
-import { Table, Modal, Input, Form, Switch } from 'antd';
-import { FormComponentProps } from 'antd/lib/form';
+import { Button, Divider, Popconfirm, Table } from 'antd';
 import { PaginationConfig } from 'antd/lib/table';
-
-interface CreateGameFormProps extends FormComponentProps<Game> {
-  visible: boolean;
-  onCreate: (game: Game) => void;
-  onCancel: () => void;
-}
-const CreateGameForm = Form.create<CreateGameFormProps>()(
-  function CreateGameForm({
-    visible,
-    onCreate,
-    onCancel,
-    form: {
-      getFieldValue,
-      getFieldDecorator,
-      validateFieldsAndScroll,
-      resetFields,
-    },
-  }: CreateGameFormProps) {
-    return (
-      <Modal
-        visible={visible}
-        onOk={() => {
-          validateFieldsAndScroll((err, values) => {
-            if (err) {
-              return;
-            }
-            onCreate(values);
-            resetFields();
-          });
-        }}
-        onCancel={() => {
-          onCancel();
-          resetFields();
-        }}
-        title="Create new game"
-        okText="Create"
-      >
-        <Form labelCol={{ sm: { span: 8 } }} wrapperCol={{ sm: { span: 16 } }}>
-          <Form.Item label="Name">
-            {getFieldDecorator('name', { rules: [{ required: true }] })(
-              <Input />,
-            )}
-          </Form.Item>
-          <Form.Item label="Use password?">
-            {getFieldDecorator('usePassword', { valuePropName: 'checked' })(
-              <Switch />,
-            )}
-          </Form.Item>
-          {getFieldValue('usePassword') && (
-            <Form.Item label="Password">
-              {getFieldDecorator('password')(<Input type="password" />)}
-            </Form.Item>
-          )}
-        </Form>
-      </Modal>
-    );
-  },
-);
+import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import eventing from '../config/eventing';
+import CreateGameModal from './CreateGameModal';
+import store from '../config/store';
+import routing from '../config/routing';
 
 export default function GameList() {
   const [pagination, setPagination] = React.useState<PaginationConfig>({
@@ -70,21 +15,26 @@ export default function GameList() {
     total: 0,
   });
   const [games, setGames] = React.useState<undefined | (Game[])>(undefined);
-  React.useEffect(() => {
-    eventing.lists.Games.find({
-      skip: ((pagination.current || 1) - 1) * (pagination.pageSize || 1),
-      take: pagination.pageSize,
-    }).then(({ data, total }) => {
-      setGames(data);
-      setPagination(p => ({ ...p, total }));
-    });
-  }, [pagination.current, pagination.pageSize]);
+  React.useEffect(
+    () =>
+      eventing.lists.Games.findAndSubscribe(
+        {
+          skip: ((pagination.current || 1) - 1) * (pagination.pageSize || 1),
+          take: pagination.pageSize,
+        },
+        (data, total) => {
+          setGames(data);
+          setPagination(p => ({ ...p, total }));
+        },
+      ),
+    [pagination.current, pagination.pageSize],
+  );
   const [creatingNewGame, setCreatingNewGame] = React.useState(false);
 
   return (
     <div>
       <button onClick={() => setCreatingNewGame(true)}>Create Game</button>
-      <CreateGameForm
+      <CreateGameModal
         visible={creatingNewGame}
         onCreate={game => {
           eventing.aggregates.Game().create(game.name, game.password);
@@ -102,8 +52,101 @@ export default function GameList() {
         columns={[
           {
             title: 'Name',
-            dataIndex: 'name',
             key: 'name',
+            dataIndex: 'name',
+          },
+          {
+            title: 'Participants',
+            key: 'participants',
+            render: (_, record) =>
+              record.participants
+                .map(usr => `${usr.name} (${usr.id})`)
+                .join(', '),
+          },
+          {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+              <span>
+                {record.participants.find(
+                  usr => usr.id === (eventing.myself && eventing.myself.id),
+                ) ? (
+                  <>
+                    <Button
+                      type="link"
+                      onClick={() => {
+                        store.general.enterGame(record.id);
+                        store.routing.push(routing.overview.link());
+                      }}
+                    >
+                      Enter
+                    </Button>
+                    {record.owner.id !==
+                      (eventing.myself && eventing.myself.id) && (
+                      <Popconfirm
+                        title={
+                          <FormattedMessage
+                            id="confirm.leaveGame"
+                            defaultMessage="Are you sure you want to leave?"
+                          />
+                        }
+                        okText={
+                          <FormattedMessage
+                            id="confirm.yes"
+                            defaultMessage="Yes"
+                          />
+                        }
+                        cancelText={
+                          <FormattedMessage
+                            id="confirm.cancel"
+                            defaultMessage="Cancel"
+                          />
+                        }
+                        onConfirm={() =>
+                          eventing.aggregates.Game(record.id).leave()
+                        }
+                      >
+                        <Button type="link">Leave</Button>
+                      </Popconfirm>
+                    )}
+                  </>
+                ) : (
+                  <Button
+                    type="link"
+                    onClick={() => eventing.aggregates.Game(record.id).join()}
+                  >
+                    Join
+                  </Button>
+                )}
+                {record.owner.id ===
+                  (eventing.myself && eventing.myself.id) && (
+                  <>
+                    <Popconfirm
+                      title={
+                        <FormattedMessage
+                          id="confirm.deleteGame"
+                          defaultMessage="Deleting this game is irrevokable, continue?"
+                        />
+                      }
+                      okText={
+                        <FormattedMessage id="confirm.ok" defaultMessage="Ok" />
+                      }
+                      cancelText={
+                        <FormattedMessage
+                          id="confirm.cancel"
+                          defaultMessage="Cancel"
+                        />
+                      }
+                      onConfirm={() =>
+                        eventing.aggregates.Game(record.id).delete()
+                      }
+                    >
+                      <Button type="link">Delete</Button>
+                    </Popconfirm>
+                  </>
+                )}
+              </span>
+            ),
           },
         ]}
       />

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import sift from 'sift';
 import { DomainEvent } from './DomainEvent';
 
@@ -15,7 +16,43 @@ type Query<T> = {
   take?: number;
 };
 
-export default abstract class List<T extends { id: string }> {
+export const $push = Symbol('Push operation');
+export const $pull = Symbol('Pull operation');
+
+const operations = {
+  [$push]: <T>(arr: T[], val: T | T[]) => [
+    ...arr,
+    ...(Array.isArray(val) ? val : [val]),
+  ],
+  [$pull]: <T extends { [key: string]: unknown }>(
+    arr: T[],
+    val: Partial<T> | Partial<T>[],
+  ) => {
+    const predicate = Array.isArray(val)
+      ? (d: T) => !val.some(v => Object.keys(v).every(key => v[key] === d[key]))
+      : (d: T) => !Object.keys(val).every(key => val[key] === d[key]);
+    return arr.filter(predicate);
+  },
+};
+
+type ArrayElement<T> = T extends (infer U)[] ? U : never;
+
+type Operations<T extends ListEntry> = {
+  [P in keyof T]?:
+    | T[P]
+    | { [$push]: T[P] | ArrayElement<T[P]> }
+    | { [$pull]: Partial<T[P]> | Partial<ArrayElement<T[P]>> };
+};
+
+export abstract class ListEntry {
+  id!: string;
+  owner!: { id: string; name: string };
+}
+
+export default abstract class List<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends ListEntry & { [key: string]: any }
+> {
   private static [EventHandlerSymbol]: {
     [clazz: string]: { [event: string]: string };
   } = {};
@@ -46,20 +83,49 @@ export default abstract class List<T extends { id: string }> {
     return false;
   }
 
-  add(newItem: T) {
+  protected add(newItem: T) {
     this.state.push(newItem);
     this.checkSubscriptions();
   }
 
-  update(query: Query<T>, updatedItem: Partial<T>) {
+  protected update(query: Query<T>, updates: Operations<T>) {
     const idx = this.state.findIndex(sift((query.where as {}) || {}));
     if (idx >= 0) {
+      const updatedItem = Object.entries(updates).reduce(
+        (acc, [key, value]) => {
+          if (typeof value === 'object' && $push in value) {
+            return {
+              ...acc,
+              [key]: operations[$push](
+                this.state[idx][key],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (value as any)[$push],
+              ),
+            };
+          }
+          if (typeof value === 'object' && $pull in value) {
+            return {
+              ...acc,
+              [key]: operations[$pull](
+                this.state[idx][key],
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (value as any)[$pull],
+              ),
+            };
+          }
+          return {
+            ...acc,
+            [key]: value,
+          };
+        },
+        {},
+      );
       this.state.splice(idx, 1, { ...this.state[idx], ...updatedItem });
     }
     this.checkSubscriptions();
   }
 
-  remove(query: Query<T>) {
+  protected remove(query: Query<T>) {
     const idx = this.state.findIndex(sift((query.where as {}) || {}));
     if (idx >= 0) {
       this.state.splice(idx, 1);
@@ -68,7 +134,7 @@ export default abstract class List<T extends { id: string }> {
   }
 
   private checkSubscriptions() {
-    [...this.subscriptions.entries()].forEach(([query, cfg]) => {
+    Array.from(this.subscriptions.entries()).forEach(([query, cfg]) => {
       switch (cfg.type) {
         case 'multi': {
           const data = this.state
@@ -139,21 +205,21 @@ export default abstract class List<T extends { id: string }> {
     onUpdate(data);
   }
 
-  public handle(event: DomainEvent) {
+  public async handle(event: DomainEvent) {
     const handler = List[EventHandlerSymbol][this.constructor.name][event.name];
     const fn = ((this as {}) as {
       [P in typeof handler]?: (evt: DomainEvent) => void;
     })[handler];
     if (fn) {
-      fn.call(this, event);
+      await fn.call(this, event);
       return true;
     }
     return false;
   }
 
-  public replay(events: DomainEvent[]) {
+  public async replay(events: DomainEvent[]) {
     for (const event of events) {
-      this.handle(event);
+      await this.handle(event);
     }
   }
 }

@@ -5,5 +5,6 @@ export class GameCreated extends DomainEvent<
   {
     name: string;
     password: string | null;
-  }
+  },
+  true
 > {}

@@ -7,7 +7,8 @@ import {
   CommandRejected,
   List,
   DomainEvent,
-} from '../lib';
+  AggregateConstructorParameters,
+} from './lib';
 
 const log = Debug('eventing');
 
@@ -27,7 +28,12 @@ export default class Server {
       };
       aggregates: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        [key: string]: new (id?: string, state?: any) => Aggregate<any>;
+        [key: string]: new (
+          ...args: AggregateConstructorParameters
+        ) => Aggregate<
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any
+        >;
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       lists: { [key: string]: new () => List<any> };
@@ -42,14 +48,16 @@ export default class Server {
           refreshToken?: string | null;
           expiryDate: number;
         }>;
-        verifyToken: (idToken: string) => Promise<{ payload: { sub: string } }>;
+        verifyToken: (
+          idToken: string,
+        ) => Promise<{ payload: { sub: string; name: string } }>;
       };
     },
   ) {}
 
   private wss: WebSocket.Server | null = null;
   private events: DomainEvent[] = [];
-  private clientAuth = new Map<WebSocket, { id: string }>();
+  private clientAuth = new Map<WebSocket, { id: string; name: string }>();
   private subscriptions = new Map<
     string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +65,7 @@ export default class Server {
   >();
 
   async listen(port: number) {
-    this.events = await this.options.store.load();
+    this.events = [...(await this.options.store.load())];
 
     this.wss = new WebSocket.Server({
       port,
@@ -78,6 +86,10 @@ export default class Server {
 
       client.on('message', async msg => {
         // trace('Message received: %O', msg);
+        if (msg === 'ping') {
+          client.send('pong');
+          return;
+        }
 
         try {
           const { id, type, payload } = JSON.parse(msg.toString());
@@ -128,12 +140,19 @@ export default class Server {
                 const ticket = await this.options.auth.verifyToken(payload);
                 if (ticket) {
                   trace('User authenticated');
-                  this.clientAuth.set(client, { id: ticket.payload.sub });
+                  this.clientAuth.set(client, {
+                    id: ticket.payload.sub,
+                    name: ticket.payload.name,
+                  });
                   client.send(
                     JSON.stringify({
                       type: 'response',
                       to: id,
-                      payload: { authenticated: true },
+                      payload: {
+                        authenticated: true,
+                        id: ticket.payload.sub,
+                        name: ticket.payload.name,
+                      },
                     }),
                   );
                 } else {
@@ -172,7 +191,7 @@ export default class Server {
                   );
                   return;
                 }
-                list.replay(this.events);
+                await list.replay(this.events);
                 const onUpdate = (result: {}, total: number) => {
                   client.send(
                     JSON.stringify({
@@ -194,7 +213,10 @@ export default class Server {
                     list,
                     onUpdate,
                   });
-                  trace('Subscription started');
+                  trace('Subscription started %o', {
+                    subscriptionId,
+                    listType,
+                  });
                 } else {
                   client.send(
                     JSON.stringify({
@@ -222,19 +244,27 @@ export default class Server {
             case 'stopSubscription': {
               const { subscriptionId } = payload;
               this.subscriptions.delete(`${clientId}::${subscriptionId}`);
-              trace('Subscription stopped');
+              trace('Subscription stopped %o', {
+                subscriptionId,
+              });
               break;
             }
             case 'command':
               {
                 const { aggregateType, aggregateId, command, data } = payload;
 
+                // first event determines owner of aggregate
+                const firstEvent = this.events.find(
+                  evt => evt.aggregate.id === aggregateId,
+                );
                 const aggregate = new this.options.aggregates[aggregateType](
                   aggregateId,
                   // TODO apply state from cache?
+                  {},
+                  firstEvent ? firstEvent.user : null,
                 );
                 if (aggregateId) {
-                  aggregate.replay(
+                  await aggregate.replay(
                     this.events.filter(evt => evt.aggregate.id === aggregateId),
                   );
                 }

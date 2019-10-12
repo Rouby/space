@@ -24,7 +24,11 @@ export default abstract class Aggregate<T> {
 
   static events?: { publish: (evt: DomainEvent) => void };
 
-  constructor(public readonly id = uuid(), private state: T) {
+  constructor(
+    public readonly id = uuid(),
+    private state: T,
+    public readonly owner: { id: string; name: string } | null = null,
+  ) {
     if (!this.state) {
       this.state = this.initialState();
     }
@@ -57,19 +61,21 @@ export default abstract class Aggregate<T> {
     this.stateUpdates = [];
   }
 
-  public handle(event: DomainEvent) {
+  public async handle(event: DomainEvent) {
     const fn = ((this as {}) as {
       [P in typeof event.constructor.name]?: (evt: DomainEvent) => void;
     })[Aggregate[EventHandlerSymbol][this.constructor.name][event.name]];
     if (fn) {
-      fn.call(this, event);
+      await fn.call(this, event);
+      return true;
     }
+    return false;
   }
 
-  public replay(events: DomainEvent[]) {
+  public async replay(events: DomainEvent[]) {
     this.batchStateUpdate = true;
     for (const event of events) {
-      this.handle(event);
+      await this.handle(event);
     }
     this.batchStateUpdate = false;
     this.handleStateUpdate();
@@ -97,7 +103,20 @@ export function Command(config: CommandConfig = {}) {
 
 export class CommandRejected extends Error {}
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+class DummyAggregate extends Aggregate<any> {
+  protected initialState() {
+    return {};
+  }
+}
+
+export type AggregateConstructorParameters = ConstructorParameters<
+  typeof DummyAggregate
+>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventName<T> = T extends DomainEvent<infer U, any> ? U : never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventData<T> = T extends DomainEvent<any, infer U> ? U : never;
 
 export type CommandInterface = {
@@ -131,7 +150,6 @@ type ArgumentsOf<T> = T extends (i: CommandInterface, ...args: infer U) => any
 type ClientFunctions<T, R> = {
   [P in keyof T]: (...args: ArgumentsOf<T[P]>) => Promise<R>;
 };
-// type AggregateObject<T> = T extends Aggregate<infer U> ? U : never;
 export type AggregateInterface<T> = Omit<
   ClientFunctions<CommandsOf<T>, { id: string }>,
   'handle'

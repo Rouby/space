@@ -4,7 +4,7 @@ import aggregates from './write';
 import lists from './read';
 import { OAuth2Client } from 'google-auth-library';
 import * as dotenv from 'dotenv';
-import { writeFile, readFile } from 'fs';
+import { writeFile, readFile, existsSync } from 'fs';
 
 dotenv.config();
 
@@ -26,6 +26,9 @@ const simplePubSub = {
 const fsStore = {
   _events: [] as {}[],
   async load() {
+    if (!existsSync('./eventlog.json')) {
+      return (this._events = []);
+    }
     return (this._events = JSON.parse(
       await new Promise((resolve, reject) =>
         readFile('./eventlog.json', 'utf8', (err, data) =>
@@ -90,8 +93,8 @@ const googleAuth = {
         audience: `${process.env.GOOGLE_CLIENT_ID}`,
       });
       const payload = ticket.getPayload();
-      if (payload) {
-        return { payload };
+      if (payload && payload.name) {
+        return { payload: { sub: payload.sub, name: payload.name } };
       }
       throw new Error('Could not validate token.');
     } catch (err) {

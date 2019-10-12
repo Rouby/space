@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
+import { Dashboard } from '../components';
 
 export default function Overview() {
   return (
@@ -7,7 +8,7 @@ export default function Overview() {
       <Helmet>
         <title>Overview</title>
       </Helmet>
-      <div>hello</div>
+      <Dashboard />
     </>
   );
 }

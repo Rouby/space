@@ -1,5 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class DomainEvent<TName extends string = any, TData = unknown> {
+export class DomainEvent<
+  TName extends string = any,
+  TData = unknown,
+  THasUser = false
+> {
   aggregate!: {
     name: string;
     id: string;
@@ -7,9 +11,12 @@ export class DomainEvent<TName extends string = any, TData = unknown> {
   name!: TName;
   id!: string;
   data!: TData;
-  user!: {
-    id: string;
-  };
+  user!: THasUser extends true
+    ? {
+        id: string;
+        name: string;
+      }
+    : { id: string; name: string } | null;
   metadata!: {
     timestamp: number;
     causationId: string;

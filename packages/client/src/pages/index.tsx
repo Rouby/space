@@ -12,7 +12,7 @@ import Welcome from './Welcome';
 
 export default function Routing() {
   const authenticated = useStore(stores => stores.general.authenticated);
-  const inGame = false;
+  const inGame = useStore(stores => !!stores.general.gameId);
 
   return (
     <>

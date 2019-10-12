@@ -13,9 +13,7 @@ const useStyles = createUseStyles({
   },
   content: {
     marginTop: 64,
-    height: 'calc(100vh - 64px)',
     position: 'relative',
-    overflow: 'hidden',
   },
 });
 

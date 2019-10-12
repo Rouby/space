@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import { createUseStyles } from 'react-jss';
 import { Link } from '.';
 import routing from '../config/routing';
+import store from '../config/store';
 import { usePathMatch, useStore } from '../hooks';
 
 const useStyles = createUseStyles({
@@ -20,23 +21,24 @@ const useStyles = createUseStyles({
 export default function Header() {
   const classNames = useStyles();
 
-  const client = useStore(stores => stores.general.client);
+  const connected = useStore(stores => stores.general.connected);
   const authenticated = useStore(stores => stores.general.authenticated);
-  const authenticate = useStore(stores => stores.general.authenticate);
-  const inGame = false;
+  const inGame = useStore(stores => !!stores.general.gameId);
 
   React.useEffect(() => {
-    window.gapi.load('auth2', () => {
-      window.gapi.signin2.render('google-signin', {
-        onsuccess: user => {
-          authenticate(user.getAuthResponse().id_token);
-        },
-        onfailure: reason => {
-          console.log('failure', reason);
-        },
+    if (connected) {
+      window.gapi.load('auth2', () => {
+        window.gapi.signin2.render('google-signin', {
+          onsuccess: user => {
+            store.general.authenticate(user.getAuthResponse().id_token);
+          },
+          onfailure: reason => {
+            console.log('failure', reason);
+          },
+        });
       });
-    });
-  }, []);
+    }
+  }, [connected]);
 
   return (
     <>
@@ -57,16 +59,13 @@ export default function Header() {
 function AnonymousMenu() {
   const classNames = useStyles();
 
-  const pathMatch = usePathMatch([
-    routing.overview.pathname,
-    routing.galaxy.pathname,
-  ]);
+  const pathMatch = usePathMatch([routing.about.pathname]);
 
   return (
     <Menu
       theme="dark"
       mode="horizontal"
-      defaultSelectedKeys={pathMatch ? [pathMatch[0] as string] : []}
+      selectedKeys={pathMatch ? [pathMatch[0] as string] : []}
       className={classNames.menu}
     >
       <Menu.Item key={routing.about.pathname}>
@@ -81,16 +80,13 @@ function AnonymousMenu() {
 function UserMenu() {
   const classNames = useStyles();
 
-  const pathMatch = usePathMatch([
-    routing.overview.pathname,
-    routing.galaxy.pathname,
-  ]);
+  const pathMatch = usePathMatch([routing.games.pathname]);
 
   return (
     <Menu
       theme="dark"
       mode="horizontal"
-      defaultSelectedKeys={pathMatch ? [pathMatch[0] as string] : []}
+      selectedKeys={pathMatch ? [pathMatch[0] as string] : []}
       className={classNames.menu}
     >
       <Menu.Item key={routing.games.pathname}>
@@ -114,7 +110,7 @@ function InGameMenu() {
     <Menu
       theme="dark"
       mode="horizontal"
-      defaultSelectedKeys={pathMatch ? [pathMatch[0] as string] : []}
+      selectedKeys={pathMatch ? [pathMatch[0] as string] : []}
       className={classNames.menu}
     >
       <Menu.Item key={routing.overview.pathname}>
