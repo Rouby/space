@@ -5,12 +5,21 @@ import {
   Projection,
   Property,
   $push,
+  $this,
 } from '@rouby/eventing';
 import { JoinedGame, LeftGame, GameCreated } from '../events';
 
 export class GameOverview extends ListEntry {
   @Property()
-  recentNews!: { summary: string; text?: string; timestamp: number }[];
+  turn!: number;
+
+  @Property()
+  recentNews!: {
+    summary: string;
+    text?: string;
+    onTurn: number;
+    timestamp: number;
+  }[];
 }
 
 export class GameOverviews extends List<GameOverview> {
@@ -19,6 +28,7 @@ export class GameOverviews extends List<GameOverview> {
     this.add({
       id: event.aggregate.id,
       owner: event.user,
+      turn: 1,
       recentNews: [],
     });
   }
@@ -31,6 +41,9 @@ export class GameOverviews extends List<GameOverview> {
         recentNews: {
           [$push]: {
             summary: `${event.user.name} joined the game.`,
+            onTurn: {
+              [$this]: 'turn',
+            },
             timestamp: event.metadata.timestamp,
           },
         },
@@ -46,6 +59,9 @@ export class GameOverviews extends List<GameOverview> {
         recentNews: {
           [$push]: {
             summary: `${event.user.name} left the game.`,
+            onTurn: {
+              [$this]: 'turn',
+            },
             timestamp: event.metadata.timestamp,
           },
         },

@@ -19,6 +19,8 @@ type Query<T> = {
 export const $push = Symbol('Push operation');
 export const $pull = Symbol('Pull operation');
 
+export const $this = Symbol('This reference operation');
+
 const operations = {
   [$push]: <T>(arr: T[], val: T | T[]) => [
     ...arr,
@@ -33,15 +35,71 @@ const operations = {
       : (d: T) => !Object.keys(val).every(key => val[key] === d[key]);
     return arr.filter(predicate);
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [$this]: <T extends { [key: string]: any }>(state: T, accessor: string) =>
+    accessor.split('.').reduce((acc, key) => acc[key], state),
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function executeOperations(object: Operations<any>, state: any): any {
+  if (typeof object !== 'object') {
+    return object;
+  }
+
+  return Object.entries(object).reduce((acc, [key, value]) => {
+    if (typeof value === 'object' && $push in value) {
+      return {
+        ...acc,
+        [key]: operations[$push](
+          state[key],
+          executeOperations(value[$push], state),
+        ),
+      };
+    }
+    if (typeof value === 'object' && $pull in value) {
+      return {
+        ...acc,
+        [key]: operations[$pull](
+          state[key],
+          executeOperations(value[$pull], state),
+        ),
+      };
+    }
+    if (typeof value === 'object' && $this in value) {
+      return {
+        ...acc,
+        [key]: operations[$this](state, executeOperations(value[$this], state)),
+      };
+    }
+    return {
+      ...acc,
+      [key]: value,
+    };
+  }, {});
+}
 
 type ArrayElement<T> = T extends (infer U)[] ? U : never;
 
-type Operations<T extends ListEntry> = {
+type Operations<T> = {
   [P in keyof T]?:
-    | T[P]
-    | { [$push]: T[P] | ArrayElement<T[P]> }
-    | { [$pull]: Partial<T[P]> | Partial<ArrayElement<T[P]>> };
+    | (T[P])
+    | { [$this]: string }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | (T[P] extends any[]
+        ? {
+            [$push]:
+              | Operations<ArrayElement<T[P]>>
+              | (Operations<ArrayElement<T[P]>>)[];
+          }
+        : never)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | (T[P] extends any[]
+        ? {
+            [$pull]:
+              | Operations<ArrayElement<T[P]>>
+              | (Operations<ArrayElement<T[P]>>)[];
+          }
+        : never);
 };
 
 export abstract class ListEntry {
@@ -91,36 +149,10 @@ export default abstract class List<
   protected update(query: Query<T>, updates: Operations<T>) {
     const idx = this.state.findIndex(sift((query.where as {}) || {}));
     if (idx >= 0) {
-      const updatedItem = Object.entries(updates).reduce(
-        (acc, [key, value]) => {
-          if (typeof value === 'object' && $push in value) {
-            return {
-              ...acc,
-              [key]: operations[$push](
-                this.state[idx][key],
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (value as any)[$push],
-              ),
-            };
-          }
-          if (typeof value === 'object' && $pull in value) {
-            return {
-              ...acc,
-              [key]: operations[$pull](
-                this.state[idx][key],
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (value as any)[$pull],
-              ),
-            };
-          }
-          return {
-            ...acc,
-            [key]: value,
-          };
-        },
-        {},
-      );
-      this.state.splice(idx, 1, { ...this.state[idx], ...updatedItem });
+      this.state.splice(idx, 1, {
+        ...this.state[idx],
+        ...executeOperations(updates, this.state[idx]),
+      });
     }
     this.checkSubscriptions();
   }

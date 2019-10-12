@@ -12,6 +12,7 @@ export {
   Property,
   $push,
   $pull,
+  $this,
 } from './List';
 
 // Explicit type exports to circumvent weird transpilation warnings

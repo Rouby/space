@@ -1,0 +1,9 @@
+import { DomainEvent } from '@rouby/eventing';
+
+export class $$EventName extends DomainEvent<
+  '$$EventName',
+  {
+    
+  },
+  $$HasUser
+> {}

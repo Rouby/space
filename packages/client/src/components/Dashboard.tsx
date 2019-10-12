@@ -1,10 +1,11 @@
 import { GameOverview } from '@space/server/src/read/GameOverviews';
 import { Card, Col, Row, List } from 'antd';
 import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, FormattedDate } from 'react-intl';
 import { createUseStyles } from 'react-jss';
 import eventing from '../config/eventing';
 import { useStore } from '../hooks';
+import { DateTime } from 'luxon';
 
 const useStyles = createUseStyles({
   container: {
@@ -49,16 +50,24 @@ export default function Dashboard() {
             }
           >
             <List
-              itemLayout="vertical"
               size="small"
+              pagination={{
+                pageSize: 5,
+              }}
               dataSource={gameOverview && gameOverview.recentNews}
               renderItem={item => (
                 <List.Item key={item.summary}>
                   <List.Item.Meta
                     title={item.summary}
-                    description={item.timestamp}
+                    description={
+                      <FormattedMessage
+                        id="overview.newsHappendOnTurn"
+                        defaultMessage="On turn {turn}"
+                        values={{ turn: item.onTurn }}
+                      />
+                    }
                   />
-                  {item.text}
+                  {item.text || 'No text'}
                 </List.Item>
               )}
             ></List>
