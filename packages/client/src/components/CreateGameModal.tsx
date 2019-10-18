@@ -1,5 +1,5 @@
 import { Game } from '@space/server/src/read/Games';
-import { Form, Input, Modal, Switch } from 'antd';
+import { Form, Input, Modal, Switch, InputNumber } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import * as React from 'react';
 
@@ -8,6 +8,7 @@ interface CreateGameFormProps extends FormComponentProps<Game> {
   onCreate: (game: Game) => void;
   onCancel: () => void;
 }
+
 export default Form.create<CreateGameFormProps>()(function CreateGameForm({
   visible,
   onCreate,
@@ -56,6 +57,12 @@ export default Form.create<CreateGameFormProps>()(function CreateGameForm({
             )}
           </Form.Item>
         )}
+        <Form.Item label="Player slots">
+          {getFieldDecorator('playerSlots', {
+            rules: [{ required: true }],
+            initialValue: 6,
+          })(<InputNumber min={2} max={16} />)}
+        </Form.Item>
       </Form>
     </Modal>
   );

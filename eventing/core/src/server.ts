@@ -9,6 +9,7 @@ import {
   DomainEvent,
   AggregateConstructorParameters,
 } from './lib';
+import { reactions } from './lib/Reaction';
 
 const log = Debug('eventing');
 
@@ -76,11 +77,37 @@ export default class Server {
       [...this.subscriptions.values()].forEach(({ list }) =>
         list.handle(event),
       );
+      const eventReactions = reactions.get(event.name);
+      if (eventReactions) {
+        const reactionInterface = {
+          aggregates: new Proxy(
+            {},
+            {
+              get: (_, type) => (aggregateId?: string) =>
+                this.aggregateInterface(event, type.toString(), aggregateId),
+            },
+          ),
+        };
+        eventReactions.forEach(fn => fn(reactionInterface, event));
+      }
     });
 
     this.wss.on('connection', client => {
       const clientId = uuid();
       const trace = log.extend(clientId, '@');
+      let hrstart: ReturnType<typeof process.hrtime>;
+      const timing = Symbol();
+      function startTiming() {
+        hrstart = process.hrtime();
+        return (msg: string, ...args: unknown[]) => {
+          const [
+            s,
+            ns,
+            ms = (s / 1e3 + ns / 1e6).toPrecision(3),
+          ] = process.hrtime(hrstart);
+          trace(msg, ...args.map(a => (a === timing ? ms : a)));
+        };
+      }
 
       trace('Connected');
 
@@ -177,7 +204,10 @@ export default class Server {
               const { listType, op, query, subscriptionId } = payload;
 
               try {
+                const finishListBuild = startTiming();
+
                 const list = new this.options.lists[listType]();
+
                 if (list.needsAuthorization && !this.clientAuth.has(client)) {
                   client.send(
                     JSON.stringify({
@@ -191,7 +221,15 @@ export default class Server {
                   );
                   return;
                 }
+
                 await list.replay(this.events);
+
+                finishListBuild(
+                  'Building list %s took %d ms',
+                  listType,
+                  timing,
+                );
+
                 const onUpdate = (result: {}, total: number) => {
                   client.send(
                     JSON.stringify({
@@ -253,21 +291,16 @@ export default class Server {
               {
                 const { aggregateType, aggregateId, command, data } = payload;
 
-                // first event determines owner of aggregate
-                const firstEvent = this.events.find(
-                  evt => evt.aggregate.id === aggregateId,
-                );
-                const aggregate = new this.options.aggregates[aggregateType](
+                const finishAggregateBuild = startTiming();
+                const aggregate = await this.getAggregate(
+                  aggregateType,
                   aggregateId,
-                  // TODO apply state from cache?
-                  {},
-                  firstEvent ? firstEvent.user : null,
                 );
-                if (aggregateId) {
-                  await aggregate.replay(
-                    this.events.filter(evt => evt.aggregate.id === aggregateId),
-                  );
-                }
+                finishAggregateBuild(
+                  'Building aggregate %s took %d ms',
+                  aggregateType,
+                  timing,
+                );
 
                 const commandId = uuid();
 
@@ -290,32 +323,15 @@ export default class Server {
                 }
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const user = this.clientAuth.get(client)!;
-                const commandInterface: CommandInterface = {
-                  events: {
-                    publish: (name, data) => {
-                      const event = {
-                        aggregate: {
-                          name: aggregateType,
-                          id: aggregate.id,
-                        },
-                        name: name,
-                        id: uuid(),
-                        data,
-                        user,
-                        metadata: {
-                          timestamp: Date.now(),
-                          causationId: commandId,
-                          correlationId: commandId,
-                        },
-                      };
-                      this.options.store
-                        .save(event)
-                        .then(() => this.options.queue.publish(event));
-                    },
-                  },
+                const [commandInterface, storeEvents] = this.commandInterface(
                   user,
-                };
+                  aggregateType,
+                  aggregate.id,
+                  commandId,
+                  commandId,
+                );
                 trace('Executing command %s on %s', command, aggregateType);
+                const finishCommandExecution = startTiming();
                 try {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   await (aggregate as any)[command].call(
@@ -323,6 +339,8 @@ export default class Server {
                     commandInterface,
                     ...data,
                   );
+
+                  await storeEvents();
 
                   client.send(
                     JSON.stringify({
@@ -360,6 +378,13 @@ export default class Server {
                       }),
                     );
                   }
+                } finally {
+                  finishCommandExecution(
+                    'Executing command %s on %s took %d ms',
+                    command,
+                    aggregateType,
+                    timing,
+                  );
                 }
               }
               break;
@@ -396,5 +421,103 @@ export default class Server {
     if (this.wss) {
       this.wss.close();
     }
+  }
+
+  private async getAggregate(aggregateType: string, aggregateId?: string) {
+    // first event determines owner of aggregate
+    const firstEvent = this.events.find(
+      evt => evt.aggregate.id === aggregateId,
+    );
+    const aggregate = new this.options.aggregates[aggregateType](
+      aggregateId,
+      // TODO apply state from cache?
+      {},
+      firstEvent ? firstEvent.user : null,
+    );
+    if (aggregateId) {
+      await aggregate.replay(
+        this.events.filter(evt => evt.aggregate.id === aggregateId),
+      );
+    }
+    return aggregate;
+  }
+
+  private aggregateInterface(
+    event: DomainEvent,
+    aggregateType: string,
+    aggregateId?: string,
+  ) {
+    const promisedAggregate = this.getAggregate(aggregateType, aggregateId);
+    return new Proxy(
+      {},
+      {
+        get: (_, command) => {
+          return async (...data: unknown[]) => {
+            const aggregate = await promisedAggregate;
+            const [commandInterface, storeEvents] = this.commandInterface(
+              event.user,
+              aggregateType,
+              aggregate.id,
+              event.id,
+              event.metadata.correlationId,
+            );
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (aggregate as any)[command].call(
+              aggregate,
+              commandInterface,
+              ...data,
+            );
+            await storeEvents();
+          };
+        },
+      },
+    );
+  }
+
+  private commandInterface(
+    user: { id: string; name: string } | null,
+    aggregateType: string,
+    aggregateId: string,
+    causationId: string,
+    correlationId: string,
+  ): [CommandInterface, () => Promise<void>] {
+    const publishedEvents: DomainEvent[] = [];
+    const commandInterface: CommandInterface = {
+      events: {
+        publish: (name, data) => {
+          const event = {
+            aggregate: {
+              name: aggregateType,
+              id: aggregateId,
+            },
+            name: name,
+            id: uuid(),
+            data,
+            user,
+            metadata: {
+              timestamp: Date.now(),
+              causationId,
+              correlationId,
+            },
+          };
+          publishedEvents.push(event);
+        },
+      },
+      user: user && {
+        ...user,
+        authorize: (...commands) => {
+          console.log('Authorize to %s', commands.join(', '));
+        },
+      },
+    };
+    return [
+      commandInterface,
+      async () => {
+        for (const event of publishedEvents) {
+          await this.options.store.save(event);
+          this.options.queue.publish(event);
+        }
+      },
+    ];
   }
 }

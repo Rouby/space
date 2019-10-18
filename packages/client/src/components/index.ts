@@ -1,6 +1,8 @@
+export { default as ConditionalPopconfirm } from './ConditionalPopconfirm';
 export { default as Dashboard } from './Dashboard';
 export { default as EndTurnButton } from './EndTurnButton';
 export { default as GameList } from './GameList';
+export { default as GameSetup } from './GameSetup';
 export { default as Header } from './Header';
 export { default as IntlProvider } from './IntlProvider';
 export { default as Layout } from './Layout';

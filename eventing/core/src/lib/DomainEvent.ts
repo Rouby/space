@@ -1,5 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class DomainEvent<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TName extends string = any,
   TData = unknown,
   THasUser = false
@@ -16,6 +16,8 @@ export class DomainEvent<
         id: string;
         name: string;
       }
+    : THasUser extends null
+    ? null
     : { id: string; name: string } | null;
   metadata!: {
     timestamp: number;

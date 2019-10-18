@@ -1,0 +1,9 @@
+{
+  "name": "@space/utils",
+  "version": "1.0.0",
+  "main": "src/index",
+  "license": "MIT",
+  "dependencies": {
+    "random": "^2.1.1"
+  }
+}

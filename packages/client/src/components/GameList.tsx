@@ -1,12 +1,12 @@
-import { Game } from '@space/server/src/read/Games';
-import { Button, Divider, Popconfirm, Table } from 'antd';
+import { Button, Popconfirm, Table } from 'antd';
 import { PaginationConfig } from 'antd/lib/table';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import eventing from '../config/eventing';
-import CreateGameModal from './CreateGameModal';
-import store from '../config/store';
 import routing from '../config/routing';
+import store from '../config/store';
+import { useSubscription } from '../hooks';
+import CreateGameModal from './CreateGameModal';
 
 export default function GameList() {
   const [pagination, setPagination] = React.useState<PaginationConfig>({
@@ -14,19 +14,12 @@ export default function GameList() {
     pageSize: 10,
     total: 0,
   });
-  const [games, setGames] = React.useState<undefined | (Game[])>(undefined);
-  React.useEffect(
-    () =>
-      eventing.lists.Games.findAndSubscribe(
-        {
-          skip: ((pagination.current || 1) - 1) * (pagination.pageSize || 1),
-          take: pagination.pageSize,
-        },
-        (data, total) => {
-          setGames(data);
-          setPagination(p => ({ ...p, total }));
-        },
-      ),
+  const games = useSubscription(
+    eventing.lists.Games.findAndSubscribe,
+    {
+      skip: ((pagination.current || 1) - 1) * (pagination.pageSize || 1),
+      take: pagination.pageSize,
+    },
     [pagination.current, pagination.pageSize],
   );
   const [creatingNewGame, setCreatingNewGame] = React.useState(false);
@@ -37,7 +30,9 @@ export default function GameList() {
       <CreateGameModal
         visible={creatingNewGame}
         onCreate={game => {
-          eventing.aggregates.Game().create(game.name, game.password);
+          eventing.aggregates
+            .Game()
+            .create(game.name, game.password, game.playerSlots);
           setCreatingNewGame(false);
         }}
         onCancel={() => setCreatingNewGame(false)}
@@ -56,12 +51,10 @@ export default function GameList() {
             dataIndex: 'name',
           },
           {
-            title: 'Participants',
-            key: 'participants',
+            title: 'Slots',
+            key: 'slots',
             render: (_, record) =>
-              record.participants
-                .map(usr => `${usr.name} (${usr.id})`)
-                .join(', '),
+              `${record.participants.length} / ${record.playerSlots}`,
           },
           {
             title: 'Actions',

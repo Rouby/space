@@ -51,6 +51,10 @@ export default class Client<
     return this._myself;
   }
 
+  public amI(user: { id: string; name: string }) {
+    return this.myself ? this.myself.id === user.id : false;
+  }
+
   constructor(
     private readonly address: string,
     options?: Partial<typeof defaultOptions>,

@@ -126,7 +126,10 @@ export type CommandInterface = {
       event: EventData<T>,
     ) => void;
   };
-  user: { id: string };
+  user: {
+    id: string;
+    authorize: <T>(...commands: (keyof AggregateInterface<T>)[]) => void;
+  } | null;
 };
 
 type Condition<Base, Condition> = Pick<

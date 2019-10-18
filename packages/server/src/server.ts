@@ -1,7 +1,8 @@
-import { Server } from '@rouby/eventing';
+import { Server } from '@eventing/core';
 import { log } from './config/logging';
 import aggregates from './write';
 import lists from './read';
+import './reactions';
 import { OAuth2Client } from 'google-auth-library';
 import * as dotenv from 'dotenv';
 import { writeFile, readFile, existsSync } from 'fs';

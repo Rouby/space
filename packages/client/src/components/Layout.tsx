@@ -13,6 +13,7 @@ const useStyles = createUseStyles({
   },
   content: {
     marginTop: 64,
+    minHeight: 'calc(100vh - 64px)',
     position: 'relative',
   },
 });

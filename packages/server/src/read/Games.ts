@@ -6,7 +6,7 @@ import {
   Property,
   $push,
   $pull,
-} from '@rouby/eventing';
+} from '@eventing/core';
 import { GameCreated, JoinedGame, GameDeleted, LeftGame } from '../events';
 
 export class Game extends ListEntry {
@@ -20,6 +20,9 @@ export class Game extends ListEntry {
 
   @Property()
   participants!: { id: string; name: string }[];
+
+  @Property()
+  playerSlots!: number;
 }
 
 export class Games extends List<Game> {
@@ -30,7 +33,8 @@ export class Games extends List<Game> {
       owner: event.user,
       name: event.data.name,
       password: event.data.password,
-      participants: [event.user],
+      participants: [],
+      playerSlots: event.data.playerSlots,
     });
   }
 
@@ -42,7 +46,7 @@ export class Games extends List<Game> {
   }
 
   @Projection
-  async onJoin(event: JoinedGame) {
+  onJoin(event: JoinedGame) {
     this.update(
       { where: { id: event.aggregate.id } },
       {
@@ -52,7 +56,7 @@ export class Games extends List<Game> {
   }
 
   @Projection
-  async onLeave(event: LeftGame) {
+  onLeave(event: LeftGame) {
     this.update(
       { where: { id: event.aggregate.id } },
       {

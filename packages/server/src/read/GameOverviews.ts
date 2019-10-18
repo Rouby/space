@@ -1,13 +1,22 @@
 import {
+  $push,
+  $this,
   List,
   ListEntry,
   ListInterface,
   Projection,
   Property,
-  $push,
-  $this,
-} from '@rouby/eventing';
-import { JoinedGame, LeftGame, GameCreated } from '../events';
+  $update,
+} from '@eventing/core';
+import {
+  GameCreated,
+  GameStarted,
+  JoinedGame,
+  LeftGame,
+  RaceSelected,
+  GameSettingsChanged,
+} from '../events';
+import { GalaxyType, GalaxySize } from '@space/types';
 
 export class GameOverview extends ListEntry {
   @Property()
@@ -20,6 +29,32 @@ export class GameOverview extends ListEntry {
     onTurn: number;
     timestamp: number;
   }[];
+
+  @Property()
+  participants!: {
+    id: string;
+    name: string;
+    color: string;
+    race?: {
+      id: string;
+      name: string;
+    };
+  }[];
+
+  @Property()
+  playerSlots!: number;
+
+  @Property()
+  galaxyType!: GalaxyType;
+
+  @Property()
+  galaxySize!: GalaxySize;
+
+  @Property()
+  wormholes!: boolean;
+
+  @Property()
+  fogOfWar!: boolean;
 }
 
 export class GameOverviews extends List<GameOverview> {
@@ -28,9 +63,28 @@ export class GameOverviews extends List<GameOverview> {
     this.add({
       id: event.aggregate.id,
       owner: event.user,
-      turn: 1,
+      turn: 0,
       recentNews: [],
+      participants: [],
+      playerSlots: event.data.playerSlots,
+      galaxyType: GalaxyType.Elliptical,
+      galaxySize:
+        event.data.playerSlots > 8
+          ? GalaxySize.Large
+          : event.data.playerSlots > 4
+          ? GalaxySize.Medium
+          : GalaxySize.Small,
+      wormholes: true,
+      fogOfWar: true,
     });
+  }
+
+  @Projection
+  async onStart(event: GameStarted) {
+    this.update(
+      { where: { id: event.aggregate.id } },
+      { turn: 1, recentNews: [] },
+    );
   }
 
   @Projection
@@ -38,6 +92,12 @@ export class GameOverviews extends List<GameOverview> {
     this.update(
       { where: { id: event.aggregate.id } },
       {
+        participants: {
+          [$push]: {
+            ...event.user,
+            color: event.data.color,
+          },
+        },
         recentNews: {
           [$push]: {
             summary: `${event.user.name} joined the game.`,
@@ -45,6 +105,26 @@ export class GameOverviews extends List<GameOverview> {
               [$this]: 'turn',
             },
             timestamp: event.metadata.timestamp,
+          },
+        },
+      },
+    );
+  }
+
+  @Projection
+  async onSelectRace(event: RaceSelected) {
+    this.update(
+      { where: { id: event.aggregate.id } },
+      {
+        participants: {
+          [$update]: {
+            where: { id: event.user.id },
+            set: {
+              race: {
+                id: event.data.id,
+                name: 'unknown',
+              },
+            },
           },
         },
       },
@@ -67,6 +147,11 @@ export class GameOverviews extends List<GameOverview> {
         },
       },
     );
+  }
+
+  @Projection
+  onSettingsChange(event: GameSettingsChanged) {
+    this.update({ where: { id: event.aggregate.id } }, { ...event.data });
   }
 }
 

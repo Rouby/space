@@ -8,6 +8,10 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
+  "workspaces": [
+    "packages/**",
+    "eventing/**"
+  ],
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
@@ -40,13 +44,16 @@
           "functions": false
         }
       ],
-      "react/display-name": 0
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ],
+      "react/display-name": 0,
+      "react/prop-types": 0
     }
   },
-  "workspaces": [
-    "packages/**",
-    "packages/@types/**"
-  ],
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.2",

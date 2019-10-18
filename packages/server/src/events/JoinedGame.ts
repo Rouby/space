@@ -1,3 +1,9 @@
-import { DomainEvent } from '@rouby/eventing';
+import { DomainEvent } from '@eventing/core';
 
-export class JoinedGame extends DomainEvent<'JoinedGame', {}, true> {}
+export class JoinedGame extends DomainEvent<
+  'JoinedGame',
+  {
+    color: string;
+  },
+  true
+> {}

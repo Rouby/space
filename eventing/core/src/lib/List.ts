@@ -18,6 +18,7 @@ type Query<T> = {
 
 export const $push = Symbol('Push operation');
 export const $pull = Symbol('Pull operation');
+export const $update = Symbol('Update operation');
 
 export const $this = Symbol('This reference operation');
 
@@ -34,6 +35,13 @@ const operations = {
       ? (d: T) => !val.some(v => Object.keys(v).every(key => v[key] === d[key]))
       : (d: T) => !Object.keys(val).every(key => val[key] === d[key]);
     return arr.filter(predicate);
+  },
+  [$update]: <T>(arr: T[], val: UpdateOp<T>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const match = sift(val.where as any);
+    return arr.map((d, idx, arr) =>
+      match(d, idx, arr) ? { ...d, ...val.set } : d,
+    );
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [$this]: <T extends { [key: string]: any }>(state: T, accessor: string) =>
@@ -65,6 +73,15 @@ function executeOperations(object: Operations<any>, state: any): any {
         ),
       };
     }
+    if (typeof value === 'object' && $update in value) {
+      return {
+        ...acc,
+        [key]: operations[$update](
+          state[key],
+          executeOperations(value[$update], state),
+        ),
+      };
+    }
     if (typeof value === 'object' && $this in value) {
       return {
         ...acc,
@@ -80,8 +97,14 @@ function executeOperations(object: Operations<any>, state: any): any {
 
 type ArrayElement<T> = T extends (infer U)[] ? U : never;
 
+type UpdateOp<T> = {
+  where: {
+    [P in keyof ArrayElement<T>]?: ArrayElement<T>[P];
+  };
+  set: Partial<Operations<ArrayElement<T>>>;
+};
 type Operations<T> = {
-  [P in keyof T]?:
+  [P in keyof T]:
     | (T[P])
     | { [$this]: string }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,8 +119,14 @@ type Operations<T> = {
     | (T[P] extends any[]
         ? {
             [$pull]:
-              | Operations<ArrayElement<T[P]>>
-              | (Operations<ArrayElement<T[P]>>)[];
+              | Partial<Operations<ArrayElement<T[P]>>>
+              | (Partial<Operations<ArrayElement<T[P]>>>)[];
+          }
+        : never)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | (T[P] extends any[]
+        ? {
+            [$update]: UpdateOp<T[P]>;
           }
         : never);
 };
@@ -146,7 +175,7 @@ export default abstract class List<
     this.checkSubscriptions();
   }
 
-  protected update(query: Query<T>, updates: Operations<T>) {
+  protected update(query: Query<T>, updates: Partial<Operations<T>>) {
     const idx = this.state.findIndex(sift((query.where as {}) || {}));
     if (idx >= 0) {
       this.state.splice(idx, 1, {

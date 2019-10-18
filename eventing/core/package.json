@@ -1,10 +1,11 @@
 {
-  "name": "@rouby/eventing",
+  "name": "@eventing/core",
   "version": "1.0.0",
   "main": "src/index",
   "license": "MIT",
   "bin": {
-    "create-event": "./src/generator.ts gen event"
+    "create-event": "./src/generator.ts event",
+    "create-aggregate": "./src/generator.ts aggregate"
   },
   "dependencies": {
     "commander": "^3.0.2",
@@ -14,9 +15,6 @@
     "sift": "^8.5.0",
     "uuid": "^3.3.3",
     "ws": "^7.1.2"
-  },
-  "peerDependencies": {
-    "mobx": "^5.13.0"
   },
   "devDependencies": {
     "@types/figlet": "^1.2.0"

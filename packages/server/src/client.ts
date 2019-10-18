@@ -1,9 +1,5 @@
-import { Client as EventingClient } from '@rouby/eventing';
-import { GameOverviewsInterface } from './read/GameOverviews';
-import { GamesInterface } from './read/Games';
-import { GameInterface } from './write/Game';
+import { Client as EventingClient } from '@eventing/core';
+import { ClientReads } from './read';
+import { ClientWrites } from './write';
 
-export default class Client extends EventingClient<
-  { GameOverviews: GameOverviewsInterface; Games: GamesInterface },
-  { Game: GameInterface }
-> {}
+export default class Client extends EventingClient<ClientReads, ClientWrites> {}

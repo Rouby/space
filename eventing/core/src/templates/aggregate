@@ -1,0 +1,33 @@
+import {
+  Aggregate,
+  AggregateInterface,
+  Command,
+  CommandInterface,
+  CommandRejected,
+} from '@eventing/core';
+
+export class $$AggregateName extends Aggregate<{
+  
+}> {
+  initialState() {
+    return {
+      
+    };
+  }
+
+  @Command()
+  command(
+    { events }: CommandInterface,
+    arg: string,
+  ) {
+    if (!arg) {
+      throw new CommandRejected('No arg given.');
+    }
+
+    events.publish<...>('...', {
+      
+    });
+  }
+}
+
+export type $$AggregateNameInterface = AggregateInterface<$$AggregateName>;

@@ -12,8 +12,10 @@ export {
   Property,
   $push,
   $pull,
+  $update,
   $this,
 } from './List';
+export { Reaction } from './Reaction';
 
 // Explicit type exports to circumvent weird transpilation warnings
 import {
@@ -22,7 +24,9 @@ import {
   AggregateConstructorParameters,
 } from './Aggregate';
 import { ListInterface } from './List';
+import { ReactionInterface } from './Reaction';
 export type AggregateConstructorParameters = AggregateConstructorParameters;
 export type AggregateInterface<T> = AggregateInterface<T>;
 export type CommandInterface = CommandInterface;
 export type ListInterface<T> = ListInterface<T>;
+export type ReactionInterface<T> = ReactionInterface<T>;

@@ -1,3 +1,3 @@
-import { DomainEvent } from '@rouby/eventing';
+import { DomainEvent } from '@eventing/core';
 
 export class GameDeleted extends DomainEvent<'GameDeleted', {}, true> {}
