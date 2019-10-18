@@ -98,10 +98,30 @@ export default function Dashboard() {
               />
             }
           >
-            ...
+            {gameId && <SystemsOverview gameId={gameId} />}
           </Card>
         </Col>
       </Row>
     </div>
+  );
+}
+
+function SystemsOverview({ gameId }: { gameId: string }) {
+  const starSystems = useSubscription(
+    eventing.lists.StarSystems.findAndSubscribe,
+    { where: { gameId } },
+    [gameId],
+  );
+
+  if (!starSystems) {
+    return null;
+  }
+
+  return (
+    <>
+      {starSystems.map(sys => (
+        <div key={sys.id}>{sys.name}</div>
+      ))}
+    </>
   );
 }

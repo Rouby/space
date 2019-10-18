@@ -4,6 +4,5 @@ export class RaceSelected extends DomainEvent<
   'RaceSelected',
   {
     id: string;
-  },
-  true
+  }
 > {}

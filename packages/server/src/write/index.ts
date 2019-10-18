@@ -1,5 +1,6 @@
-import { Game, GameInterface } from './Game';
-import { StarSystem, StarSystemInterface } from './StarSystem';
+import { Game } from './Game';
+import { StarSystem } from './StarSystem';
+import { AggregateInterface, AggregarteServerInterface } from '@eventing/core';
 
 export default {
   Game,
@@ -7,6 +8,11 @@ export default {
 };
 
 export type ClientWrites = {
-  Game: GameInterface;
-  StarSystem: StarSystemInterface;
+  Game: AggregateInterface<Game>;
+  StarSystem: AggregateInterface<StarSystem>;
+};
+
+export type ServerWrites = {
+  Game: AggregarteServerInterface<Game>;
+  StarSystem: AggregarteServerInterface<StarSystem>;
 };

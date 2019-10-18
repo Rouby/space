@@ -3,7 +3,6 @@ import {
   $this,
   List,
   ListEntry,
-  ListInterface,
   Projection,
   Property,
   $update,
@@ -61,8 +60,6 @@ export class GameOverviews extends List<GameOverview> {
   @Projection
   async onCreate(event: GameCreated) {
     this.add({
-      id: event.aggregate.id,
-      owner: event.user,
       turn: 0,
       recentNews: [],
       participants: [],
@@ -154,5 +151,3 @@ export class GameOverviews extends List<GameOverview> {
     this.update({ where: { id: event.aggregate.id } }, { ...event.data });
   }
 }
-
-export type GameOverviewsInterface = ListInterface<GameOverview>;

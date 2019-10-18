@@ -1,6 +1,5 @@
 import {
   Aggregate,
-  AggregateInterface,
   Command,
   CommandInterface,
   CommandRejected,
@@ -65,7 +64,7 @@ export class Game extends Aggregate<{
 
   @Command({ needsAuthorization: true })
   delete({ events, user }: CommandInterface) {
-    if (!this.owner || !user || user.id !== this.owner.id) {
+    if (user && user.is(this.owner)) {
       throw new CommandRejected('Only the creator can delete.');
     }
 
@@ -74,16 +73,12 @@ export class Game extends Aggregate<{
 
   @Command()
   join({ events, user }: CommandInterface, password?: string) {
-    if (!user) {
-      throw new CommandRejected('Only users can join.');
+    if (this.currentState.participants.find(usr => user.is(usr))) {
+      throw new CommandRejected('Already joined this game.');
     }
 
     if (this.currentState.password && this.currentState.password !== password) {
       throw new CommandRejected('Game requires a passwort.');
-    }
-
-    if (this.currentState.participants.find(usr => usr.id === user.id)) {
-      throw new CommandRejected('Already joined this game.');
     }
 
     if (
@@ -103,11 +98,11 @@ export class Game extends Aggregate<{
 
   @Command()
   leave({ events, user }: CommandInterface) {
-    if (!this.owner || !user || user.id === this.owner.id) {
+    if (user.is(this.owner)) {
       throw new CommandRejected('The creator cannot leave the game.');
     }
 
-    if (!this.currentState.participants.find(usr => usr.id === user.id)) {
+    if (!this.currentState.participants.find(usr => user.is(usr))) {
       throw new CommandRejected('Only participants can leave the game.');
     }
 
@@ -182,6 +177,7 @@ export class Game extends Aggregate<{
       galaxySize: this.currentState.galaxySize,
       wormholes: this.currentState.wormholes,
       fogOfWar: this.currentState.fogOfWar,
+      participants: this.currentState.participants,
     });
   }
 
@@ -207,7 +203,7 @@ export class Game extends Aggregate<{
   onJoined(event: JoinedGame) {
     this.setState(s => ({
       ...s,
-      participants: [...s.participants, event.user],
+      participants: [...s.participants, { id: event.user.id }],
     }));
   }
 
@@ -235,5 +231,3 @@ export class Game extends Aggregate<{
     }));
   }
 }
-
-export type GameInterface = AggregateInterface<Game>;

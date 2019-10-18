@@ -4,6 +4,5 @@ export class JoinedGame extends DomainEvent<
   'JoinedGame',
   {
     color: string;
-  },
-  true
+  }
 > {}

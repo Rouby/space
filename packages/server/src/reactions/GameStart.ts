@@ -16,11 +16,10 @@ export default class GameStart {
       const gn = random.normal(5, 3);
       return () => Math.floor(Math.max(0, gn()));
     })();
-
-    generateSystemPositions(
+    const systems = generateSystemPositions(
       event.data.galaxyType,
       event.data.galaxySize,
-    ).forEach(({ x, y }) => {
+    ).map(({ x, y }) =>
       aggregates
         .StarSystem()
         .spawn(
@@ -30,7 +29,11 @@ export default class GameStart {
           [StarType.G],
           habitablePlanets(),
           inhabitablePlanets(),
-        );
-    });
+        ),
+    );
+
+    event.data.participants.forEach((user, idx) =>
+      systems[idx].transferOwnership(user.id),
+    );
   }
 }

@@ -1,8 +1,7 @@
 export class DomainEvent<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TName extends string = any,
-  TData = unknown,
-  THasUser = false
+  TData = unknown
 > {
   aggregate!: {
     name: string;
@@ -11,14 +10,10 @@ export class DomainEvent<
   name!: TName;
   id!: string;
   data!: TData;
-  user!: THasUser extends true
-    ? {
-        id: string;
-        name: string;
-      }
-    : THasUser extends null
-    ? null
-    : { id: string; name: string } | null;
+  user!: {
+    id: string;
+    name: string;
+  };
   metadata!: {
     timestamp: number;
     causationId: string;

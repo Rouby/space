@@ -8,6 +8,5 @@ export class GameSettingsChanged extends DomainEvent<
     galaxySize?: GalaxySize;
     wormholes?: boolean;
     fogOfWar?: boolean;
-  },
-  true
+  }
 > {}

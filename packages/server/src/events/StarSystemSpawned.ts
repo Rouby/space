@@ -10,6 +10,5 @@ export class StarSystemSpawned extends DomainEvent<
     stars: StarType[];
     habitablePlanets: number;
     inhabitablePlanets: number;
-  },
-  null
+  }
 > {}

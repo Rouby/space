@@ -3,12 +3,13 @@ import * as uuid from 'uuid/v4';
 import * as WebSocket from 'ws';
 import {
   Aggregate,
+  AggregateConstructorParameters,
   CommandInterface,
   CommandRejected,
-  List,
   DomainEvent,
-  AggregateConstructorParameters,
+  List,
 } from './lib';
+import { PrivilegesGranted, OwnershipDeclared } from './lib/AuthEvents';
 import { reactions } from './lib/Reaction';
 
 const log = Debug('eventing');
@@ -122,46 +123,6 @@ export default class Server {
           const { id, type, payload } = JSON.parse(msg.toString());
 
           switch (type) {
-            case 'ssoUrl': {
-              const authUrl = await this.options.auth.getUrl(payload);
-              client.send(
-                JSON.stringify({
-                  type: 'response',
-                  to: id,
-                  payload: authUrl,
-                }),
-              );
-              break;
-            }
-            case 'ssoCode': {
-              try {
-                const tokens = await this.options.auth.exchangeCode(
-                  payload.redirectUri,
-                  payload.code,
-                );
-                client.send(
-                  JSON.stringify({
-                    type: 'response',
-                    to: id,
-                    payload: {
-                      tokens,
-                    },
-                  }),
-                );
-              } catch (error) {
-                trace('Code exchange failed:\n%O', error);
-                client.send(
-                  JSON.stringify({
-                    type: 'response',
-                    to: id,
-                    payload: {
-                      error: error.message,
-                    },
-                  }),
-                );
-              }
-              break;
-            }
             case 'auth': {
               try {
                 const ticket = await this.options.auth.verifyToken(payload);
@@ -201,26 +162,26 @@ export default class Server {
               break;
             }
             case 'request': {
+              if (!this.clientAuth.has(client)) {
+                client.send(
+                  JSON.stringify({
+                    type: 'response',
+                    to: id,
+                    payload: {
+                      rejected: true,
+                      reason: 'Not authorized.',
+                    },
+                  }),
+                );
+                return;
+              }
+
               const { listType, op, query, subscriptionId } = payload;
 
               try {
                 const finishListBuild = startTiming();
 
                 const list = new this.options.lists[listType]();
-
-                if (list.needsAuthorization && !this.clientAuth.has(client)) {
-                  client.send(
-                    JSON.stringify({
-                      type: 'response',
-                      to: id,
-                      payload: {
-                        rejected: true,
-                        reason: 'Not authorized to read this list.',
-                      },
-                    }),
-                  );
-                  return;
-                }
 
                 await list.replay(this.events);
 
@@ -289,6 +250,20 @@ export default class Server {
             }
             case 'command':
               {
+                if (!this.clientAuth.has(client)) {
+                  client.send(
+                    JSON.stringify({
+                      type: 'response',
+                      to: id,
+                      payload: {
+                        rejected: true,
+                        reason: 'Not authorized.',
+                      },
+                    }),
+                  );
+                  return;
+                }
+
                 const { aggregateType, aggregateId, command, data } = payload;
 
                 const finishAggregateBuild = startTiming();
@@ -308,7 +283,9 @@ export default class Server {
                   aggregateType,
                   command,
                 );
-                if (config.needsAuthorization && !this.clientAuth.has(client)) {
+                // TODO get real permissions
+                const hasPermissions = true;
+                if (config.needsAuthorization && !hasPermissions) {
                   client.send(
                     JSON.stringify({
                       type: 'response',
@@ -330,7 +307,6 @@ export default class Server {
                   commandId,
                   commandId,
                 );
-                trace('Executing command %s on %s', command, aggregateType);
                 const finishCommandExecution = startTiming();
                 try {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -424,20 +400,23 @@ export default class Server {
   }
 
   private async getAggregate(aggregateType: string, aggregateId?: string) {
-    // first event determines owner of aggregate
-    const firstEvent = this.events.find(
+    const aggregateEvents = this.events.filter(
       evt => evt.aggregate.id === aggregateId,
     );
+    // last OwnershipDeclared event determines owner of aggregate
+    const firstEvent = [...aggregateEvents]
+      .reverse()
+      .find(evt => evt.name === OwnershipDeclared.name) as
+      | OwnershipDeclared
+      | undefined;
     const aggregate = new this.options.aggregates[aggregateType](
       aggregateId,
       // TODO apply state from cache?
-      {},
-      firstEvent ? firstEvent.user : null,
+      null,
+      firstEvent ? { id: firstEvent.data.newOwnerId } : null,
     );
     if (aggregateId) {
-      await aggregate.replay(
-        this.events.filter(evt => evt.aggregate.id === aggregateId),
-      );
+      await aggregate.replay(aggregateEvents);
     }
     return aggregate;
   }
@@ -447,35 +426,39 @@ export default class Server {
     aggregateType: string,
     aggregateId?: string,
   ) {
-    const promisedAggregate = this.getAggregate(aggregateType, aggregateId);
-    return new Proxy(
+    let promisedAggregate = this.getAggregate(aggregateType, aggregateId);
+    const proxy = new Proxy(
       {},
       {
         get: (_, command) => {
-          return async (...data: unknown[]) => {
-            const aggregate = await promisedAggregate;
-            const [commandInterface, storeEvents] = this.commandInterface(
-              event.user,
-              aggregateType,
-              aggregate.id,
-              event.id,
-              event.metadata.correlationId,
-            );
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (aggregate as any)[command].call(
-              aggregate,
-              commandInterface,
-              ...data,
-            );
-            await storeEvents();
+          return (...data: unknown[]) => {
+            promisedAggregate = promisedAggregate.then(async aggregate => {
+              const [commandInterface, storeEvents] = this.commandInterface(
+                { id: 'REACTION', name: 'REACTION' },
+                aggregateType,
+                aggregate.id,
+                event.id,
+                event.metadata.correlationId,
+              );
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              await (aggregate as any)[command].call(
+                aggregate,
+                commandInterface,
+                ...data,
+              );
+              await storeEvents();
+              return aggregate;
+            });
+            return proxy;
           };
         },
       },
     );
+    return proxy;
   }
 
   private commandInterface(
-    user: { id: string; name: string } | null,
+    user: { id: string; name: string },
     aggregateType: string,
     aggregateId: string,
     causationId: string,
@@ -485,7 +468,7 @@ export default class Server {
     const commandInterface: CommandInterface = {
       events: {
         publish: (name, data) => {
-          const event = {
+          publishedEvents.push({
             aggregate: {
               name: aggregateType,
               id: aggregateId,
@@ -499,14 +482,32 @@ export default class Server {
               causationId,
               correlationId,
             },
-          };
-          publishedEvents.push(event);
+          });
         },
       },
-      user: user && {
+      user: {
         ...user,
+        is: usr => !!usr && usr.id === user.id,
         authorize: (...commands) => {
-          console.log('Authorize to %s', commands.join(', '));
+          publishedEvents.push(
+            ...commands.map(command => ({
+              aggregate: {
+                name: aggregateType,
+                id: aggregateId,
+              },
+              name: PrivilegesGranted.name,
+              id: uuid(),
+              data: {
+                command,
+              },
+              user,
+              metadata: {
+                timestamp: Date.now(),
+                causationId,
+                correlationId,
+              },
+            })),
+          );
         },
       },
     };

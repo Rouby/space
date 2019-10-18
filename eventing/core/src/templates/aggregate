@@ -1,6 +1,5 @@
 import {
   Aggregate,
-  AggregateInterface,
   Command,
   CommandInterface,
   CommandRejected,
@@ -29,5 +28,3 @@ export class $$AggregateName extends Aggregate<{
     });
   }
 }
-
-export type $$AggregateNameInterface = AggregateInterface<$$AggregateName>;

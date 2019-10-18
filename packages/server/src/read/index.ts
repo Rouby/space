@@ -1,12 +1,16 @@
-import { GameOverviews, GameOverviewsInterface } from './GameOverviews';
-import { Games, GamesInterface } from './Games';
+import { GameOverviews } from './GameOverviews';
+import { Games } from './Games';
+import { StarSystems } from './StarSystems';
+import { ListInterface } from '@eventing/core';
 
 export default {
   GameOverviews,
   Games,
+  StarSystems,
 };
 
 export type ClientReads = {
-  GameOverviews: GameOverviewsInterface;
-  Games: GamesInterface;
+  GameOverviews: ListInterface<GameOverviews>;
+  Games: ListInterface<Games>;
+  StarSystems: ListInterface<StarSystems>;
 };

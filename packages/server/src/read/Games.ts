@@ -1,7 +1,6 @@
 import {
   List,
   ListEntry,
-  ListInterface,
   Projection,
   Property,
   $push,
@@ -29,8 +28,6 @@ export class Games extends List<Game> {
   @Projection
   onCreate(event: GameCreated) {
     this.add({
-      id: event.aggregate.id,
-      owner: event.user,
       name: event.data.name,
       password: event.data.password,
       participants: [],
@@ -65,5 +62,3 @@ export class Games extends List<Game> {
     );
   }
 }
-
-export type GamesInterface = ListInterface<Game>;

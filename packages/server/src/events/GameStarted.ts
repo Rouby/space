@@ -8,6 +8,6 @@ export class GameStarted extends DomainEvent<
     galaxySize: GalaxySize;
     wormholes: boolean;
     fogOfWar: boolean;
-  },
-  true
+    participants: { id: string }[];
+  }
 > {}

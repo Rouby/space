@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import * as uuid from 'uuid/v4';
 import { DomainEvent } from './DomainEvent';
+import { OwnershipDeclared } from './AuthEvents';
 
 const EventHandlerSymbol = Symbol();
 const CommandHandlerSymbol = Symbol();
@@ -27,7 +28,7 @@ export default abstract class Aggregate<T> {
   constructor(
     public readonly id = uuid(),
     private state: T,
-    public readonly owner: { id: string; name: string } | null = null,
+    public readonly owner: { id: string } | null = null,
   ) {
     if (!this.state) {
       this.state = this.initialState();
@@ -70,6 +71,12 @@ export default abstract class Aggregate<T> {
       return true;
     }
     return false;
+  }
+
+  public transferOwnership({ events }: CommandInterface, userId: string) {
+    events.publish<OwnershipDeclared>('OwnershipDeclared', {
+      newOwnerId: userId,
+    });
   }
 
   public async replay(events: DomainEvent[]) {
@@ -129,7 +136,8 @@ export type CommandInterface = {
   user: {
     id: string;
     authorize: <T>(...commands: (keyof AggregateInterface<T>)[]) => void;
-  } | null;
+    is: (user: { id: string } | null) => boolean;
+  };
 };
 
 type Condition<Base, Condition> = Pick<
@@ -153,7 +161,14 @@ type ArgumentsOf<T> = T extends (i: CommandInterface, ...args: infer U) => any
 type ClientFunctions<T, R> = {
   [P in keyof T]: (...args: ArgumentsOf<T[P]>) => Promise<R>;
 };
+type ServerFunctions<T, R> = {
+  [P in keyof T]: (...args: ArgumentsOf<T[P]>) => ServerFunctions<T, R>;
+};
 export type AggregateInterface<T> = Omit<
   ClientFunctions<CommandsOf<T>, { id: string }>,
+  'handle'
+>;
+export type AggregarteServerInterface<T> = Omit<
+  ServerFunctions<CommandsOf<T>, { id: string }>,
   'handle'
 >;

@@ -1,12 +1,12 @@
 import { ReactionInterface } from '@eventing/core';
-import { ClientWrites } from './write';
+import { ServerWrites } from './write';
 
 export type ReactionInterface = ReactionInterface<
   {
-    [P in keyof ClientWrites]: (
+    [P in keyof ServerWrites]: (
       id?: string,
     ) => {
-      [O in keyof ClientWrites[P]]: ClientWrites[P][O];
+      [O in keyof ServerWrites[P]]: ServerWrites[P][O];
     };
   }
 >;

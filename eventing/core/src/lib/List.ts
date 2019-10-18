@@ -133,7 +133,7 @@ type Operations<T> = {
 
 export abstract class ListEntry {
   id!: string;
-  owner!: { id: string; name: string };
+  owner!: { id: string };
 }
 
 export default abstract class List<
@@ -151,7 +151,9 @@ export default abstract class List<
     return List[EventHandlerSymbol][clazz];
   }
 
+  private context = { aggregate: { id: '' }, user: { id: '', name: '' } };
   private state: T[] = [];
+  private visibility = new Set<string>();
   private subscriptions = new Map<
     Query<T>,
     | {
@@ -166,12 +168,16 @@ export default abstract class List<
       }
   >();
 
-  get needsAuthorization() {
+  get hasVisibility() {
     return false;
   }
 
-  protected add(newItem: T) {
-    this.state.push(newItem);
+  protected add(newItem: Omit<T, 'id' | 'owner'>) {
+    this.state.push({
+      ...newItem,
+      id: this.context.aggregate.id,
+      owner: { id: this.context.user.id },
+    } as T);
     this.checkSubscriptions();
   }
 
@@ -194,18 +200,19 @@ export default abstract class List<
     this.checkSubscriptions();
   }
 
+  protected grantVisibility(...ids: string[]) {
+    ids.forEach(id => this.visibility.add(id));
+  }
+
+  protected denyVisibility(...ids: string[]) {
+    ids.forEach(id => this.visibility.delete(id));
+  }
+
   private checkSubscriptions() {
-    Array.from(this.subscriptions.entries()).forEach(([query, cfg]) => {
+    Array.from(this.subscriptions.entries()).forEach(async ([query, cfg]) => {
       switch (cfg.type) {
         case 'multi': {
-          const data = this.state
-            .filter(sift((query.where as {}) || {}))
-            .slice(
-              query.skip,
-              query.skip !== undefined && query.take !== undefined
-                ? query.skip + query.take
-                : undefined,
-            );
+          const data = await this.filter(query);
           // TODO better check equality
           if (data !== cfg.lastData || data.length !== cfg.lastData.length) {
             cfg.onUpdate(data, this.state.length);
@@ -213,7 +220,7 @@ export default abstract class List<
           break;
         }
         case 'single': {
-          const data = this.state.find(sift((query.where as {}) || {}));
+          const data = await this.filterOne(query);
           if (data !== cfg.lastData) {
             cfg.onUpdate(data);
           }
@@ -225,14 +232,7 @@ export default abstract class List<
 
   async find(query: Query<T>) {
     return {
-      data: this.state
-        .filter(sift((query.where as {}) || {}))
-        .slice(
-          query.skip,
-          query.skip !== undefined && query.take !== undefined
-            ? query.skip + query.take
-            : undefined,
-        ),
+      data: await this.filter(query),
       total: this.state.length,
     };
   }
@@ -241,7 +241,29 @@ export default abstract class List<
     query: Query<T>,
     onUpdate: (data: T[], total: number) => void,
   ) {
-    const data = this.state
+    const data = await this.filter(query);
+    this.subscriptions.set(query, { onUpdate, lastData: data, type: 'multi' });
+    onUpdate(data, this.state.length);
+  }
+
+  async findOne(query: Query<T>) {
+    return this.filterOne(query);
+  }
+
+  async findOneAndSubscribe(
+    query: Query<T>,
+    onUpdate: (data: T | undefined) => void,
+  ) {
+    const data = await this.filterOne(query);
+    this.subscriptions.set(query, { onUpdate, lastData: data, type: 'single' });
+    onUpdate(data);
+  }
+
+  private async filter(query: Query<T>) {
+    const list = this.hasVisibility
+      ? this.state.filter(d => this.visibility.has(d.id))
+      : this.state;
+    return list
       .filter(sift((query.where as {}) || {}))
       .slice(
         query.skip,
@@ -249,21 +271,13 @@ export default abstract class List<
           ? query.skip + query.take
           : undefined,
       );
-    this.subscriptions.set(query, { onUpdate, lastData: data, type: 'multi' });
-    onUpdate(data, this.state.length);
   }
 
-  async findOne(query: Query<T>) {
-    return this.state.find(sift((query.where as {}) || {}));
-  }
-
-  async findOneAndSubscribe(
-    query: Query<T>,
-    onUpdate: (data: T | undefined) => void,
-  ) {
-    const data = this.state.find(sift((query.where as {}) || {}));
-    this.subscriptions.set(query, { onUpdate, lastData: data, type: 'single' });
-    onUpdate(data);
+  private async filterOne(query: Query<T>) {
+    const list = this.hasVisibility
+      ? this.state.filter(d => this.visibility.has(d.id))
+      : this.state;
+    return list.find(sift((query.where as {}) || {}));
   }
 
   public async handle(event: DomainEvent) {
@@ -272,6 +286,8 @@ export default abstract class List<
       [P in typeof handler]?: (evt: DomainEvent) => void;
     })[handler];
     if (fn) {
+      this.context.aggregate = event.aggregate;
+      this.context.user = event.user;
       await fn.call(this, event);
       return true;
     }
@@ -305,15 +321,20 @@ export function Projection(target: List<any>, propertyKey: string) {
   map[type.name] = propertyKey;
 }
 
+type ListElement<T> = T extends List<infer U> ? U : never;
 export type ListInterface<T> = {
-  find: (query: Query<T>) => Promise<{ data: T[]; total: number }>;
+  find: (
+    query: Query<ListElement<T>>,
+  ) => Promise<{ data: ListElement<T>[]; total: number }>;
   findAndSubscribe: (
-    query: Query<T>,
-    onUpdate: (list: T[], total: number) => void,
+    query: Query<ListElement<T>>,
+    onUpdate: (list: ListElement<T>[], total: number) => void,
   ) => () => void;
-  findOne: (query: Query<T>) => Promise<T | undefined>;
+  findOne: (
+    query: Query<ListElement<T>>,
+  ) => Promise<ListElement<T> | undefined>;
   findOneAndSubscribe: (
-    query: Query<T>,
-    onUpdate: (data: T | undefined) => void,
+    query: Query<ListElement<T>>,
+    onUpdate: (data: ListElement<T> | undefined) => void,
   ) => () => void;
 };

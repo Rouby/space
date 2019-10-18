@@ -7,6 +7,5 @@ export class WormholeSpawned extends DomainEvent<
     origin: { x: number; y: number };
     destination?: { x: number; y: number };
     twoway?: boolean;
-  },
-  null
+  }
 > {}

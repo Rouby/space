@@ -1,6 +1,5 @@
 import {
   Aggregate,
-  AggregateInterface,
   Command,
   CommandInterface,
   CommandRejected,
@@ -49,5 +48,3 @@ export class StarSystem extends Aggregate<{
     });
   }
 }
-
-export type StarSystemInterface = AggregateInterface<StarSystem>;

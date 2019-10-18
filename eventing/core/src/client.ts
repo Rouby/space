@@ -51,7 +51,7 @@ export default class Client<
     return this._myself;
   }
 
-  public amI(user: { id: string; name: string }) {
+  public amI(user: { id: string }) {
     return this.myself ? this.myself.id === user.id : false;
   }
 
