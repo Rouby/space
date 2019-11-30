@@ -70,7 +70,7 @@ export default function SystemOverview({
             valueStyle={{
               color: system.populationTrend === 'rise' ? '#3f8600' : '#cf1322',
             }}
-            prefix={<Icon type={system.populationTrend} />}
+            prefix={<Icon type={system.populationTrend || 'fall'} />}
             suffix="billion"
           />
         </Col>
@@ -81,7 +81,7 @@ export default function SystemOverview({
             valueStyle={{
               color: system.gdpTrend === 'rise' ? '#3f8600' : '#cf1322',
             }}
-            prefix={<Icon type={system.gdpTrend} />}
+            prefix={<Icon type={system.gdpTrend || 'fall'} />}
             suffix="thousand"
           />
         </Col>

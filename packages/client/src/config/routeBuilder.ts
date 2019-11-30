@@ -8,6 +8,7 @@ class RouteConfig<TLink = unknown, TSidebar = unknown> {
     private _pathname: string,
     public readonly sidebars: TSidebar,
     public readonly parent: RouteConfig | null,
+    private defaultState = undefined,
   ) {
     Object.values(this.sidebars).forEach(route => (route.parent = this));
   }
@@ -29,7 +30,7 @@ class RouteConfig<TLink = unknown, TSidebar = unknown> {
 
   link<S = {}>(
     args?: TLink extends {} ? TLink : S,
-    state?: S,
+    state: S | undefined = this.defaultState,
   ): LocationDescriptorObject {
     return {
       pathname: pathToRegexp.compile(this.pathname)(args as TLink),
@@ -44,7 +45,11 @@ export default class RouteBuilder<
 > {
   sidebars: TSidebar = {} as TSidebar;
 
-  constructor(private pathname: string) {}
+  constructor(
+    private pathname: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private defaultState: any = undefined,
+  ) {}
 
   withSidebar<K extends string, L, S>(
     key: K,
@@ -58,6 +63,11 @@ export default class RouteBuilder<
   }
 
   build() {
-    return new RouteConfig<TLink, TSidebar>(this.pathname, this.sidebars, null);
+    return new RouteConfig<TLink, TSidebar>(
+      this.pathname,
+      this.sidebars,
+      null,
+      this.defaultState,
+    );
   }
 }

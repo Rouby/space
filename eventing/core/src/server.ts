@@ -40,16 +40,6 @@ export default class Server {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       lists: { [key: string]: new () => List<any> };
       auth: {
-        getUrl: (redirectUri: string) => Promise<string>;
-        exchangeCode: (
-          redirectUri: string,
-          code: string,
-        ) => Promise<{
-          idToken: string;
-          accessToken: string;
-          refreshToken?: string | null;
-          expiryDate: number;
-        }>;
         verifyToken: (
           idToken: string,
         ) => Promise<{ payload: { sub: string; name: string } }>;
@@ -59,11 +49,15 @@ export default class Server {
 
   private wss: WebSocket.Server | null = null;
   private events: DomainEvent[] = [];
+  // private eventPermissions: Map<EventId, Set<UserId>> = new Map();
   private clientAuth = new Map<WebSocket, { id: string; name: string }>();
   private subscriptions = new Map<
     string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    { list: List<any>; onUpdate: (data: {}, total: number) => void }
+    {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      list: List<any>;
+      onUpdate: (result: { data: {}[]; total: number } | { data: {} }) => void;
+    }
   >();
 
   async listen(port: number) {
@@ -191,23 +185,28 @@ export default class Server {
                   timing,
                 );
 
-                const onUpdate = (result: {}, total: number) => {
-                  client.send(
-                    JSON.stringify({
-                      type: 'subscription',
-                      to: subscriptionId,
-                      payload: { result, total },
-                    }),
-                  );
-                };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const result = await (list as any)[op].call(
-                  list,
-                  query,
-                  onUpdate,
-                );
-                // TODO restrict results based on access
                 if (subscriptionId) {
+                  const onUpdate = (
+                    result:
+                      | {
+                          data: {}[];
+                          total: number;
+                        }
+                      | { data: {} },
+                  ) => {
+                    // TODO restrict results based on access
+                    client.send(
+                      JSON.stringify({
+                        type: 'subscription',
+                        to: subscriptionId,
+                        payload: { ...result },
+                      }),
+                    );
+                  };
+                  // start subscription
+                  await list[
+                    op as 'findAndSubscribe' | 'findOneAndSubscribe'
+                  ].call(list, query, onUpdate);
                   this.subscriptions.set(`${clientId}::${subscriptionId}`, {
                     list,
                     onUpdate,
@@ -217,6 +216,11 @@ export default class Server {
                     listType,
                   });
                 } else {
+                  const result = await list[op as 'find' | 'findOne'].call(
+                    list,
+                    query,
+                  );
+                  // TODO restrict results based on access
                   client.send(
                     JSON.stringify({
                       type: 'response',

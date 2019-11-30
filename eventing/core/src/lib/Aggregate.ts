@@ -62,30 +62,30 @@ export default abstract class Aggregate<T> {
     this.stateUpdates = [];
   }
 
-  public async handle(event: DomainEvent) {
+  public handle(event: DomainEvent) {
     const fn = ((this as {}) as {
       [P in typeof event.constructor.name]?: (evt: DomainEvent) => void;
     })[Aggregate[EventHandlerSymbol][this.constructor.name][event.name]];
     if (fn) {
-      await fn.call(this, event);
+      fn.call(this, event);
       return true;
     }
     return false;
+  }
+
+  public replay(events: DomainEvent[]) {
+    this.batchStateUpdate = true;
+    for (const event of events) {
+      this.handle(event);
+    }
+    this.batchStateUpdate = false;
+    this.handleStateUpdate();
   }
 
   public transferOwnership({ events }: CommandInterface, userId: string) {
     events.publish<OwnershipDeclared>('OwnershipDeclared', {
       newOwnerId: userId,
     });
-  }
-
-  public async replay(events: DomainEvent[]) {
-    this.batchStateUpdate = true;
-    for (const event of events) {
-      await this.handle(event);
-    }
-    this.batchStateUpdate = false;
-    this.handleStateUpdate();
   }
 }
 

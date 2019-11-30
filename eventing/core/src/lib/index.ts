@@ -20,16 +20,16 @@ export { Reaction } from './Reaction';
 
 // Explicit type exports to circumvent weird transpilation warnings
 import {
-  AggregarteServerInterface,
-  AggregateConstructorParameters,
-  AggregateInterface,
-  CommandInterface,
+  AggregarteServerInterface as ASI,
+  AggregateConstructorParameters as ACP,
+  AggregateInterface as AI,
+  CommandInterface as CI,
 } from './Aggregate';
-import { ListInterface } from './List';
-import { ReactionInterface } from './Reaction';
-export type AggregateConstructorParameters = AggregateConstructorParameters;
-export type AggregateInterface<T> = AggregateInterface<T>;
-export type AggregarteServerInterface<T> = AggregarteServerInterface<T>;
-export type CommandInterface = CommandInterface;
-export type ListInterface<T> = ListInterface<T>;
-export type ReactionInterface<T> = ReactionInterface<T>;
+import { ListInterface as LI } from './List';
+import { ReactionInterface as RI } from './Reaction';
+export type AggregateConstructorParameters = ACP;
+export type AggregateInterface<T> = AI<T>;
+export type AggregarteServerInterface<T> = ASI<T>;
+export type CommandInterface = CI;
+export type ListInterface<T> = LI<T>;
+export type ReactionInterface<T> = RI<T>;

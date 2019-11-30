@@ -41,12 +41,14 @@ export default function Sidebar() {
 function useDrawerCloser() {
   const routeConfig = useCurrentRouteConfig();
 
-  return useStore(store =>
-    store.routing.location.state === CanGoBackToCloseDrawer
-      ? store.routing.goBack
-      : () =>
-          routeConfig &&
-          routeConfig.parent &&
-          store.routing.replace(routeConfig.parent.link()),
+  return useStore(
+    store =>
+      store.routing.location.state === CanGoBackToCloseDrawer
+        ? store.routing.goBack
+        : () =>
+            routeConfig &&
+            routeConfig.parent &&
+            store.routing.replace(routeConfig.parent.link()),
+    [routeConfig],
   );
 }

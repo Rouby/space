@@ -55,20 +55,20 @@
     }
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
-    "@types/node": "^12.7.2",
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
-    "eslint": "^6.1.0",
-    "eslint-config-prettier": "^6.1.0",
-    "eslint-plugin-react": "^7.14.3",
-    "husky": "^3.0.4",
+    "@types/jest": "^24.0.22",
+    "@types/node": "^12.12.6",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-react": "^7.16.0",
+    "husky": "^3.0.9",
     "jest": "^24.9.0",
     "jest-validate": "^24.9.0",
     "jest-watch-master": "^1.0.0",
     "jest-watch-yarn-workspaces": "^1.1.0",
     "prettier": "^1.18.2",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.5.3"
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.7.2"
   }
 }

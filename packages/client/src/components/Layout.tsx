@@ -2,7 +2,7 @@ import { Layout as AntLayout } from 'antd';
 import * as React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Header } from '.';
-import Routing from '../pages';
+import Pages from '../pages';
 
 const useStyles = createUseStyles({
   header: {
@@ -27,7 +27,7 @@ export default function Layout() {
         <Header />
       </AntLayout.Header>
       <AntLayout.Content className={classNames.content}>
-        <Routing />
+        <Pages />
       </AntLayout.Content>
     </AntLayout>
   );

@@ -1,6 +1,6 @@
-import RouteBuilder from './routeBuilder';
+import RouteBuilder, { CanGoBackToCloseDrawer } from './routeBuilder';
 
-export { CanGoBackToCloseDrawer } from './routeBuilder';
+export { CanGoBackToCloseDrawer };
 
 export default {
   // Anonymous
@@ -14,7 +14,7 @@ export default {
   galaxy: new RouteBuilder('/galaxy')
     .withSidebar(
       'system',
-      new RouteBuilder<{ id: string }>('/system/:id')
+      new RouteBuilder<{ id: string }>('/system/:id', CanGoBackToCloseDrawer)
         .withSidebar('build', new RouteBuilder('/build').build())
         .build(),
     )

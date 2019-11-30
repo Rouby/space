@@ -77,7 +77,10 @@ export default class Client<
   >();
   private subscriptions = new Map<
     string,
-    { list: string; onUpdate: (data: {}[], total: number) => void }
+    {
+      list: string;
+      onUpdate: (result: { data: {}[]; total: number } | { data: {} }) => void;
+    }
   >();
   private websocket: Promise<WebSocket> = {
     then: async (
@@ -182,7 +185,7 @@ export default class Client<
                 'New data arrived %o',
                 payload,
               );
-              sub.onUpdate(payload.result, payload.total);
+              sub.onUpdate(payload);
             }
             break;
           }
@@ -256,7 +259,12 @@ export default class Client<
       {
         get: (_, op) =>
           op.toString().endsWith('AndSubscribe')
-            ? (query: {}, onUpdate: (list: {}[]) => void) => {
+            ? (
+                query: {},
+                onUpdate: (
+                  result: { data: {}[]; total: number } | { data: {} },
+                ) => void,
+              ) => {
                 const subscriptionId = uuid();
                 trace.extend(subscriptionId)('%s %O', op, query);
                 this.subscriptions.set(subscriptionId, { list, onUpdate });

@@ -8,13 +8,13 @@
     "create-aggregate": "./src/generator.ts aggregate"
   },
   "dependencies": {
-    "commander": "^3.0.2",
+    "commander": "^4.0.0",
     "debug": "^4.1.1",
     "figlet": "^1.2.4",
     "isomorphic-ws": "^4.0.1",
-    "sift": "^8.5.0",
+    "sift": "^8.5.1",
     "uuid": "^3.3.3",
-    "ws": "^7.1.2"
+    "ws": "^7.2.0"
   },
   "devDependencies": {
     "@types/figlet": "^1.2.0"

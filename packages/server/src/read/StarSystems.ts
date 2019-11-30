@@ -1,10 +1,4 @@
-import {
-  List,
-  ListEntry,
-  OwnershipDeclared,
-  Projection,
-  Property,
-} from '@eventing/core';
+import { List, ListEntry, Projection, Property } from '@eventing/core';
 import { StarSystemSpawned } from '../events';
 
 export class StarSystem extends ListEntry {
@@ -13,23 +7,18 @@ export class StarSystem extends ListEntry {
 
   @Property()
   gameId!: string;
+
+  @Property()
+  position!: { x: number; y: number };
 }
 
 export class StarSystems extends List<StarSystem> {
-  get hasVisibility() {
-    return true;
-  }
-
   @Projection
   onSpawn(event: StarSystemSpawned) {
     this.add({
       name: event.data.name,
       gameId: event.data.gameId,
+      position: event.data.position,
     });
-  }
-
-  @Projection
-  onOwned(event: OwnershipDeclared) {
-    this.grantVisibility(event.aggregate.id);
   }
 }

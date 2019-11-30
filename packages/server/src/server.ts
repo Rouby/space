@@ -49,44 +49,6 @@ const fsStore = {
 };
 
 const googleAuth = {
-  async getUrl(redirectUri: string) {
-    return authClient.generateAuthUrl({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      redirect_uri: redirectUri,
-      scope: ['profile'],
-    });
-  },
-  async exchangeCode(redirectUri: string, code: string) {
-    try {
-      const {
-        tokens: {
-          id_token: idToken,
-          access_token: accessToken,
-          refresh_token: refreshToken,
-          expiry_date: expiryDate,
-        },
-      } = await authClient.getToken({
-        code,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        redirect_uri: redirectUri,
-      });
-      if (idToken && accessToken && expiryDate) {
-        return {
-          idToken,
-          accessToken,
-          refreshToken,
-          expiryDate,
-        };
-      }
-
-      throw new Error('No valid tokens generated.');
-    } catch (err) {
-      throw new Error(
-        (err.response && err.response.data && err.response.data.error) ||
-          err.message,
-      );
-    }
-  },
   async verifyToken(idToken: string) {
     try {
       const ticket = await authClient.verifyIdToken({

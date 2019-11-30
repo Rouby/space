@@ -10,7 +10,7 @@ import NotFound from './NotFound';
 import Overview from './Overview';
 import Welcome from './Welcome';
 
-export default function Routing() {
+export default function Pages() {
   const authenticated = useStore(stores => stores.general.authenticated);
   const inGame = useStore(stores => !!stores.general.gameId);
 

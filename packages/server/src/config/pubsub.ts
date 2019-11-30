@@ -1,6 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
 import { createClient, Callback } from 'redis';
-import { Event } from '../events';
 
 const store = new Client({ node: 'http://localhost:9200' });
 const publisher = createClient();

@@ -8,7 +8,7 @@ function generateEvent(name: string) {
     data: {},
     id: '',
     metadata: { causationId: '', correlationId: '', timestamp: 0 },
-    user: null,
+    user: { id: '', name: '' },
   };
 }
 
