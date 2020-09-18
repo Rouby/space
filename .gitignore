@@ -1,3 +1,9 @@
+.yarn/*
+!.yarn/cache
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+
 node_modules
 yarn-error.log
 .env

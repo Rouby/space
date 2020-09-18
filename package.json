@@ -4,71 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "private": true,
-  "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch"
-  },
   "workspaces": [
-    "packages/**",
-    "eventing/**"
-  ],
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    }
-  },
-  "eslintConfig": {
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint",
-      "react"
-    ],
-    "env": {
-      "browser": true,
-      "node": true,
-      "es6": true,
-      "jest": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:react/recommended",
-      "prettier",
-      "prettier/@typescript-eslint"
-    ],
-    "rules": {
-      "@typescript-eslint/explicit-function-return-type": 0,
-      "@typescript-eslint/no-use-before-define": [
-        "error",
-        {
-          "functions": false
-        }
-      ],
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "argsIgnorePattern": "^_"
-        }
-      ],
-      "react/display-name": 0,
-      "react/prop-types": 0
-    }
-  },
-  "devDependencies": {
-    "@types/jest": "^24.0.22",
-    "@types/node": "^12.12.6",
-    "@typescript-eslint/eslint-plugin": "^2.6.1",
-    "@typescript-eslint/parser": "^2.6.1",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
-    "eslint-plugin-react": "^7.16.0",
-    "husky": "^3.0.9",
-    "jest": "^24.9.0",
-    "jest-validate": "^24.9.0",
-    "jest-watch-master": "^1.0.0",
-    "jest-watch-yarn-workspaces": "^1.1.0",
-    "prettier": "^1.18.2",
-    "ts-jest": "^24.1.0",
-    "typescript": "^3.7.2"
-  }
+    "packages/**"
+  ]
 }

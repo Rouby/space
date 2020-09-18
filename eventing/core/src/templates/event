@@ -1,9 +1,0 @@
-import { DomainEvent } from '@eventing/core';
-
-export class $$EventName extends DomainEvent<
-  '$$EventName',
-  {
-    
-  },
-  $$HasUser
-> {}
