@@ -1,17 +1,18 @@
-import * as ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-import * as HTMLWebpackPlugin from 'html-webpack-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import HTMLWebpackPlugin from 'html-webpack-plugin';
 import { resolve } from 'path';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 export const config: webpack.Configuration = {
   mode: isDevelopment ? 'development' : 'production',
   entry: resolve(__dirname, '../src/index.tsx'),
-  // output: {
-  //   filename: 'main.js',
-  //   path: resolve(__dirname, '../dist'),
-  // },
+  output: {
+    filename: 'main.js',
+    path: resolve(__dirname, '../dist'),
+  },
   module: {
     rules: [
       {
@@ -24,12 +25,15 @@ export const config: webpack.Configuration = {
               babelrc: false,
               configFile: false,
               presets: [
-                require.resolve('@babel/preset-env'),
+                // require.resolve('@babel/preset-env'),
                 [
                   require.resolve('@babel/preset-react'),
                   { development: isDevelopment },
                 ],
-                require.resolve('@babel/preset-typescript'),
+                [
+                  require.resolve('@babel/preset-typescript'),
+                  { onlyRemoveTypeImports: true },
+                ],
               ],
               plugins: [
                 isDevelopment && require.resolve('react-refresh/babel'),
@@ -54,6 +58,11 @@ export const config: webpack.Configuration = {
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    }),
+    new ForkTsCheckerWebpackPlugin({
+      async: isDevelopment,
+      formatter: undefined,
+      logger: { devServer: false, infrastructure: 'silent', issues: 'silent' },
     }),
   ].filter(Boolean) as webpack.WebpackPluginInstance[],
 };

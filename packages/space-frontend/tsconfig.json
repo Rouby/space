@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ESNext", // Node 12
+    "target": "ES2019",
     "lib": ["ESNext", "DOM"],
     "jsx": "react",
 
     "module": "CommonJS",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
 
     "sourceMap": true,
     "removeComments": true,
