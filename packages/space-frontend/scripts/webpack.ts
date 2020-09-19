@@ -25,7 +25,7 @@ export const config: webpack.Configuration = {
               babelrc: false,
               configFile: false,
               presets: [
-                // require.resolve('@babel/preset-env'),
+                require.resolve('@babel/preset-env'),
                 [
                   require.resolve('@babel/preset-react'),
                   { development: isDevelopment },
@@ -51,10 +51,24 @@ export const config: webpack.Configuration = {
     },
   },
   plugins: [
-    isDevelopment && new ReactRefreshWebpackPlugin(),
     new HTMLWebpackPlugin({
+      inject: true,
       filename: './index.html',
       template: resolve(__dirname, '../public/index.html'),
+      ...(!isDevelopment && {
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true,
+          removeEmptyAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          keepClosingSlash: true,
+          minifyJS: true,
+          minifyCSS: true,
+          minifyURLs: true,
+        },
+      }),
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -62,7 +76,12 @@ export const config: webpack.Configuration = {
     new ForkTsCheckerWebpackPlugin({
       async: isDevelopment,
       formatter: undefined,
-      logger: { devServer: false, infrastructure: 'silent', issues: 'silent' },
+      logger: {
+        devServer: false,
+        infrastructure: 'silent',
+        issues: 'silent',
+      },
     }),
+    isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean) as webpack.WebpackPluginInstance[],
 };
