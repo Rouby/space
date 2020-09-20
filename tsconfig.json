@@ -1,19 +1,30 @@
 {
   "compilerOptions": {
-    "lib": ["esnext"],
-    "target": "es2020",
+    "target": "ES2019",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react",
+
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    "sourceMap": true,
+    "removeComments": true,
+
+    "preserveSymlinks": false,
+    "skipLibCheck": true,
+
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
+
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "module": "commonjs"
+    "forceConsistentCasingInFileNames": true
   }
 }
