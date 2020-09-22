@@ -9,9 +9,24 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 export const config: webpack.Configuration = {
   mode: isDevelopment ? 'development' : 'production',
   entry: resolve(__dirname, '../src/index.tsx'),
+  devtool: isDevelopment ? 'cheap-source-map' : 'source-map',
   output: {
-    filename: 'main.js',
+    filename: isDevelopment
+      ? 'static/js/[name].js'
+      : 'static/js/[name].[contenthash].js',
     path: resolve(__dirname, '../dist'),
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        defaultVendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
   },
   module: {
     rules: [
@@ -25,18 +40,32 @@ export const config: webpack.Configuration = {
               babelrc: false,
               configFile: false,
               presets: [
-                require.resolve('@babel/preset-env'),
+                [
+                  require.resolve('@babel/preset-env'),
+                  {
+                    useBuiltIns: false,
+                    targets: {
+                      chrome: '85',
+                    },
+                  },
+                ],
                 [
                   require.resolve('@babel/preset-react'),
-                  { development: isDevelopment },
+                  {
+                    useBuiltIns: false,
+                    development: isDevelopment,
+                  },
                 ],
                 [
                   require.resolve('@babel/preset-typescript'),
-                  { onlyRemoveTypeImports: true },
+                  {
+                    onlyRemoveTypeImports: true,
+                  },
                 ],
               ],
               plugins: [
                 isDevelopment && require.resolve('react-refresh/babel'),
+                // require.resolve('@babel/plugin-transform-runtime'),
               ].filter(Boolean),
             },
           },
@@ -72,6 +101,8 @@ export const config: webpack.Configuration = {
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.GRAPHQL_ENDPOINT': JSON.stringify('http://localhost:5000'),
+      'process.env': '{}',
     }),
     new ForkTsCheckerWebpackPlugin({
       async: isDevelopment,

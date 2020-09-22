@@ -14,6 +14,7 @@ export const config: PostGraphileOptions = {
   enableQueryBatching: true,
   disableQueryLog: true,
   legacyRelations: 'omit',
+  enableCors: true,
 
   ...(process.env.NODE_ENV !== 'production' && {
     extendedErrors: ['hint', 'detail', 'errcode'],
