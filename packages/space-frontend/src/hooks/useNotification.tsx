@@ -54,7 +54,6 @@ export function NotificationProvider({
         }
         setNotifications((n) => [...n, notification]);
         if (duration) {
-          console.log(duration);
           setTimeout(() => {
             setNotifications((n) => n.filter((d) => d !== notification));
           }, duration);

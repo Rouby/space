@@ -8,7 +8,7 @@ import {
 } from 'react-icons/ai';
 import { animated, useTransition } from 'react-spring';
 import { stylesheet } from 'typestyle';
-import { colors, units } from '../../style';
+import { colors, elevation, units } from '../../style';
 
 const icons = {
   success: AiOutlineCheckCircle,
@@ -28,11 +28,10 @@ const classNames = stylesheet({
     width: units(32),
     maxWidth: `calc(100vw - ${units(1)})`,
     background: 'white',
-    boxShadow:
-      '0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05)',
     overflow: 'hidden',
     marginBottom: units(1),
     marginRight: units(1),
+    ...elevation(),
   },
   notification: {
     position: 'relative',
@@ -120,16 +119,6 @@ export function NotificationHub({
     enter: { opacity: 1, transform: 'translateX(0%)' },
     leave: { opacity: 0 },
     config: { tension: 500, friction: 25, precision: 0.1 },
-    // enter: (item) => async (next) =>
-    //   await next({ opacity: 1, height: refMap.get(item)?.offsetHeight }),
-    // leave: (item) => async (next, cancel) => {
-    //   cancelMap.set(item, cancel);
-    //   await next({ life: '0%' });
-    //   await next({ opacity: 0 });
-    //   await next({ height: 0 });
-    // },
-    // config: (item, state) =>
-    //   state === 'leave' ? [{ duration: timeout }, config, config] : config,
   });
 
   return (

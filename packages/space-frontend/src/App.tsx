@@ -1,15 +1,15 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
+import { AiFillAndroid } from 'react-icons/ai';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { userAtom } from './atoms';
+import { Button } from './components/ui';
 import { useGraphQLMutation } from './hooks';
 import { useNotification } from './hooks/useNotification';
 
 export function App() {
   const user = useRecoilValue(userAtom);
-
-  const notify = useNotification();
 
   return (
     <div>
@@ -19,15 +19,6 @@ export function App() {
         <>
           <SignIn />
           <SignUp />
-          <button
-            onClick={() =>
-              notify.success({
-                text: 'Notification',
-              })
-            }
-          >
-            NOTIFY
-          </button>
         </>
       )}
     </div>
@@ -89,6 +80,8 @@ function SignUp() {
 
   const notify = useNotification();
 
+  const [loading, setLoading] = React.useState<Promise<void>>();
+
   return (
     <form
       onSubmit={handleSubmit((data) => {
@@ -97,15 +90,11 @@ function SignUp() {
             setUser(jwtToken);
           })
           .catch(
-            ({
-              response: { errors },
-            }: {
-              response: { errors: { errcode: string; detail: string }[] };
-            }) => {
+            ({ errors }: { errors: { errcode: string; detail: string }[] }) => {
               notify.error({
                 text: 'Sign-up failed',
                 description: errors.map((err) => (
-                  <div>
+                  <div key={err.detail}>
                     {err.errcode}: {err.detail}
                   </div>
                 )),
@@ -116,7 +105,31 @@ function SignUp() {
     >
       <input type="text" name="email" ref={register} />
       <input type="password" name="password" ref={register} />
-      <button type="submit">sign-up</button>
+      <Button type="submit">sign-up</Button>
+      <Button variant="primary" type="submit">
+        sign-up
+      </Button>
+      <Button variant="dashed" type="submit">
+        sign-up
+      </Button>
+      <Button variant="text" type="submit">
+        sign-up
+      </Button>
+      <Button variant="link" type="submit">
+        sign-up
+      </Button>
+      <Button icon={AiFillAndroid} variant="link" type="submit">
+        sign-up
+      </Button>
+      <Button
+        variant="primary"
+        onClick={() => {
+          setLoading(new Promise((res) => setTimeout(res, 2500)));
+        }}
+        loading={loading}
+      >
+        sign-up
+      </Button>
     </form>
   );
 }

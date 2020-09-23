@@ -2,6 +2,8 @@ import { cssRule } from 'typestyle';
 import * as colors from './colors';
 
 export * as colors from './colors';
+export * from './elevation';
+export * as transition from './transition';
 export * from './units';
 
 cssRule('html, body', {
