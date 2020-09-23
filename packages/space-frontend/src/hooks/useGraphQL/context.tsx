@@ -1,7 +1,22 @@
 import { DocumentNode, print } from 'graphql';
 import * as React from 'react';
+import { QueryCache, ReactQueryCacheProvider, setConsole } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../../atoms';
+
+setConsole({ log() {}, warn() {}, error() {} });
+
+const queryCache = new QueryCache({
+  defaultConfig: {
+    queries: {
+      suspense: true,
+    },
+    mutations: {
+      throwOnError: true,
+      suspense: false,
+    },
+  },
+});
 
 const GraphQLContext = React.createContext<{
   request<T, V>(document: DocumentNode | string, variables?: V): Promise<T>;
@@ -14,21 +29,23 @@ const GraphQLContext = React.createContext<{
 class GraphQLError extends Error {
   constructor(
     message: string,
-    public errors: { errcode: string; detail: string }[],
+    public errors: { message?: string; errcode?: string; detail?: string }[],
   ) {
     super(message);
+  }
+
+  get messageJSX() {
+    return this.errors.map((err) => (
+      <div key={err.detail ?? err.message}>
+        {err.errcode ? `${err.errcode}: ${err.detail}` : err.message}
+      </div>
+    ));
   }
 }
 
 export function GraphQLProvider({ children }: { children: React.ReactNode }) {
   const jwtToken = useRecoilValue(userAtom);
   const graphQLClient = React.useMemo(() => {
-    // return new GraphQLClient(`${process.env.GRAPHQL_ENDPOINT}/graphql`, {
-    //   headers: {
-    //     ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
-    //   },
-    // });
-
     return {
       async request<T, V>(document: DocumentNode | string, variables?: V) {
         document = typeof document === 'string' ? document : print(document);
@@ -64,9 +81,11 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
   }, [jwtToken]);
 
   return (
-    <GraphQLContext.Provider value={graphQLClient}>
-      {children}
-    </GraphQLContext.Provider>
+    <ReactQueryCacheProvider queryCache={queryCache}>
+      <GraphQLContext.Provider value={graphQLClient}>
+        {children}
+      </GraphQLContext.Provider>
+    </ReactQueryCacheProvider>
   );
 }
 

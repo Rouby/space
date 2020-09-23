@@ -1,10 +1,9 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { AiFillAndroid } from 'react-icons/ai';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { userAtom } from './atoms';
-import { Button } from './components/ui';
+import { Button, Input } from './components/ui';
 import { useGraphQLMutation } from './hooks';
 import { useNotification } from './hooks/useNotification';
 
@@ -34,30 +33,52 @@ function SignIn() {
     }
   `);
 
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm();
 
   const setUser = useSetRecoilState(userAtom);
 
   const notify = useNotification();
 
   return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        authenticate(data)
-          .then(({ authenticate: { jwtToken } }) => {
-            setUser(jwtToken);
-          })
-          .catch((err) => {
-            notify.error({
-              text: 'Sign-up failed',
-              description: err.toString(),
-            });
-          });
-      })}
-    >
-      <input type="text" name="email" ref={register} />
-      <input type="password" name="password" ref={register} />
-      <button type="submit">sign-in</button>
+    <form autoComplete="off">
+      <Input
+        type="text"
+        name="email"
+        ref={register({ required: true })}
+        disabled={isSubmitting}
+      />
+      <Input
+        type="password"
+        name="password"
+        ref={register({ required: true })}
+        disabled={isSubmitting}
+      />
+      <Button
+        type="submit"
+        variant="primary"
+        onClick={handleSubmit((data) =>
+          authenticate(data)
+            .then(({ authenticate: { jwtToken } }) => {
+              if (jwtToken) {
+                setUser(jwtToken);
+              } else {
+                throw new Error('Invalid credentials!');
+              }
+            })
+            .catch((err) => {
+              notify.error({
+                text: 'Sign-in failed',
+                description: err.messageJSX ?? err.message,
+              });
+            }),
+        )}
+      >
+        Sign In
+      </Button>
     </form>
   );
 }
@@ -74,61 +95,69 @@ function SignUp() {
     }
   `);
 
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    errors,
+    formState: { isSubmitting },
+  } = useForm();
 
   const setUser = useSetRecoilState(userAtom);
 
   const notify = useNotification();
 
-  const [loading, setLoading] = React.useState<Promise<void>>();
-
   return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        registerAccount(data)
-          .then(({ authenticate: { jwtToken } }) => {
-            setUser(jwtToken);
-          })
-          .catch(
-            ({ errors }: { errors: { errcode: string; detail: string }[] }) => {
+    <form name="register" autoComplete="off">
+      <Input
+        placeholder="Email"
+        type="text"
+        name="email"
+        ref={register({ required: true })}
+        disabled={isSubmitting}
+        errors={errors}
+      />
+      <Input
+        placeholder="Password"
+        type="password"
+        name="password"
+        ref={register({ required: true })}
+        disabled={isSubmitting}
+        errors={errors}
+      />
+      <Input
+        placeholder="Password (repeat)"
+        type="password"
+        name="password2"
+        ref={register({
+          required: true,
+          validate: {
+            matchesPreviousPassword: (value) => {
+              const { password } = getValues();
+              return password === value || 'Passwords should match!';
+            },
+          },
+        })}
+        disabled={isSubmitting}
+        errors={errors}
+      />
+      <Button
+        type="submit"
+        variant="primary"
+        onClick={handleSubmit((data) =>
+          registerAccount(data)
+            .then(({ authenticate: { jwtToken } }) => {
+              setUser(jwtToken);
+            })
+            .catch((err) => {
               notify.error({
                 text: 'Sign-up failed',
-                description: errors.map((err) => (
-                  <div key={err.detail}>
-                    {err.errcode}: {err.detail}
-                  </div>
-                )),
+                description: err.messageJSX ?? err.message,
               });
-            },
-          );
-      })}
-    >
-      <input type="text" name="email" ref={register} />
-      <input type="password" name="password" ref={register} />
-      <Button type="submit">sign-up</Button>
-      <Button variant="primary" type="submit">
-        sign-up
-      </Button>
-      <Button variant="dashed" type="submit">
-        sign-up
-      </Button>
-      <Button variant="text" type="submit">
-        sign-up
-      </Button>
-      <Button variant="link" type="submit">
-        sign-up
-      </Button>
-      <Button icon={AiFillAndroid} variant="link" type="submit">
-        sign-up
-      </Button>
-      <Button
-        variant="primary"
-        onClick={() => {
-          setLoading(new Promise((res) => setTimeout(res, 2500)));
-        }}
-        loading={loading}
+            }),
+        )}
       >
-        sign-up
+        Sign Up
       </Button>
     </form>
   );

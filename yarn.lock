@@ -1268,7 +1268,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.11.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:7.11.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4":
   version: 7.11.2
   resolution: "@babel/runtime@npm:7.11.2"
   dependencies:
@@ -1313,6 +1313,55 @@ __metadata:
     lodash: ^4.17.19
     to-fast-properties: ^2.0.0
   checksum: a1515b3ed19a8499f1f27d2c90537803b3e77f6d100ef1c327c86f85817ad2d915a61ae777eaacd9d955999db4ea68d6bb3b5933e0611d3d18a6ffc95430f44a
+  languageName: node
+  linkType: hard
+
+"@formatjs/ecma402-abstract@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "@formatjs/ecma402-abstract@npm:1.2.2"
+  checksum: c5a59a37faaecfa1af2675c51801cdf6a53f8b65040b4c8c678c6e15db54eb1b47179184a69ed43d218d0066123a83bebfa71cea8dfc6c2ebe671778702f3fb6
+  languageName: node
+  linkType: hard
+
+"@formatjs/intl-displaynames@npm:^3.3.8":
+  version: 3.3.8
+  resolution: "@formatjs/intl-displaynames@npm:3.3.8"
+  dependencies:
+    "@formatjs/ecma402-abstract": ^1.2.2
+  checksum: 3ed1d72759053d81d43158a3bb8f2b6dbbc13e03fea4edfeeae24effe03291020c4fc2a3d6c95a18e493623190135a8800ea854051ed590ae15165bdc7ca25e7
+  languageName: node
+  linkType: hard
+
+"@formatjs/intl-listformat@npm:^4.2.7":
+  version: 4.2.7
+  resolution: "@formatjs/intl-listformat@npm:4.2.7"
+  dependencies:
+    "@formatjs/ecma402-abstract": ^1.2.2
+  checksum: b0ac4bcaf8c466580443af3f8f89490ed0832ed03a19745fae1805845b9529db4d75678422a6a58e3f34056a10945debaeac834c1a7306cad89ea504b78355e5
+  languageName: node
+  linkType: hard
+
+"@formatjs/intl-relativetimeformat@npm:^7.2.7":
+  version: 7.2.7
+  resolution: "@formatjs/intl-relativetimeformat@npm:7.2.7"
+  dependencies:
+    "@formatjs/ecma402-abstract": ^1.2.2
+  checksum: 5af66a8c25e00b4d089ff2266b312be4986a1929428426de657372014e43bbc550530b10a85a6fffb9dc33a2519fb3f5fa8726bab8ba000b228bce54396b72e0
+  languageName: node
+  linkType: hard
+
+"@formatjs/intl@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "@formatjs/intl@npm:1.3.2"
+  dependencies:
+    "@formatjs/ecma402-abstract": ^1.2.2
+    "@formatjs/intl-displaynames": ^3.3.8
+    "@formatjs/intl-listformat": ^4.2.7
+    "@formatjs/intl-relativetimeformat": ^7.2.7
+    fast-memoize: ^2.5.2
+    intl-messageformat: ^9.3.8
+    intl-messageformat-parser: ^6.0.7
+  checksum: 0258e60b21c44445bb0fd0bfe0d7c0ea917238806c42f8a2fd8c8fb9c8101214ffbdc194fe33bbfadbc79e2535df6e3b5790990ce4cf839480e8c3fcbbd8ce2d
   languageName: node
   linkType: hard
 
@@ -1419,10 +1468,12 @@ __metadata:
     graphql-tag: 2.11.0
     html-webpack-plugin: 4.4.1
     querystring-es3: 0.2.1
-    react: 16.13.1
-    react-dom: 16.13.1
+    react: 0.0.0-experimental-94c0244ba
+    react-dom: 0.0.0-experimental-94c0244ba
+    react-error-boundary: 3.0.2
     react-hook-form: 6.8.3
     react-icons: 3.11.0
+    react-intl: 5.8.2
     react-query: 2.23.0
     react-refresh: 0.8.3
     react-spring: 8.0.27
@@ -1636,6 +1687,16 @@ __metadata:
     "@types/minimatch": "*"
     "@types/node": "*"
   checksum: 633bf1dda9a30899b233ed6b97c75cdd59f2ee856a12240c85474ce6889e26b3b3520b62de56f6bb61824af0ef51b311a0cae305f27ba0de8ddc4898a3673d42
+  languageName: node
+  linkType: hard
+
+"@types/hoist-non-react-statics@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "@types/hoist-non-react-statics@npm:3.3.1"
+  dependencies:
+    "@types/react": "*"
+    hoist-non-react-statics: ^3.3.0
+  checksum: 16ab4c45d4920fa378c8be76554b10061247fc04d2c8af11bdb7d520b3967e9c06d7ad5efd9b0f1657fbc4d095f62c6e1325f03b9141eb1ef2c8095b96fd42f8
   languageName: node
   linkType: hard
 
@@ -3743,6 +3804,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-memoize@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "fast-memoize@npm:2.5.2"
+  checksum: 88bd91488039c0e04131d5382b8ea084268f144ce14ab36c360dd04f7792ac0c419e125b0fe6e6f41e77f03d1f703b31697475b2e95889ca86510623e2f0d904
+  languageName: node
+  linkType: hard
+
 "faye-websocket@npm:^0.10.0":
   version: 0.10.0
   resolution: "faye-websocket@npm:0.10.0"
@@ -4300,6 +4368,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "hoist-non-react-statics@npm:3.3.2"
+  dependencies:
+    react-is: ^16.7.0
+  checksum: d3e3791d6e3a2741ce0ba38e878081dec49247ef22982a990c80941ee1f564ef16cd5a511bcc8c5e54f1ce8205535e0414ca5feea722c0690c80040be7ebf9df
+  languageName: node
+  linkType: hard
+
 "hpack.js@npm:^2.1.6":
   version: 2.1.6
   resolution: "hpack.js@npm:2.1.6"
@@ -4544,6 +4621,25 @@ fsevents@^1.2.7:
     default-gateway: ^4.2.0
     ipaddr.js: ^1.9.0
   checksum: 2cf2248053bd471a3f07880d76a86fa64fb16f2fe5006c0efda218224050ea383618788627498734055cc7027926b7749288f88981bb35433da3f4171824afd0
+  languageName: node
+  linkType: hard
+
+"intl-messageformat-parser@npm:^6.0.7":
+  version: 6.0.7
+  resolution: "intl-messageformat-parser@npm:6.0.7"
+  dependencies:
+    "@formatjs/ecma402-abstract": ^1.2.2
+  checksum: fa6027cf7cf39433e7619bc9896f6813c3d26c6421e278e35e015310fdb1abee420023d842738f5c1d0c988f1f39910de4dda3b8e0266940ae57b53478f533cd
+  languageName: node
+  linkType: hard
+
+"intl-messageformat@npm:^9.3.8":
+  version: 9.3.8
+  resolution: "intl-messageformat@npm:9.3.8"
+  dependencies:
+    fast-memoize: ^2.5.2
+    intl-messageformat-parser: ^6.0.7
+  checksum: 9cb95a9e0c4dd249d5c642506aacfd2c01cd875103755d2cd1c971074df63bc24019e6507415e0f89343ecf6be7935939ce295f27b92c053977d9d1dc824626d
   languageName: node
   linkType: hard
 
@@ -6372,7 +6468,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.8, prop-types@npm:^15.6.2":
+"prop-types@npm:^15.5.8":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
   dependencies:
@@ -6501,17 +6597,27 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-dom@npm:16.13.1":
-  version: 16.13.1
-  resolution: "react-dom@npm:16.13.1"
+"react-dom@npm:0.0.0-experimental-94c0244ba":
+  version: 0.0.0-experimental-94c0244ba
+  resolution: "react-dom@npm:0.0.0-experimental-94c0244ba"
   dependencies:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    scheduler: ^0.19.1
+    scheduler: 0.0.0-experimental-94c0244ba
   peerDependencies:
-    react: ^16.13.1
-  checksum: fb5c3ad41360c6a8674f33916aa895d05e79d063d31a6963074220c1cda9e07e880799d01670b4ebd570b4d3457584f13cc898b5033a05641e8e801f5611607e
+    react: 0.0.0-experimental-94c0244ba
+  checksum: ef3dd58e0384960cea872073c662631a521c7394fc3f0f82cbd228c7319d283b0c7aebec90e4d3c2ef298987393b4b20b04bb5a9e551b42352c9fafadb6df43e
+  languageName: node
+  linkType: hard
+
+"react-error-boundary@npm:3.0.2":
+  version: 3.0.2
+  resolution: "react-error-boundary@npm:3.0.2"
+  dependencies:
+    "@babel/runtime": ^7.11.2
+  peerDependencies:
+    react: ">=16.13.1"
+  checksum: 241a91a7db61350fcd7370e857b127ca232afb47cbc3b437b77f29277eb696785c85bf8e3d2597604ba68273125e3168783037d173cccc72fed4d2b379f6a2f8
   languageName: node
   linkType: hard
 
@@ -6535,7 +6641,29 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.8.1":
+"react-intl@npm:5.8.2":
+  version: 5.8.2
+  resolution: "react-intl@npm:5.8.2"
+  dependencies:
+    "@formatjs/ecma402-abstract": ^1.2.2
+    "@formatjs/intl": ^1.3.2
+    "@formatjs/intl-displaynames": ^3.3.8
+    "@formatjs/intl-listformat": ^4.2.7
+    "@formatjs/intl-relativetimeformat": ^7.2.7
+    "@types/hoist-non-react-statics": ^3.3.1
+    fast-memoize: ^2.5.2
+    hoist-non-react-statics: ^3.3.2
+    intl-messageformat: ^9.3.8
+    intl-messageformat-parser: ^6.0.7
+    shallow-equal: ^1.2.1
+  peerDependencies:
+    react: ^16.3.0
+    typescript: 3.8 || 4
+  checksum: 80df23dba6718072395b3ed4a9b1a349d12013a6935e6a66837c3071147b812ff6d57f5f087054a7d72936c779424187d6f487d8d999059de4e126b06500692e
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^16.7.0, react-is@npm:^16.8.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 11bcf1267a314a522615f626f3ce3727a3a24cdbf61c4d452add3550a7875326669631326cfb1ba3e92b6f72244c32ffecf93ad21c0cad8455d3e169d0e3f060
@@ -6578,14 +6706,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react@npm:16.13.1":
-  version: 16.13.1
-  resolution: "react@npm:16.13.1"
+"react@npm:0.0.0-experimental-94c0244ba":
+  version: 0.0.0-experimental-94c0244ba
+  resolution: "react@npm:0.0.0-experimental-94c0244ba"
   dependencies:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
-    prop-types: ^15.6.2
-  checksum: 13dcc9ba8a7521ecc3d7e69998dbc5703ae9515308d06a94a474ad34b42f1fc109372265e924a8c9b11d20fa1828407c290b8f61617c36734c4ca907ae7e5f45
+  checksum: 197e6db98e820034e6c4c5c450d4482ab62755e18e2f247aa7807cc6bbd6b5f9230d0df47632e6d85bedd51421766e3c09ea33998bdd61fd463883b3f7862a1c
   languageName: node
   linkType: hard
 
@@ -6924,13 +7051,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.19.1":
-  version: 0.19.1
-  resolution: "scheduler@npm:0.19.1"
+"scheduler@npm:0.0.0-experimental-94c0244ba":
+  version: 0.0.0-experimental-94c0244ba
+  resolution: "scheduler@npm:0.0.0-experimental-94c0244ba"
   dependencies:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
-  checksum: 804f990b9f370cca6d42b65f3cba2cc2bfed4973ee5623bed1ea36a6627842db8c891e2e5ac003f06f9ee892d1d3396921e27fa077346caf0213af05776e8dee
+  checksum: ea439817038bd70bc0369dfae985c2e65d6eb54604f03d2db5bc0eab40891581f37c435132f914f2f9fccef152c6d3815f23c03c1de08dbb521f7a5aa5646738
   languageName: node
   linkType: hard
 
@@ -7122,6 +7249,13 @@ fsevents@^1.2.7:
   version: 1.2.0
   resolution: "setprototypeof@npm:1.2.0"
   checksum: 72691439857719aa33ec11ebc97960347f0f96e75c2fe65d0f2ca5c9c44fb1aa026e2ae528959624ed3ae3820fe06bfb1aded306402c5c941afd3dfdf47f79d0
+  languageName: node
+  linkType: hard
+
+"shallow-equal@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "shallow-equal@npm:1.2.1"
+  checksum: 5002ac4a3639e35782d3cb21073d48e1e4f85321cc54608f48b2331f6db6d54e4f4b44ed81ec4d75385ebe893e8286752b1e29595381e6adad72dd836f001b7f
   languageName: node
   linkType: hard
 

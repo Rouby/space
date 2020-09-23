@@ -1,19 +1,20 @@
+/// <reference types="react/experimental" />
+
 import * as React from 'react';
 import { render } from 'react-dom';
-import { setConsole } from 'react-query';
 import { RecoilRoot } from 'recoil';
 import { forceRenderStyles } from 'typestyle';
 import { App } from './App';
-import { GraphQLProvider, NotificationProvider } from './hooks';
-
-setConsole({ log() {}, warn() {}, error() {} });
+import { GraphQLProvider, NotificationProvider, StyleProvider } from './hooks';
 
 render(
   <RecoilRoot>
     <GraphQLProvider>
-      <NotificationProvider>
-        <App />
-      </NotificationProvider>
+      <StyleProvider>
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
+      </StyleProvider>
     </GraphQLProvider>
   </RecoilRoot>,
   document.getElementById('root'),

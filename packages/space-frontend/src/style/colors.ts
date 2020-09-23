@@ -6,6 +6,7 @@ export const textContrast = color('#fff');
 export const primary = color('#1890ff');
 export const primaryContrast = color('#fff');
 
+export const disabled = color('##f5f5f5');
 export const success = color('#52c41a');
 export const info = color('#1890ff');
 export const warn = color('#faad14');

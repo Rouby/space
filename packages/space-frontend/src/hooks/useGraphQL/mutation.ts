@@ -12,6 +12,6 @@ export function useGraphQLMutation<
 
   return useMutation<TData, unknown, TVariables>(
     async (variables) => client.request(document, variables),
-    { ...options, throwOnError: true },
+    options,
   );
 }

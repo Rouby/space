@@ -7,7 +7,7 @@ import {
   AiOutlineWarning,
 } from 'react-icons/ai';
 import { animated, useTransition } from 'react-spring';
-import { stylesheet } from 'typestyle';
+import { useStylesheet } from '../../hooks';
 import { colors, elevation, units } from '../../style';
 
 const icons = {
@@ -17,59 +17,6 @@ const icons = {
   error: AiOutlineExclamationCircle,
   none: null,
 };
-
-const classNames = stylesheet({
-  container: {
-    position: 'fixed',
-    top: units(1),
-    right: units(0),
-  },
-  box: {
-    width: units(32),
-    maxWidth: `calc(100vw - ${units(1)})`,
-    background: 'white',
-    overflow: 'hidden',
-    marginBottom: units(1),
-    marginRight: units(1),
-    ...elevation(),
-  },
-  notification: {
-    position: 'relative',
-    padding: units(1.5, 2, 1),
-    lineHeight: 1.5715,
-  },
-  icon: {
-    position: 'absolute',
-    fontSize: '24px',
-    lineHeight: '24px',
-    marginRight: units(1),
-  },
-  success: { color: colors.success.toString() },
-  info: { color: colors.info.toString() },
-  warn: { color: colors.warn.toString() },
-  error: { color: colors.error.toString() },
-  none: {},
-  title: {
-    fontSize: '16px',
-    lineHeight: '24px',
-    display: 'block',
-    paddingRight: units(2),
-    marginBottom: units(0.5),
-  },
-  description: {
-    fontSize: '14px',
-  },
-  withIcon: {
-    marginLeft: units(3),
-  },
-  close: {
-    fontSize: '16px',
-    height: '24px',
-    position: 'absolute',
-    right: units(2),
-    color: colors.text.fadeOut(0.3).toString(),
-  },
-});
 
 export interface NotificationProps {
   key: string;
@@ -81,6 +28,45 @@ export interface NotificationProps {
 
 const Notification = React.forwardRef<HTMLDivElement, NotificationProps>(
   function Notification({ type, text, description, onClose }, ref) {
+    const classNames = useStylesheet({
+      notification: {
+        position: 'relative',
+        padding: units(1.5, 2, 1),
+        lineHeight: 1.5715,
+      },
+      icon: {
+        position: 'absolute',
+        fontSize: '24px',
+        lineHeight: '24px',
+        marginRight: units(1),
+      },
+      success: { color: colors.success.toString() },
+      info: { color: colors.info.toString() },
+      warn: { color: colors.warn.toString() },
+      error: { color: colors.error.toString() },
+      none: {},
+      title: {
+        fontSize: '16px',
+        lineHeight: '24px',
+        display: 'block',
+        paddingRight: units(2),
+        marginBottom: units(0.5),
+      },
+      description: {
+        fontSize: '14px',
+      },
+      withIcon: {
+        marginLeft: units(3),
+      },
+      close: {
+        fontSize: '16px',
+        height: '24px',
+        position: 'absolute',
+        right: units(2),
+        color: colors.text.fadeOut(0.3).toString(),
+      },
+    });
+
     const Icon = icons[type];
 
     return (
@@ -111,6 +97,23 @@ export function NotificationHub({
 }: {
   notifications: NotificationProps[];
 }) {
+  const classNames = useStylesheet({
+    container: {
+      position: 'fixed',
+      top: units(1),
+      right: units(0),
+    },
+    box: {
+      width: units(32),
+      maxWidth: `calc(100vw - ${units(1)})`,
+      background: 'white',
+      overflow: 'hidden',
+      marginBottom: units(1),
+      marginRight: units(1),
+      ...elevation(),
+    },
+  });
+
   const [refMap] = React.useState(
     () => new WeakMap<NotificationProps, HTMLDivElement | null>(),
   );
