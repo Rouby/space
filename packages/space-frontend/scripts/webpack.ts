@@ -73,7 +73,7 @@ export function createConfig(isDevelopment: boolean): webpack.Configuration {
                     require.resolve('babel-plugin-react-intl'),
                     {
                       idInterpolationPattern: '[sha512:contenthash:base64:6]',
-                      removeDefaultMessage: true,
+                      removeDefaultMessage: !isDevelopment,
                       extractFromFormatMessageCall: true,
                       ast: true,
                     },

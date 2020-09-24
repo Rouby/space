@@ -158,7 +158,7 @@ function SignUp() {
             }),
         )}
       >
-        <FormattedMessage defaultMessage="Sign Up" />
+        <FormattedMessage id="" defaultMessage="Sign Up" />
       </Button>
     </form>
   );
