@@ -1,7 +1,8 @@
 {
   "name": "@space/frontend",
   "scripts": {
-    "start": "ts-node scripts/start.ts"
+    "start": "ts-node scripts/start.ts",
+    "build": "ts-node scripts/build.ts"
   },
   "devDependencies": {
     "@babel/code-frame": "7.10.4",
@@ -11,6 +12,7 @@
     "@babel/preset-react": "7.10.4",
     "@babel/preset-typescript": "7.10.4",
     "@babel/runtime": "7.11.2",
+    "@formatjs/ts-transformer": "2.10.1",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.2",
     "@types/babel__code-frame": "7.0.1",
     "@types/babel__core": "7.1.9",
@@ -23,11 +25,14 @@
     "@types/recoil": "0.0.1",
     "@types/webpack-dev-server": "3.11.0",
     "babel-loader": "8.1.0",
+    "babel-plugin-react-intl": "8.2.3",
     "chalk": "4.1.0",
     "fork-ts-checker-webpack-plugin": "5.2.0",
     "html-webpack-plugin": "4.4.1",
     "querystring-es3": "0.2.1",
+    "react-intl-webpack-plugin": "0.3.0",
     "react-refresh": "0.8.3",
+    "ts-loader": "8.0.4",
     "ts-node": "9.0.0",
     "type-fest": "0.16.0",
     "typescript": "4.0.3",

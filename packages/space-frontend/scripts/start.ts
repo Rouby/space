@@ -7,11 +7,11 @@ import { EOL } from 'os';
 import webpack from 'webpack';
 import webpackDevServer from 'webpack-dev-server';
 import formatMessages from 'webpack-format-messages';
-import { config } from './webpack';
+import { createConfig } from './webpack';
 
 process.env.NODE_ENV = 'development';
 
-const compiler = webpack(config);
+const compiler = webpack(createConfig(true));
 
 compiler.hooks.invalid.tap('invalid', () => {
   clearConsole();

@@ -1,22 +1,7 @@
 import { DocumentNode, print } from 'graphql';
 import * as React from 'react';
-import { QueryCache, ReactQueryCacheProvider, setConsole } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../../atoms';
-
-setConsole({ log() {}, warn() {}, error() {} });
-
-const queryCache = new QueryCache({
-  defaultConfig: {
-    queries: {
-      suspense: true,
-    },
-    mutations: {
-      throwOnError: true,
-      suspense: false,
-    },
-  },
-});
 
 const GraphQLContext = React.createContext<{
   request<T, V>(document: DocumentNode | string, variables?: V): Promise<T>;
@@ -81,11 +66,9 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
   }, [jwtToken]);
 
   return (
-    <ReactQueryCacheProvider queryCache={queryCache}>
-      <GraphQLContext.Provider value={graphQLClient}>
-        {children}
-      </GraphQLContext.Provider>
-    </ReactQueryCacheProvider>
+    <GraphQLContext.Provider value={graphQLClient}>
+      {children}
+    </GraphQLContext.Provider>
   );
 }
 

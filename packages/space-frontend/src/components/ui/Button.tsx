@@ -243,7 +243,7 @@ export function Button({
             </animated.div>
           ),
       )}
-      <span>{children}</span>
+      {children}
     </button>
   );
 }

@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
+import { FormattedMessage } from 'react-intl';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { userAtom } from './atoms';
 import { Button, Input } from './components/ui';
@@ -157,7 +158,7 @@ function SignUp() {
             }),
         )}
       >
-        Sign Up
+        <FormattedMessage defaultMessage="Sign Up" />
       </Button>
     </form>
   );
