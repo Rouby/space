@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RecoilRoot, RecoilState, RecoilValue, useRecoilValue } from 'recoil';
-import { localeAtom } from './atoms';
+import { jwtAtom, localeAtom } from './atoms';
 
 interface StateRootProps {
   children: React.ReactNode;
@@ -15,14 +15,14 @@ export function StateRoot({ children }: StateRootProps): React.ReactElement {
   );
 }
 
-const persistedAtoms = [localeAtom];
+const persistedAtoms = [jwtAtom, localeAtom];
 
 function Persistence() {
   persistedAtoms.forEach(usePersistence);
   return null;
 }
 
-function usePersistence<T>(atom: RecoilState<T>) {
+function usePersistence(atom: RecoilState<any>) {
   const firstRun = React.useRef(true);
   const value = useRecoilValue(atom);
   React.useEffect(() => {
@@ -40,7 +40,7 @@ function usePersistence<T>(atom: RecoilState<T>) {
 function initializeState({
   set,
 }: {
-  set: <T>(recoilVal: RecoilState<T>, newVal: T) => void;
+  set: (recoilVal: RecoilState<any>, newVal: any) => void;
 }) {
   console.groupCollapsed('Restoring state');
   persistedAtoms.forEach((atom) => {

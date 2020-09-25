@@ -30,6 +30,6 @@ export const config: PostGraphileOptions = {
   }),
 
   pgDefaultRole: 'space_anonymous',
-  jwtPgTypeIdentifier: 'space.jwt_token',
+  jwtPgTypeIdentifier: 'space.jwt',
   jwtSecret: 'supreme-kittens',
 };

@@ -1,7 +1,7 @@
 import { DocumentNode, print } from 'graphql';
 import * as React from 'react';
 import { useRecoilValue } from 'recoil';
-import { userAtom } from '../../state/atoms';
+import { jwtAtom } from '../../state/atoms';
 
 const GraphQLContext = React.createContext<{
   request<T, V>(document: DocumentNode | string, variables?: V): Promise<T>;
@@ -11,7 +11,7 @@ const GraphQLContext = React.createContext<{
   },
 });
 
-class GraphQLError extends Error {
+export class GraphQLError extends Error {
   constructor(
     message: string,
     public errors: { message?: string; errcode?: string; detail?: string }[],
@@ -29,7 +29,7 @@ class GraphQLError extends Error {
 }
 
 export function GraphQLProvider({ children }: { children: React.ReactNode }) {
-  const jwtToken = useRecoilValue(userAtom);
+  const jwt = useRecoilValue(jwtAtom);
   const graphQLClient = React.useMemo(() => {
     return {
       async request<T, V>(document: DocumentNode | string, variables?: V) {
@@ -41,7 +41,7 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
+              ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
             },
             body: JSON.stringify({ query: document, variables }),
           },
@@ -63,7 +63,7 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
         throw new GraphQLError('GraphQL error', errors);
       },
     };
-  }, [jwtToken]);
+  }, [jwt]);
 
   return (
     <GraphQLContext.Provider value={graphQLClient}>

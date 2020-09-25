@@ -1,4 +1,4 @@
-create type space.jwt_token as (
+create type space.jwt as (
   role       text,
   person_id  uuid
 );
@@ -59,8 +59,8 @@ grant execute on function space.register(text, text, text) to space_anonymous;
 create function space.authenticate(
   email      text,
   password   text
-) returns space.jwt_token as $$
-  select ('space_person', person_id)::space.jwt_token
+) returns space.jwt as $$
+  select ('space_person', person_id)::space.jwt
   from space_private.account
   where
     account.email = $1

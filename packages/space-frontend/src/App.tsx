@@ -1,16 +1,30 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import { FormattedDisplayName, FormattedMessage, useIntl } from 'react-intl';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  AuthenticateInput,
+  AuthenticatePayload,
+  RegisterPayload,
+} from './api/types';
 import { Button, Input, Select } from './components/ui';
 import { useGraphQLMutation, useLocale, useNotification } from './hooks';
-import { userAtom } from './state/atoms';
+import { jwtAtom, userAtom } from './state/atoms';
 
 export function App() {
   const user = useRecoilValue(userAtom);
 
   const [locale, setLocale] = useLocale();
+  const locales = ['de', 'en'].map((key) => ({
+    key,
+    render() {
+      return <FormattedDisplayName type="language" value={this.key} />;
+    },
+    toString() {
+      return this.key;
+    },
+  }));
 
   return (
     <div>
@@ -21,15 +35,11 @@ export function App() {
           <SignIn />
           <SignUp />
           <Select
-            native={false}
-            options={['de-DE', 'en-US']}
-            value={locale}
-            onChange={(evt) => evt.target.value && setLocale(evt.target.value)}
-          />
-          <Select
-            options={['de-DE', 'en-US']}
-            value={locale}
-            onChange={(evt) => evt.target.value && setLocale(evt.target.value)}
+            options={locales}
+            value={locales.find((l) => l.key === locale)}
+            onChange={(evt) =>
+              evt.target.value && setLocale(evt.target.value.key)
+            }
           />
         </>
       )}
@@ -38,10 +48,19 @@ export function App() {
 }
 
 function SignIn() {
-  const [authenticate] = useGraphQLMutation(gql`
+  const setJWT = useSetRecoilState(jwtAtom);
+
+  const notify = useNotification();
+
+  const { formatMessage } = useIntl();
+
+  const [authenticate] = useGraphQLMutation<
+    { authenticate?: Pick<AuthenticatePayload, 'jwt'> },
+    AuthenticateInput
+  >(gql`
     mutation SignIn($email: String!, $password: String!) {
       authenticate(input: { email: $email, password: $password }) {
-        jwtToken
+        jwt
       }
     }
   `);
@@ -51,15 +70,12 @@ function SignIn() {
     handleSubmit,
     errors,
     formState: { isSubmitting },
-  } = useForm();
-
-  const setUser = useSetRecoilState(userAtom);
-
-  const notify = useNotification();
+  } = useForm<{ email: string; password: string }>();
 
   return (
     <form autoComplete="off">
       <Input
+        placeholder={formatMessage({ defaultMessage: 'Email' })}
         type="text"
         name="email"
         ref={register({ required: true })}
@@ -67,6 +83,7 @@ function SignIn() {
         errors={errors}
       />
       <Input
+        placeholder={formatMessage({ defaultMessage: 'Password' })}
         type="password"
         name="password"
         ref={register({ required: true })}
@@ -78,16 +95,18 @@ function SignIn() {
         variant="primary"
         onClick={handleSubmit((data) =>
           authenticate(data)
-            .then(({ authenticate: { jwtToken } }) => {
-              if (jwtToken) {
-                setUser(jwtToken);
+            .then((data) => {
+              if (data?.authenticate?.jwt) {
+                setJWT(data?.authenticate?.jwt);
               } else {
-                throw new Error('Invalid credentials!');
+                throw new Error(
+                  formatMessage({ defaultMessage: 'Invalid credentials' }),
+                );
               }
             })
             .catch((err) => {
               notify.error({
-                text: 'Sign-in failed',
+                text: formatMessage({ defaultMessage: 'Sign In failed' }),
                 description: err.messageJSX ?? err.message,
               });
             }),
@@ -100,13 +119,25 @@ function SignIn() {
 }
 
 function SignUp() {
-  const [registerAccount] = useGraphQLMutation(gql`
+  const setJWT = useSetRecoilState(jwtAtom);
+
+  const notify = useNotification();
+
+  const { formatMessage } = useIntl();
+
+  const [registerAccount] = useGraphQLMutation<
+    {
+      register?: Pick<RegisterPayload, 'clientMutationId'>;
+      authenticate?: Pick<AuthenticatePayload, 'jwt'>;
+    },
+    AuthenticateInput
+  >(gql`
     mutation SignUp($email: String!, $password: String!) {
       register(input: { name: $email, email: $email, password: $password }) {
         clientMutationId
       }
       authenticate(input: { email: $email, password: $password }) {
-        jwtToken
+        jwt
       }
     }
   `);
@@ -117,16 +148,12 @@ function SignUp() {
     getValues,
     errors,
     formState: { isSubmitting },
-  } = useForm();
-
-  const setUser = useSetRecoilState(userAtom);
-
-  const notify = useNotification();
+  } = useForm<{ email: string; password: string }>();
 
   return (
     <form name="register" autoComplete="off">
       <Input
-        placeholder="Email"
+        placeholder={formatMessage({ defaultMessage: 'Email' })}
         type="text"
         name="email"
         ref={register({ required: true })}
@@ -134,7 +161,7 @@ function SignUp() {
         errors={errors}
       />
       <Input
-        placeholder="Password"
+        placeholder={formatMessage({ defaultMessage: 'Password' })}
         type="password"
         name="password"
         ref={register({ required: true })}
@@ -142,7 +169,7 @@ function SignUp() {
         errors={errors}
       />
       <Input
-        placeholder="Password (repeat)"
+        placeholder={formatMessage({ defaultMessage: 'Password (repeat)' })}
         type="password"
         name="password2"
         ref={register({
@@ -150,25 +177,15 @@ function SignUp() {
           validate: {
             matchesPreviousPassword: (value) => {
               const { password } = getValues();
-              return password === value || 'Passwords should match!';
+              return (
+                password === value ||
+                formatMessage({ defaultMessage: 'Passwords should match' })
+              );
             },
           },
         })}
         disabled={isSubmitting}
         errors={errors}
-      />
-      <Select
-        options={new Array(20).fill(undefined).map((_, i) => ({
-          render: () => 'val' + i,
-          toString: () => 'val' + i,
-        }))}
-      />
-      <Select
-        native
-        options={new Array(20).fill(undefined).map((_, i) => ({
-          render: () => 'val' + i,
-          toString: () => 'val' + i,
-        }))}
       />
       <Button
         type="submit"
@@ -176,12 +193,20 @@ function SignUp() {
         onClick={handleSubmit((data) => {
           console.log(data);
           return registerAccount(data)
-            .then(({ authenticate: { jwtToken } }) => {
-              setUser(jwtToken);
+            .then((data) => {
+              if (data?.authenticate?.jwt) {
+                setJWT(data?.authenticate?.jwt);
+              } else {
+                throw new Error(
+                  formatMessage({
+                    defaultMessage: 'Unexpected authentication error',
+                  }),
+                );
+              }
             })
             .catch((err) => {
               notify.error({
-                text: 'Sign-up failed',
+                text: formatMessage({ defaultMessage: 'Sign Up failed' }),
                 description: err.messageJSX ?? err.message,
               });
             });

@@ -1,0 +1,17 @@
+schema: http://localhost:5000/graphql
+documents: 'src/**/*.{ts,tsx}'
+extensions:
+  codegen:
+    generates:
+      ./src/api/types.ts:
+        hooks:
+          afterOneFileWrite:
+            - yarn dlx prettier --write
+        plugins:
+          - typescript
+        config:
+          scalars:
+            UUID: string
+            Jwt: string
+            Cursor: string
+            Datetime: Date

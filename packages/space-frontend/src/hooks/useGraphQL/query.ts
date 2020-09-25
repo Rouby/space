@@ -1,27 +1,29 @@
 import { DefinitionNode, DocumentNode, OperationDefinitionNode } from 'graphql';
 import { QueryConfig, useQuery } from 'react-query';
-import { useGraphQLClient } from './context';
+import { GraphQLError, useGraphQLClient } from './context';
 
-interface GraphQLQueryOptions<TData, TVariables> extends QueryConfig<TData> {
+interface GraphQLQueryOptions<TData, TError, TVariables>
+  extends QueryConfig<TData, TError> {
   variables?: TVariables;
 }
 
 export function useGraphQLQuery<
   TData = any,
-  TVariables = Record<string, unknown>
+  TVariables = Record<string, unknown>,
+  TError = GraphQLError
 >(
   document: DocumentNode,
   {
     variables,
     ...options
-  }: GraphQLQueryOptions<TData, TVariables> | undefined = {},
+  }: GraphQLQueryOptions<TData, TError, TVariables> | undefined = {},
 ) {
   const documentKey = document.definitions.find(isOperationDefinition)?.name
     ?.value;
 
   const client = useGraphQLClient();
 
-  return useQuery<TData>(
+  return useQuery<TData, TError>(
     [documentKey, { variables }],
     async () => client.request(document, variables),
     options,
