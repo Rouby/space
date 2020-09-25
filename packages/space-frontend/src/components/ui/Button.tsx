@@ -159,7 +159,7 @@ export function Button({
   const [clickPromise, setClickPromise] = React.useState<Promise<any>>();
   const [isLoading, setLoading] = React.useState(false);
   const [startTransition, isPending] = React.unstable_useTransition({
-    timeoutMs: 2000,
+    timeoutMs: 3000,
   });
   loading = loading ?? clickPromise;
   const currentlyLoading =

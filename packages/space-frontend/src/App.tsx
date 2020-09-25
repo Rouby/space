@@ -3,13 +3,14 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { userAtom } from './atoms';
-import { Button, Input } from './components/ui';
-import { useGraphQLMutation } from './hooks';
-import { useNotification } from './hooks/useNotification';
+import { Button, Input, Select } from './components/ui';
+import { useGraphQLMutation, useLocale, useNotification } from './hooks';
+import { userAtom } from './state/atoms';
 
 export function App() {
   const user = useRecoilValue(userAtom);
+
+  const [locale, setLocale] = useLocale();
 
   return (
     <div>
@@ -19,6 +20,17 @@ export function App() {
         <>
           <SignIn />
           <SignUp />
+          <Select
+            native={false}
+            options={['de-DE', 'en-US']}
+            value={locale}
+            onChange={(evt) => evt.target.value && setLocale(evt.target.value)}
+          />
+          <Select
+            options={['de-DE', 'en-US']}
+            value={locale}
+            onChange={(evt) => evt.target.value && setLocale(evt.target.value)}
+          />
         </>
       )}
     </div>
@@ -37,6 +49,7 @@ function SignIn() {
   const {
     register,
     handleSubmit,
+    errors,
     formState: { isSubmitting },
   } = useForm();
 
@@ -51,12 +64,14 @@ function SignIn() {
         name="email"
         ref={register({ required: true })}
         disabled={isSubmitting}
+        errors={errors}
       />
       <Input
         type="password"
         name="password"
         ref={register({ required: true })}
         disabled={isSubmitting}
+        errors={errors}
       />
       <Button
         type="submit"
@@ -78,7 +93,7 @@ function SignIn() {
             }),
         )}
       >
-        Sign In
+        <FormattedMessage id="" defaultMessage="Sign In" />
       </Button>
     </form>
   );
@@ -142,11 +157,25 @@ function SignUp() {
         disabled={isSubmitting}
         errors={errors}
       />
+      <Select
+        options={new Array(20).fill(undefined).map((_, i) => ({
+          render: () => 'val' + i,
+          toString: () => 'val' + i,
+        }))}
+      />
+      <Select
+        native
+        options={new Array(20).fill(undefined).map((_, i) => ({
+          render: () => 'val' + i,
+          toString: () => 'val' + i,
+        }))}
+      />
       <Button
         type="submit"
         variant="primary"
-        onClick={handleSubmit((data) =>
-          registerAccount(data)
+        onClick={handleSubmit((data) => {
+          console.log(data);
+          return registerAccount(data)
             .then(({ authenticate: { jwtToken } }) => {
               setUser(jwtToken);
             })
@@ -155,8 +184,8 @@ function SignUp() {
                 text: 'Sign-up failed',
                 description: err.messageJSX ?? err.message,
               });
-            }),
-        )}
+            });
+        })}
       >
         <FormattedMessage id="" defaultMessage="Sign Up" />
       </Button>

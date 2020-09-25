@@ -1,9 +1,9 @@
 /// <reference types="react/experimental" />
+/// <reference types="react-dom/experimental" />
 
 import * as React from 'react';
-import { render } from 'react-dom';
+import { unstable_createRoot } from 'react-dom';
 import { QueryCache, ReactQueryCacheProvider, setConsole } from 'react-query';
-import { RecoilRoot } from 'recoil';
 import { forceRenderStyles } from 'typestyle';
 import { App } from './App';
 import {
@@ -12,6 +12,16 @@ import {
   NotificationProvider,
   StyleProvider,
 } from './hooks';
+import { StateRoot } from './state/StateRoot';
+
+const ReactQueryDevtoolsPanel =
+  process.env.NODE_ENV === 'production'
+    ? null
+    : React.lazy(() =>
+        import('react-query-devtools').then((d) => ({
+          default: d.ReactQueryDevtools,
+        })),
+      );
 
 setConsole({ log() {}, warn() {}, error() {} });
 
@@ -27,8 +37,14 @@ const queryCache = new QueryCache({
   },
 });
 
-render(
-  <RecoilRoot>
+const root = document.getElementById('root');
+
+if (!root) {
+  throw new Error('No root element!');
+}
+
+unstable_createRoot(root).render(
+  <StateRoot>
     <ReactQueryCacheProvider queryCache={queryCache}>
       <React.Suspense fallback="Loading app...">
         <IntlProvider>
@@ -41,9 +57,11 @@ render(
           </GraphQLProvider>
         </IntlProvider>
       </React.Suspense>
+      {ReactQueryDevtoolsPanel && (
+        <ReactQueryDevtoolsPanel initialIsOpen={false} />
+      )}
     </ReactQueryCacheProvider>
-  </RecoilRoot>,
-  document.getElementById('root'),
+  </StateRoot>,
 );
 
 forceRenderStyles();

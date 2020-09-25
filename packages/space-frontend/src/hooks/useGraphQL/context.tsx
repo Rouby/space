@@ -1,7 +1,7 @@
 import { DocumentNode, print } from 'graphql';
 import * as React from 'react';
 import { useRecoilValue } from 'recoil';
-import { userAtom } from '../../atoms';
+import { userAtom } from '../../state/atoms';
 
 const GraphQLContext = React.createContext<{
   request<T, V>(document: DocumentNode | string, variables?: V): Promise<T>;

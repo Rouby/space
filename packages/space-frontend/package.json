@@ -31,6 +31,7 @@
     "html-webpack-plugin": "4.4.1",
     "querystring-es3": "0.2.1",
     "react-intl-webpack-plugin": "0.3.0",
+    "react-query-devtools": "2.5.0",
     "react-refresh": "0.8.3",
     "ts-loader": "8.0.4",
     "ts-node": "9.0.0",
@@ -44,6 +45,7 @@
     "csx": "10.0.1",
     "graphql": "15.3.0",
     "graphql-tag": "2.11.0",
+    "history": "5.0.0",
     "react": "0.0.0-experimental-94c0244ba",
     "react-dom": "0.0.0-experimental-94c0244ba",
     "react-error-boundary": "3.0.2",
@@ -51,6 +53,7 @@
     "react-icons": "3.11.0",
     "react-intl": "5.8.2",
     "react-query": "2.23.0",
+    "react-router-dom": "6.0.0-beta.0",
     "react-spring": "8.0.27",
     "recoil": "0.0.13",
     "typestyle": "2.1.0"

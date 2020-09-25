@@ -1268,7 +1268,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.11.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:7.11.2, @babel/runtime@npm:^7.10.5, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4":
   version: 7.11.2
   resolution: "@babel/runtime@npm:7.11.2"
   dependencies:
@@ -1478,6 +1478,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: 5.2.0
     graphql: 15.3.0
     graphql-tag: 2.11.0
+    history: 5.0.0
     html-webpack-plugin: 4.4.1
     querystring-es3: 0.2.1
     react: 0.0.0-experimental-94c0244ba
@@ -1488,7 +1489,9 @@ __metadata:
     react-intl: 5.8.2
     react-intl-webpack-plugin: 0.3.0
     react-query: 2.23.0
+    react-query-devtools: 2.5.0
     react-refresh: 0.8.3
+    react-router-dom: 6.0.0-beta.0
     react-spring: 8.0.27
     recoil: 0.0.13
     ts-loader: 8.0.4
@@ -4436,6 +4439,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"history@npm:5.0.0":
+  version: 5.0.0
+  resolution: "history@npm:5.0.0"
+  dependencies:
+    "@babel/runtime": ^7.7.6
+  checksum: 38a8af6f31a08ddfd6b404fa6df2fcca8bd91300aa0858bdd2bf314aca0516bd37f9835c1f628e4a9113c1be4145d8e7c58f225564d8e9708a0f49c217acb47a
+  languageName: node
+  linkType: hard
+
 "hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
@@ -5481,6 +5493,16 @@ fsevents@^1.2.7:
   dependencies:
     object-visit: ^1.0.0
   checksum: 9e85e6d802183927229d9ad04d70a0e0c7225451994605674d3ed4e4a21f817b4d9aba42a775e98078ffe47cf67df44a50eb07f965f14afead5015c8692503bd
+  languageName: node
+  linkType: hard
+
+"match-sorter@npm:^4.1.0":
+  version: 4.2.1
+  resolution: "match-sorter@npm:4.2.1"
+  dependencies:
+    "@babel/runtime": ^7.10.5
+    remove-accents: 0.4.2
+  checksum: 7b28e050cb4ee14e96e7233fb37f2d4587e9addbda10c10832d50e10cca0b99b49fd77669d094b8c42779442b8db7c2b52197ee4733422df3a3bf170d311c8c2
   languageName: node
   linkType: hard
 
@@ -6570,7 +6592,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.8":
+"prop-types@npm:^15.5.8, prop-types@npm:^15.7.2":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
   dependencies:
@@ -6783,6 +6805,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-query-devtools@npm:2.5.0":
+  version: 2.5.0
+  resolution: "react-query-devtools@npm:2.5.0"
+  dependencies:
+    match-sorter: ^4.1.0
+  peerDependencies:
+    react: ^16.6.3
+    react-query: ^2.0.0
+  checksum: ea09326290cc6f698ac62d2c867a7905bb2ce1f24c62b1da0208c91054b90defc75bbb3c2033e7128bfc574fc2ae2f50b54c1608ee06f215c6f2a33a95b17ff7
+  languageName: node
+  linkType: hard
+
 "react-query@npm:2.23.0":
   version: 2.23.0
   resolution: "react-query@npm:2.23.0"
@@ -6803,6 +6837,32 @@ fsevents@^1.2.7:
   version: 0.8.3
   resolution: "react-refresh@npm:0.8.3"
   checksum: 38f06df8e0a20701b96e5d680838a3528d66cfb53db79843d30cb9517df3262ec596607147439975267bf0634bee77101db37298ea79b5742cc28664632f3c76
+  languageName: node
+  linkType: hard
+
+"react-router-dom@npm:6.0.0-beta.0":
+  version: 6.0.0-beta.0
+  resolution: "react-router-dom@npm:6.0.0-beta.0"
+  dependencies:
+    prop-types: ^15.7.2
+    react-router: 6.0.0-beta.0
+  peerDependencies:
+    history: ">=5"
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 1d0585c8db13b6bf83789cee29e70ab57caad4a0baa165fafe621d6648417fd1f417e5e176fa1bc0bf3b27f14599863dcf672b3ff4d9f2c44ac8c37281d851bb
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.0.0-beta.0":
+  version: 6.0.0-beta.0
+  resolution: "react-router@npm:6.0.0-beta.0"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    history: ">=5"
+    react: ">=16.8"
+  checksum: a6af377693adf7830e209893376f154bfd07c54d452ba760c46951dc04c92f14acaf4cee3e086b0e48b1c0905fea828a2df5fd307cdf219b460ac10e8a36634a
   languageName: node
   linkType: hard
 
@@ -6964,6 +7024,13 @@ fsevents@^1.2.7:
   version: 0.2.7
   resolution: "relateurl@npm:0.2.7"
   checksum: 856db0385d82022042584c14702ce58cb4d74c6b6a6d98ba85357638e64c081e6cb85adbbadebc82eec87b6e70ba43ae02d8655e565dbd4baffdc405a1b0b614
+  languageName: node
+  linkType: hard
+
+"remove-accents@npm:0.4.2":
+  version: 0.4.2
+  resolution: "remove-accents@npm:0.4.2"
+  checksum: 54fd27e4b0df03e7827c49721113a99b51292dcd23233d65ef89aa2b73e4d96f071eaf11ff58cfec22cab0ad711ba60914749c57e4f37f799c2bf22b78be7992
   languageName: node
   linkType: hard
 

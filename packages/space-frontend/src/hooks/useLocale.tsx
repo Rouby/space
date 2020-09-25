@@ -2,30 +2,33 @@ import * as React from 'react';
 import { IntlProvider as ReactIntlProvider } from 'react-intl';
 import { useQuery } from 'react-query';
 
-const LocaleContext = React.createContext<{
-  locale: string;
-  setLocale: React.Dispatch<React.SetStateAction<string>>;
-}>({
-  locale: navigator.language,
-  setLocale: () => {},
-});
+const LocaleContext = React.createContext<
+  [string, React.Dispatch<React.SetStateAction<string>>]
+>([navigator.language, () => {}]);
+
+export function useLocale() {
+  return React.useContext(LocaleContext);
+}
 
 export function IntlProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = React.useState(navigator.language);
-  const context = React.useMemo(() => ({ locale, setLocale }), [locale]);
-  const { data: messages } = useQuery(`messages.${locale}`, async () =>
-    process.env.NODE_ENV === 'production'
-      ? fetch(`static/locales/${locale}.json`)
-      : {},
+  const context = React.useState(navigator.language);
+  // const context = useRecoilState(localeAtom);
+  const { data: messages } = useQuery(
+    `messages.${context[0]}`,
+    async () =>
+      process.env.NODE_ENV === 'production'
+        ? fetch(`static/locales/${context[0]}.json`)
+        : new Promise<{}>((resolve) => setTimeout(resolve, 500)),
+    { staleTime: Infinity },
   );
 
   return (
     <LocaleContext.Provider value={context}>
       <ReactIntlProvider
-        locale={locale}
+        locale={context[0]}
         messages={messages}
-        onError={(err) => {
-          console.warn(err);
+        onError={(_err) => {
+          // console.warn(err);
         }}
       >
         {children}
