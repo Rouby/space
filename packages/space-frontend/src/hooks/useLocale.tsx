@@ -18,7 +18,7 @@ export function IntlProvider({ children }: { children: React.ReactNode }) {
     async () =>
       process.env.NODE_ENV === 'production'
         ? fetch(`static/locales/${context[0]}.json`)
-        : new Promise<{}>((resolve) => setTimeout(resolve, 500)),
+        : new Promise<{}>((resolve) => setTimeout(resolve, 0)),
     { staleTime: Infinity },
   );
 

@@ -4,6 +4,7 @@
 import * as React from 'react';
 import { unstable_createRoot } from 'react-dom';
 import { QueryCache, ReactQueryCacheProvider, setConsole } from 'react-query';
+import { BrowserRouter } from 'react-router-dom';
 import { forceRenderStyles } from 'typestyle';
 import { App } from './App';
 import {
@@ -51,7 +52,9 @@ unstable_createRoot(root).render(
           <GraphQLProvider>
             <StyleProvider>
               <NotificationProvider>
-                <App />
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
               </NotificationProvider>
             </StyleProvider>
           </GraphQLProvider>
