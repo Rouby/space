@@ -300,6 +300,7 @@ function Select_<TValue extends string | Renderable>(
         >
           {options?.map((opt) => (
             <div
+              key={valueToString(opt)}
               className={classes(
                 classNames.value,
                 valueToString(opt) ===
