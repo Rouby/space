@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
-import { Query } from '../api/types';
+import { CurrentUserQuery, CurrentUserQueryVariables } from '../api/types';
 import { useGraphQLQuery } from '../hooks';
 import { jwtAtom } from './atoms';
 
@@ -9,7 +9,12 @@ export function useUser() {
   const jwt = useRecoilValue(jwtAtom);
   const resetJwt = useResetRecoilState(jwtAtom);
 
-  const { data } = useGraphQLQuery<Pick<Query, 'currentPerson'>>(
+  const {
+    data: {
+      data: { currentPerson },
+      errors,
+    },
+  } = useGraphQLQuery<CurrentUserQuery, CurrentUserQueryVariables>(
     gql`
       query CurrentUser {
         currentPerson {
@@ -22,10 +27,10 @@ export function useUser() {
   );
 
   React.useEffect(() => {
-    if (!data?.data?.currentPerson && !data?.errors) {
+    if (!currentPerson && !errors) {
       resetJwt();
     }
-  }, [data?.data?.currentPerson, data?.errors]);
+  }, [currentPerson, errors]);
 
-  return data?.data?.currentPerson;
+  return currentPerson;
 }

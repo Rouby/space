@@ -3,7 +3,6 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HTMLWebpackPlugin from 'html-webpack-plugin';
 import { resolve } from 'path';
-import ReactIntlWebpackPlugin from 'react-intl-webpack-plugin';
 import webpack from 'webpack';
 
 export function createConfig(isDevelopment: boolean): webpack.Configuration {
@@ -40,9 +39,7 @@ export function createConfig(isDevelopment: boolean): webpack.Configuration {
               options: {
                 babelrc: false,
                 configFile: false,
-                metadataSubscribers: [
-                  ReactIntlWebpackPlugin.metadataContextFunctionName,
-                ],
+                metadataSubscribers: ['ReactIntlExtractPlugin'],
                 presets: [
                   [
                     require.resolve('@babel/preset-env'),
@@ -126,7 +123,47 @@ export function createConfig(isDevelopment: boolean): webpack.Configuration {
         },
       }),
       isDevelopment && new ReactRefreshWebpackPlugin(),
-      new ReactIntlWebpackPlugin(),
+      new ReactIntlExtractPlugin(),
     ].filter(Boolean) as webpack.WebpackPluginInstance[],
   };
+}
+
+class ReactIntlExtractPlugin {
+  latestJson = '';
+  messages: { id: string; description?: string; defaultMessage: string }[] = [];
+
+  apply(compiler: webpack.Compiler) {
+    compiler.hooks.compilation.tap('ReactIntlExtractPlugin', (compilation) => {
+      compilation.hooks.normalModuleLoader.tap(
+        'ReactIntlExtractPlugin',
+        (context) => {
+          context.ReactIntlExtractPlugin = (metadata: {
+            'react-intl'?: { messages: any[] };
+          }) => {
+            this.messages.push(...(metadata['react-intl']?.messages ?? []));
+          };
+        },
+      );
+    });
+
+    compiler.hooks.emit.tap('ReactIntlExtractPlugin', (compilation) => {
+      const messagesJson =
+        JSON.stringify(
+          this.messages
+            .filter((m, i, a) => a.findIndex((m2) => m.id === m2.id) === i)
+            .sort((a, b) => (a.id < b.id ? -1 : 1)),
+          null,
+          2,
+        ) + '\n';
+
+      compilation.assets['i18n/messages.json'] = {
+        source() {
+          return messagesJson;
+        },
+        size() {
+          return messagesJson.length;
+        },
+      } as webpack.sources.Source;
+    });
+  }
 }

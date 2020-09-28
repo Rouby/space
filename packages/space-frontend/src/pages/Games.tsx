@@ -15,7 +15,14 @@ export function GamesPage() {
         }
       />
       <Route path="new" element={<GameNew />} />
-      <Route path=":id" element={<GameDetails />} />
+      <Route
+        path=":id"
+        element={
+          <React.Suspense fallback={<GameDetails.Skeleton />}>
+            <GameDetails />
+          </React.Suspense>
+        }
+      />
     </Routes>
   );
 }

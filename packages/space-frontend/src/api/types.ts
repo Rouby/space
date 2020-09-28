@@ -1406,6 +1406,7 @@ export type SignInMutation = { __typename?: "Mutation" } & {
 };
 
 export type SignUpMutationVariables = Exact<{
+  name: Scalars["String"];
   email: Scalars["String"];
   password: Scalars["String"];
 }>;
@@ -1419,6 +1420,54 @@ export type SignUpMutation = { __typename?: "Mutation" } & {
   >;
   authenticate?: Maybe<
     { __typename?: "AuthenticatePayload" } & Pick<AuthenticatePayload, "jwt">
+  >;
+};
+
+export type GameDetailsQueryVariables = Exact<{
+  id: Scalars["UUID"];
+}>;
+
+export type GameDetailsQuery = { __typename?: "Query" } & {
+  game?: Maybe<
+    { __typename?: "Game" } & Pick<
+      Game,
+      "id" | "name" | "type" | "size" | "started" | "playerSlots"
+    > & {
+        players: { __typename?: "PlayersConnection" } & Pick<
+          PlayersConnection,
+          "totalCount"
+        >;
+        author?: Maybe<{ __typename?: "Person" } & Pick<Person, "id" | "name">>;
+      }
+  >;
+};
+
+export type GamePlayerListQueryVariables = Exact<{
+  id: Scalars["UUID"];
+}>;
+
+export type GamePlayerListQuery = { __typename?: "Query" } & {
+  players?: Maybe<
+    { __typename?: "PlayersConnection" } & {
+      nodes: Array<
+        { __typename?: "Player" } & {
+          person?: Maybe<
+            { __typename?: "Person" } & Pick<Person, "id" | "name">
+          >;
+          race?: Maybe<{ __typename?: "Race" } & Pick<Race, "id" | "name">>;
+        }
+      >;
+    }
+  >;
+};
+
+export type RacesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type RacesQuery = { __typename?: "Query" } & {
+  races?: Maybe<
+    { __typename?: "RacesConnection" } & {
+      nodes: Array<{ __typename?: "Race" } & Pick<Race, "id" | "name">>;
+    }
   >;
 };
 

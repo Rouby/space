@@ -37,6 +37,8 @@ export function Button({
       '--button-disabled-border-color': colors.text.toString(),
       '--button-disabled-background-color': colors.textContrast.toString(),
       '--button-disabled-text-color': colors.text.toString(),
+      '--button-press-color-from': colors.primary.lighten(0.1),
+      '--button-press-color-to': colors.primary.lighten(0.1).fadeOut(1),
 
       margin: 0,
       padding: units(0.25, 1),
@@ -114,21 +116,23 @@ export function Button({
       borderStyle: 'solid',
       '--button-border-color': 'transparent',
       '--button-highlight-border-color': 'transparent',
+      '--button-disabled-border-color': 'transparent',
+      '--button-press-color-from': 'transparent',
+      '--button-press-color-to': 'transparent',
     },
     link: {
       borderStyle: 'solid',
       '--button-border-color': 'transparent',
       '--button-highlight-border-color': 'transparent',
+      '--button-disabled-border-color': 'transparent',
       '--button-text-color': colors.primary.toString(),
+      '--button-press-color-from': 'transparent',
+      '--button-press-color-to': 'transparent',
     },
     animated: {
       animationName: useKeyframes({
-        from: {
-          boxShadow: `0 0 2px 0px ${colors.primary.lighten(0.1)}`,
-        },
-        to: {
-          boxShadow: `0 0 2px 4px ${colors.primary.lighten(0.1).fadeOut(1)}`,
-        },
+        from: { boxShadow: `0 0 2px 0px var(--button-press-color-from)` },
+        to: { boxShadow: `0 0 2px 4px var(--button-press-color-to)` },
       }),
       animationDuration: '300ms',
     },
@@ -239,7 +243,9 @@ export function Button({
         ({ item: Icon, key, props }) =>
           Icon && (
             <animated.div key={key} className={classNames.icon} style={props}>
-              <Icon className={classes(loading && classNames.spinning)} />
+              <Icon
+                className={classes(currentlyLoading && classNames.spinning)}
+              />
             </animated.div>
           ),
       )}

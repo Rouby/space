@@ -69,7 +69,7 @@ export function GameList({}: GameListProps): React.ReactElement {
           {edge.node.name}
           <FormattedMessage
             id=""
-            defaultMessage="{playerCount} of {playerTotal} Players"
+            defaultMessage="{playerCount} of {playerTotal} players"
             values={{
               playerCount: edge.node.players.totalCount,
               playerTotal: edge.node.playerSlots,

@@ -72,8 +72,11 @@ export function GameNew({}: GameNewProps) {
                   (p) => p.queryKey[0] === 'GameList',
                 );
                 queryCache.setQueryData(
-                  ['GameDetails', data?.data?.createGame?.game?.id],
-                  data?.data?.createGame?.game,
+                  [
+                    'GameDetails',
+                    { variables: { id: data?.data?.createGame?.game?.id } },
+                  ],
+                  { data: { game: data?.data?.createGame?.game } },
                 );
                 navigate(`/games/${data?.data?.createGame?.game?.id}`);
               } else {

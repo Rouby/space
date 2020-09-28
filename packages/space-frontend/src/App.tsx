@@ -2,12 +2,13 @@ import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedDisplayName, FormattedMessage, useIntl } from 'react-intl';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import {
-  AuthenticateInput,
-  AuthenticatePayload,
-  RegisterPayload,
+  SignInMutation,
+  SignInMutationVariables,
+  SignUpMutation,
+  SignUpMutationVariables,
 } from './api/types';
 import { Button, Input, Select } from './components/ui';
 import { useGraphQLMutation, useLocale, useNotification } from './hooks';
@@ -29,11 +30,15 @@ export function App() {
     },
   }));
 
+  const navigate = useNavigate();
+
   return (
     <div>
       {user ? (
         <>
-          <Link to="games">Games</Link>
+          <Button variant="link" onClick={() => navigate('games')}>
+            Games
+          </Button>
           <Routes>
             <Route path="games/*" element={<GamesPage />} />
           </Routes>
@@ -42,15 +47,13 @@ export function App() {
         <>
           <SignIn />
           <SignUp />
-          <Select
-            options={locales}
-            value={locales.find((l) => l.key === locale)}
-            onChange={(evt) =>
-              evt.target.value && setLocale(evt.target.value.key)
-            }
-          />
         </>
       )}
+      <Select
+        options={locales}
+        value={locales.find((l) => l.key === locale)}
+        onChange={(evt) => evt.target.value && setLocale(evt.target.value.key)}
+      />
     </div>
   );
 }
@@ -63,8 +66,8 @@ function SignIn() {
   const { formatMessage } = useIntl();
 
   const [authenticate] = useGraphQLMutation<
-    { authenticate?: Pick<AuthenticatePayload, 'jwt'> },
-    AuthenticateInput
+    SignInMutation,
+    SignInMutationVariables
   >(gql`
     mutation SignIn($email: String!, $password: String!) {
       authenticate(input: { email: $email, password: $password }) {
@@ -134,14 +137,11 @@ function SignUp() {
   const { formatMessage } = useIntl();
 
   const [registerAccount] = useGraphQLMutation<
-    {
-      register?: Pick<RegisterPayload, 'clientMutationId'>;
-      authenticate?: Pick<AuthenticatePayload, 'jwt'>;
-    },
-    AuthenticateInput
+    SignUpMutation,
+    SignUpMutationVariables
   >(gql`
-    mutation SignUp($email: String!, $password: String!) {
-      register(input: { name: $email, email: $email, password: $password }) {
+    mutation SignUp($name: String!, $email: String!, $password: String!) {
+      register(input: { name: $name, email: $email, password: $password }) {
         clientMutationId
       }
       authenticate(input: { email: $email, password: $password }) {
@@ -156,10 +156,18 @@ function SignUp() {
     getValues,
     errors,
     formState: { isSubmitting },
-  } = useForm<{ email: string; password: string }>();
+  } = useForm<{ name: string; email: string; password: string }>();
 
   return (
     <form name="sign-up" autoComplete="off">
+      <Input
+        placeholder={formatMessage({ defaultMessage: 'Name' })}
+        type="text"
+        name="name"
+        ref={register({ required: true })}
+        disabled={isSubmitting}
+        errors={errors}
+      />
       <Input
         placeholder={formatMessage({ defaultMessage: 'Email' })}
         type="text"

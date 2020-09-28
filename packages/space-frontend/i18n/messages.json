@@ -1,0 +1,74 @@
+[
+  {
+    "id": "0j7WpE",
+    "defaultMessage": "Create a game"
+  },
+  {
+    "id": "1rlBUx",
+    "defaultMessage": "Unexpected error"
+  },
+  {
+    "id": "39AHJm",
+    "defaultMessage": "Sign Up"
+  },
+  {
+    "id": "5sg7KC",
+    "defaultMessage": "Password"
+  },
+  {
+    "id": "B1sHu1",
+    "defaultMessage": "Showing {gameCount, plural, =0 {no games} one {# game} other {# games} } {moreGamesThanShown, select, yes { out of {gameTotal} total games} no {} }"
+  },
+  {
+    "id": "BJDmEI",
+    "defaultMessage": "Game name"
+  },
+  {
+    "id": "GpN2bn",
+    "defaultMessage": "Sign In failed"
+  },
+  {
+    "id": "JGj0xp",
+    "defaultMessage": "{playerCount} of {playerTotal} players"
+  },
+  {
+    "id": "Lv0zJu",
+    "defaultMessage": "Details"
+  },
+  {
+    "id": "M77Nuo",
+    "defaultMessage": "Invalid credentials"
+  },
+  {
+    "id": "SPqrNk",
+    "defaultMessage": "Passwords should match"
+  },
+  {
+    "id": "U/AsPu",
+    "defaultMessage": "Sign Up failed"
+  },
+  {
+    "id": "Ub+AGc",
+    "defaultMessage": "Sign In"
+  },
+  {
+    "id": "cBFGlx",
+    "defaultMessage": "Password (repeat)"
+  },
+  {
+    "id": "r9ZMwX",
+    "defaultMessage": "Could not create game"
+  },
+  {
+    "id": "sy+pv5",
+    "defaultMessage": "Email"
+  },
+  {
+    "id": "syUSAd",
+    "defaultMessage": "Create game"
+  },
+  {
+    "id": "tDpoE5",
+    "defaultMessage": "Unexpected authentication error"
+  }
+]

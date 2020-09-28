@@ -3,7 +3,6 @@
   "scripts": {
     "start": "ts-node scripts/start.ts",
     "build": "ts-node scripts/build.ts",
-    "graphql-let": "graphql-let",
     "codegen": "graphql-codegen"
   },
   "devDependencies": {

@@ -54,6 +54,12 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
           },
         );
 
+        if (process.env.NODE_ENV === 'development') {
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.random() * 1000 + 1000),
+          );
+        }
+
         if (!response.ok) {
           if (response.status === 401) {
             resetJwt();

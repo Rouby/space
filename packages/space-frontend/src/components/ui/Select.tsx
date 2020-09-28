@@ -138,6 +138,7 @@ function Select_<TValue extends string | Renderable>(
       background: colors.textContrast.toString(),
       maxHeight: '300px',
       outline: 0,
+      zIndex: 1,
       ...elevation(),
     },
     option: {

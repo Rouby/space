@@ -1,9 +1,10 @@
 import { DocumentNode } from 'graphql';
-import { QueryConfig, useQuery } from 'react-query';
+import { QueryConfig, QueryResult, useQuery } from 'react-query';
 import { GraphQLError, useGraphQLClient } from './context';
 import { isOperationDefinition } from './util';
 
-interface GraphQLQueryOptions<TData, TVariables> extends QueryConfig<TData> {
+interface GraphQLQueryOptions<TData, TVariables>
+  extends Omit<QueryConfig<TData>, 'suspense'> {
   variables?: TVariables;
 }
 
@@ -35,5 +36,7 @@ export function useGraphQLQuery<
       : [documentKey],
     async () => client.request(document, variables),
     options,
-  );
+  ) as QueryResult<{ data: TData; errors: GraphQLError[] }, any> & {
+    data: { data: TData; errors: GraphQLError[] };
+  };
 }
