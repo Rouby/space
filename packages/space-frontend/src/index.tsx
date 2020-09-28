@@ -30,6 +30,7 @@ const queryCache = new QueryCache({
   defaultConfig: {
     queries: {
       suspense: true,
+      retry: 0,
     },
     mutations: {
       throwOnError: true,

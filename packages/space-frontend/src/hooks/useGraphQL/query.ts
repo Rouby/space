@@ -1,37 +1,39 @@
-import { DefinitionNode, DocumentNode, OperationDefinitionNode } from 'graphql';
+import { DocumentNode } from 'graphql';
 import { QueryConfig, useQuery } from 'react-query';
 import { GraphQLError, useGraphQLClient } from './context';
+import { isOperationDefinition } from './util';
 
-interface GraphQLQueryOptions<TData, TError, TVariables>
-  extends QueryConfig<TData, TError> {
+interface GraphQLQueryOptions<TData, TVariables> extends QueryConfig<TData> {
   variables?: TVariables;
 }
 
 export function useGraphQLQuery<
   TData = any,
-  TVariables = Record<string, unknown>,
-  TError = GraphQLError
+  TVariables = Record<string, unknown>
 >(
   document: DocumentNode,
   {
     variables,
+    queryKey,
     ...options
-  }: GraphQLQueryOptions<TData, TError, TVariables> | undefined = {},
+  }:
+    | GraphQLQueryOptions<{ data: TData; errors: GraphQLError[] }, TVariables>
+    | undefined = {},
 ) {
   const documentKey = document.definitions.find(isOperationDefinition)?.name
     ?.value;
 
   const client = useGraphQLClient();
 
-  return useQuery<TData, TError>(
-    [documentKey, { variables }],
+  return useQuery<{ data: TData; errors: GraphQLError[] }>(
+    queryKey !== undefined
+      ? variables
+        ? [documentKey, queryKey, { variables }]
+        : [documentKey, queryKey]
+      : variables
+      ? [documentKey, { variables }]
+      : [documentKey],
     async () => client.request(document, variables),
     options,
   );
-}
-
-function isOperationDefinition(
-  x: DefinitionNode,
-): x is OperationDefinitionNode {
-  return x.kind === 'OperationDefinition';
 }

@@ -3,6 +3,7 @@
   "scripts": {
     "start": "ts-node scripts/start.ts",
     "build": "ts-node scripts/build.ts",
+    "graphql-let": "graphql-let",
     "codegen": "graphql-codegen"
   },
   "devDependencies": {
@@ -16,6 +17,7 @@
     "@formatjs/ts-transformer": "2.10.1",
     "@graphql-codegen/cli": "1.17.8",
     "@graphql-codegen/typescript": "1.17.9",
+    "@graphql-codegen/typescript-operations": "1.17.8",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.2",
     "@types/babel__code-frame": "7.0.1",
     "@types/babel__core": "7.1.9",
@@ -56,7 +58,7 @@
     "react-icons": "3.11.0",
     "react-intl": "5.8.2",
     "react-query": "2.23.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "0.0.0-experimental-ffd8c7d0",
     "react-spring": "8.0.27",
     "recoil": "0.0.13",
     "typestyle": "2.1.0"

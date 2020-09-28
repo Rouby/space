@@ -2,7 +2,8 @@ import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedDisplayName, FormattedMessage, useIntl } from 'react-intl';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { Link, Route, Routes } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import {
   AuthenticateInput,
   AuthenticatePayload,
@@ -10,10 +11,12 @@ import {
 } from './api/types';
 import { Button, Input, Select } from './components/ui';
 import { useGraphQLMutation, useLocale, useNotification } from './hooks';
-import { jwtAtom, userAtom } from './state/atoms';
+import { GamesPage } from './pages/Games';
+import { useUser } from './state';
+import { jwtAtom } from './state/atoms';
 
 export function App() {
-  const user = useRecoilValue(userAtom);
+  const user = useUser();
 
   const [locale, setLocale] = useLocale();
   const locales = ['de', 'en'].map((key) => ({
@@ -29,7 +32,12 @@ export function App() {
   return (
     <div>
       {user ? (
-        'LOGGED IN'
+        <>
+          <Link to="games">Games</Link>
+          <Routes>
+            <Route path="games/*" element={<GamesPage />} />
+          </Routes>
+        </>
       ) : (
         <>
           <SignIn />
@@ -73,7 +81,7 @@ function SignIn() {
   } = useForm<{ email: string; password: string }>();
 
   return (
-    <form autoComplete="off">
+    <form name="sign-in" autoComplete="off">
       <Input
         placeholder={formatMessage({ defaultMessage: 'Email' })}
         type="text"
@@ -96,8 +104,8 @@ function SignIn() {
         onClick={handleSubmit((data) =>
           authenticate(data)
             .then((data) => {
-              if (data?.authenticate?.jwt) {
-                setJWT(data?.authenticate?.jwt);
+              if (data?.data?.authenticate?.jwt) {
+                setJWT(data?.data.authenticate?.jwt);
               } else {
                 throw new Error(
                   formatMessage({ defaultMessage: 'Invalid credentials' }),
@@ -151,7 +159,7 @@ function SignUp() {
   } = useForm<{ email: string; password: string }>();
 
   return (
-    <form name="register" autoComplete="off">
+    <form name="sign-up" autoComplete="off">
       <Input
         placeholder={formatMessage({ defaultMessage: 'Email' })}
         type="text"
@@ -190,12 +198,11 @@ function SignUp() {
       <Button
         type="submit"
         variant="primary"
-        onClick={handleSubmit((data) => {
-          console.log(data);
-          return registerAccount(data)
+        onClick={handleSubmit((data) =>
+          registerAccount(data)
             .then((data) => {
-              if (data?.authenticate?.jwt) {
-                setJWT(data?.authenticate?.jwt);
+              if (data?.data?.authenticate?.jwt) {
+                setJWT(data?.data?.authenticate?.jwt);
               } else {
                 throw new Error(
                   formatMessage({
@@ -209,8 +216,8 @@ function SignUp() {
                 text: formatMessage({ defaultMessage: 'Sign Up failed' }),
                 description: err.messageJSX ?? err.message,
               });
-            });
-        })}
+            }),
+        )}
       >
         <FormattedMessage id="" defaultMessage="Sign Up" />
       </Button>

@@ -73,6 +73,14 @@ grant execute on function space.authenticate(text, text) to space_anonymous, spa
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
+create function space.current_person_id() returns uuid as $$
+begin
+  return nullif(current_setting('jwt.claims.person_id', true), '')::uuid;
+end
+$$ language plpgsql;
+
+grant execute on function space.current_person_id() to space_anonymous, space_person;
+
 
 create function space.current_person() returns space.person as $$
   select *

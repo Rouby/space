@@ -1,5 +1,5 @@
 schema: http://localhost:5000/graphql
-documents: 'src/**/*.{ts,tsx}'
+documents: './src/**/*.{ts,tsx}'
 extensions:
   codegen:
     generates:
@@ -9,6 +9,7 @@ extensions:
             - yarn dlx prettier --write
         plugins:
           - typescript
+          - typescript-operations
         config:
           scalars:
             UUID: string

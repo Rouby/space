@@ -1,10 +1,13 @@
 import { DocumentNode, print } from 'graphql';
 import * as React from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { jwtAtom } from '../../state/atoms';
 
 const GraphQLContext = React.createContext<{
-  request<T, V>(document: DocumentNode | string, variables?: V): Promise<T>;
+  request<T, V>(
+    document: DocumentNode | string,
+    variables?: V,
+  ): Promise<{ data: T; errors: GraphQLError[] }>;
 }>({
   async request<T>() {
     return {} as T;
@@ -22,7 +25,9 @@ export class GraphQLError extends Error {
   get messageJSX() {
     return this.errors.map((err) => (
       <div key={err.detail ?? err.message}>
-        {err.errcode ? `${err.errcode}: ${err.detail}` : err.message}
+        {err.errcode
+          ? `${err.errcode}: ${err.detail ?? err.message}`
+          : err.message}
       </div>
     ));
   }
@@ -30,6 +35,8 @@ export class GraphQLError extends Error {
 
 export function GraphQLProvider({ children }: { children: React.ReactNode }) {
   const jwt = useRecoilValue(jwtAtom);
+  const resetJwt = useResetRecoilState(jwtAtom);
+
   const graphQLClient = React.useMemo(() => {
     return {
       async request<T, V>(document: DocumentNode | string, variables?: V) {
@@ -48,6 +55,13 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
         );
 
         if (!response.ok) {
+          if (response.status === 401) {
+            resetJwt();
+            throw new GraphQLError('Auth error', [
+              { errcode: '-1', detail: 'Auth error' },
+            ]);
+          }
+
           throw new GraphQLError('Network error', [
             { errcode: '-1', detail: 'Network error' },
           ]);
@@ -55,12 +69,7 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
 
         const { data, errors } = await response.json();
 
-        if (data && !errors) {
-          // also return errros?
-          return data as T;
-        }
-
-        throw new GraphQLError('GraphQL error', errors);
+        return { data, errors } as { data: T; errors: GraphQLError[] };
       },
     };
   }, [jwt]);

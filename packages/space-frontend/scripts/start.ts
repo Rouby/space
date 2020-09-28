@@ -115,6 +115,7 @@ const devServer = new webpackDevServer(compiler as any, {
   transportMode: 'ws',
   quiet: true,
   clientLogLevel: 'silent',
+  historyApiFallback: true,
 }).listen(3000, () => {
   (['SIGINT', 'SIGTERM'] as const).forEach((sig) => {
     process.on(sig, function () {

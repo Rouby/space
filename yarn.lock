@@ -1515,7 +1515,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/typescript@npm:*, @graphql-codegen/typescript@npm:1.17.9":
+"@graphql-codegen/typescript-operations@npm:*, @graphql-codegen/typescript-operations@npm:1.17.8":
+  version: 1.17.8
+  resolution: "@graphql-codegen/typescript-operations@npm:1.17.8"
+  dependencies:
+    "@graphql-codegen/plugin-helpers": ^1.17.8
+    "@graphql-codegen/typescript": ^1.17.8
+    "@graphql-codegen/visitor-plugin-common": ^1.17.13
+    auto-bind: ~4.0.0
+    tslib: ~2.0.0
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: 2dfda9bed0a294c1cbee434003af6e30495a643b8a68bc7b09dba00a65d5ae2f279623df37535fe788934074274d353f5b9d14a4a9b60f15cddb44b3b524315b
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/typescript@npm:*, @graphql-codegen/typescript@npm:1.17.9, @graphql-codegen/typescript@npm:^1.17.8":
   version: 1.17.9
   resolution: "@graphql-codegen/typescript@npm:1.17.9"
   dependencies:
@@ -1529,7 +1544,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/visitor-plugin-common@npm:^1.17.14":
+"@graphql-codegen/visitor-plugin-common@npm:^1.17.13, @graphql-codegen/visitor-plugin-common@npm:^1.17.14":
   version: 1.17.14
   resolution: "@graphql-codegen/visitor-plugin-common@npm:1.17.14"
   dependencies:
@@ -1927,6 +1942,7 @@ __metadata:
     "@formatjs/ts-transformer": 2.10.1
     "@graphql-codegen/cli": 1.17.8
     "@graphql-codegen/typescript": 1.17.9
+    "@graphql-codegen/typescript-operations": 1.17.8
     "@pmmmwh/react-refresh-webpack-plugin": 0.4.2
     "@types/babel__code-frame": 7.0.1
     "@types/babel__core": 7.1.9
@@ -1958,7 +1974,7 @@ __metadata:
     react-query: 2.23.0
     react-query-devtools: 2.5.0
     react-refresh: 0.8.3
-    react-router-dom: 6.0.0-beta.0
+    react-router-dom: 0.0.0-experimental-ffd8c7d0
     react-spring: 8.0.27
     recoil: 0.0.13
     ts-loader: 8.0.4
@@ -8406,29 +8422,29 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:6.0.0-beta.0":
-  version: 6.0.0-beta.0
-  resolution: "react-router-dom@npm:6.0.0-beta.0"
+"react-router-dom@npm:0.0.0-experimental-ffd8c7d0":
+  version: 0.0.0-experimental-ffd8c7d0
+  resolution: "react-router-dom@npm:0.0.0-experimental-ffd8c7d0"
   dependencies:
     prop-types: ^15.7.2
-    react-router: 6.0.0-beta.0
+    react-router: 0.0.0-experimental-ffd8c7d0
   peerDependencies:
     history: ">=5"
-    react: ">=16.8"
-    react-dom: ">=16.8"
-  checksum: 1d0585c8db13b6bf83789cee29e70ab57caad4a0baa165fafe621d6648417fd1f417e5e176fa1bc0bf3b27f14599863dcf672b3ff4d9f2c44ac8c37281d851bb
+    react: 0.0.0-experimental-33c3af284
+    react-dom: 0.0.0-experimental-33c3af284
+  checksum: 625e83058c403389b3e0135923de52d99512f47513aee9adc11819c75ac31152fb15f9c1edabbfd69f8847d97becf5d272fc23fa491958df7d2fc73054ce3bf6
   languageName: node
   linkType: hard
 
-"react-router@npm:6.0.0-beta.0":
-  version: 6.0.0-beta.0
-  resolution: "react-router@npm:6.0.0-beta.0"
+"react-router@npm:0.0.0-experimental-ffd8c7d0":
+  version: 0.0.0-experimental-ffd8c7d0
+  resolution: "react-router@npm:0.0.0-experimental-ffd8c7d0"
   dependencies:
     prop-types: ^15.7.2
   peerDependencies:
     history: ">=5"
-    react: ">=16.8"
-  checksum: a6af377693adf7830e209893376f154bfd07c54d452ba760c46951dc04c92f14acaf4cee3e086b0e48b1c0905fea828a2df5fd307cdf219b460ac10e8a36634a
+    react: 0.0.0-experimental-33c3af284
+  checksum: e634bd11bed8b0efac182c1682687461496b950b107452856c09275adfd6481a63bf959d3ea9f3b573ed5c7fb82291b47456670541a5321291491c96b8f87e13
   languageName: node
   linkType: hard
 

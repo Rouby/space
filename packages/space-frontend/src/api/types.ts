@@ -211,7 +211,10 @@ export type Game = Node & {
   nodeId: Scalars["ID"];
   id: Scalars["UUID"];
   name: Scalars["String"];
-  authorId: Scalars["UUID"];
+  authorId?: Maybe<Scalars["UUID"]>;
+  playerSlots: Scalars["Int"];
+  type: GalaxyType;
+  size: GalaxySize;
   started?: Maybe<Scalars["Datetime"]>;
   /** Reads a single `Person` that is related to this `Game`. */
   author?: Maybe<Person>;
@@ -228,6 +231,18 @@ export type GamePlayersArgs = {
   orderBy?: Maybe<Array<PlayersOrderBy>>;
   condition?: Maybe<PlayerCondition>;
 };
+
+export enum GalaxyType {
+  Spiral = "SPIRAL",
+  Elliptical = "ELLIPTICAL",
+}
+
+export enum GalaxySize {
+  Tiny = "TINY",
+  Normal = "NORMAL",
+  Big = "BIG",
+  Giant = "GIANT",
+}
 
 export type Person = Node & {
   __typename?: "Person";
@@ -508,8 +523,6 @@ export type RacesEdge = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: "Mutation";
-  /** Creates a single `Game`. */
-  createGame?: Maybe<CreateGamePayload>;
   /** Creates a single `Person`. */
   createPerson?: Maybe<CreatePersonPayload>;
   /** Creates a single `Planet`. */
@@ -559,13 +572,10 @@ export type Mutation = {
   /** Deletes a single `Race` using a unique key. */
   deleteRace?: Maybe<DeleteRacePayload>;
   authenticate?: Maybe<AuthenticatePayload>;
+  createGame?: Maybe<CreateGamePayload>;
+  currentPersonId?: Maybe<CurrentPersonIdPayload>;
   joinGame?: Maybe<JoinGamePayload>;
   register?: Maybe<RegisterPayload>;
-};
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationCreateGameArgs = {
-  input: CreateGameInput;
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
@@ -694,6 +704,16 @@ export type MutationAuthenticateArgs = {
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateGameArgs = {
+  input: CreateGameInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationCurrentPersonIdArgs = {
+  input: CurrentPersonIdInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationJoinGameArgs = {
   input: JoinGameInput;
 };
@@ -701,42 +721,6 @@ export type MutationJoinGameArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationRegisterArgs = {
   input: RegisterInput;
-};
-
-/** All input for the create `Game` mutation. */
-export type CreateGameInput = {
-  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
-  clientMutationId?: Maybe<Scalars["String"]>;
-  /** The `Game` to be created by this mutation. */
-  game: GameInput;
-};
-
-/** An input for mutations affecting `Game` */
-export type GameInput = {
-  id?: Maybe<Scalars["UUID"]>;
-  name: Scalars["String"];
-  authorId: Scalars["UUID"];
-  started?: Maybe<Scalars["Datetime"]>;
-};
-
-/** The output of our create `Game` mutation. */
-export type CreateGamePayload = {
-  __typename?: "CreateGamePayload";
-  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
-  clientMutationId?: Maybe<Scalars["String"]>;
-  /** The `Game` that was created by this mutation. */
-  game?: Maybe<Game>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** Reads a single `Person` that is related to this `Game`. */
-  author?: Maybe<Person>;
-  /** An edge for our `Game`. May be used by Relay 1. */
-  gameEdge?: Maybe<GamesEdge>;
-};
-
-/** The output of our create `Game` mutation. */
-export type CreateGamePayloadGameEdgeArgs = {
-  orderBy?: Maybe<Array<GamesOrderBy>>;
 };
 
 /** All input for the create `Person` mutation. */
@@ -897,6 +881,9 @@ export type GamePatch = {
   id?: Maybe<Scalars["UUID"]>;
   name?: Maybe<Scalars["String"]>;
   authorId?: Maybe<Scalars["UUID"]>;
+  playerSlots?: Maybe<Scalars["Int"]>;
+  type?: Maybe<GalaxyType>;
+  size?: Maybe<GalaxySize>;
   started?: Maybe<Scalars["Datetime"]>;
 };
 
@@ -1308,6 +1295,48 @@ export type AuthenticatePayload = {
   query?: Maybe<Query>;
 };
 
+/** All input for the `createGame` mutation. */
+export type CreateGameInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+};
+
+/** The output of our `createGame` mutation. */
+export type CreateGamePayload = {
+  __typename?: "CreateGamePayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  game?: Maybe<Game>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** Reads a single `Person` that is related to this `Game`. */
+  author?: Maybe<Person>;
+  /** An edge for our `Game`. May be used by Relay 1. */
+  gameEdge?: Maybe<GamesEdge>;
+};
+
+/** The output of our `createGame` mutation. */
+export type CreateGamePayloadGameEdgeArgs = {
+  orderBy?: Maybe<Array<GamesOrderBy>>;
+};
+
+/** All input for the `currentPersonId` mutation. */
+export type CurrentPersonIdInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+};
+
+/** The output of our `currentPersonId` mutation. */
+export type CurrentPersonIdPayload = {
+  __typename?: "CurrentPersonIdPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  uuid?: Maybe<Scalars["UUID"]>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
 /** All input for the `joinGame` mutation. */
 export type JoinGameInput = {
   /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
@@ -1363,4 +1392,92 @@ export type RegisterPayload = {
 /** The output of our `register` mutation. */
 export type RegisterPayloadPersonEdgeArgs = {
   orderBy?: Maybe<Array<PeopleOrderBy>>;
+};
+
+export type SignInMutationVariables = Exact<{
+  email: Scalars["String"];
+  password: Scalars["String"];
+}>;
+
+export type SignInMutation = { __typename?: "Mutation" } & {
+  authenticate?: Maybe<
+    { __typename?: "AuthenticatePayload" } & Pick<AuthenticatePayload, "jwt">
+  >;
+};
+
+export type SignUpMutationVariables = Exact<{
+  email: Scalars["String"];
+  password: Scalars["String"];
+}>;
+
+export type SignUpMutation = { __typename?: "Mutation" } & {
+  register?: Maybe<
+    { __typename?: "RegisterPayload" } & Pick<
+      RegisterPayload,
+      "clientMutationId"
+    >
+  >;
+  authenticate?: Maybe<
+    { __typename?: "AuthenticatePayload" } & Pick<AuthenticatePayload, "jwt">
+  >;
+};
+
+export type GameListQueryVariables = Exact<{
+  cursor?: Maybe<Scalars["Cursor"]>;
+}>;
+
+export type GameListQuery = { __typename?: "Query" } & {
+  games?: Maybe<
+    { __typename?: "GamesConnection" } & Pick<GamesConnection, "totalCount"> & {
+        edges: Array<
+          { __typename?: "GamesEdge" } & Pick<GamesEdge, "cursor"> & {
+              node: { __typename?: "Game" } & Pick<
+                Game,
+                "id" | "name" | "playerSlots"
+              > & {
+                  author?: Maybe<
+                    { __typename?: "Person" } & Pick<Person, "id" | "name">
+                  >;
+                  players: { __typename?: "PlayersConnection" } & Pick<
+                    PlayersConnection,
+                    "totalCount"
+                  >;
+                };
+            }
+        >;
+      }
+  >;
+};
+
+export type CreateGameMutationVariables = Exact<{
+  name: Scalars["String"];
+}>;
+
+export type CreateGameMutation = { __typename?: "Mutation" } & {
+  createGame?: Maybe<
+    { __typename?: "CreateGamePayload" } & {
+      game?: Maybe<
+        { __typename?: "Game" } & Pick<
+          Game,
+          "id" | "name" | "type" | "size" | "started" | "playerSlots"
+        > & {
+            players: { __typename?: "PlayersConnection" } & Pick<
+              PlayersConnection,
+              "totalCount"
+            >;
+            author?: Maybe<
+              { __typename?: "Person" } & Pick<Person, "id" | "name">
+            >;
+          }
+      >;
+    }
+  >;
+};
+
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never }>;
+
+export type CurrentUserQuery = { __typename?: "Query" } & {
+  currentPerson?: Maybe<
+    { __typename?: "Person" } & Pick<Person, "id" | "name">
+  >;
 };
