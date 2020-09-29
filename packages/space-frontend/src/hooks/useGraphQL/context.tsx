@@ -1,7 +1,7 @@
 import { DocumentNode, print } from 'graphql';
 import * as React from 'react';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
-import { jwtAtom } from '../../state/atoms';
+import { atoms } from '../../state';
 
 const GraphQLContext = React.createContext<{
   request<T, V>(
@@ -34,8 +34,8 @@ export class GraphQLError extends Error {
 }
 
 export function GraphQLProvider({ children }: { children: React.ReactNode }) {
-  const jwt = useRecoilValue(jwtAtom);
-  const resetJwt = useResetRecoilState(jwtAtom);
+  const jwt = useRecoilValue(atoms.jwt);
+  const resetJwt = useResetRecoilState(atoms.jwt);
 
   const graphQLClient = React.useMemo(() => {
     return {

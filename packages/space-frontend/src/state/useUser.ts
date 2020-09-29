@@ -3,11 +3,11 @@ import * as React from 'react';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { CurrentUserQuery, CurrentUserQueryVariables } from '../api/types';
 import { useGraphQLQuery } from '../hooks';
-import { jwtAtom } from './atoms';
+import { jwt } from './atoms';
 
 export function useUser() {
-  const jwt = useRecoilValue(jwtAtom);
-  const resetJwt = useResetRecoilState(jwtAtom);
+  const jwtValue = useRecoilValue(jwt);
+  const resetJwt = useResetRecoilState(jwt);
 
   const {
     data: {
@@ -23,7 +23,7 @@ export function useUser() {
         }
       }
     `,
-    { queryKey: jwt },
+    { queryKey: jwtValue },
   );
 
   React.useEffect(() => {

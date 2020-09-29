@@ -4,15 +4,18 @@ import { useUser } from '../../state';
 import { GraphQLError, useGraphQLClient } from './context';
 import { isOperationDefinition } from './util';
 
-interface GraphQLMutationOptions<TData> extends MutationConfig<TData> {}
+interface GraphQLMutationOptions<TData, TVariables>
+  extends MutationConfig<TData, GraphQLError, TVariables> {}
 
 export function useGraphQLMutation<
   TData = any,
-  TVariables = Record<string, unknown>,
-  TError = GraphQLError
+  TVariables = Record<string, unknown>
 >(
   document: DocumentNode,
-  options?: GraphQLMutationOptions<{ data: TData; errors: GraphQLError[] }>,
+  options?: GraphQLMutationOptions<
+    { data: TData; errors: GraphQLError[] },
+    TVariables
+  >,
 ) {
   const client = useGraphQLClient();
 
@@ -25,7 +28,7 @@ export function useGraphQLMutation<
 
   return useMutation<
     { data: TData; errors: GraphQLError[] },
-    TError,
+    GraphQLError,
     TVariables
   >(
     async (variables) =>

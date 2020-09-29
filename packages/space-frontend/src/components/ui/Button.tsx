@@ -37,8 +37,11 @@ export function Button({
       '--button-disabled-border-color': colors.text.toString(),
       '--button-disabled-background-color': colors.textContrast.toString(),
       '--button-disabled-text-color': colors.text.toString(),
-      '--button-press-color-from': colors.primary.lighten(0.1),
-      '--button-press-color-to': colors.primary.lighten(0.1).fadeOut(1),
+      '--button-press-color-from': colors.primary.lighten(0.1).toString(),
+      '--button-press-color-to': colors.primary
+        .lighten(0.1)
+        .fadeOut(1)
+        .toString(),
 
       margin: 0,
       padding: units(0.25, 1),

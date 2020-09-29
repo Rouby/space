@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { GameList, GameNew } from '../components';
-import { GameDetails } from '../components/GameDetails';
+import { GameDetails, GameList, GameNew } from '../components';
 
 export function GamesPage() {
   return (

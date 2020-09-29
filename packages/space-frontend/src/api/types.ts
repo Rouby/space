@@ -220,6 +220,8 @@ export type Game = Node & {
   author?: Maybe<Person>;
   /** Reads and enables pagination through a set of `Player`. */
   players: PlayersConnection;
+  /** Reads and enables pagination through a set of `Planet`. */
+  planets: PlanetsConnection;
 };
 
 export type GamePlayersArgs = {
@@ -230,6 +232,16 @@ export type GamePlayersArgs = {
   after?: Maybe<Scalars["Cursor"]>;
   orderBy?: Maybe<Array<PlayersOrderBy>>;
   condition?: Maybe<PlayerCondition>;
+};
+
+export type GamePlanetsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<PlanetsOrderBy>>;
+  condition?: Maybe<PlanetCondition>;
 };
 
 export enum GalaxyType {
@@ -254,6 +266,8 @@ export type Person = Node & {
   authoredGames: GamesConnection;
   /** Reads and enables pagination through a set of `Player`. */
   players: PlayersConnection;
+  /** Reads and enables pagination through a set of `Planet`. */
+  planetsByOwnerId: PlanetsConnection;
 };
 
 export type PersonAuthoredGamesArgs = {
@@ -274,6 +288,16 @@ export type PersonPlayersArgs = {
   after?: Maybe<Scalars["Cursor"]>;
   orderBy?: Maybe<Array<PlayersOrderBy>>;
   condition?: Maybe<PlayerCondition>;
+};
+
+export type PersonPlanetsByOwnerIdArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<PlanetsOrderBy>>;
+  condition?: Maybe<PlanetCondition>;
 };
 
 /** Methods to use when ordering `Player`. */
@@ -325,6 +349,18 @@ export type Player = Node & {
   person?: Maybe<Person>;
   /** Reads a single `Race` that is related to this `Player`. */
   race?: Maybe<Race>;
+  /** Reads and enables pagination through a set of `Planet`. */
+  ownedPlanets: PlanetsConnection;
+};
+
+export type PlayerOwnedPlanetsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<PlanetsOrderBy>>;
+  condition?: Maybe<PlanetCondition>;
 };
 
 export type Race = Node & {
@@ -347,13 +383,88 @@ export type RacePlayersArgs = {
   condition?: Maybe<PlayerCondition>;
 };
 
-/** A `Player` edge in the connection. */
-export type PlayersEdge = {
-  __typename?: "PlayersEdge";
+/** Methods to use when ordering `Planet`. */
+export enum PlanetsOrderBy {
+  Natural = "NATURAL",
+  IdAsc = "ID_ASC",
+  IdDesc = "ID_DESC",
+  GameIdAsc = "GAME_ID_ASC",
+  GameIdDesc = "GAME_ID_DESC",
+  OwnerIdAsc = "OWNER_ID_ASC",
+  OwnerIdDesc = "OWNER_ID_DESC",
+  PrimaryKeyAsc = "PRIMARY_KEY_ASC",
+  PrimaryKeyDesc = "PRIMARY_KEY_DESC",
+}
+
+/** A condition to be used against `Planet` object types. All fields are tested for equality and combined with a logical ‘and.’ */
+export type PlanetCondition = {
+  /** Checks for equality with the object’s `id` field. */
+  id?: Maybe<Scalars["UUID"]>;
+  /** Checks for equality with the object’s `gameId` field. */
+  gameId?: Maybe<Scalars["UUID"]>;
+  /** Checks for equality with the object’s `ownerId` field. */
+  ownerId?: Maybe<Scalars["UUID"]>;
+};
+
+/** A connection to a list of `Planet` values. */
+export type PlanetsConnection = {
+  __typename?: "PlanetsConnection";
+  /** A list of `Planet` objects. */
+  nodes: Array<Planet>;
+  /** A list of edges which contains the `Planet` and cursor to aid in pagination. */
+  edges: Array<PlanetsEdge>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `Planet` you could get from the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export type Planet = Node & {
+  __typename?: "Planet";
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  nodeId: Scalars["ID"];
+  id: Scalars["UUID"];
+  name: Scalars["String"];
+  gameId: Scalars["UUID"];
+  ownerId?: Maybe<Scalars["UUID"]>;
+  class: PlanetClass;
+  position: Vector2;
+  /** Reads a single `Game` that is related to this `Planet`. */
+  game?: Maybe<Game>;
+  /** Reads a single `Player` that is related to this `Planet`. */
+  player?: Maybe<Player>;
+  /** Reads a single `Person` that is related to this `Planet`. */
+  owner?: Maybe<Person>;
+};
+
+export enum PlanetClass {
+  ClassA = "CLASS_A",
+  ClassC = "CLASS_C",
+  ClassD = "CLASS_D",
+  ClassH = "CLASS_H",
+  ClassJ = "CLASS_J",
+  ClassK = "CLASS_K",
+  ClassL = "CLASS_L",
+  ClassM = "CLASS_M",
+  ClassO = "CLASS_O",
+  ClassP = "CLASS_P",
+  ClassR = "CLASS_R",
+  ClassY = "CLASS_Y",
+}
+
+export type Vector2 = {
+  __typename?: "Vector2";
+  x?: Maybe<Scalars["Float"]>;
+  y?: Maybe<Scalars["Float"]>;
+};
+
+/** A `Planet` edge in the connection. */
+export type PlanetsEdge = {
+  __typename?: "PlanetsEdge";
   /** A cursor for use in pagination. */
   cursor?: Maybe<Scalars["Cursor"]>;
-  /** The `Player` at the end of the edge. */
-  node: Player;
+  /** The `Planet` at the end of the edge. */
+  node: Planet;
 };
 
 /** Information about pagination in a connection. */
@@ -367,6 +478,15 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars["Cursor"]>;
   /** When paginating forwards, the cursor to continue. */
   endCursor?: Maybe<Scalars["Cursor"]>;
+};
+
+/** A `Player` edge in the connection. */
+export type PlayersEdge = {
+  __typename?: "PlayersEdge";
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars["Cursor"]>;
+  /** The `Player` at the end of the edge. */
+  node: Player;
 };
 
 /** A `Game` edge in the connection. */
@@ -413,74 +533,6 @@ export type PeopleEdge = {
   cursor?: Maybe<Scalars["Cursor"]>;
   /** The `Person` at the end of the edge. */
   node: Person;
-};
-
-/** Methods to use when ordering `Planet`. */
-export enum PlanetsOrderBy {
-  Natural = "NATURAL",
-  IdAsc = "ID_ASC",
-  IdDesc = "ID_DESC",
-  PrimaryKeyAsc = "PRIMARY_KEY_ASC",
-  PrimaryKeyDesc = "PRIMARY_KEY_DESC",
-}
-
-/** A condition to be used against `Planet` object types. All fields are tested for equality and combined with a logical ‘and.’ */
-export type PlanetCondition = {
-  /** Checks for equality with the object’s `id` field. */
-  id?: Maybe<Scalars["UUID"]>;
-};
-
-/** A connection to a list of `Planet` values. */
-export type PlanetsConnection = {
-  __typename?: "PlanetsConnection";
-  /** A list of `Planet` objects. */
-  nodes: Array<Planet>;
-  /** A list of edges which contains the `Planet` and cursor to aid in pagination. */
-  edges: Array<PlanetsEdge>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-  /** The count of *all* `Planet` you could get from the connection. */
-  totalCount: Scalars["Int"];
-};
-
-export type Planet = Node & {
-  __typename?: "Planet";
-  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
-  nodeId: Scalars["ID"];
-  id: Scalars["UUID"];
-  name: Scalars["String"];
-  class: PlanetClass;
-  position: Vector2;
-};
-
-export enum PlanetClass {
-  ClassA = "CLASS_A",
-  ClassC = "CLASS_C",
-  ClassD = "CLASS_D",
-  ClassH = "CLASS_H",
-  ClassJ = "CLASS_J",
-  ClassK = "CLASS_K",
-  ClassL = "CLASS_L",
-  ClassM = "CLASS_M",
-  ClassO = "CLASS_O",
-  ClassP = "CLASS_P",
-  ClassR = "CLASS_R",
-  ClassY = "CLASS_Y",
-}
-
-export type Vector2 = {
-  __typename?: "Vector2";
-  x?: Maybe<Scalars["Float"]>;
-  y?: Maybe<Scalars["Float"]>;
-};
-
-/** A `Planet` edge in the connection. */
-export type PlanetsEdge = {
-  __typename?: "PlanetsEdge";
-  /** A cursor for use in pagination. */
-  cursor?: Maybe<Scalars["Cursor"]>;
-  /** The `Planet` at the end of the edge. */
-  node: Planet;
 };
 
 /** Methods to use when ordering `Race`. */
@@ -576,6 +628,7 @@ export type Mutation = {
   currentPersonId?: Maybe<CurrentPersonIdPayload>;
   joinGame?: Maybe<JoinGamePayload>;
   register?: Maybe<RegisterPayload>;
+  startGame?: Maybe<StartGamePayload>;
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
@@ -723,6 +776,11 @@ export type MutationRegisterArgs = {
   input: RegisterInput;
 };
 
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationStartGameArgs = {
+  input: StartGameInput;
+};
+
 /** All input for the create `Person` mutation. */
 export type CreatePersonInput = {
   /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
@@ -767,6 +825,8 @@ export type CreatePlanetInput = {
 export type PlanetInput = {
   id?: Maybe<Scalars["UUID"]>;
   name: Scalars["String"];
+  gameId: Scalars["UUID"];
+  ownerId?: Maybe<Scalars["UUID"]>;
   class: PlanetClass;
   position: Vector2Input;
 };
@@ -786,6 +846,12 @@ export type CreatePlanetPayload = {
   planet?: Maybe<Planet>;
   /** Our root query field type. Allows us to run any query from our mutation payload. */
   query?: Maybe<Query>;
+  /** Reads a single `Game` that is related to this `Planet`. */
+  game?: Maybe<Game>;
+  /** Reads a single `Player` that is related to this `Planet`. */
+  player?: Maybe<Player>;
+  /** Reads a single `Person` that is related to this `Planet`. */
+  owner?: Maybe<Person>;
   /** An edge for our `Planet`. May be used by Relay 1. */
   planetEdge?: Maybe<PlanetsEdge>;
 };
@@ -973,6 +1039,8 @@ export type UpdatePlanetByNodeIdInput = {
 export type PlanetPatch = {
   id?: Maybe<Scalars["UUID"]>;
   name?: Maybe<Scalars["String"]>;
+  gameId?: Maybe<Scalars["UUID"]>;
+  ownerId?: Maybe<Scalars["UUID"]>;
   class?: Maybe<PlanetClass>;
   position?: Maybe<Vector2Input>;
 };
@@ -986,6 +1054,12 @@ export type UpdatePlanetPayload = {
   planet?: Maybe<Planet>;
   /** Our root query field type. Allows us to run any query from our mutation payload. */
   query?: Maybe<Query>;
+  /** Reads a single `Game` that is related to this `Planet`. */
+  game?: Maybe<Game>;
+  /** Reads a single `Player` that is related to this `Planet`. */
+  player?: Maybe<Player>;
+  /** Reads a single `Person` that is related to this `Planet`. */
+  owner?: Maybe<Person>;
   /** An edge for our `Planet`. May be used by Relay 1. */
   planetEdge?: Maybe<PlanetsEdge>;
 };
@@ -1186,6 +1260,12 @@ export type DeletePlanetPayload = {
   deletedPlanetNodeId?: Maybe<Scalars["ID"]>;
   /** Our root query field type. Allows us to run any query from our mutation payload. */
   query?: Maybe<Query>;
+  /** Reads a single `Game` that is related to this `Planet`. */
+  game?: Maybe<Game>;
+  /** Reads a single `Player` that is related to this `Planet`. */
+  player?: Maybe<Player>;
+  /** Reads a single `Person` that is related to this `Planet`. */
+  owner?: Maybe<Person>;
   /** An edge for our `Planet`. May be used by Relay 1. */
   planetEdge?: Maybe<PlanetsEdge>;
 };
@@ -1394,6 +1474,32 @@ export type RegisterPayloadPersonEdgeArgs = {
   orderBy?: Maybe<Array<PeopleOrderBy>>;
 };
 
+/** All input for the `startGame` mutation. */
+export type StartGameInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  gameId?: Maybe<Scalars["UUID"]>;
+};
+
+/** The output of our `startGame` mutation. */
+export type StartGamePayload = {
+  __typename?: "StartGamePayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  game?: Maybe<Game>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** Reads a single `Person` that is related to this `Game`. */
+  author?: Maybe<Person>;
+  /** An edge for our `Game`. May be used by Relay 1. */
+  gameEdge?: Maybe<GamesEdge>;
+};
+
+/** The output of our `startGame` mutation. */
+export type StartGamePayloadGameEdgeArgs = {
+  orderBy?: Maybe<Array<GamesOrderBy>>;
+};
+
 export type SignInMutationVariables = Exact<{
   email: Scalars["String"];
   password: Scalars["String"];
@@ -1442,6 +1548,32 @@ export type GameDetailsQuery = { __typename?: "Query" } & {
   >;
 };
 
+export type UpdateGameMutationVariables = Exact<{
+  id: Scalars["UUID"];
+  patch: GamePatch;
+}>;
+
+export type UpdateGameMutation = { __typename?: "Mutation" } & {
+  updateGame?: Maybe<
+    { __typename?: "UpdateGamePayload" } & Pick<
+      UpdateGamePayload,
+      "clientMutationId"
+    >
+  >;
+};
+
+export type StartGameMutationVariables = Exact<{
+  id: Scalars["UUID"];
+}>;
+
+export type StartGameMutation = { __typename?: "Mutation" } & {
+  startGame?: Maybe<
+    { __typename?: "StartGamePayload" } & {
+      game?: Maybe<{ __typename?: "Game" } & Pick<Game, "started">>;
+    }
+  >;
+};
+
 export type GamePlayerListQueryVariables = Exact<{
   id: Scalars["UUID"];
 }>;
@@ -1482,7 +1614,7 @@ export type GameListQuery = { __typename?: "Query" } & {
           { __typename?: "GamesEdge" } & Pick<GamesEdge, "cursor"> & {
               node: { __typename?: "Game" } & Pick<
                 Game,
-                "id" | "name" | "playerSlots"
+                "id" | "name" | "playerSlots" | "started"
               > & {
                   author?: Maybe<
                     { __typename?: "Person" } & Pick<Person, "id" | "name">

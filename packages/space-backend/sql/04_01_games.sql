@@ -113,3 +113,24 @@ $$ language plpgsql strict security definer;
 
 
 grant execute on function space.create_game(text) to space_person;
+
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+create function space.start_game(
+  game_id  uuid
+) returns space.game as $$
+  const [correctGame] = plv8.execute('select * from space.game where id = $1 and author_id = space.current_person_id()' , [ game_id ]);
+
+  if (!correctGame) {
+    throw new Error('You cannot start this game');
+  }
+
+  plv8.execute('update space.game set started = now() where id = $1', [ game_id ]);
+
+  return plv8.execute('select * from space.game where id = $1 and author_id = space.current_person_id()' , [ game_id ])[0];
+$$ language plv8 security definer;
+
+
+grant execute on function space.start_game(uuid) to space_person;

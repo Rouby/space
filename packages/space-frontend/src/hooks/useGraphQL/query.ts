@@ -1,5 +1,5 @@
 import { DocumentNode } from 'graphql';
-import { QueryConfig, QueryResult, useQuery } from 'react-query';
+import { QueryConfig, QueryKey, QueryResult, useQuery } from 'react-query';
 import { GraphQLError, useGraphQLClient } from './context';
 import { isOperationDefinition } from './util';
 
@@ -26,17 +26,23 @@ export function useGraphQLQuery<
 
   const client = useGraphQLClient();
 
-  return useQuery<{ data: TData; errors: GraphQLError[] }>(
+  const key =
     queryKey !== undefined
       ? variables
         ? [documentKey, queryKey, { variables }]
         : [documentKey, queryKey]
       : variables
       ? [documentKey, { variables }]
-      : [documentKey],
-    async () => client.request(document, variables),
-    options,
-  ) as QueryResult<{ data: TData; errors: GraphQLError[] }, any> & {
-    data: { data: TData; errors: GraphQLError[] };
+      : [documentKey];
+
+  return {
+    queryKey: key as QueryKey,
+    ...(useQuery<{ data: TData; errors: GraphQLError[] }>(
+      key,
+      async () => client.request(document, variables),
+      options,
+    ) as QueryResult<{ data: TData; errors: GraphQLError[] }, any> & {
+      data: { data: TData; errors: GraphQLError[] };
+    }),
   };
 }

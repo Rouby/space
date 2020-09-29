@@ -1,18 +1,26 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { useQueryCache } from 'react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import {
+  GalaxySize,
+  GalaxyType,
   GameDetailsQuery,
   GameDetailsQueryVariables,
   GamePlayerListQuery,
   GamePlayerListQueryVariables,
   RacesQuery,
   RacesQueryVariables,
+  StartGameMutation,
+  StartGameMutationVariables,
+  UpdateGameMutation,
+  UpdateGameMutationVariables,
 } from '../api/types';
-import { useGraphQLQuery } from '../hooks';
-import { useUser } from '../state';
-import { Select } from './ui';
+import { useGraphQLMutation, useGraphQLQuery } from '../hooks';
+import { atoms, useUser } from '../state';
+import { Button, Input, Select } from './ui';
 
 interface GameDetailsProps {}
 
@@ -20,6 +28,7 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
   const { id } = useParams();
 
   const {
+    queryKey,
     data: {
       data: { game },
     },
@@ -50,10 +59,86 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
     },
   );
 
+  const queryCache = useQueryCache();
+
+  const [updateGame] = useGraphQLMutation<
+    UpdateGameMutation,
+    UpdateGameMutationVariables
+  >(
+    gql`
+      mutation UpdateGame($id: UUID!, $patch: GamePatch!) {
+        updateGame(input: { id: $id, patch: $patch }) {
+          clientMutationId
+        }
+      }
+    `,
+    {
+      onMutate: ({ patch }) => {
+        queryCache.cancelQueries(queryKey);
+        queryCache.setQueryData(queryKey, (d: any) => ({
+          ...d,
+          data: { ...d?.data, game: { ...d?.data?.game, ...patch } },
+        }));
+      },
+    },
+  );
+
+  const setCurrentGame = useSetRecoilState(atoms.gameId);
+
+  const [startGame] = useGraphQLMutation<
+    StartGameMutation,
+    StartGameMutationVariables
+  >(
+    gql`
+      mutation StartGame($id: UUID!) {
+        startGame(input: { gameId: $id }) {
+          game {
+            started
+          }
+        }
+      }
+    `,
+    {
+      onSuccess: ({ data: { startGame } }) => {
+        queryCache.cancelQueries(queryKey);
+        queryCache.setQueryData(queryKey, (d: any) => ({
+          ...d,
+          data: {
+            ...d?.data,
+            game: { ...d?.data?.game, started: startGame?.game?.started },
+          },
+        }));
+      },
+    },
+  );
+
+  const navigate = useNavigate();
+
+  const user = useUser();
+
+  const isAuthor = user?.id === game?.author?.id;
+  const hasStarted = !!game?.started;
+
   return (
     <div>
-      Name: {game?.name}
-      <br />
+      {isAuthor && !hasStarted ? (
+        <>
+          <Input
+            value={game?.name}
+            onChange={({ target: { value } }) => {
+              updateGame({ id: game!.id, patch: { name: value } });
+            }}
+          />
+          <Select value={game?.type} options={Object.values(GalaxyType)} />
+          <Select value={game?.size} options={Object.values(GalaxySize)} />
+        </>
+      ) : (
+        <>
+          <div>Name: {game?.name}</div>
+          <div>Type: {game?.type}</div>
+          <div>Size: {game?.size}</div>
+        </>
+      )}
       <FormattedMessage
         id=""
         defaultMessage="{playerCount} of {playerTotal} players"
@@ -64,8 +149,24 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
       />
       {game && (
         <React.Suspense fallback={<PlayerList.Skeleton />}>
-          <PlayerList gameId={game?.id} />
+          <PlayerList gameId={game?.id} gameHasStarted={hasStarted} />
         </React.Suspense>
+      )}
+      {isAuthor && !hasStarted && (
+        <Button variant="primary" onClick={() => startGame({ id: game!.id })}>
+          <FormattedMessage id="" defaultMessage="Start game" />
+        </Button>
+      )}
+      {hasStarted && (
+        <Button
+          variant="primary"
+          onClick={() => {
+            setCurrentGame(game!.id);
+            navigate('/');
+          }}
+        >
+          <FormattedMessage id="" defaultMessage="Open game" />
+        </Button>
       )}
     </div>
   );
@@ -77,9 +178,10 @@ GameDetails.Skeleton = function GameDetailsSkeleton() {
 
 interface PlayerListProps {
   gameId: string;
+  gameHasStarted: boolean;
 }
 
-function PlayerList({ gameId }: PlayerListProps) {
+function PlayerList({ gameId, gameHasStarted }: PlayerListProps) {
   const {
     data: {
       data: { players },
@@ -132,25 +234,29 @@ function PlayerList({ gameId }: PlayerListProps) {
           {player.person?.id === user?.id ? (
             <>
               You{' '}
-              <Select
-                value={(
-                  races?.nodes.map((race) => ({
-                    id: race.id,
-                    toString() {
-                      return race.name;
-                    },
-                  })) ?? []
-                ).find((race) => race.id === player.race?.id)}
-                onChange={(v) => console.log(v)}
-                options={
-                  races?.nodes.map((race) => ({
-                    id: race.id,
-                    toString() {
-                      return race.name;
-                    },
-                  })) ?? []
-                }
-              />
+              {!gameHasStarted ? (
+                <Select
+                  value={(
+                    races?.nodes.map((race) => ({
+                      id: race.id,
+                      toString() {
+                        return race.name;
+                      },
+                    })) ?? []
+                  ).find((race) => race.id === player.race?.id)}
+                  onChange={(v) => console.log(v)}
+                  options={
+                    races?.nodes.map((race) => ({
+                      id: race.id,
+                      toString() {
+                        return race.name;
+                      },
+                    })) ?? []
+                  }
+                />
+              ) : (
+                <>({player.race?.name})</>
+              )}
             </>
           ) : (
             <>

@@ -26,6 +26,7 @@ export function GameList({}: GameListProps): React.ReactElement {
               players {
                 totalCount
               }
+              started
             }
           }
           totalCount
@@ -75,6 +76,7 @@ export function GameList({}: GameListProps): React.ReactElement {
               playerTotal: edge.node.playerSlots,
             }}
           />
+          {edge.node.started ? 'started? YES' : 'started? NO'}
           <Button variant="link" onClick={() => navigate(edge.node.id)}>
             <FormattedMessage id="" defaultMessage="Details" />
           </Button>

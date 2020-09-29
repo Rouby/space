@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedDisplayName, FormattedMessage, useIntl } from 'react-intl';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   SignInMutation,
   SignInMutationVariables,
@@ -12,9 +12,8 @@ import {
 } from './api/types';
 import { Button, Input, Select } from './components/ui';
 import { useGraphQLMutation, useLocale, useNotification } from './hooks';
-import { GamesPage } from './pages/Games';
-import { useUser } from './state';
-import { jwtAtom } from './state/atoms';
+import { GamesPage, InGamePage } from './pages';
+import { atoms, useUser } from './state';
 
 export function App() {
   const user = useUser();
@@ -32,6 +31,8 @@ export function App() {
 
   const navigate = useNavigate();
 
+  const gameId = useRecoilState(atoms.gameId);
+
   return (
     <div>
       {user ? (
@@ -41,6 +42,7 @@ export function App() {
           </Button>
           <Routes>
             <Route path="games/*" element={<GamesPage />} />
+            {gameId && <Route path="*" element={<InGamePage />} />}
           </Routes>
         </>
       ) : (
@@ -59,7 +61,7 @@ export function App() {
 }
 
 function SignIn() {
-  const setJWT = useSetRecoilState(jwtAtom);
+  const setJWT = useSetRecoilState(atoms.jwt);
 
   const notify = useNotification();
 
@@ -130,7 +132,7 @@ function SignIn() {
 }
 
 function SignUp() {
-  const setJWT = useSetRecoilState(jwtAtom);
+  const setJWT = useSetRecoilState(atoms.jwt);
 
   const notify = useNotification();
 

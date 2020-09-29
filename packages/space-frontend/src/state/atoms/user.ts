@@ -1,14 +1,14 @@
 import { atom, selector } from 'recoil';
 
-export const jwtAtom = atom<string | null>({
+export const jwt = atom<string | null>({
   key: 'jwt',
   default: null,
 });
 
-export const userAtom = selector({
+export const user = selector({
   key: 'user',
   get: ({ get }) => {
-    const jwt = get(jwtAtom);
-    return jwt ? {} : null;
+    const value = get(jwt);
+    return value ? {} : null;
   },
 });
