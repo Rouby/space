@@ -17,9 +17,10 @@ export function useGraphQLQuery<
     variables,
     queryKey,
     ...options
-  }:
-    | GraphQLQueryOptions<{ data: TData; errors: GraphQLError[] }, TVariables>
-    | undefined = {},
+  }: GraphQLQueryOptions<
+    { data: TData; errors: GraphQLError[] },
+    TVariables
+  > = {},
 ) {
   const documentKey = document.definitions.find(isOperationDefinition)?.name
     ?.value;

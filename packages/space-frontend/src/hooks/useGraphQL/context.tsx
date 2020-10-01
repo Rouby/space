@@ -85,14 +85,19 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
       );
     });
 
-    ws.addEventListener('message', ({ data }) => {
+    ws.addEventListener('message', async ({ data }) => {
+      if (process.env.NODE_ENV === 'development') {
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.random() * 1000 + 1000),
+        );
+      }
+
       try {
         data = JSON.parse(data);
         switch (data.type) {
           case 'data':
             const op = operations.get(data.id);
             if (op) {
-              console.log('resolve', op);
               op.resolve?.();
               delete op.resolve;
               op.latestData = data.payload;

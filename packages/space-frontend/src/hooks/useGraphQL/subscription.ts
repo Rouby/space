@@ -1,54 +1,63 @@
 import { DocumentNode } from 'graphql';
 import * as React from 'react';
+import {
+  QueryConfig,
+  QueryKey,
+  QueryResult,
+  useQuery,
+  useQueryCache,
+} from 'react-query';
 import { GraphQLError, useGraphQLClient } from './context';
 import { isOperationDefinition } from './util';
+
+interface GraphQLSubscriptionOptions<TData, TVariables>
+  extends Omit<QueryConfig<TData>, 'suspense'> {
+  variables?: TVariables;
+}
 
 export function useGraphQLSubscription<
   TData = any,
   TVariables = Record<string, unknown>
 >(
   document: DocumentNode,
-  { queryKey, variables }: { queryKey?: string; variables?: TVariables } = {},
+  {
+    queryKey,
+    variables,
+    ...options
+  }: GraphQLSubscriptionOptions<
+    { data: TData; errors: GraphQLError[] },
+    TVariables
+  > = {},
 ) {
   const documentKey = document.definitions.find(isOperationDefinition)?.name
     ?.value;
 
   const client = useGraphQLClient();
 
-  const key = JSON.stringify(
+  const key =
     queryKey !== undefined
       ? variables
         ? [documentKey, queryKey, { variables }]
         : [documentKey, queryKey]
       : variables
       ? [documentKey, { variables }]
-      : [documentKey],
+      : [documentKey];
+
+  const queryCache = useQueryCache();
+
+  const opKey = JSON.stringify(
+    queryCache.getResolvedQueryConfig(key).queryKeySerializerFn(queryKey),
   );
 
-  const promiseRef = React.useRef<Promise<void>>();
-  const resolveRef = React.useRef<() => void>();
-  const promise =
-    promiseRef.current ??
-    new Promise((resolve) => (resolveRef.current = resolve));
-  promiseRef.current = promise;
-
-  const [data, setData] = React.useState<
-    | {
-        data: TData;
-        errors: GraphQLError[];
-      }
-    | undefined
-  >(() => client.getSubscriptionData(key));
   const [unsubscribe] = React.useState(() =>
     client.subscribe<TData, TVariables>(
-      key,
+      opKey,
       document,
       (err, payload) => {
         if (err) {
           // handle fatal error?
         } else {
-          setData(payload);
-          resolveRef.current?.();
+          queryCache.setQueryData(key, payload);
         }
       },
       variables,
@@ -56,12 +65,17 @@ export function useGraphQLSubscription<
   );
   React.useEffect(() => () => unsubscribe(), []);
 
-  console.log(data, client.getSubscriptionPromise(key), key);
-  if (!data) {
-    throw client.getSubscriptionPromise(key);
-  }
-
   return {
-    data,
+    queryKey: key as QueryKey,
+    ...(useQuery<{ data: TData; errors: GraphQLError[] }>(
+      key,
+      async () =>
+        client
+          .getSubscriptionPromise(opKey)
+          .then(() => client.getSubscriptionData<TData>(opKey)!),
+      options,
+    ) as QueryResult<{ data: TData; errors: GraphQLError[] }, any> & {
+      data: { data: TData; errors: GraphQLError[] };
+    }),
   };
 }

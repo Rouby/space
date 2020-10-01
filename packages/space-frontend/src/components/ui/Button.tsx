@@ -1,6 +1,8 @@
+import { To } from 'history';
 import * as React from 'react';
 import { IconType } from 'react-icons';
 import { AiOutlineLoading } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
 import { animated, useTransition } from 'react-spring';
 import { classes } from 'typestyle';
 import { useKeyframes, useStylesheet } from '../../hooks';
@@ -14,6 +16,7 @@ interface ButtonProps
   variant?: 'default' | 'primary' | 'dashed' | 'text' | 'link';
   icon?: IconType;
   loading?: boolean | Promise<unknown>;
+  to?: To;
   onClick?: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void | Promise<any>;
@@ -22,6 +25,7 @@ interface ButtonProps
 export function Button({
   variant = 'default',
   icon,
+  to,
   loading,
   children,
   ...props
@@ -205,13 +209,15 @@ export function Button({
   }
 
   const ref = React.useRef<HTMLButtonElement | null>(null);
-  const transitions = useTransition(icon, null, {
+  const iconTransition = useTransition(icon, null, {
     immediate: !ref.current,
     from: { opacity: 0, width: 0 },
     enter: { opacity: 1, width: 20 },
     leave: { opacity: 0, width: 0 },
     config: { tension: 280, friction: 120, duration: 300 },
   });
+
+  const navigate = useNavigate();
 
   return (
     <button
@@ -233,6 +239,9 @@ export function Button({
           if (result instanceof Promise) {
             setClickPromise(result);
           }
+          if (to) {
+            navigate(to);
+          }
         });
       }}
       className={classes(
@@ -242,7 +251,7 @@ export function Button({
         props.className,
       )}
     >
-      {transitions.map(
+      {iconTransition.map(
         ({ item: Icon, key, props }) =>
           Icon && (
             <animated.div key={key} className={classNames.icon} style={props}>

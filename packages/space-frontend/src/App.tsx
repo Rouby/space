@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedDisplayName, FormattedMessage, useIntl } from 'react-intl';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   SignInMutation,
@@ -29,15 +29,13 @@ export function App() {
     },
   }));
 
-  const navigate = useNavigate();
-
   const gameId = useRecoilState(atoms.gameId);
 
   return (
     <div>
       {user ? (
         <>
-          <Button variant="link" onClick={() => navigate('games')}>
+          <Button variant="link" to="games">
             Games
           </Button>
           <Routes>

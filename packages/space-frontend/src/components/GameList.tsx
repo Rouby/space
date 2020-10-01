@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useNavigate } from 'react-router-dom';
 import { GameListQuery, GameListQueryVariables } from '../api/types';
 import { useGraphQLQuery } from '../hooks';
 import { Button } from './ui';
@@ -44,8 +43,6 @@ export function GameList({}: GameListProps): React.ReactElement {
     },
   );
 
-  const navigate = useNavigate();
-
   const gameCount = games?.edges.length ?? 0;
   const gameTotal = games?.totalCount ?? 0;
 
@@ -81,17 +78,12 @@ export function GameList({}: GameListProps): React.ReactElement {
             }}
           />
           {edge.node.started ? 'started? YES' : 'started? NO'}
-          <Button variant="link" onClick={() => navigate(edge.node.id)}>
+          <Button variant="link" to={edge.node.id}>
             <FormattedMessage id="" defaultMessage="Details" />
           </Button>
         </div>
       ))}
-      <Button
-        variant="primary"
-        onClick={() => {
-          navigate('new');
-        }}
-      >
+      <Button variant="primary" to="new">
         <FormattedMessage id="" defaultMessage="Create a game" />
       </Button>
     </div>

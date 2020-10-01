@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { unstable_createRoot } from 'react-dom';
-import { QueryCache, ReactQueryCacheProvider, setConsole } from 'react-query';
+import { QueryCache, ReactQueryCacheProvider } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { forceRenderStyles } from 'typestyle';
 import { App } from './App';
@@ -24,8 +24,6 @@ const ReactQueryDevtoolsPanel =
         })),
       );
 
-setConsole({ log() {}, warn() {}, error() {} });
-
 const queryCache = new QueryCache({
   defaultConfig: {
     queries: {
@@ -34,7 +32,7 @@ const queryCache = new QueryCache({
     },
     mutations: {
       throwOnError: true,
-      suspense: false,
+      suspense: true,
     },
   },
 });

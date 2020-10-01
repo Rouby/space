@@ -64,6 +64,7 @@ export function GameNew({}: GameNewProps) {
       <Button
         type="submit"
         variant="primary"
+        loading={isSubmitting}
         onClick={handleSubmit((data) =>
           createGame(data)
             .then((data) => {
