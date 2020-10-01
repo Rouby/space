@@ -9,7 +9,11 @@ import { Button } from './ui';
 interface GameListProps {}
 
 export function GameList({}: GameListProps): React.ReactElement {
-  const { data } = useGraphQLQuery<GameListQuery, GameListQueryVariables>(
+  const {
+    data: {
+      data: { games },
+    },
+  } = useGraphQLQuery<GameListQuery, GameListQueryVariables>(
     gql`
       query GameList($cursor: Cursor) {
         games(orderBy: [NATURAL], after: $cursor, first: 10) {
@@ -42,8 +46,8 @@ export function GameList({}: GameListProps): React.ReactElement {
 
   const navigate = useNavigate();
 
-  const gameCount = data?.data?.games?.edges.length ?? 0;
-  const gameTotal = data?.data?.games?.totalCount ?? 0;
+  const gameCount = games?.edges.length ?? 0;
+  const gameTotal = games?.totalCount ?? 0;
 
   return (
     <div>
@@ -65,7 +69,7 @@ export function GameList({}: GameListProps): React.ReactElement {
           moreGamesThanShown: gameCount < gameTotal ? 'yes' : 'no',
         }}
       />
-      {data?.data?.games?.edges.map((edge) => (
+      {games?.edges.map((edge) => (
         <div key={edge.node.id}>
           {edge.node.name}
           <FormattedMessage

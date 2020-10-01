@@ -13,11 +13,12 @@ interface SelectProps<TValue extends string | Renderable>
       React.SelectHTMLAttributes<HTMLSelectElement>,
       HTMLSelectElement
     >,
-    'value' | 'onChange'
+    'value' | 'defaultValue' | 'onChange'
   > {
   native?: boolean;
   options?: TValue[];
   value?: TValue;
+  defaultValue?: TValue;
   onChange?: (event: { target: { value?: TValue } }) => void;
   errors?: Record<string, any>;
 }
@@ -28,6 +29,7 @@ function Select_<TValue extends string | Renderable>(
   {
     native,
     value,
+    defaultValue,
     onChange,
     options,
     errors,
@@ -157,7 +159,7 @@ function Select_<TValue extends string | Renderable>(
   });
 
   const [uncontrolledValue, setUncontrolledValue] = React.useState(
-    options?.[0],
+    defaultValue ?? options?.[0],
   );
 
   const element = React.useRef<{

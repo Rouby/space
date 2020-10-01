@@ -1,14 +1,13 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useQueryCache } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import {
   GalaxySize,
   GalaxyType,
-  GameDetailsQuery,
-  GameDetailsQueryVariables,
+  GameDetailsSubscription,
+  GameDetailsSubscriptionVariables,
   GamePlayerListQuery,
   GamePlayerListQueryVariables,
   RacesQuery,
@@ -18,7 +17,11 @@ import {
   UpdateGameMutation,
   UpdateGameMutationVariables,
 } from '../api/types';
-import { useGraphQLMutation, useGraphQLQuery } from '../hooks';
+import {
+  useGraphQLMutation,
+  useGraphQLQuery,
+  useGraphQLSubscription,
+} from '../hooks';
 import { atoms, useUser } from '../state';
 import { Button, Input, Select } from './ui';
 
@@ -28,13 +31,15 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
   const { id } = useParams();
 
   const {
-    queryKey,
     data: {
       data: { game },
     },
-  } = useGraphQLQuery<GameDetailsQuery, GameDetailsQueryVariables>(
+  } = useGraphQLSubscription<
+    GameDetailsSubscription,
+    GameDetailsSubscriptionVariables
+  >(
     gql`
-      query GameDetails($id: UUID!) {
+      subscription GameDetails($id: UUID!) {
         game(id: $id) {
           id
           name
@@ -59,8 +64,6 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
     },
   );
 
-  const queryCache = useQueryCache();
-
   const [updateGame] = useGraphQLMutation<
     UpdateGameMutation,
     UpdateGameMutationVariables
@@ -72,15 +75,6 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
         }
       }
     `,
-    {
-      onMutate: ({ patch }) => {
-        queryCache.cancelQueries(queryKey);
-        queryCache.setQueryData(queryKey, (d: any) => ({
-          ...d,
-          data: { ...d?.data, game: { ...d?.data?.game, ...patch } },
-        }));
-      },
-    },
   );
 
   const setCurrentGame = useSetRecoilState(atoms.gameId);
@@ -98,18 +92,6 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
         }
       }
     `,
-    {
-      onSuccess: ({ data: { startGame } }) => {
-        queryCache.cancelQueries(queryKey);
-        queryCache.setQueryData(queryKey, (d: any) => ({
-          ...d,
-          data: {
-            ...d?.data,
-            game: { ...d?.data?.game, started: startGame?.game?.started },
-          },
-        }));
-      },
-    },
   );
 
   const navigate = useNavigate();
@@ -124,13 +106,25 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
       {isAuthor && !hasStarted ? (
         <>
           <Input
-            value={game?.name}
+            defaultValue={game?.name}
             onChange={({ target: { value } }) => {
               updateGame({ id: game!.id, patch: { name: value } });
             }}
           />
-          <Select value={game?.type} options={Object.values(GalaxyType)} />
-          <Select value={game?.size} options={Object.values(GalaxySize)} />
+          <Select
+            defaultValue={game?.type}
+            options={Object.values(GalaxyType)}
+            onChange={({ target: { value } }) => {
+              updateGame({ id: game!.id, patch: { type: value } });
+            }}
+          />
+          <Select
+            defaultValue={game?.size}
+            options={Object.values(GalaxySize)}
+            onChange={({ target: { value } }) => {
+              updateGame({ id: game!.id, patch: { size: value } });
+            }}
+          />
         </>
       ) : (
         <>

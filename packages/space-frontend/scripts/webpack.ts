@@ -110,7 +110,12 @@ export function createConfig(isDevelopment: boolean): webpack.Configuration {
       }),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-        'process.env.GRAPHQL_ENDPOINT': JSON.stringify('http://localhost:5000'),
+        'process.env.GRAPHQL_ENDPOINT': JSON.stringify(
+          'http://localhost:5000/graphql',
+        ),
+        'process.env.GRAPHQL_SUBSCRIPTION_ENDPOINT': JSON.stringify(
+          'ws://localhost:5000/graphql',
+        ),
         'process.env': '{}',
       }),
       new ForkTsCheckerWebpackPlugin({

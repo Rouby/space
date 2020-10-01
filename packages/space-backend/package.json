@@ -1,14 +1,18 @@
 {
   "name": "@space/backend",
   "scripts": {
-    "start": "ts-node src/index.ts"
+    "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/index.ts\""
   },
   "dependencies": {
     "@graphile-contrib/pg-simplify-inflector": "6.0.0",
+    "@graphile/pg-pubsub": "4.9.0",
+    "@graphile/subscriptions-lds": "4.9.0",
+    "graphile-worker": "0.8.1",
     "postgraphile": "4.9.0",
     "postgraphile-plugin-connection-filter": "2.0.0"
   },
   "devDependencies": {
+    "nodemon": "2.0.4",
     "ts-node": "9.0.0",
     "typescript": "4.0.3"
   }
