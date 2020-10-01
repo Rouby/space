@@ -6,8 +6,15 @@ export async function startGame(
 ) {
   helpers.logger.info(`Start game ${gameId}`);
 
-  await helpers.withPgClient(async (client) => {
-    await client.query('update space.game set started = now() where id = $1', [
+  await helpers.withPgClient(async (pg) => {
+    await pg.query(
+      'insert into space.planet (game_id, name, class, position) values ($1, $2, $3, ($4, $5)::space.vector2)',
+      [gameId, ...['Planet', 'class_m', 0, 0]],
+    );
+  });
+
+  await helpers.withPgClient(async (pg) => {
+    await pg.query('update space.game set started = now() where id = $1', [
       gameId,
     ]);
   });

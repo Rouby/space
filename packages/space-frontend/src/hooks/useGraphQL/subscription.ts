@@ -46,7 +46,7 @@ export function useGraphQLSubscription<
   const queryCache = useQueryCache();
 
   const opKey = JSON.stringify(
-    queryCache.getResolvedQueryConfig(key).queryKeySerializerFn(queryKey),
+    queryCache.getResolvedQueryConfig(key).queryKeySerializerFn(key),
   );
 
   const [unsubscribe] = React.useState(() =>
@@ -69,10 +69,7 @@ export function useGraphQLSubscription<
     queryKey: key as QueryKey,
     ...(useQuery<{ data: TData; errors: GraphQLError[] }>(
       key,
-      async () =>
-        client
-          .getSubscriptionPromise(opKey)
-          .then(() => client.getSubscriptionData<TData>(opKey)!),
+      async () => client.getSubscriptionData(opKey),
       options,
     ) as QueryResult<{ data: TData; errors: GraphQLError[] }, any> & {
       data: { data: TData; errors: GraphQLError[] };
