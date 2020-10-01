@@ -86,7 +86,7 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
     });
 
     ws.addEventListener('message', async ({ data }) => {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV !== 'production') {
         await new Promise((resolve) =>
           setTimeout(resolve, Math.random() * 1000 + 1000),
         );
@@ -122,7 +122,7 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
           body: JSON.stringify({ query: print(document), variables }),
         });
 
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV !== 'production') {
           await new Promise((resolve) =>
             setTimeout(resolve, Math.random() * 1000 + 1000),
           );

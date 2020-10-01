@@ -31,12 +31,14 @@ export function App() {
 
   const gameId = useRecoilState(atoms.gameId);
 
+  const notify = useNotification();
+
   return (
     <div>
       {user ? (
         <>
           <Button variant="link" to="games">
-            Games
+            <FormattedMessage id="" defaultMessage="Games" />
           </Button>
           <Routes>
             <Route path="games/*" element={<GamesPage />} />
@@ -54,6 +56,12 @@ export function App() {
         value={locales.find((l) => l.key === locale)}
         onChange={(evt) => evt.target.value && setLocale(evt.target.value.key)}
       />
+      <Button
+        variant="dashed"
+        onClick={() => notify.info({ text: 'oopsi', duration: 0 })}
+      >
+        Notify
+      </Button>
     </div>
   );
 }

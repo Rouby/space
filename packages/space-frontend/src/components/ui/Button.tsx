@@ -1,9 +1,9 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { To } from 'history';
 import * as React from 'react';
 import { IconType } from 'react-icons';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import { animated, useTransition } from 'react-spring';
 import { classes } from 'typestyle';
 import { useKeyframes, useStylesheet } from '../../hooks';
 import { colors, transition, units } from '../../style';
@@ -24,7 +24,7 @@ interface ButtonProps
 
 export function Button({
   variant = 'default',
-  icon,
+  icon: Icon,
   to,
   loading,
   children,
@@ -205,24 +205,14 @@ export function Button({
   }, [loading]);
 
   if (currentlyLoading) {
-    icon = AiOutlineLoading;
+    Icon = AiOutlineLoading;
   }
-
-  const ref = React.useRef<HTMLButtonElement | null>(null);
-  const iconTransition = useTransition(icon, null, {
-    immediate: !ref.current,
-    from: { opacity: 0, width: 0 },
-    enter: { opacity: 1, width: 20 },
-    leave: { opacity: 0, width: 0 },
-    config: { tension: 280, friction: 120, duration: 300 },
-  });
 
   const navigate = useNavigate();
 
   return (
     <button
       {...props}
-      ref={ref}
       disabled={props.disabled || currentlyLoading}
       onMouseDown={(evt) => {
         setPressed(true);
@@ -251,16 +241,20 @@ export function Button({
         props.className,
       )}
     >
-      {iconTransition.map(
-        ({ item: Icon, key, props }) =>
-          Icon && (
-            <animated.div key={key} className={classNames.icon} style={props}>
-              <Icon
-                className={classes(currentlyLoading && classNames.spinning)}
-              />
-            </animated.div>
-          ),
-      )}
+      <AnimatePresence>
+        {Icon && (
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 20, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            className={classNames.icon}
+          >
+            <Icon
+              className={classes(currentlyLoading && classNames.spinning)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {children}
     </button>
   );

@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import * as React from 'react';
 import {
   AiOutlineCheckCircle,
@@ -6,7 +7,6 @@ import {
   AiOutlineInfoCircle,
   AiOutlineWarning,
 } from 'react-icons/ai';
-import { animated, useTransition } from 'react-spring';
 import { useStylesheet } from '../../hooks';
 import { colors, elevation, units } from '../../style';
 
@@ -64,6 +64,7 @@ const Notification = React.forwardRef<HTMLDivElement, NotificationProps>(
         position: 'absolute',
         right: units(2),
         color: colors.text.fadeOut(0.3).toString(),
+        cursor: 'pointer',
       },
     });
 
@@ -114,23 +115,26 @@ export function NotificationHub({
     },
   });
 
-  const [refMap] = React.useState(
-    () => new WeakMap<NotificationProps, HTMLDivElement | null>(),
-  );
-  const transitions = useTransition(notifications, (n) => n.key, {
-    from: { opacity: 0, transform: 'translateX(100%)' },
-    enter: { opacity: 1, transform: 'translateX(0%)' },
-    leave: { opacity: 0 },
-    config: { tension: 500, friction: 25, precision: 0.1 },
-  });
-
   return (
     <div className={classNames.container}>
-      {transitions.map(({ key, props, item }) => (
-        <animated.div key={key} className={classNames.box} style={props}>
-          <Notification ref={(ref) => refMap.set(item, ref)} {...item} />
-        </animated.div>
-      ))}
+      <AnimatePresence initial={false}>
+        {notifications.map((item) => (
+          <motion.div
+            key={item.key}
+            className={classNames.box}
+            initial={{ opacity: 0, transform: 'translateX(100%)' }}
+            animate={{ opacity: 1, transform: 'translateX(0%)' }}
+            exit={{
+              opacity: 0,
+              scaleY: 0.5,
+              height: 0,
+              transition: { duration: 0.2 },
+            }}
+          >
+            <Notification {...item} />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

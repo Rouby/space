@@ -47,17 +47,17 @@ unstable_createRoot(root).render(
   <StateRoot>
     <ReactQueryCacheProvider queryCache={queryCache}>
       <GraphQLProvider>
-        <React.Suspense fallback="Loading app...">
-          <IntlProvider>
-            <StyleProvider>
-              <NotificationProvider>
-                <BrowserRouter>
+        <StyleProvider>
+          <NotificationProvider>
+            <BrowserRouter>
+              <React.Suspense fallback="Loading app...">
+                <IntlProvider>
                   <App />
-                </BrowserRouter>
-              </NotificationProvider>
-            </StyleProvider>
-          </IntlProvider>
-        </React.Suspense>
+                </IntlProvider>
+              </React.Suspense>
+            </BrowserRouter>
+          </NotificationProvider>
+        </StyleProvider>
       </GraphQLProvider>
       {ReactQueryDevtoolsPanel && (
         <ReactQueryDevtoolsPanel initialIsOpen={false} />

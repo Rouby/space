@@ -1,6 +1,6 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import * as React from 'react';
 import { AiOutlineCaretDown, AiOutlineLoading } from 'react-icons/ai';
-import { animated, useSpring, useTransition } from 'react-spring';
 import { classes } from 'typestyle';
 import { useKeyframes, useStylesheet } from '../../hooks';
 import { colors, elevation, transition, units } from '../../style';
@@ -194,12 +194,6 @@ function Select_<TValue extends string | Renderable>(
   const [startTransition, isPending] = React.unstable_useTransition({
     timeoutMs: 3000,
   });
-  const loadingIcon = useTransition(isPending && AiOutlineLoading, null, {
-    from: { opacity: 0, width: 0 },
-    enter: { opacity: 1, width: 20 },
-    leave: { opacity: 0, width: 0 },
-    config: { tension: 280, friction: 120, duration: 300 },
-  });
 
   const useNative =
     native ??
@@ -209,21 +203,20 @@ function Select_<TValue extends string | Renderable>(
   const [isFocused, setFocused] = React.useState(false);
   const [focusedOption, setFocusedOption] = React.useState<number>();
 
-  const optionsProps = useSpring({
-    opacity: isFocused ? 1 : 0,
-    pointerEvents: isFocused ? 'all' : 'none',
-  });
-
   return (
     <div className={classNames.container}>
-      {loadingIcon.map(
-        ({ item: Icon, key, props }) =>
-          Icon && (
-            <animated.div key={key} className={classNames.icon} style={props}>
-              <Icon className={classNames.spinning} />
-            </animated.div>
-          ),
-      )}
+      <AnimatePresence>
+        {isPending && (
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 20, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            className={classNames.icon}
+          >
+            <AiOutlineLoading className={classNames.spinning} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {useNative ? (
         <select
           {...props}
@@ -314,10 +307,14 @@ function Select_<TValue extends string | Renderable>(
               {valueToNode(opt)}
             </div>
           ))}
-          <animated.div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: isFocused ? 1 : 0,
+              pointerEvents: isFocused ? 'all' : 'none',
+            }}
             className={classNames.options}
             tabIndex={-1}
-            style={optionsProps}
             onFocus={() => setFocused(true)}
           >
             {options?.map((opt, idx) => (
@@ -341,7 +338,7 @@ function Select_<TValue extends string | Renderable>(
                 {valueToNode(opt)}
               </div>
             ))}
-          </animated.div>
+          </motion.div>
         </div>
       )}
       <AiOutlineCaretDown className={classNames.caret} />
