@@ -1992,8 +1992,10 @@ __metadata:
     "@graphile-contrib/pg-simplify-inflector": 6.0.0
     "@graphile/pg-pubsub": 4.9.0
     "@graphile/subscriptions-lds": 4.9.0
+    "@types/jsonwebtoken": ^8
     "@types/random": ^2
     graphile-worker: 0.8.1
+    jsonwebtoken: 8.5.1
     nodemon: 2.0.4
     postgraphile: 4.9.0
     postgraphile-plugin-connection-filter: 2.0.0
@@ -2376,7 +2378,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^8.3.2, @types/jsonwebtoken@npm:^8.5.0":
+"@types/jsonwebtoken@npm:^8, @types/jsonwebtoken@npm:^8.3.2, @types/jsonwebtoken@npm:^8.5.0":
   version: 8.5.0
   resolution: "@types/jsonwebtoken@npm:8.5.0"
   dependencies:
@@ -7012,7 +7014,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:^8.0.0, jsonwebtoken@npm:^8.5.1":
+"jsonwebtoken@npm:8.5.1, jsonwebtoken@npm:^8.0.0, jsonwebtoken@npm:^8.5.1":
   version: 8.5.1
   resolution: "jsonwebtoken@npm:8.5.1"
   dependencies:

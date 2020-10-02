@@ -116,6 +116,12 @@ const devServer = new webpackDevServer(compiler as any, {
   quiet: true,
   clientLogLevel: 'silent',
   historyApiFallback: true,
+  proxy: {
+    '/graphql': {
+      target: 'http://localhost:5000',
+      // ws: true,
+    },
+  },
 }).listen(3000, () => {
   (['SIGINT', 'SIGTERM'] as const).forEach((sig) => {
     process.on(sig, function () {

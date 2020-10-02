@@ -33,6 +33,3 @@ create index on space.planet ( game_id, owner_id );
 
 grant select on table space.planet to space_person;
 alter table space.planet enable row level security;
-
-create policy select_planet on space.planet for select
-  using (true);

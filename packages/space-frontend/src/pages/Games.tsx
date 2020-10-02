@@ -6,7 +6,7 @@ export function GamesPage() {
   return (
     <Routes>
       <Route
-        // path="/"
+        path="/"
         element={
           <React.Suspense fallback={<GameList.Skeleton />}>
             <GameList />

@@ -28,7 +28,7 @@ export function generateGalaxyPositions(type: GalaxyType, size: GalaxySize) {
           const y = rngY();
           const tx = x * Math.cos(φ) - y * Math.sin(φ);
           const ty = y * Math.cos(φ) + x * Math.sin(φ);
-          systems.push({ x: tx, y: ty });
+          systems.push({ x: tx * 10, y: ty * 10 });
         }
       }
       break;
@@ -56,7 +56,7 @@ export function generateGalaxyPositions(type: GalaxyType, size: GalaxySize) {
           x * Math.cos(φ + i ** 1.5 / 100) - y * Math.sin(φ + i ** 1.5 / 100);
         const ty =
           y * Math.cos(φ + i ** 1.5 / 100) + x * Math.sin(φ + i ** 1.5 / 100);
-        points.push({ x: tx, y: ty });
+        points.push({ x: tx * 10, y: ty * 10 });
       }
     }
     return points;

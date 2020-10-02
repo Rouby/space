@@ -139,3 +139,12 @@ $$ language plv8 security definer;
 
 
 grant execute on function space.start_game(uuid) to space_person;
+
+
+create function space.current_game_id() returns uuid as $$
+begin
+  return nullif(current_setting('jwt.game_id', true), '')::uuid;
+end
+$$ language plpgsql;
+
+grant execute on function space.current_game_id() to space_anonymous, space_person;

@@ -53,11 +53,10 @@ export class GraphQLError extends Error {
 }
 
 export function GraphQLProvider({ children }: { children: React.ReactNode }) {
-  const jwt = useRecoilValue(atoms.jwt);
   const resetJwt = useResetRecoilState(atoms.jwt);
 
-  const fetchRef = useFetchRef(jwt);
-  const wsRef = useWebSocketRef(jwt);
+  const fetchRef = useFetchRef();
+  const wsRef = useWebSocketRef();
 
   const graphQLClient = React.useMemo(() => {
     const operations = new Map<
@@ -172,7 +171,7 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
         return op.promise.then(() => op.latestData);
       },
     };
-  }, [jwt]);
+  }, []);
 
   return (
     <GraphQLContext.Provider value={graphQLClient}>
@@ -185,7 +184,10 @@ export function useGraphQLClient() {
   return React.useContext(GraphQLContext);
 }
 
-function useFetchRef(jwt: string | null) {
+function useFetchRef() {
+  const jwt = useRecoilValue(atoms.jwt);
+  const gameId = useRecoilValue(atoms.gameId);
+
   const requestQueue = React.useRef<
     {
       body: string;
@@ -202,11 +204,12 @@ function useFetchRef(jwt: string | null) {
 
   React.useEffect(() => {
     ref.current = (body) =>
-      fetch(process.env.GRAPHQL_ENDPOINT ?? '/', {
+      fetch(process.env.GRAPHQL_ENDPOINT ?? '/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+          ...(gameId ? { 'X-Game-Id': gameId } : {}),
         },
         body,
       });
@@ -221,7 +224,9 @@ function useFetchRef(jwt: string | null) {
   return ref;
 }
 
-function useWebSocketRef(jwt: string | null) {
+function useWebSocketRef() {
+  const jwt = useRecoilValue(atoms.jwt);
+
   const wsRef = React.useRef<{
     send: (data: any) => void;
     onmessage: (data: any) => void;
@@ -229,10 +234,11 @@ function useWebSocketRef(jwt: string | null) {
     send: () => {},
     onmessage: () => {},
   });
+  const [i, setI] = React.useState(0);
 
   React.useEffect(() => {
     const ws = new WebSocket(
-      process.env.GRAPHQL_SUBSCRIPTION_ENDPOINT ?? '/',
+      process.env.GRAPHQL_SUBSCRIPTION_ENDPOINT ?? '/graphql',
       'graphql-ws',
     );
 
@@ -245,6 +251,9 @@ function useWebSocketRef(jwt: string | null) {
           },
         }),
       );
+    });
+    ws.addEventListener('close', () => {
+      setI((i) => i + 1);
     });
 
     ws.addEventListener('message', ({ data }) => {
@@ -260,7 +269,7 @@ function useWebSocketRef(jwt: string | null) {
     return () => {
       ws.close();
     };
-  }, [jwt]);
+  }, [jwt, i]);
 
   return wsRef;
 }

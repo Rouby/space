@@ -8,11 +8,13 @@
     "@graphile/pg-pubsub": "4.9.0",
     "@graphile/subscriptions-lds": "4.9.0",
     "graphile-worker": "0.8.1",
+    "jsonwebtoken": "8.5.1",
     "postgraphile": "4.9.0",
     "postgraphile-plugin-connection-filter": "2.0.0",
     "random": "2.2.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^8",
     "@types/random": "^2",
     "nodemon": "2.0.4",
     "ts-node": "9.0.0",
