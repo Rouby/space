@@ -10,6 +10,7 @@ import {
   GameDetailsSubscriptionVariables,
   GamePlayerListQuery,
   GamePlayerListQueryVariables,
+  GameState,
   RacesQuery,
   RacesQueryVariables,
   StartGameMutation,
@@ -45,6 +46,7 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
           name
           type
           size
+          state
           started
           playerSlots
           players {
@@ -99,11 +101,13 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
   const user = useUser();
 
   const isAuthor = user?.id === game?.author?.id;
+  const isStarting = game?.state === GameState.Starting;
   const hasStarted = !!game?.started;
+  const canBeEdited = isAuthor && !isStarting && !hasStarted;
 
   return (
     <div>
-      {isAuthor && !hasStarted ? (
+      {canBeEdited ? (
         <>
           <Input
             defaultValue={game?.name}
@@ -146,22 +150,22 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
           <PlayerList gameId={game?.id} gameHasStarted={hasStarted} />
         </React.Suspense>
       )}
-      {isAuthor && !hasStarted && (
+      {canBeEdited && (
         <Button variant="primary" onClick={() => startGame({ id: game!.id })}>
           <FormattedMessage id="" defaultMessage="Start game" />
         </Button>
       )}
-      {hasStarted && (
-        <Button
-          variant="primary"
-          onClick={() => {
-            setCurrentGame(game!.id);
-            navigate('/');
-          }}
-        >
-          <FormattedMessage id="" defaultMessage="Open game" />
-        </Button>
-      )}
+      <Button
+        variant="primary"
+        disabled={!hasStarted}
+        loading={isStarting}
+        onClick={() => {
+          setCurrentGame(game!.id);
+          navigate('/');
+        }}
+      >
+        <FormattedMessage id="" defaultMessage="Open game" />
+      </Button>
     </div>
   );
 }

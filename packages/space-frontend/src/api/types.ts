@@ -328,6 +328,7 @@ export type Game = Node & {
   playerSlots: Scalars["Int"];
   type: GalaxyType;
   size: GalaxySize;
+  state: GameState;
   started?: Maybe<Scalars["Datetime"]>;
   /** Reads a single `Person` that is related to this `Game`. */
   author?: Maybe<Person>;
@@ -382,6 +383,13 @@ export enum GalaxySize {
   Normal = "NORMAL",
   Big = "BIG",
   Giant = "GIANT",
+}
+
+export enum GameState {
+  Create = "CREATE",
+  Starting = "STARTING",
+  Running = "RUNNING",
+  Done = "DONE",
 }
 
 export type Person = Node & {
@@ -1387,6 +1395,7 @@ export type GamePatch = {
   playerSlots?: Maybe<Scalars["Int"]>;
   type?: Maybe<GalaxyType>;
   size?: Maybe<GalaxySize>;
+  state?: Maybe<GameState>;
   started?: Maybe<Scalars["Datetime"]>;
 };
 
@@ -2569,7 +2578,7 @@ export type GameDetailsSubscription = { __typename?: "Subscription" } & {
   game?: Maybe<
     { __typename?: "Game" } & Pick<
       Game,
-      "id" | "name" | "type" | "size" | "started" | "playerSlots"
+      "id" | "name" | "type" | "size" | "state" | "started" | "playerSlots"
     > & {
         players: { __typename?: "PlayersConnection" } & Pick<
           PlayersConnection,

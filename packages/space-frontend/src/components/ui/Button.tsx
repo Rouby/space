@@ -85,7 +85,6 @@ export function Button({
           color: 'var(--button-highlight-text-color)',
         },
         '&:disabled': {
-          opacity: 0.8,
           borderColor: 'var(--button-disabled-border-color)',
           backgroundColor: 'var(--button-disabled-background-color)',
           color: 'var(--button-disabled-text-color)',
@@ -112,9 +111,9 @@ export function Button({
         .lighten(0.08)
         .toString(),
       '--button-highlight-text-color': colors.primaryContrast.toString(),
-      '--button-disabled-border-color': colors.primary.toString(),
-      '--button-disabled-background-color': colors.primary.toString(),
-      '--button-disabled-text-color': colors.primaryContrast.toString(),
+      // '--button-disabled-border-color': colors.primary.toString(),
+      // '--button-disabled-background-color': colors.primary.toString(),
+      // '--button-disabled-text-color': colors.primaryContrast.toString(),
     },
     dashed: {
       borderStyle: 'dashed',

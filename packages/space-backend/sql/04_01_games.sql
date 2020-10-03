@@ -10,6 +10,13 @@ create type space.galaxy_size as enum (
   'giant'
 );
 
+create type space.game_state as enum (
+  'create',
+  'starting',
+  'running',
+  'done'
+);
+
 create table space.game (
   id            uuid primary key default uuid_generate_v1mc(),
   name          text not null check (char_length(name) < 80),
@@ -17,6 +24,7 @@ create table space.game (
   player_slots  smallint not null default 6,
   type          space.galaxy_type not null default 'spiral',
   size          space.galaxy_size not null default 'normal',
+  state         space.game_state not null default 'create',
   started       timestamp with time zone
 );
 
@@ -127,6 +135,7 @@ create function space.start_game(
     throw new Error('You cannot start this game');
   }
 
+  plv8.execute(`update space.game set state = 'starting' where id = $1`, [ game_id ]);
   plv8.execute(`select graphile_worker.add_job(
     'startGame',
     payload := json_build_object (

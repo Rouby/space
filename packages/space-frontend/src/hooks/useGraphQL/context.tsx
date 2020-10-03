@@ -224,14 +224,18 @@ function useFetchRef() {
   return ref;
 }
 
+// TODO this should ideally resume operations after a reconnect
+
 function useWebSocketRef() {
   const jwt = useRecoilValue(atoms.jwt);
+  const gameId = useRecoilValue(atoms.gameId);
 
+  const sendQueue = React.useRef<any[]>([]);
   const wsRef = React.useRef<{
     send: (data: any) => void;
     onmessage: (data: any) => void;
   }>({
-    send: () => {},
+    send: (data) => sendQueue.current.push(data),
     onmessage: () => {},
   });
   const [i, setI] = React.useState(0);
@@ -248,17 +252,30 @@ function useWebSocketRef() {
           type: 'connection_init',
           payload: {
             Authorization: `Bearer ${jwt}`,
+            'x-game-id': gameId,
           },
         }),
       );
     });
+
+    let mounted = true;
     ws.addEventListener('close', () => {
-      setI((i) => i + 1);
+      wsRef.current.send = (data) => sendQueue.current.push(data);
+      setTimeout(() => {
+        if (mounted) {
+          setI((i) => i + 1);
+        }
+      }, Math.min(10000, 1000 * i));
     });
 
     ws.addEventListener('message', ({ data }) => {
       try {
-        wsRef.current.onmessage(JSON.parse(data));
+        const parsed = JSON.parse(data);
+        if (parsed.type === 'connection_ack') {
+          sendQueue.current.forEach((data) => wsRef.current.send(data));
+          sendQueue.current = [];
+        }
+        wsRef.current.onmessage(parsed);
       } catch {}
     });
 
@@ -267,9 +284,10 @@ function useWebSocketRef() {
     };
 
     return () => {
+      mounted = false;
       ws.close();
     };
-  }, [jwt, i]);
+  }, [jwt, gameId, i]);
 
   return wsRef;
 }

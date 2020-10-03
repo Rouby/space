@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedDisplayName, FormattedMessage, useIntl } from 'react-intl';
 import { Route, Routes } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   SignInMutation,
   SignInMutationVariables,
@@ -29,7 +29,7 @@ export function App() {
     },
   }));
 
-  const gameId = useRecoilState(atoms.gameId);
+  const gameId = useRecoilValue(atoms.gameId);
 
   const notify = useNotification();
 

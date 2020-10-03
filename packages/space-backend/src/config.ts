@@ -30,32 +30,43 @@ export const config: PostGraphileOptions = {
   disableQueryLog: true,
   legacyRelations: 'omit',
   enableCors: true,
+  jwtPgTypeIdentifier: 'space.jwt',
+  jwtSecret: 'supreme-kittens',
   pgSettings: async (req) => {
     const jwtToken = getJwtToken(req.headers.authorization);
 
-    const claims = jwtToken
-      ? await new Promise<any>((resolve, reject) => {
-          jwt.verify(
-            jwtToken,
-            'supreme-kittens',
-            {
-              // ...jwtVerifyOptions,
-              audience: ['postgraphile'],
-            },
-            (err, decoded) => {
-              if (err) reject(err);
-              else resolve(decoded);
-            },
-          );
-        })
-      : {};
+    try {
+      const claims = jwtToken
+        ? await new Promise<any>((resolve, reject) => {
+            jwt.verify(
+              jwtToken,
+              'supreme-kittens',
+              {
+                // ...jwtVerifyOptions,
+                audience: ['postgraphile'],
+              },
+              (err, decoded) => {
+                if (err) reject(err);
+                else resolve(decoded);
+              },
+            );
+          })
+        : {};
 
-    console.log(claims, req.headers['x-game-id']);
-
-    return {
-      role: claims?.role ?? 'space_anonymous',
-      'jwt.game_id': req.headers['x-game-id'],
-    };
+      return {
+        role: claims?.role ?? 'space_anonymous',
+        'jwt.game_id':
+          req.headers['x-game-id'] ??
+          (req as any).connectionParams?.['x-game-id'],
+      };
+    } catch (err) {
+      if (err instanceof jwt.TokenExpiredError) {
+        (err as any).statusCode = 401;
+      } else {
+        (err as any).statusCode = 403;
+      }
+      throw err;
+    }
   },
 
   ...(process.env.NODE_ENV !== 'production' && {
@@ -70,9 +81,6 @@ export const config: PostGraphileOptions = {
       return true;
     },
   }),
-
-  jwtPgTypeIdentifier: 'space.jwt',
-  jwtSecret: 'supreme-kittens',
 };
 
 function getJwtToken(authorization: string | undefined) {

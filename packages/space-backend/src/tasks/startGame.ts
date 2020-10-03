@@ -8,6 +8,12 @@ export async function startGame(
 ) {
   helpers.logger.info(`Start game ${gameId}`);
 
+  if (process.env.NODE_ENV !== 'production') {
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 1000 + 1000),
+    );
+  }
+
   const {
     rows: [game],
   } = await helpers.query('select * from space.game where id = $1', [gameId]);
@@ -61,6 +67,8 @@ export async function startGame(
 
   // insert planets into db
 
+  helpers.logger.info(`Creating ${planets.length} planets`);
+
   const bulkSize = 100;
   for (const bunch of Array.from({
     length: Math.ceil(planets.length / bulkSize),
@@ -74,15 +82,14 @@ export async function startGame(
       )
       .join(', ');
 
-    helpers.logger.info(queryStr);
-
     await helpers.query(
       `insert into space.planet (game_id, name, class, position, owner_id) values ${queryStr}`,
       [gameId, ...bunch.flatMap((p) => p.values())],
     );
   }
 
-  await helpers.query('update space.game set started = now() where id = $1', [
-    gameId,
-  ]);
+  await helpers.query(
+    `update space.game set started = now(), state = 'running' where id = $1`,
+    [gameId],
+  );
 }
