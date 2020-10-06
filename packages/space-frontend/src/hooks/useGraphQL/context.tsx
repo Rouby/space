@@ -70,9 +70,16 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
     >();
 
     wsRef.current.onmessage = async (data) => {
-      if (process.env.NODE_ENV !== 'production') {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        localStorage.getItem('space.delay')
+      ) {
+        const delay = localStorage.getItem('space.delay')!;
         await new Promise((resolve) =>
-          setTimeout(resolve, Math.random() * 1000 + 1000),
+          setTimeout(
+            resolve,
+            isNaN(+delay) ? Math.random() * 1000 + 1000 : +delay,
+          ),
         );
       }
 
@@ -98,9 +105,16 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
           JSON.stringify({ query: print(document), variables }),
         );
 
-        if (process.env.NODE_ENV !== 'production') {
+        if (
+          process.env.NODE_ENV !== 'production' &&
+          localStorage.getItem('space.delay')
+        ) {
+          const delay = localStorage.getItem('space.delay')!;
           await new Promise((resolve) =>
-            setTimeout(resolve, Math.random() * 1000 + 1000),
+            setTimeout(
+              resolve,
+              isNaN(+delay) ? Math.random() * 1000 + 1000 : +delay,
+            ),
           );
         }
 

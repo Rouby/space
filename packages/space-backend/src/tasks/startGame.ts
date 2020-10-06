@@ -33,7 +33,7 @@ export async function startGame(
       return [
         `$${2 + offset}`, // name
         `$${3 + offset}`, // class
-        `($${4 + offset}, $${5 + offset})::space.vector2`, // position
+        `point ($${4 + offset}, $${5 + offset})`, // position
         `$${6 + offset}`, // owner
       ];
     },

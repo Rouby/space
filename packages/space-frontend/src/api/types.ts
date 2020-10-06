@@ -49,6 +49,8 @@ export type Query = Node & {
   player?: Maybe<Player>;
   race?: Maybe<Race>;
   currentPerson?: Maybe<Person>;
+  hashcircle?: Maybe<Scalars["Int"]>;
+  hashpoint?: Maybe<Scalars["Int"]>;
   /** Reads a single `Fleet` using its globally unique `ID`. */
   fleetByNodeId?: Maybe<Fleet>;
   /** Reads a single `Game` using its globally unique `ID`. */
@@ -182,6 +184,16 @@ export type QueryRaceArgs = {
 };
 
 /** The root query type which gives access points into the data universe. */
+export type QueryHashcircleArgs = {
+  arg0?: Maybe<Scalars["String"]>;
+};
+
+/** The root query type which gives access points into the data universe. */
+export type QueryHashpointArgs = {
+  arg0?: Maybe<PointInput>;
+};
+
+/** The root query type which gives access points into the data universe. */
 export type QueryFleetByNodeIdArgs = {
   nodeId: Scalars["ID"];
 };
@@ -303,7 +315,7 @@ export type Fleet = Node & {
   name: Scalars["String"];
   gameId: Scalars["UUID"];
   ownerId: Scalars["UUID"];
-  position: Vector2;
+  position: Point;
   /** Reads a single `Game` that is related to this `Fleet`. */
   game?: Maybe<Game>;
   /** Reads a single `Player` that is related to this `Fleet`. */
@@ -312,8 +324,8 @@ export type Fleet = Node & {
   owner?: Maybe<Person>;
 };
 
-export type Vector2 = {
-  __typename?: "Vector2";
+export type Point = {
+  __typename?: "Point";
   x: Scalars["Float"];
   y: Scalars["Float"];
 };
@@ -578,6 +590,7 @@ export type Player = Node & {
   nodeId: Scalars["ID"];
   gameId: Scalars["UUID"];
   personId: Scalars["UUID"];
+  turnEnded: Scalars["Boolean"];
   raceId: Scalars["UUID"];
   /** Reads a single `Game` that is related to this `Player`. */
   game?: Maybe<Game>;
@@ -695,7 +708,7 @@ export type Planet = Node & {
   gameId: Scalars["UUID"];
   ownerId?: Maybe<Scalars["UUID"]>;
   class: PlanetClass;
-  position: Vector2;
+  position: Point;
   /** Reads a single `Game` that is related to this `Planet`. */
   game?: Maybe<Game>;
   /** Reads a single `Player` that is related to this `Planet`. */
@@ -864,8 +877,7 @@ export type VisionsConnection = {
 
 export type Vision = {
   __typename?: "Vision";
-  position?: Maybe<Vector2>;
-  range?: Maybe<Scalars["Float"]>;
+  circle?: Maybe<Scalars["String"]>;
 };
 
 /** A `Vision` edge in the connection. */
@@ -875,6 +887,11 @@ export type VisionsEdge = {
   cursor?: Maybe<Scalars["Cursor"]>;
   /** The `Vision` at the end of the edge. */
   node: Vision;
+};
+
+export type PointInput = {
+  x: Scalars["Float"];
+  y: Scalars["Float"];
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
@@ -1147,13 +1164,7 @@ export type FleetInput = {
   name: Scalars["String"];
   gameId: Scalars["UUID"];
   ownerId: Scalars["UUID"];
-  position: Vector2Input;
-};
-
-/** An input for mutations affecting `Vector2` */
-export type Vector2Input = {
-  x: Scalars["Float"];
-  y: Scalars["Float"];
+  position: PointInput;
 };
 
 /** The output of our create `Fleet` mutation. */
@@ -1227,7 +1238,7 @@ export type PlanetInput = {
   gameId: Scalars["UUID"];
   ownerId?: Maybe<Scalars["UUID"]>;
   class: PlanetClass;
-  position: Vector2Input;
+  position: PointInput;
 };
 
 /** The output of our create `Planet` mutation. */
@@ -1266,6 +1277,7 @@ export type CreatePlayerInput = {
 export type PlayerInput = {
   gameId: Scalars["UUID"];
   personId: Scalars["UUID"];
+  turnEnded?: Maybe<Scalars["Boolean"]>;
   raceId: Scalars["UUID"];
 };
 
@@ -1341,7 +1353,7 @@ export type FleetPatch = {
   name?: Maybe<Scalars["String"]>;
   gameId?: Maybe<Scalars["UUID"]>;
   ownerId?: Maybe<Scalars["UUID"]>;
-  position?: Maybe<Vector2Input>;
+  position?: Maybe<PointInput>;
 };
 
 /** The output of our update `Fleet` mutation. */
@@ -1488,7 +1500,7 @@ export type PlanetPatch = {
   gameId?: Maybe<Scalars["UUID"]>;
   ownerId?: Maybe<Scalars["UUID"]>;
   class?: Maybe<PlanetClass>;
-  position?: Maybe<Vector2Input>;
+  position?: Maybe<PointInput>;
 };
 
 /** The output of our update `Planet` mutation. */
@@ -1538,6 +1550,7 @@ export type UpdatePlayerByNodeIdInput = {
 export type PlayerPatch = {
   gameId?: Maybe<Scalars["UUID"]>;
   personId?: Maybe<Scalars["UUID"]>;
+  turnEnded?: Maybe<Scalars["Boolean"]>;
   raceId?: Maybe<Scalars["UUID"]>;
 };
 
@@ -1924,7 +1937,7 @@ export type IsVisibleInput = {
   /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
   clientMutationId?: Maybe<Scalars["String"]>;
   gameId: Scalars["UUID"];
-  position: Vector2Input;
+  position: PointInput;
 };
 
 /** The output of our `isVisible` mutation. */
@@ -2071,6 +2084,10 @@ export type Subscription = {
   race?: Maybe<Race>;
   /**  (live) */
   currentPerson?: Maybe<Person>;
+  /**  (live) */
+  hashcircle?: Maybe<Scalars["Int"]>;
+  /**  (live) */
+  hashpoint?: Maybe<Scalars["Int"]>;
   /** Reads a single `Fleet` using its globally unique `ID`. (live) */
   fleetByNodeId?: Maybe<Fleet>;
   /** Reads a single `Game` using its globally unique `ID`. (live) */
@@ -2415,6 +2432,44 @@ export type SubscriptionRaceArgs = {
  *
  * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
  */
+export type SubscriptionHashcircleArgs = {
+  arg0?: Maybe<Scalars["String"]>;
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
+export type SubscriptionHashpointArgs = {
+  arg0?: Maybe<PointInput>;
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
 export type SubscriptionFleetByNodeIdArgs = {
   nodeId: Scalars["ID"];
 };
@@ -2708,20 +2763,14 @@ export type GalaxyMapQuery = { __typename?: "Query" } & {
             owner?: Maybe<
               { __typename?: "Person" } & Pick<Person, "id" | "name">
             >;
-            position: { __typename?: "Vector2" } & Pick<Vector2, "x" | "y">;
+            position: { __typename?: "Point" } & Pick<Point, "x" | "y">;
           }
       >;
     }
   >;
   visions?: Maybe<
     { __typename?: "VisionsConnection" } & {
-      nodes: Array<
-        { __typename?: "Vision" } & Pick<Vision, "range"> & {
-            position?: Maybe<
-              { __typename?: "Vector2" } & Pick<Vector2, "x" | "y">
-            >;
-          }
-      >;
+      nodes: Array<{ __typename?: "Vision" } & Pick<Vision, "circle">>;
     }
   >;
 };

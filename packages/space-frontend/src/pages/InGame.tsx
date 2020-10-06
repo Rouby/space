@@ -66,11 +66,7 @@ function GalaxyMap() {
         }
         visions {
           nodes {
-            position {
-              x
-              y
-            }
-            range
+            circle
           }
         }
       }
@@ -80,31 +76,65 @@ function GalaxyMap() {
     },
   );
 
+  const boundsX = planets?.nodes.reduce(
+    ([min, max], planet) =>
+      [
+        Math.min(min, planet.position.x),
+        Math.max(max, planet.position.x),
+      ] as const,
+    [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER] as const,
+  ) ?? [0, 0];
+  const boundsY = planets?.nodes.reduce(
+    ([min, max], planet) =>
+      [
+        Math.min(min, planet.position.y),
+        Math.max(max, planet.position.y),
+      ] as const,
+    [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER] as const,
+  ) ?? [0, 0];
+
+  const padding = 20;
+
   return (
     <div className={classNames.map}>
-      {visions?.nodes.map((vision, idx) => (
-        <div
-          key={idx}
-          className={classNames.vision}
-          style={{
-            left: (vision.position?.x ?? 0) + 750,
-            top: (vision.position?.y ?? 0) + 700,
-            width: (vision.range ?? 0) * 2,
-            height: (vision.range ?? 0) * 2,
-          }}
-        ></div>
-      ))}
+      {visions?.nodes.map((vision, idx) => {
+        const circle = parseCircle(vision.circle);
+        if (!circle) {
+          return null;
+        }
+        return (
+          <div
+            key={idx}
+            className={classNames.vision}
+            style={{
+              left: circle.x - boundsX[0] + padding,
+              top: circle.y - boundsY[0] + padding,
+              width: circle.radius * 2,
+              height: circle.radius * 2,
+            }}
+          />
+        );
+      })}
       {planets?.nodes.map((planet) => (
         <div
           key={planet.id}
           title={planet.name}
           className={classNames.planet}
           style={{
-            left: planet.position.x + 750,
-            top: planet.position.y + 700,
+            left: planet.position.x - boundsX[0] + padding,
+            top: planet.position.y - boundsY[0] + padding,
           }}
         ></div>
       ))}
     </div>
   );
+}
+
+function parseCircle(str?: string | null) {
+  const result = /^<\((-?[\d.]+),(-?[\d.]+)\),(-?[\d.]+)>$/.exec(str ?? '');
+
+  if (result) {
+    return { x: +result[1], y: +result[2], radius: +result[3] };
+  }
+  return undefined;
 }

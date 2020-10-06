@@ -111,9 +111,9 @@ export function Button({
         .lighten(0.08)
         .toString(),
       '--button-highlight-text-color': colors.primaryContrast.toString(),
-      // '--button-disabled-border-color': colors.primary.toString(),
-      // '--button-disabled-background-color': colors.primary.toString(),
-      // '--button-disabled-text-color': colors.primaryContrast.toString(),
+      '--button-disabled-border-color': colors.primary.toString(),
+      '--button-disabled-background-color': colors.primary.toString(),
+      '--button-disabled-text-color': colors.primaryContrast.toString(),
     },
     dashed: {
       borderStyle: 'dashed',

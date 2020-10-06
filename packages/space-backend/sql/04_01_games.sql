@@ -51,6 +51,7 @@ create policy delete_game on space.game for delete to space_person
 create table space.player (
   game_id       uuid not null references space.game(id) on delete cascade,
   person_id     uuid not null references space.person(id) on delete cascade,
+  turn_ended    boolean not null default false,
   primary key(game_id, person_id)
 );
 

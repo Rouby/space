@@ -20,7 +20,7 @@ create table space.planet (
   game_id       uuid not null references space.game(id) on delete cascade,
   owner_id      uuid references space.person(id) on delete set null default null,
   class         space.planet_class not null,
-  position      space.vector2 not null,
+  position      point not null,
   foreign key (game_id, owner_id) references space.player(game_id, person_id)
 );
 
