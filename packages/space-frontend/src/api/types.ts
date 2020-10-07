@@ -48,7 +48,9 @@ export type Query = Node & {
   planet?: Maybe<Planet>;
   player?: Maybe<Player>;
   race?: Maybe<Race>;
+  currentGame?: Maybe<Game>;
   currentPerson?: Maybe<Person>;
+  currentPlayer?: Maybe<Player>;
   hashcircle?: Maybe<Scalars["Int"]>;
   hashpoint?: Maybe<Scalars["Int"]>;
   /** Reads a single `Fleet` using its globally unique `ID`. */
@@ -959,6 +961,7 @@ export type Mutation = {
   createGame?: Maybe<CreateGamePayload>;
   currentGameId?: Maybe<CurrentGameIdPayload>;
   currentPersonId?: Maybe<CurrentPersonIdPayload>;
+  endTurn?: Maybe<EndTurnPayload>;
   isVisible?: Maybe<IsVisiblePayload>;
   joinGame?: Maybe<JoinGamePayload>;
   register?: Maybe<RegisterPayload>;
@@ -1128,6 +1131,11 @@ export type MutationCurrentGameIdArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCurrentPersonIdArgs = {
   input: CurrentPersonIdInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationEndTurnArgs = {
+  input: EndTurnInput;
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
@@ -1932,11 +1940,26 @@ export type CurrentPersonIdPayload = {
   query?: Maybe<Query>;
 };
 
+/** All input for the `endTurn` mutation. */
+export type EndTurnInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+};
+
+/** The output of our `endTurn` mutation. */
+export type EndTurnPayload = {
+  __typename?: "EndTurnPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  boolean?: Maybe<Scalars["Boolean"]>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+};
+
 /** All input for the `isVisible` mutation. */
 export type IsVisibleInput = {
   /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
   clientMutationId?: Maybe<Scalars["String"]>;
-  gameId: Scalars["UUID"];
   position: PointInput;
 };
 
@@ -2083,7 +2106,11 @@ export type Subscription = {
   /**  (live) */
   race?: Maybe<Race>;
   /**  (live) */
+  currentGame?: Maybe<Game>;
+  /**  (live) */
   currentPerson?: Maybe<Person>;
+  /**  (live) */
+  currentPlayer?: Maybe<Player>;
   /**  (live) */
   hashcircle?: Maybe<Scalars["Int"]>;
   /**  (live) */
@@ -2772,6 +2799,20 @@ export type GalaxyMapQuery = { __typename?: "Query" } & {
     { __typename?: "VisionsConnection" } & {
       nodes: Array<{ __typename?: "Vision" } & Pick<Vision, "circle">>;
     }
+  >;
+};
+
+export type TurnEndedSubscriptionVariables = Exact<{ [key: string]: never }>;
+
+export type TurnEndedSubscription = { __typename?: "Subscription" } & {
+  currentPlayer?: Maybe<{ __typename?: "Player" } & Pick<Player, "turnEnded">>;
+};
+
+export type EndTurnMutationVariables = Exact<{ [key: string]: never }>;
+
+export type EndTurnMutation = { __typename?: "Mutation" } & {
+  endTurn?: Maybe<
+    { __typename?: "EndTurnPayload" } & Pick<EndTurnPayload, "boolean">
   >;
 };
 

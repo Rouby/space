@@ -24,7 +24,6 @@ create view space.vision as (
 grant select on table space.vision to space_person;
 
 create function space.is_visible(
-  game_id      uuid,
   "position"   point
 ) returns boolean as $$
   const [vision] = plv8.execute('select count(*) as count from space.vision where circle @> $1::point', [ position ]);
@@ -32,11 +31,11 @@ create function space.is_visible(
   return vision.count > 0;
 $$ language plv8 strict security definer;
 
-grant execute on function space.is_visible(uuid, point) to space_person;
+grant execute on function space.is_visible(point) to space_person;
 
 
 create policy select_planet on space.planet for select
-  using (space.is_visible(game_id, position));
+  using (space.is_visible(position) and game_id = space.current_game_id());
 
 create policy select_fleet on space.fleet for select
-  using (space.is_visible(game_id, position));
+  using (space.is_visible(position) and game_id = space.current_game_id());

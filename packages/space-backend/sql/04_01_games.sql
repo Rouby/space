@@ -59,21 +59,11 @@ create index on space.player ( game_id );
 create index on space.player ( person_id );
 
 
-grant select, insert, update, delete on table space.player to space_person;
+grant select on table space.player to space_person;
 alter table space.player enable row level security;
 
 create policy select_player on space.player for select
   using (true);
-
-create policy insert_player on space.player for insert to space_person
-  with check (person_id = current_setting('jwt.claims.person_id', true)::uuid);
-
-create policy update_player on space.player for update to space_person
-  using (person_id = current_setting('jwt.claims.person_id', true)::uuid)
-  with check (person_id = current_setting('jwt.claims.person_id', true)::uuid);
-
-create policy delete_player on space.player for delete to space_person
-  using (person_id = current_setting('jwt.claims.person_id', true)::uuid);
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -150,6 +140,35 @@ $$ language plv8 security definer;
 
 grant execute on function space.start_game(uuid) to space_person;
 
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+create function space.end_turn()
+returns boolean as $$
+  const [player] = plv8.execute('select * from space.player where game_id = space.current_game_id() and person_id = space.current_person_id() and turn_ended = false');
+
+  if (!player) {
+    throw new Error('You cannot end your turn now');
+  }
+
+  // TODO check if game started
+
+  plv8.execute(`update space.player set turn_ended = true where game_id = space.current_game_id() and person_id = space.current_person_id()`);
+  plv8.execute(`select graphile_worker.add_job(
+    'calculateGameRound',
+    payload := json_build_object (
+      'gameId', space.current_game_id()
+    )
+  )`);
+
+  return true;
+$$ language plv8 security definer;
+
+
+grant execute on function space.end_turn() to space_person;
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 create function space.current_game_id() returns uuid as $$
 begin
@@ -158,3 +177,26 @@ end
 $$ language plpgsql;
 
 grant execute on function space.current_game_id() to space_anonymous, space_person;
+
+
+create function space.current_game() returns space.game as $$
+  select *
+  from space.game
+  where
+    id = space.current_game_id()
+$$ language sql stable;
+
+
+grant execute on function space.current_game() to space_anonymous, space_person;
+
+
+create function space.current_player() returns space.player as $$
+  select *
+  from space.player
+  where
+    game_id = space.current_game_id() and
+    person_id = space.current_person_id()
+$$ language sql stable;
+
+
+grant execute on function space.current_player() to space_anonymous, space_person;

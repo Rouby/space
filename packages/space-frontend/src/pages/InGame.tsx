@@ -1,8 +1,22 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
+import { BiBadge, BiBadgeCheck } from 'react-icons/bi';
 import { useRecoilValue } from 'recoil';
-import { GalaxyMapQuery, GalaxyMapQueryVariables } from '../api/types';
-import { useGraphQLQuery, useStylesheet } from '../hooks';
+import {
+  EndTurnMutation,
+  EndTurnMutationVariables,
+  GalaxyMapQuery,
+  GalaxyMapQueryVariables,
+  TurnEndedSubscription,
+  TurnEndedSubscriptionVariables,
+} from '../api/types';
+import { Button } from '../components/ui';
+import {
+  useGraphQLMutation,
+  useGraphQLQuery,
+  useGraphQLSubscription,
+  useStylesheet,
+} from '../hooks';
 import { atoms } from '../state';
 
 export function InGamePage() {
@@ -10,6 +24,9 @@ export function InGamePage() {
     <>
       INGAME
       <GalaxyMap />
+      <div style={{ position: 'fixed', right: 0, bottom: 0 }}>
+        <EndTurnButton />
+      </div>
     </>
   );
 }
@@ -137,4 +154,44 @@ function parseCircle(str?: string | null) {
     return { x: +result[1], y: +result[2], radius: +result[3] };
   }
   return undefined;
+}
+
+function EndTurnButton() {
+  const {
+    data: {
+      data: { currentPlayer },
+    },
+  } = useGraphQLSubscription<
+    TurnEndedSubscription,
+    TurnEndedSubscriptionVariables
+  >(
+    gql`
+      subscription TurnEnded {
+        currentPlayer {
+          turnEnded
+        }
+      }
+    `,
+  );
+
+  const [endTurn] = useGraphQLMutation<
+    EndTurnMutation,
+    EndTurnMutationVariables
+  >(
+    gql`
+      mutation EndTurn {
+        endTurn(input: {}) {
+          boolean
+        }
+      }
+    `,
+  );
+
+  return (
+    <Button
+      variant="primary"
+      icon={currentPlayer?.turnEnded ? BiBadgeCheck : BiBadge}
+      onClick={() => endTurn()}
+    ></Button>
+  );
 }

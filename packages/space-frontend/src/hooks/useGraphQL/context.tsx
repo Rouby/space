@@ -1,5 +1,6 @@
 import { DocumentNode, print } from 'graphql';
 import * as React from 'react';
+import { MdTimer } from 'react-icons/md';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { atoms } from '../../state';
 import { isOperationDefinition } from './util';
@@ -180,9 +181,9 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
           operations.delete(key);
         };
       },
-      getSubscriptionData(key: string) {
-        const op = operations.get(key)!;
-        return op.promise.then(() => op.latestData);
+      async getSubscriptionData(key: string) {
+        const op = operations.get(key);
+        return op?.promise.then(() => op.latestData);
       },
     };
   }, []);
@@ -190,7 +191,40 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
   return (
     <GraphQLContext.Provider value={graphQLClient}>
       {children}
+      {process.env.NODE_ENV !== 'production' && <DelayToggle />}
     </GraphQLContext.Provider>
+  );
+}
+
+function DelayToggle() {
+  const [active, setActive] = React.useState(
+    !!localStorage.getItem('space.delay'),
+  );
+
+  return (
+    <div
+      onClick={() =>
+        setActive((a) => {
+          if (a) {
+            localStorage.removeItem('space.delay');
+          } else {
+            localStorage.setItem('space.delay', 'enabled');
+          }
+          return !a;
+        })
+      }
+      style={{
+        position: 'fixed',
+        cursor: 'pointer',
+        bottom: 0,
+        left: 48,
+        margin: '0.5rem 0.5rem -0.25rem 0.5rem',
+        fontSize: 40,
+        opacity: active ? 1 : 0.5,
+      }}
+    >
+      <MdTimer />
+    </div>
   );
 }
 

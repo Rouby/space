@@ -144,7 +144,7 @@ export function Button({
     },
     icon: {
       display: 'inline-block',
-      marginRight: units(0.5),
+      marginRight: children ? units(0.5) : units(-0.5),
       marginLeft: units(-0.5),
       $nest: {
         '>svg': {
