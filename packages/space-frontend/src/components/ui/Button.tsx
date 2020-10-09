@@ -16,6 +16,7 @@ interface ButtonProps
   variant?: 'default' | 'primary' | 'dashed' | 'text' | 'link';
   icon?: IconType;
   loading?: boolean | Promise<unknown>;
+  useTransition?: boolean;
   to?: To;
   onClick?: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -27,6 +28,7 @@ export function Button({
   icon: Icon,
   to,
   loading,
+  useTransition,
   children,
   ...props
 }: ButtonProps) {
@@ -168,9 +170,13 @@ export function Button({
   const [isPressed, setPressed] = React.useState(false);
   const [clickPromise, setClickPromise] = React.useState<Promise<any>>();
   const [isLoading, setLoading] = React.useState(false);
-  const [startTransition, isPending] = React.unstable_useTransition({
+  let [startTransition, isPending] = React.unstable_useTransition({
     timeoutMs: 3000,
   });
+  if (!useTransition && !to) {
+    startTransition = (fn: () => void) => fn();
+  }
+
   loading = loading ?? clickPromise;
   const currentlyLoading =
     (typeof loading === 'boolean' ? loading : isLoading) || isPending;
@@ -228,7 +234,7 @@ export function Button({
           if (result instanceof Promise) {
             setClickPromise(result);
           }
-          if (to) {
+          if (!evt.defaultPrevented && to) {
             navigate(to);
           }
         });

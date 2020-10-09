@@ -14,8 +14,8 @@
     "random": "2.2.0"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^8",
-    "@types/random": "^2",
+    "@types/jsonwebtoken": "8.5.0",
+    "@types/random": "2.1.1",
     "nodemon": "2.0.4",
     "ts-node": "9.0.0",
     "typescript": "4.0.3"

@@ -65,6 +65,7 @@ export function createConfig(isDevelopment: boolean): webpack.Configuration {
                   ],
                 ],
                 plugins: [
+                  require.resolve('@babel/plugin-proposal-class-properties'),
                   isDevelopment && require.resolve('react-refresh/babel'),
                   [
                     require.resolve('babel-plugin-react-intl'),

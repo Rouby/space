@@ -20,6 +20,7 @@ interface SelectProps<TValue extends string | Renderable>
   value?: TValue;
   defaultValue?: TValue;
   onChange?: (event: { target: { value?: TValue } }) => void;
+  useTransition?: boolean;
   errors?: Record<string, any>;
 }
 
@@ -32,6 +33,7 @@ function Select_<TValue extends string | Renderable>(
     defaultValue,
     onChange,
     options,
+    useTransition,
     errors,
     ref: _,
     ...props
@@ -191,9 +193,12 @@ function Select_<TValue extends string | Renderable>(
     return;
   }, []);
 
-  const [startTransition, isPending] = React.unstable_useTransition({
+  let [startTransition, isPending] = React.unstable_useTransition({
     timeoutMs: 3000,
   });
+  if (!useTransition) {
+    startTransition = (fn: () => void) => fn();
+  }
 
   const useNative =
     native ??

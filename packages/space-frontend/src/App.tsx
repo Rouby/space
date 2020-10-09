@@ -52,6 +52,7 @@ export function App() {
         </>
       )}
       <Select
+        useTransition
         options={locales}
         value={locales.find((l) => l.key === locale)}
         onChange={(evt) => evt.target.value && setLocale(evt.target.value.key)}

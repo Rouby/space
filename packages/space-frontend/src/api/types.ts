@@ -2778,9 +2778,7 @@ export type CreateGameMutation = { __typename?: "Mutation" } & {
   >;
 };
 
-export type GalaxyMapQueryVariables = Exact<{
-  gameId: Scalars["UUID"];
-}>;
+export type GalaxyMapQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GalaxyMapQuery = { __typename?: "Query" } & {
   planets?: Maybe<

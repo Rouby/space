@@ -49,27 +49,36 @@ export function useGraphQLSubscription<
     queryCache.getResolvedQueryConfig(key).queryKeySerializerFn(key),
   );
 
-  const [unsubscribe] = React.useState(() =>
-    client.subscribe<TData, TVariables>(
-      opKey,
-      document,
-      (err, payload) => {
-        if (err) {
-          // handle fatal error?
-        } else {
-          queryCache.setQueryData(key, payload);
-        }
-      },
-      variables,
-    ),
-  );
-  React.useEffect(() => () => unsubscribe(), []);
+  React.useEffect(() => {
+    {
+      if (queryCache.getQuery(key)?.isStale()) {
+        queryCache.getQuery(key)?.refetch();
+      }
+      return () => {
+        client.unsubscribe(opKey);
+      };
+    }
+  }, []);
 
   return {
     queryKey: key as QueryKey,
     ...(useQuery<{ data: TData; errors: GraphQLError[] }>(
       key,
-      async () => client.getSubscriptionData(opKey),
+      () => {
+        client.subscribe<TData, TVariables>(
+          opKey,
+          document,
+          (err, payload) => {
+            if (err) {
+              // handle fatal error?
+            } else {
+              queryCache.setQueryData(key, payload);
+            }
+          },
+          variables,
+        );
+        return client.getSubscriptionData(opKey);
+      },
       options,
     ) as QueryResult<{ data: TData; errors: GraphQLError[] }, any> & {
       data: { data: TData; errors: GraphQLError[] };

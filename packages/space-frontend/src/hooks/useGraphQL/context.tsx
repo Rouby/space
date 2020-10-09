@@ -18,17 +18,19 @@ const GraphQLContext = React.createContext<{
       payload: { data: T; errors: GraphQLError[] },
     ) => void,
     variables?: V,
-  ): () => void;
+  ): void;
+  unsubscribe(key: string): void;
   getSubscriptionData<T>(
     key: string,
-  ): Promise<{ data: T; errors: GraphQLError[] }>;
+  ):
+    | Promise<{ data: T; errors: GraphQLError[] }>
+    | { data: T; errors: GraphQLError[] };
 }>({
   async request<T>() {
     return {} as T;
   },
-  subscribe() {
-    return () => {};
-  },
+  subscribe() {},
+  unsubscribe() {},
   async getSubscriptionData<T>() {
     return {} as T;
   },
@@ -56,53 +58,13 @@ export class GraphQLError extends Error {
 export function GraphQLProvider({ children }: { children: React.ReactNode }) {
   const resetJwt = useResetRecoilState(atoms.jwt);
 
-  const fetchRef = useFetchRef();
-  const wsRef = useWebSocketRef();
+  const sendRequest = useFetch();
+  const subscriptionManager = useSubscriptionManager();
 
   const graphQLClient = React.useMemo(() => {
-    const operations = new Map<
-      string,
-      {
-        cb: (payload: { data: any; errors?: GraphQLError[] }) => void;
-        latestData?: any;
-        promise: Promise<void>;
-        resolve?: () => void;
-      }
-    >();
-
-    wsRef.current.onmessage = async (data) => {
-      if (
-        process.env.NODE_ENV !== 'production' &&
-        localStorage.getItem('space.delay')
-      ) {
-        const delay = localStorage.getItem('space.delay')!;
-        await new Promise((resolve) =>
-          setTimeout(
-            resolve,
-            isNaN(+delay) ? Math.random() * 1000 + 1000 : +delay,
-          ),
-        );
-      }
-
-      switch (data.type) {
-        case 'data':
-          const op = operations.get(data.id);
-          if (op) {
-            op.resolve?.();
-            delete op.resolve;
-            op.latestData = data.payload;
-            op.cb(data.payload);
-          }
-          break;
-        case 'complete':
-          operations.delete(data.id);
-          break;
-      }
-    };
-
     return {
       async request<T, V>(document: DocumentNode, variables?: V) {
-        const response = await fetchRef.current(
+        const response = await sendRequest(
           JSON.stringify({ query: print(document), variables }),
         );
 
@@ -139,54 +101,32 @@ export function GraphQLProvider({ children }: { children: React.ReactNode }) {
       subscribe<T, V>(
         key: string,
         document: DocumentNode,
-        cb: (
+        callback: (
           err: Error | null,
           payload: { data: T; errors: GraphQLError[] },
         ) => void,
         variables?: V,
       ) {
-        const op = operations.get(key);
-        if (op) {
-          op.cb = (payload) => cb?.(null, { errors: [], ...payload });
-        } else {
-          const operationName =
-            document.definitions.find(isOperationDefinition)?.name?.value ??
-            'unknown';
+        const operationName =
+          document.definitions.find(isOperationDefinition)?.name?.value ??
+          'unknown';
 
-          let resolve: () => void = () => void 0;
-          const promise = new Promise<void>((r) => (resolve = r));
-
-          operations.set(key, {
-            cb: (payload) => cb?.(null, { errors: [], ...payload }),
-            promise,
-            resolve,
-          });
-
-          wsRef.current.send({
-            type: 'start',
-            id: key,
-            payload: {
-              operationName,
-              query: print(document),
-              variables,
-            },
-          });
-        }
-
-        return () => {
-          wsRef.current.send({
-            type: 'stop',
-            id: key,
-          });
-          operations.delete(key);
-        };
+        subscriptionManager.subscribe(
+          key,
+          operationName,
+          document,
+          variables,
+          callback,
+        );
       },
-      async getSubscriptionData(key: string) {
-        const op = operations.get(key);
-        return op?.promise.then(() => op.latestData);
+      unsubscribe(key: string) {
+        subscriptionManager.unsubscribe(key);
+      },
+      getSubscriptionData(key: string) {
+        return subscriptionManager.getData(key);
       },
     };
-  }, []);
+  }, [sendRequest, subscriptionManager]);
 
   return (
     <GraphQLContext.Provider value={graphQLClient}>
@@ -232,26 +172,12 @@ export function useGraphQLClient() {
   return React.useContext(GraphQLContext);
 }
 
-function useFetchRef() {
+function useFetch() {
   const jwt = useRecoilValue(atoms.jwt);
   const gameId = useRecoilValue(atoms.gameId);
 
-  const requestQueue = React.useRef<
-    {
-      body: string;
-      resolve: (resp: Response) => void;
-      reject: (err: Error) => void;
-    }[]
-  >([]);
-  const ref = React.useRef<(body: string) => Promise<Response>>(
-    async (body) =>
-      new Promise((resolve, reject) => {
-        requestQueue.current.push({ body, resolve, reject });
-      }),
-  );
-
-  React.useEffect(() => {
-    ref.current = (body) =>
+  return React.useCallback(
+    (body: string) =>
       fetch(process.env.GRAPHQL_ENDPOINT ?? '/graphql', {
         method: 'POST',
         headers: {
@@ -260,38 +186,104 @@ function useFetchRef() {
           ...(gameId ? { 'X-Game-Id': gameId } : {}),
         },
         body,
-      });
-    if (requestQueue.current.length > 0) {
-      requestQueue.current.forEach(({ body, resolve, reject }) =>
-        ref.current(body).then(resolve, reject),
-      );
-      requestQueue.current = [];
-    }
-  }, [jwt]);
-
-  return ref;
+      }),
+    [jwt, gameId],
+  );
 }
 
-// TODO this should ideally resume operations after a reconnect
-
-function useWebSocketRef() {
+function useSubscriptionManager() {
   const jwt = useRecoilValue(atoms.jwt);
   const gameId = useRecoilValue(atoms.gameId);
 
-  const sendQueue = React.useRef<any[]>([]);
-  const wsRef = React.useRef<{
-    send: (data: any) => void;
-    onmessage: (data: any) => void;
-  }>({
-    send: (data) => sendQueue.current.push(data),
-    onmessage: () => {},
-  });
-  const [i, setI] = React.useState(0);
+  const [subscriptionManager] = React.useState(() => new SubscriptionManager());
 
   React.useEffect(() => {
+    if (jwt) {
+      subscriptionManager.connect(jwt, gameId);
+    }
+  }, [jwt, gameId]);
+
+  return subscriptionManager;
+}
+
+class SubscriptionManager {
+  #ws: WebSocket | null = null;
+  #operations = new Map<
+    string,
+    {
+      operationName: string;
+      document: DocumentNode;
+      variables: any;
+      callback: (
+        err: Error | null,
+        payload: { data: any; errors: GraphQLError[] },
+      ) => void;
+    }
+  >();
+  #data = new Map<string, { data: any; errors: GraphQLError[] }>();
+  #promised = new Map<string, Promise<{ data: any; errors: GraphQLError[] }>>();
+  #deferred = new Map<
+    string,
+    (d: { data: any; errors: GraphQLError[] }) => void
+  >();
+  #queue = new Map<
+    string,
+    {
+      operationName: string;
+      document: DocumentNode;
+      variables: any;
+      callback: (
+        err: Error | null,
+        payload: { data: any; errors: GraphQLError[] },
+      ) => void;
+    }
+  >();
+  #closed = false;
+
+  #logger = console;
+
+  public connect(jwt: string, gameId: string | null) {
+    let resumeOperations: {
+      key: string;
+      operationName: string;
+      document: DocumentNode;
+      variables: any;
+      callback: (
+        err: Error | null,
+        payload: { data: any; errors: GraphQLError[] },
+      ) => void;
+    }[] = [];
+
+    if (this.#ws) {
+      resumeOperations = [...this.#operations.entries()].map(([key, op]) => ({
+        key,
+        ...op,
+      }));
+      this.#operations.forEach((op, key) => this.#queue.set(key, op));
+      this.close();
+      this.#closed = false;
+    }
+
+    this.#logger.info(`Connecting with ${gameId}`);
+    if (resumeOperations.length) {
+      this.#logger.group('Resuming operations');
+      resumeOperations.forEach((op) => this.#logger.info(`${op.key}`));
+      this.#logger.groupEnd();
+    }
+
     const ws = new WebSocket(
       process.env.GRAPHQL_SUBSCRIPTION_ENDPOINT ?? '/graphql',
       'graphql-ws',
+    );
+
+    resumeOperations.forEach((op) =>
+      this.subscribe(
+        op.key,
+        op.operationName,
+        op.document,
+        op.variables,
+        op.callback,
+      ),
     );
 
     ws.addEventListener('open', () => {
@@ -306,36 +298,158 @@ function useWebSocketRef() {
       );
     });
 
-    let mounted = true;
-    ws.addEventListener('close', () => {
-      wsRef.current.send = (data) => sendQueue.current.push(data);
-      setTimeout(() => {
-        if (mounted) {
-          setI((i) => i + 1);
-        }
-      }, Math.min(10000, 1000 * i));
+    ws.addEventListener('close', (ev) => {
+      if (ev.code !== 4000) {
+        this.#ws = null;
+        this.#operations.forEach((op, key) => this.#queue.set(key, op));
+        this.#operations.clear();
+        this.#deferred.clear();
+        setTimeout(() => {
+          this.connect(jwt, gameId);
+        }, 2500);
+      }
     });
 
-    ws.addEventListener('message', ({ data }) => {
+    ws.addEventListener('message', async ({ data }) => {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        localStorage.getItem('space.delay')
+      ) {
+        const delay = localStorage.getItem('space.delay')!;
+        await new Promise((resolve) =>
+          setTimeout(
+            resolve,
+            isNaN(+delay) ? Math.random() * 1000 + 1000 : +delay,
+          ),
+        );
+      }
+
       try {
         const parsed = JSON.parse(data);
-        if (parsed.type === 'connection_ack') {
-          sendQueue.current.forEach((data) => wsRef.current.send(data));
-          sendQueue.current = [];
+        switch (parsed.type) {
+          case 'connection_ack':
+            if (this.#closed) {
+              ws.close(4000, 'closed');
+              return;
+            }
+            this.#ws = ws;
+            this.#queue.forEach((op, key) =>
+              this.subscribe(
+                key,
+                op.operationName,
+                op.document,
+                op.variables,
+                op.callback,
+              ),
+            );
+            this.#queue.clear();
+            break;
+          case 'data':
+            const cbData = { errors: [], data: {}, ...parsed.payload };
+            this.#data.set(parsed.id, cbData);
+            const resolve = this.#deferred.get(parsed.id);
+            if (resolve) {
+              resolve(cbData);
+              this.#deferred.delete(parsed.id);
+            }
+            this.#operations.get(parsed.id)?.callback(null, cbData);
+            break;
+          case 'complete':
+            this.#operations.delete(parsed.id);
+            break;
         }
-        wsRef.current.onmessage(parsed);
       } catch {}
     });
+  }
 
-    wsRef.current.send = (data) => {
-      ws.send(JSON.stringify(data));
-    };
+  public subscribe(
+    key: string,
+    operationName: string,
+    document: DocumentNode,
+    variables: any,
+    callback: (
+      err: Error | null,
+      payload: { data: any; errors: GraphQLError[] },
+    ) => void,
+  ) {
+    this.#logger.info(`Subscribing to ${key}`);
 
-    return () => {
-      mounted = false;
-      ws.close();
-    };
-  }, [jwt, gameId, i]);
+    if (this.#operations.has(key)) {
+      this.#operations.get(key)!.callback = callback;
+      return;
+    }
+    if (this.#queue.has(key)) {
+      this.#queue.get(key)!.callback = callback;
+      return;
+    }
 
-  return wsRef;
+    this.#promised.set(
+      key,
+      new Promise<{ data: any; errors: GraphQLError[] }>((resolve) => {
+        this.#deferred.set(key, resolve);
+      }),
+    );
+    if (this.#ws) {
+      this.#operations.set(key, {
+        operationName,
+        document,
+        variables,
+        callback,
+      });
+      this.#ws.send(
+        JSON.stringify({
+          type: 'start',
+          id: key,
+          payload: {
+            operationName,
+            query: print(document),
+            variables,
+          },
+        }),
+      );
+    } else {
+      this.#queue.set(key, { operationName, document, variables, callback });
+    }
+  }
+
+  public unsubscribe(key: string) {
+    this.#logger.info(`Unsubscribed from ${key}`);
+
+    if (this.#operations.has(key)) {
+      this.#operations.delete(key);
+      if (this.#ws) {
+        this.#ws.send(
+          JSON.stringify({
+            type: 'stop',
+            id: key,
+          }),
+        );
+      }
+    } else {
+      this.#queue.delete(key);
+    }
+    this.#promised.delete(key);
+    this.#deferred.delete(key);
+    this.#data.delete(key);
+  }
+
+  public getData(key: string) {
+    const promise = this.#promised.get(key);
+    if (!promise) {
+      throw new Error('Requested data of non existend op');
+    }
+    return this.#data.get(key) ?? promise;
+  }
+
+  public close() {
+    this.#operations.forEach((_, key) => {
+      this.unsubscribe(key);
+    });
+
+    this.#closed = true;
+    if (this.#ws) {
+      this.#ws.close(4000, 'closed');
+      this.#ws = null;
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
 import { BiBadge, BiBadgeCheck } from 'react-icons/bi';
-import { useRecoilValue } from 'recoil';
 import {
   EndTurnMutation,
   EndTurnMutationVariables,
@@ -17,7 +16,6 @@ import {
   useGraphQLSubscription,
   useStylesheet,
 } from '../hooks';
-import { atoms } from '../state';
 
 export function InGamePage() {
   return (
@@ -57,16 +55,14 @@ function GalaxyMap() {
     },
   });
 
-  const gameId = useRecoilValue(atoms.gameId)!;
-
   const {
     data: {
       data: { planets, visions },
     },
   } = useGraphQLQuery<GalaxyMapQuery, GalaxyMapQueryVariables>(
     gql`
-      query GalaxyMap($gameId: UUID!) {
-        planets(condition: { gameId: $gameId }) {
+      query GalaxyMap {
+        planets {
           nodes {
             id
             name
@@ -88,9 +84,6 @@ function GalaxyMap() {
         }
       }
     `,
-    {
-      variables: { gameId },
-    },
   );
 
   const boundsX = planets?.nodes.reduce(
