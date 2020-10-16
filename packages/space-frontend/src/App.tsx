@@ -2,7 +2,6 @@ import gql from 'graphql-tag';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedDisplayName, FormattedMessage, useIntl } from 'react-intl';
-import { Route, Routes } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   SignInMutation,
@@ -10,9 +9,8 @@ import {
   SignUpMutation,
   SignUpMutationVariables,
 } from './api/types';
-import { Button, Input, Select } from './components/ui';
+import { Button, Input, Layout } from './components/ui';
 import { useGraphQLMutation, useLocale, useNotification } from './hooks';
-import { GamesPage, InGamePage } from './pages';
 import { atoms, useUser } from './state';
 
 export function App() {
@@ -34,36 +32,74 @@ export function App() {
   const notify = useNotification();
 
   return (
-    <div>
-      {user ? (
-        <>
-          <Button variant="link" to="games">
-            <FormattedMessage id="" defaultMessage="Games" />
-          </Button>
-          <Routes>
-            <Route path="games/*" element={<GamesPage />} />
-            {gameId && <Route path="*" element={<InGamePage />} />}
-          </Routes>
-        </>
-      ) : (
-        <>
-          <SignIn />
-          <SignUp />
-        </>
+    <Layout>
+      {gameId && (
+        <Layout.Header>
+          <div>Resource 1</div>
+          <div>Resource 2</div>
+          <div>Resource 3</div>
+          <div>Resource 4</div>
+          <div>Resource 5</div>
+          <div>Resource 6</div>
+          <div>Resource 7</div>
+          <div>Resource 8</div>
+          <div>Resource 9</div>
+          <div>Resource 10</div>
+          <div>Resource 11</div>
+          <div>Resource 12</div>
+          <div>Resource 13</div>
+          <div>Resource 14</div>
+          <div>Resource 15</div>
+          <div>Resource 16</div>
+        </Layout.Header>
       )}
-      <Select
-        useTransition
-        options={locales}
-        value={locales.find((l) => l.key === locale)}
-        onChange={(evt) => evt.target.value && setLocale(evt.target.value.key)}
-      />
-      <Button
-        variant="dashed"
-        onClick={() => notify.info({ text: 'oopsi', duration: 0 })}
-      >
-        Notify
-      </Button>
-    </div>
+      <Layout.Content>hello</Layout.Content>
+      <Layout.Aside>info panel</Layout.Aside>
+      <Layout.Avatar name={user?.name}>
+        <Button
+          variant="link"
+          onClick={() => notify.info({ text: 'oopsi', duration: 0 })}
+        >
+          Notify
+        </Button>
+        <Button
+          variant="link"
+          onClick={() => notify.info({ text: 'oopsi', duration: 0 })}
+        >
+          Notify
+        </Button>
+      </Layout.Avatar>
+    </Layout>
+    // <div>
+    //   {user ? (
+    //     <>
+    //       <Button variant="link" to="games">
+    //         <FormattedMessage id="" defaultMessage="Games" />
+    //       </Button>
+    //       <Routes>
+    //         <Route path="games/*" element={<GamesPage />} />
+    //         {gameId && <Route path="*" element={<InGamePage />} />}
+    //       </Routes>
+    //     </>
+    //   ) : (
+    //     <>
+    //       <SignIn />
+    //       <SignUp />
+    //     </>
+    //   )}
+    //   <Select
+    //     useTransition
+    //     options={locales}
+    //     value={locales.find((l) => l.key === locale)}
+    //     onChange={(evt) => evt.target.value && setLocale(evt.target.value.key)}
+    //   />
+    //   <Button
+    //     variant="dashed"
+    //     onClick={() => notify.info({ text: 'oopsi', duration: 0 })}
+    //   >
+    //     Notify
+    //   </Button>
+    // </div>
   );
 }
 

@@ -103,6 +103,7 @@ export function NotificationHub({
       position: 'fixed',
       top: units(1),
       right: units(0),
+      zIndex: 1000,
     },
     box: {
       width: units(32),
@@ -122,7 +123,7 @@ export function NotificationHub({
           <motion.div
             key={item.key}
             className={classNames.box}
-            initial={{ opacity: 0, transform: 'translateX(100%)' }}
+            initial={{ opacity: 0.5, transform: 'translateX(100%)' }}
             animate={{ opacity: 1, transform: 'translateX(0%)' }}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             layout
