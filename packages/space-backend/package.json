@@ -1,7 +1,8 @@
 {
   "name": "@space/backend",
   "scripts": {
-    "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/index.ts\""
+    "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/index.ts\"",
+    "generate": "nodemon --watch \"sql/**\" --ext \"ts\" --exec \"ts-node sql/db-setup.ts\""
   },
   "dependencies": {
     "@graphile-contrib/pg-simplify-inflector": "6.0.0",
@@ -14,6 +15,7 @@
     "random": "2.2.0"
   },
   "devDependencies": {
+    "@rouby/psb": "1.0.0",
     "@types/jsonwebtoken": "8.5.0",
     "@types/random": "2.1.1",
     "nodemon": "2.0.4",

@@ -14,14 +14,17 @@ create operator class space.circle_hash_ops default for type circle using hash a
    operator 1 ~=(circle,circle),
    function 1 space.hashcircle(circle);
 
+
+
+
 create view space.vision as (
-  -- select (position, 50) as circle from space.planet where owner_id = space.current_person_id() and game_id = space.current_game_id() union
-  -- select (position, 30) as circle from space.fleet where owner_id = space.current_person_id() and game_id = space.current_game_id()
         select circle (position, 50) as circle from space.planet where owner_id = space.current_person_id() and game_id = space.current_game_id()
   union select circle (position, 30) as circle from space.fleet where owner_id = space.current_person_id() and game_id = space.current_game_id()
 );
 
 grant select on table space.vision to space_person;
+
+
 
 create function space.is_visible(
   "position"   point
@@ -32,6 +35,7 @@ create function space.is_visible(
 $$ language plv8 strict security definer;
 
 grant execute on function space.is_visible(point) to space_person;
+
 
 
 create policy select_planet on space.planet for select

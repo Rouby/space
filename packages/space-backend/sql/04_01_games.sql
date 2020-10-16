@@ -25,7 +25,8 @@ create table space.game (
   type          space.galaxy_type not null default 'spiral',
   size          space.galaxy_size not null default 'normal',
   state         space.game_state not null default 'create',
-  started       timestamp with time zone
+  started       timestamp with time zone,
+  turn          int not null default 0
 );
 
 comment on table space.game is E'@omit create';
