@@ -28,6 +28,8 @@ export type Query = Node & {
   nodeId: Scalars["ID"];
   /** Fetches an object given its globally unique `ID`. */
   node?: Maybe<Node>;
+  /** Reads and enables pagination through a set of `Building`. */
+  buildings?: Maybe<BuildingsConnection>;
   /** Reads and enables pagination through a set of `Fleet`. */
   fleets?: Maybe<FleetsConnection>;
   /** Reads and enables pagination through a set of `Game`. */
@@ -36,16 +38,20 @@ export type Query = Node & {
   people?: Maybe<PeopleConnection>;
   /** Reads and enables pagination through a set of `Planet`. */
   planets?: Maybe<PlanetsConnection>;
+  /** Reads and enables pagination through a set of `PlanetBuilding`. */
+  planetBuildings?: Maybe<PlanetBuildingsConnection>;
   /** Reads and enables pagination through a set of `Player`. */
   players?: Maybe<PlayersConnection>;
   /** Reads and enables pagination through a set of `Race`. */
   races?: Maybe<RacesConnection>;
   /** Reads and enables pagination through a set of `Vision`. */
   visions?: Maybe<VisionsConnection>;
+  building?: Maybe<Building>;
   fleet?: Maybe<Fleet>;
   game?: Maybe<Game>;
   person?: Maybe<Person>;
   planet?: Maybe<Planet>;
+  planetBuilding?: Maybe<PlanetBuilding>;
   player?: Maybe<Player>;
   race?: Maybe<Race>;
   currentGame?: Maybe<Game>;
@@ -53,6 +59,8 @@ export type Query = Node & {
   currentPlayer?: Maybe<Player>;
   hashcircle?: Maybe<Scalars["Int"]>;
   hashpoint?: Maybe<Scalars["Int"]>;
+  /** Reads a single `Building` using its globally unique `ID`. */
+  buildingByNodeId?: Maybe<Building>;
   /** Reads a single `Fleet` using its globally unique `ID`. */
   fleetByNodeId?: Maybe<Fleet>;
   /** Reads a single `Game` using its globally unique `ID`. */
@@ -61,6 +69,8 @@ export type Query = Node & {
   personByNodeId?: Maybe<Person>;
   /** Reads a single `Planet` using its globally unique `ID`. */
   planetByNodeId?: Maybe<Planet>;
+  /** Reads a single `PlanetBuilding` using its globally unique `ID`. */
+  planetBuildingByNodeId?: Maybe<PlanetBuilding>;
   /** Reads a single `Player` using its globally unique `ID`. */
   playerByNodeId?: Maybe<Player>;
   /** Reads a single `Race` using its globally unique `ID`. */
@@ -70,6 +80,18 @@ export type Query = Node & {
 /** The root query type which gives access points into the data universe. */
 export type QueryNodeArgs = {
   nodeId: Scalars["ID"];
+};
+
+/** The root query type which gives access points into the data universe. */
+export type QueryBuildingsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<BuildingsOrderBy>>;
+  condition?: Maybe<BuildingCondition>;
+  filter?: Maybe<BuildingFilter>;
 };
 
 /** The root query type which gives access points into the data universe. */
@@ -121,6 +143,18 @@ export type QueryPlanetsArgs = {
 };
 
 /** The root query type which gives access points into the data universe. */
+export type QueryPlanetBuildingsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<PlanetBuildingsOrderBy>>;
+  condition?: Maybe<PlanetBuildingCondition>;
+  filter?: Maybe<PlanetBuildingFilter>;
+};
+
+/** The root query type which gives access points into the data universe. */
 export type QueryPlayersArgs = {
   first?: Maybe<Scalars["Int"]>;
   last?: Maybe<Scalars["Int"]>;
@@ -155,6 +189,11 @@ export type QueryVisionsArgs = {
 };
 
 /** The root query type which gives access points into the data universe. */
+export type QueryBuildingArgs = {
+  id: Scalars["UUID"];
+};
+
+/** The root query type which gives access points into the data universe. */
 export type QueryFleetArgs = {
   id: Scalars["UUID"];
 };
@@ -172,6 +211,12 @@ export type QueryPersonArgs = {
 /** The root query type which gives access points into the data universe. */
 export type QueryPlanetArgs = {
   id: Scalars["UUID"];
+};
+
+/** The root query type which gives access points into the data universe. */
+export type QueryPlanetBuildingArgs = {
+  planetId: Scalars["UUID"];
+  buildingId: Scalars["UUID"];
 };
 
 /** The root query type which gives access points into the data universe. */
@@ -196,6 +241,11 @@ export type QueryHashpointArgs = {
 };
 
 /** The root query type which gives access points into the data universe. */
+export type QueryBuildingByNodeIdArgs = {
+  nodeId: Scalars["ID"];
+};
+
+/** The root query type which gives access points into the data universe. */
 export type QueryFleetByNodeIdArgs = {
   nodeId: Scalars["ID"];
 };
@@ -216,6 +266,11 @@ export type QueryPlanetByNodeIdArgs = {
 };
 
 /** The root query type which gives access points into the data universe. */
+export type QueryPlanetBuildingByNodeIdArgs = {
+  nodeId: Scalars["ID"];
+};
+
+/** The root query type which gives access points into the data universe. */
 export type QueryPlayerByNodeIdArgs = {
   nodeId: Scalars["ID"];
 };
@@ -231,43 +286,31 @@ export type Node = {
   nodeId: Scalars["ID"];
 };
 
-/** Methods to use when ordering `Fleet`. */
-export enum FleetsOrderBy {
+/** Methods to use when ordering `Building`. */
+export enum BuildingsOrderBy {
   Natural = "NATURAL",
   IdAsc = "ID_ASC",
   IdDesc = "ID_DESC",
-  GameIdAsc = "GAME_ID_ASC",
-  GameIdDesc = "GAME_ID_DESC",
-  OwnerIdAsc = "OWNER_ID_ASC",
-  OwnerIdDesc = "OWNER_ID_DESC",
   PrimaryKeyAsc = "PRIMARY_KEY_ASC",
   PrimaryKeyDesc = "PRIMARY_KEY_DESC",
 }
 
-/** A condition to be used against `Fleet` object types. All fields are tested for equality and combined with a logical ‘and.’ */
-export type FleetCondition = {
+/** A condition to be used against `Building` object types. All fields are tested for equality and combined with a logical ‘and.’ */
+export type BuildingCondition = {
   /** Checks for equality with the object’s `id` field. */
   id?: Maybe<Scalars["UUID"]>;
-  /** Checks for equality with the object’s `gameId` field. */
-  gameId?: Maybe<Scalars["UUID"]>;
-  /** Checks for equality with the object’s `ownerId` field. */
-  ownerId?: Maybe<Scalars["UUID"]>;
 };
 
-/** A filter to be used against `Fleet` object types. All fields are combined with a logical ‘and.’ */
-export type FleetFilter = {
+/** A filter to be used against `Building` object types. All fields are combined with a logical ‘and.’ */
+export type BuildingFilter = {
   /** Filter by the object’s `id` field. */
   id?: Maybe<UuidFilter>;
-  /** Filter by the object’s `gameId` field. */
-  gameId?: Maybe<UuidFilter>;
-  /** Filter by the object’s `ownerId` field. */
-  ownerId?: Maybe<UuidFilter>;
   /** Checks for all expressions in this list. */
-  and?: Maybe<Array<FleetFilter>>;
+  and?: Maybe<Array<BuildingFilter>>;
   /** Checks for any expressions in this list. */
-  or?: Maybe<Array<FleetFilter>>;
+  or?: Maybe<Array<BuildingFilter>>;
   /** Negates the expression. */
-  not?: Maybe<FleetFilter>;
+  not?: Maybe<BuildingFilter>;
 };
 
 /** A filter to be used against UUID fields. All fields are combined with a logical ‘and.’ */
@@ -296,35 +339,143 @@ export type UuidFilter = {
   greaterThanOrEqualTo?: Maybe<Scalars["UUID"]>;
 };
 
-/** A connection to a list of `Fleet` values. */
-export type FleetsConnection = {
-  __typename?: "FleetsConnection";
-  /** A list of `Fleet` objects. */
-  nodes: Array<Fleet>;
-  /** A list of edges which contains the `Fleet` and cursor to aid in pagination. */
-  edges: Array<FleetsEdge>;
+/** A connection to a list of `Building` values. */
+export type BuildingsConnection = {
+  __typename?: "BuildingsConnection";
+  /** A list of `Building` objects. */
+  nodes: Array<Building>;
+  /** A list of edges which contains the `Building` and cursor to aid in pagination. */
+  edges: Array<BuildingsEdge>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
-  /** The count of *all* `Fleet` you could get from the connection. */
+  /** The count of *all* `Building` you could get from the connection. */
   totalCount: Scalars["Int"];
 };
 
-export type Fleet = Node & {
-  __typename?: "Fleet";
+export type Building = Node & {
+  __typename?: "Building";
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  nodeId: Scalars["ID"];
+  id: Scalars["UUID"];
+  name: Scalars["String"];
+  /** Reads and enables pagination through a set of `PlanetBuilding`. */
+  planetBuildings: PlanetBuildingsConnection;
+};
+
+export type BuildingPlanetBuildingsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<PlanetBuildingsOrderBy>>;
+  condition?: Maybe<PlanetBuildingCondition>;
+  filter?: Maybe<PlanetBuildingFilter>;
+};
+
+/** Methods to use when ordering `PlanetBuilding`. */
+export enum PlanetBuildingsOrderBy {
+  Natural = "NATURAL",
+  PlanetIdAsc = "PLANET_ID_ASC",
+  PlanetIdDesc = "PLANET_ID_DESC",
+  BuildingIdAsc = "BUILDING_ID_ASC",
+  BuildingIdDesc = "BUILDING_ID_DESC",
+  PrimaryKeyAsc = "PRIMARY_KEY_ASC",
+  PrimaryKeyDesc = "PRIMARY_KEY_DESC",
+}
+
+/** A condition to be used against `PlanetBuilding` object types. All fields are tested for equality and combined with a logical ‘and.’ */
+export type PlanetBuildingCondition = {
+  /** Checks for equality with the object’s `planetId` field. */
+  planetId?: Maybe<Scalars["UUID"]>;
+  /** Checks for equality with the object’s `buildingId` field. */
+  buildingId?: Maybe<Scalars["UUID"]>;
+};
+
+/** A filter to be used against `PlanetBuilding` object types. All fields are combined with a logical ‘and.’ */
+export type PlanetBuildingFilter = {
+  /** Filter by the object’s `planetId` field. */
+  planetId?: Maybe<UuidFilter>;
+  /** Filter by the object’s `buildingId` field. */
+  buildingId?: Maybe<UuidFilter>;
+  /** Checks for all expressions in this list. */
+  and?: Maybe<Array<PlanetBuildingFilter>>;
+  /** Checks for any expressions in this list. */
+  or?: Maybe<Array<PlanetBuildingFilter>>;
+  /** Negates the expression. */
+  not?: Maybe<PlanetBuildingFilter>;
+};
+
+/** A connection to a list of `PlanetBuilding` values. */
+export type PlanetBuildingsConnection = {
+  __typename?: "PlanetBuildingsConnection";
+  /** A list of `PlanetBuilding` objects. */
+  nodes: Array<PlanetBuilding>;
+  /** A list of edges which contains the `PlanetBuilding` and cursor to aid in pagination. */
+  edges: Array<PlanetBuildingsEdge>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `PlanetBuilding` you could get from the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export type PlanetBuilding = Node & {
+  __typename?: "PlanetBuilding";
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  nodeId: Scalars["ID"];
+  planetId: Scalars["UUID"];
+  buildingId: Scalars["UUID"];
+  /** Reads a single `Planet` that is related to this `PlanetBuilding`. */
+  planet?: Maybe<Planet>;
+  /** Reads a single `Building` that is related to this `PlanetBuilding`. */
+  building?: Maybe<Building>;
+};
+
+export type Planet = Node & {
+  __typename?: "Planet";
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   nodeId: Scalars["ID"];
   id: Scalars["UUID"];
   name: Scalars["String"];
   gameId: Scalars["UUID"];
-  ownerId: Scalars["UUID"];
+  ownerId?: Maybe<Scalars["UUID"]>;
+  class: PlanetClass;
   position: Point;
-  /** Reads a single `Game` that is related to this `Fleet`. */
+  /** Reads a single `Game` that is related to this `Planet`. */
   game?: Maybe<Game>;
-  /** Reads a single `Player` that is related to this `Fleet`. */
+  /** Reads a single `Player` that is related to this `Planet`. */
   player?: Maybe<Player>;
-  /** Reads a single `Person` that is related to this `Fleet`. */
+  /** Reads a single `Person` that is related to this `Planet`. */
   owner?: Maybe<Person>;
+  /** Reads and enables pagination through a set of `PlanetBuilding`. */
+  planetBuildings: PlanetBuildingsConnection;
 };
+
+export type PlanetPlanetBuildingsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<PlanetBuildingsOrderBy>>;
+  condition?: Maybe<PlanetBuildingCondition>;
+  filter?: Maybe<PlanetBuildingFilter>;
+};
+
+export enum PlanetClass {
+  ClassA = "CLASS_A",
+  ClassC = "CLASS_C",
+  ClassD = "CLASS_D",
+  ClassH = "CLASS_H",
+  ClassJ = "CLASS_J",
+  ClassK = "CLASS_K",
+  ClassL = "CLASS_L",
+  ClassM = "CLASS_M",
+  ClassO = "CLASS_O",
+  ClassP = "CLASS_P",
+  ClassR = "CLASS_R",
+  ClassY = "CLASS_Y",
+}
 
 export type Point = {
   __typename?: "Point";
@@ -344,6 +495,7 @@ export type Game = Node & {
   size: GalaxySize;
   state: GameState;
   started?: Maybe<Scalars["Datetime"]>;
+  turn: Scalars["Int"];
   /** Reads a single `Person` that is related to this `Game`. */
   author?: Maybe<Person>;
   /** Reads and enables pagination through a set of `Player`. */
@@ -649,6 +801,84 @@ export type RacePlayersArgs = {
   filter?: Maybe<PlayerFilter>;
 };
 
+/** Methods to use when ordering `Fleet`. */
+export enum FleetsOrderBy {
+  Natural = "NATURAL",
+  IdAsc = "ID_ASC",
+  IdDesc = "ID_DESC",
+  GameIdAsc = "GAME_ID_ASC",
+  GameIdDesc = "GAME_ID_DESC",
+  OwnerIdAsc = "OWNER_ID_ASC",
+  OwnerIdDesc = "OWNER_ID_DESC",
+  PrimaryKeyAsc = "PRIMARY_KEY_ASC",
+  PrimaryKeyDesc = "PRIMARY_KEY_DESC",
+}
+
+/** A condition to be used against `Fleet` object types. All fields are tested for equality and combined with a logical ‘and.’ */
+export type FleetCondition = {
+  /** Checks for equality with the object’s `id` field. */
+  id?: Maybe<Scalars["UUID"]>;
+  /** Checks for equality with the object’s `gameId` field. */
+  gameId?: Maybe<Scalars["UUID"]>;
+  /** Checks for equality with the object’s `ownerId` field. */
+  ownerId?: Maybe<Scalars["UUID"]>;
+};
+
+/** A filter to be used against `Fleet` object types. All fields are combined with a logical ‘and.’ */
+export type FleetFilter = {
+  /** Filter by the object’s `id` field. */
+  id?: Maybe<UuidFilter>;
+  /** Filter by the object’s `gameId` field. */
+  gameId?: Maybe<UuidFilter>;
+  /** Filter by the object’s `ownerId` field. */
+  ownerId?: Maybe<UuidFilter>;
+  /** Checks for all expressions in this list. */
+  and?: Maybe<Array<FleetFilter>>;
+  /** Checks for any expressions in this list. */
+  or?: Maybe<Array<FleetFilter>>;
+  /** Negates the expression. */
+  not?: Maybe<FleetFilter>;
+};
+
+/** A connection to a list of `Fleet` values. */
+export type FleetsConnection = {
+  __typename?: "FleetsConnection";
+  /** A list of `Fleet` objects. */
+  nodes: Array<Fleet>;
+  /** A list of edges which contains the `Fleet` and cursor to aid in pagination. */
+  edges: Array<FleetsEdge>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `Fleet` you could get from the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export type Fleet = Node & {
+  __typename?: "Fleet";
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  nodeId: Scalars["ID"];
+  id: Scalars["UUID"];
+  name: Scalars["String"];
+  gameId: Scalars["UUID"];
+  ownerId: Scalars["UUID"];
+  position: Point;
+  /** Reads a single `Game` that is related to this `Fleet`. */
+  game?: Maybe<Game>;
+  /** Reads a single `Player` that is related to this `Fleet`. */
+  player?: Maybe<Player>;
+  /** Reads a single `Person` that is related to this `Fleet`. */
+  owner?: Maybe<Person>;
+};
+
+/** A `Fleet` edge in the connection. */
+export type FleetsEdge = {
+  __typename?: "FleetsEdge";
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars["Cursor"]>;
+  /** The `Fleet` at the end of the edge. */
+  node: Fleet;
+};
+
 /** Methods to use when ordering `Planet`. */
 export enum PlanetsOrderBy {
   Natural = "NATURAL",
@@ -701,39 +931,6 @@ export type PlanetsConnection = {
   totalCount: Scalars["Int"];
 };
 
-export type Planet = Node & {
-  __typename?: "Planet";
-  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
-  nodeId: Scalars["ID"];
-  id: Scalars["UUID"];
-  name: Scalars["String"];
-  gameId: Scalars["UUID"];
-  ownerId?: Maybe<Scalars["UUID"]>;
-  class: PlanetClass;
-  position: Point;
-  /** Reads a single `Game` that is related to this `Planet`. */
-  game?: Maybe<Game>;
-  /** Reads a single `Player` that is related to this `Planet`. */
-  player?: Maybe<Player>;
-  /** Reads a single `Person` that is related to this `Planet`. */
-  owner?: Maybe<Person>;
-};
-
-export enum PlanetClass {
-  ClassA = "CLASS_A",
-  ClassC = "CLASS_C",
-  ClassD = "CLASS_D",
-  ClassH = "CLASS_H",
-  ClassJ = "CLASS_J",
-  ClassK = "CLASS_K",
-  ClassL = "CLASS_L",
-  ClassM = "CLASS_M",
-  ClassO = "CLASS_O",
-  ClassP = "CLASS_P",
-  ClassR = "CLASS_R",
-  ClassY = "CLASS_Y",
-}
-
 /** A `Planet` edge in the connection. */
 export type PlanetsEdge = {
   __typename?: "PlanetsEdge";
@@ -752,13 +949,22 @@ export type PlayersEdge = {
   node: Player;
 };
 
-/** A `Fleet` edge in the connection. */
-export type FleetsEdge = {
-  __typename?: "FleetsEdge";
+/** A `PlanetBuilding` edge in the connection. */
+export type PlanetBuildingsEdge = {
+  __typename?: "PlanetBuildingsEdge";
   /** A cursor for use in pagination. */
   cursor?: Maybe<Scalars["Cursor"]>;
-  /** The `Fleet` at the end of the edge. */
-  node: Fleet;
+  /** The `PlanetBuilding` at the end of the edge. */
+  node: PlanetBuilding;
+};
+
+/** A `Building` edge in the connection. */
+export type BuildingsEdge = {
+  __typename?: "BuildingsEdge";
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars["Cursor"]>;
+  /** The `Building` at the end of the edge. */
+  node: Building;
 };
 
 /** Methods to use when ordering `Person`. */
@@ -899,16 +1105,24 @@ export type PointInput = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: "Mutation";
+  /** Creates a single `Building`. */
+  createBuilding?: Maybe<CreateBuildingPayload>;
   /** Creates a single `Fleet`. */
   createFleet?: Maybe<CreateFleetPayload>;
   /** Creates a single `Person`. */
   createPerson?: Maybe<CreatePersonPayload>;
   /** Creates a single `Planet`. */
   createPlanet?: Maybe<CreatePlanetPayload>;
+  /** Creates a single `PlanetBuilding`. */
+  createPlanetBuilding?: Maybe<CreatePlanetBuildingPayload>;
   /** Creates a single `Player`. */
   createPlayer?: Maybe<CreatePlayerPayload>;
   /** Creates a single `Race`. */
   createRace?: Maybe<CreateRacePayload>;
+  /** Updates a single `Building` using its globally unique id and a patch. */
+  updateBuildingByNodeId?: Maybe<UpdateBuildingPayload>;
+  /** Updates a single `Building` using a unique key and a patch. */
+  updateBuilding?: Maybe<UpdateBuildingPayload>;
   /** Updates a single `Fleet` using its globally unique id and a patch. */
   updateFleetByNodeId?: Maybe<UpdateFleetPayload>;
   /** Updates a single `Fleet` using a unique key and a patch. */
@@ -925,6 +1139,10 @@ export type Mutation = {
   updatePlanetByNodeId?: Maybe<UpdatePlanetPayload>;
   /** Updates a single `Planet` using a unique key and a patch. */
   updatePlanet?: Maybe<UpdatePlanetPayload>;
+  /** Updates a single `PlanetBuilding` using its globally unique id and a patch. */
+  updatePlanetBuildingByNodeId?: Maybe<UpdatePlanetBuildingPayload>;
+  /** Updates a single `PlanetBuilding` using a unique key and a patch. */
+  updatePlanetBuilding?: Maybe<UpdatePlanetBuildingPayload>;
   /** Updates a single `Player` using its globally unique id and a patch. */
   updatePlayerByNodeId?: Maybe<UpdatePlayerPayload>;
   /** Updates a single `Player` using a unique key and a patch. */
@@ -933,6 +1151,10 @@ export type Mutation = {
   updateRaceByNodeId?: Maybe<UpdateRacePayload>;
   /** Updates a single `Race` using a unique key and a patch. */
   updateRace?: Maybe<UpdateRacePayload>;
+  /** Deletes a single `Building` using its globally unique id. */
+  deleteBuildingByNodeId?: Maybe<DeleteBuildingPayload>;
+  /** Deletes a single `Building` using a unique key. */
+  deleteBuilding?: Maybe<DeleteBuildingPayload>;
   /** Deletes a single `Fleet` using its globally unique id. */
   deleteFleetByNodeId?: Maybe<DeleteFleetPayload>;
   /** Deletes a single `Fleet` using a unique key. */
@@ -949,6 +1171,10 @@ export type Mutation = {
   deletePlanetByNodeId?: Maybe<DeletePlanetPayload>;
   /** Deletes a single `Planet` using a unique key. */
   deletePlanet?: Maybe<DeletePlanetPayload>;
+  /** Deletes a single `PlanetBuilding` using its globally unique id. */
+  deletePlanetBuildingByNodeId?: Maybe<DeletePlanetBuildingPayload>;
+  /** Deletes a single `PlanetBuilding` using a unique key. */
+  deletePlanetBuilding?: Maybe<DeletePlanetBuildingPayload>;
   /** Deletes a single `Player` using its globally unique id. */
   deletePlayerByNodeId?: Maybe<DeletePlayerPayload>;
   /** Deletes a single `Player` using a unique key. */
@@ -969,6 +1195,11 @@ export type Mutation = {
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreateBuildingArgs = {
+  input: CreateBuildingInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateFleetArgs = {
   input: CreateFleetInput;
 };
@@ -984,6 +1215,11 @@ export type MutationCreatePlanetArgs = {
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationCreatePlanetBuildingArgs = {
+  input: CreatePlanetBuildingInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreatePlayerArgs = {
   input: CreatePlayerInput;
 };
@@ -991,6 +1227,16 @@ export type MutationCreatePlayerArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationCreateRaceArgs = {
   input: CreateRaceInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateBuildingByNodeIdArgs = {
+  input: UpdateBuildingByNodeIdInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateBuildingArgs = {
+  input: UpdateBuildingInput;
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
@@ -1034,6 +1280,16 @@ export type MutationUpdatePlanetArgs = {
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdatePlanetBuildingByNodeIdArgs = {
+  input: UpdatePlanetBuildingByNodeIdInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdatePlanetBuildingArgs = {
+  input: UpdatePlanetBuildingInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdatePlayerByNodeIdArgs = {
   input: UpdatePlayerByNodeIdInput;
 };
@@ -1051,6 +1307,16 @@ export type MutationUpdateRaceByNodeIdArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateRaceArgs = {
   input: UpdateRaceInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteBuildingByNodeIdArgs = {
+  input: DeleteBuildingByNodeIdInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteBuildingArgs = {
+  input: DeleteBuildingInput;
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
@@ -1091,6 +1357,16 @@ export type MutationDeletePlanetByNodeIdArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeletePlanetArgs = {
   input: DeletePlanetInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeletePlanetBuildingByNodeIdArgs = {
+  input: DeletePlanetBuildingByNodeIdInput;
+};
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeletePlanetBuildingArgs = {
+  input: DeletePlanetBuildingInput;
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
@@ -1156,6 +1432,38 @@ export type MutationRegisterArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationStartGameArgs = {
   input: StartGameInput;
+};
+
+/** All input for the create `Building` mutation. */
+export type CreateBuildingInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `Building` to be created by this mutation. */
+  building: BuildingInput;
+};
+
+/** An input for mutations affecting `Building` */
+export type BuildingInput = {
+  id?: Maybe<Scalars["UUID"]>;
+  name: Scalars["String"];
+};
+
+/** The output of our create `Building` mutation. */
+export type CreateBuildingPayload = {
+  __typename?: "CreateBuildingPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `Building` that was created by this mutation. */
+  building?: Maybe<Building>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** An edge for our `Building`. May be used by Relay 1. */
+  buildingEdge?: Maybe<BuildingsEdge>;
+};
+
+/** The output of our create `Building` mutation. */
+export type CreateBuildingPayloadBuildingEdgeArgs = {
+  orderBy?: Maybe<Array<BuildingsOrderBy>>;
 };
 
 /** All input for the create `Fleet` mutation. */
@@ -1273,6 +1581,42 @@ export type CreatePlanetPayloadPlanetEdgeArgs = {
   orderBy?: Maybe<Array<PlanetsOrderBy>>;
 };
 
+/** All input for the create `PlanetBuilding` mutation. */
+export type CreatePlanetBuildingInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `PlanetBuilding` to be created by this mutation. */
+  planetBuilding: PlanetBuildingInput;
+};
+
+/** An input for mutations affecting `PlanetBuilding` */
+export type PlanetBuildingInput = {
+  planetId: Scalars["UUID"];
+  buildingId: Scalars["UUID"];
+};
+
+/** The output of our create `PlanetBuilding` mutation. */
+export type CreatePlanetBuildingPayload = {
+  __typename?: "CreatePlanetBuildingPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `PlanetBuilding` that was created by this mutation. */
+  planetBuilding?: Maybe<PlanetBuilding>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** Reads a single `Planet` that is related to this `PlanetBuilding`. */
+  planet?: Maybe<Planet>;
+  /** Reads a single `Building` that is related to this `PlanetBuilding`. */
+  building?: Maybe<Building>;
+  /** An edge for our `PlanetBuilding`. May be used by Relay 1. */
+  planetBuildingEdge?: Maybe<PlanetBuildingsEdge>;
+};
+
+/** The output of our create `PlanetBuilding` mutation. */
+export type CreatePlanetBuildingPayloadPlanetBuildingEdgeArgs = {
+  orderBy?: Maybe<Array<PlanetBuildingsOrderBy>>;
+};
+
 /** All input for the create `Player` mutation. */
 export type CreatePlayerInput = {
   /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
@@ -1343,6 +1687,49 @@ export type CreateRacePayload = {
 /** The output of our create `Race` mutation. */
 export type CreateRacePayloadRaceEdgeArgs = {
   orderBy?: Maybe<Array<RacesOrderBy>>;
+};
+
+/** All input for the `updateBuildingByNodeId` mutation. */
+export type UpdateBuildingByNodeIdInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The globally unique `ID` which will identify a single `Building` to be updated. */
+  nodeId: Scalars["ID"];
+  /** An object where the defined keys will be set on the `Building` being updated. */
+  patch: BuildingPatch;
+};
+
+/** Represents an update to a `Building`. Fields that are set will be updated. */
+export type BuildingPatch = {
+  id?: Maybe<Scalars["UUID"]>;
+  name?: Maybe<Scalars["String"]>;
+};
+
+/** The output of our update `Building` mutation. */
+export type UpdateBuildingPayload = {
+  __typename?: "UpdateBuildingPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `Building` that was updated by this mutation. */
+  building?: Maybe<Building>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** An edge for our `Building`. May be used by Relay 1. */
+  buildingEdge?: Maybe<BuildingsEdge>;
+};
+
+/** The output of our update `Building` mutation. */
+export type UpdateBuildingPayloadBuildingEdgeArgs = {
+  orderBy?: Maybe<Array<BuildingsOrderBy>>;
+};
+
+/** All input for the `updateBuilding` mutation. */
+export type UpdateBuildingInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** An object where the defined keys will be set on the `Building` being updated. */
+  patch: BuildingPatch;
+  id: Scalars["UUID"];
 };
 
 /** All input for the `updateFleetByNodeId` mutation. */
@@ -1417,6 +1804,7 @@ export type GamePatch = {
   size?: Maybe<GalaxySize>;
   state?: Maybe<GameState>;
   started?: Maybe<Scalars["Datetime"]>;
+  turn?: Maybe<Scalars["Int"]>;
 };
 
 /** The output of our update `Game` mutation. */
@@ -1544,6 +1932,54 @@ export type UpdatePlanetInput = {
   id: Scalars["UUID"];
 };
 
+/** All input for the `updatePlanetBuildingByNodeId` mutation. */
+export type UpdatePlanetBuildingByNodeIdInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The globally unique `ID` which will identify a single `PlanetBuilding` to be updated. */
+  nodeId: Scalars["ID"];
+  /** An object where the defined keys will be set on the `PlanetBuilding` being updated. */
+  patch: PlanetBuildingPatch;
+};
+
+/** Represents an update to a `PlanetBuilding`. Fields that are set will be updated. */
+export type PlanetBuildingPatch = {
+  planetId?: Maybe<Scalars["UUID"]>;
+  buildingId?: Maybe<Scalars["UUID"]>;
+};
+
+/** The output of our update `PlanetBuilding` mutation. */
+export type UpdatePlanetBuildingPayload = {
+  __typename?: "UpdatePlanetBuildingPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `PlanetBuilding` that was updated by this mutation. */
+  planetBuilding?: Maybe<PlanetBuilding>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** Reads a single `Planet` that is related to this `PlanetBuilding`. */
+  planet?: Maybe<Planet>;
+  /** Reads a single `Building` that is related to this `PlanetBuilding`. */
+  building?: Maybe<Building>;
+  /** An edge for our `PlanetBuilding`. May be used by Relay 1. */
+  planetBuildingEdge?: Maybe<PlanetBuildingsEdge>;
+};
+
+/** The output of our update `PlanetBuilding` mutation. */
+export type UpdatePlanetBuildingPayloadPlanetBuildingEdgeArgs = {
+  orderBy?: Maybe<Array<PlanetBuildingsOrderBy>>;
+};
+
+/** All input for the `updatePlanetBuilding` mutation. */
+export type UpdatePlanetBuildingInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** An object where the defined keys will be set on the `PlanetBuilding` being updated. */
+  patch: PlanetBuildingPatch;
+  planetId: Scalars["UUID"];
+  buildingId: Scalars["UUID"];
+};
+
 /** All input for the `updatePlayerByNodeId` mutation. */
 export type UpdatePlayerByNodeIdInput = {
   /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
@@ -1636,6 +2072,40 @@ export type UpdateRaceInput = {
   clientMutationId?: Maybe<Scalars["String"]>;
   /** An object where the defined keys will be set on the `Race` being updated. */
   patch: RacePatch;
+  id: Scalars["UUID"];
+};
+
+/** All input for the `deleteBuildingByNodeId` mutation. */
+export type DeleteBuildingByNodeIdInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The globally unique `ID` which will identify a single `Building` to be deleted. */
+  nodeId: Scalars["ID"];
+};
+
+/** The output of our delete `Building` mutation. */
+export type DeleteBuildingPayload = {
+  __typename?: "DeleteBuildingPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `Building` that was deleted by this mutation. */
+  building?: Maybe<Building>;
+  deletedBuildingNodeId?: Maybe<Scalars["ID"]>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** An edge for our `Building`. May be used by Relay 1. */
+  buildingEdge?: Maybe<BuildingsEdge>;
+};
+
+/** The output of our delete `Building` mutation. */
+export type DeleteBuildingPayloadBuildingEdgeArgs = {
+  orderBy?: Maybe<Array<BuildingsOrderBy>>;
+};
+
+/** All input for the `deleteBuilding` mutation. */
+export type DeleteBuildingInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
   id: Scalars["UUID"];
 };
 
@@ -1787,6 +2257,45 @@ export type DeletePlanetInput = {
   /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
   clientMutationId?: Maybe<Scalars["String"]>;
   id: Scalars["UUID"];
+};
+
+/** All input for the `deletePlanetBuildingByNodeId` mutation. */
+export type DeletePlanetBuildingByNodeIdInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The globally unique `ID` which will identify a single `PlanetBuilding` to be deleted. */
+  nodeId: Scalars["ID"];
+};
+
+/** The output of our delete `PlanetBuilding` mutation. */
+export type DeletePlanetBuildingPayload = {
+  __typename?: "DeletePlanetBuildingPayload";
+  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  /** The `PlanetBuilding` that was deleted by this mutation. */
+  planetBuilding?: Maybe<PlanetBuilding>;
+  deletedPlanetBuildingNodeId?: Maybe<Scalars["ID"]>;
+  /** Our root query field type. Allows us to run any query from our mutation payload. */
+  query?: Maybe<Query>;
+  /** Reads a single `Planet` that is related to this `PlanetBuilding`. */
+  planet?: Maybe<Planet>;
+  /** Reads a single `Building` that is related to this `PlanetBuilding`. */
+  building?: Maybe<Building>;
+  /** An edge for our `PlanetBuilding`. May be used by Relay 1. */
+  planetBuildingEdge?: Maybe<PlanetBuildingsEdge>;
+};
+
+/** The output of our delete `PlanetBuilding` mutation. */
+export type DeletePlanetBuildingPayloadPlanetBuildingEdgeArgs = {
+  orderBy?: Maybe<Array<PlanetBuildingsOrderBy>>;
+};
+
+/** All input for the `deletePlanetBuilding` mutation. */
+export type DeletePlanetBuildingInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars["String"]>;
+  planetId: Scalars["UUID"];
+  buildingId: Scalars["UUID"];
 };
 
 /** All input for the `deletePlayerByNodeId` mutation. */
@@ -2079,6 +2588,8 @@ export type Subscription = {
   nodeId: Scalars["ID"];
   /** Fetches an object given its globally unique `ID`. (live) */
   node?: Maybe<Node>;
+  /** Reads and enables pagination through a set of `Building`. (live) */
+  buildings?: Maybe<BuildingsConnection>;
   /** Reads and enables pagination through a set of `Fleet`. (live) */
   fleets?: Maybe<FleetsConnection>;
   /** Reads and enables pagination through a set of `Game`. (live) */
@@ -2087,12 +2598,16 @@ export type Subscription = {
   people?: Maybe<PeopleConnection>;
   /** Reads and enables pagination through a set of `Planet`. (live) */
   planets?: Maybe<PlanetsConnection>;
+  /** Reads and enables pagination through a set of `PlanetBuilding`. (live) */
+  planetBuildings?: Maybe<PlanetBuildingsConnection>;
   /** Reads and enables pagination through a set of `Player`. (live) */
   players?: Maybe<PlayersConnection>;
   /** Reads and enables pagination through a set of `Race`. (live) */
   races?: Maybe<RacesConnection>;
   /** Reads and enables pagination through a set of `Vision`. (live) */
   visions?: Maybe<VisionsConnection>;
+  /**  (live) */
+  building?: Maybe<Building>;
   /**  (live) */
   fleet?: Maybe<Fleet>;
   /**  (live) */
@@ -2101,6 +2616,8 @@ export type Subscription = {
   person?: Maybe<Person>;
   /**  (live) */
   planet?: Maybe<Planet>;
+  /**  (live) */
+  planetBuilding?: Maybe<PlanetBuilding>;
   /**  (live) */
   player?: Maybe<Player>;
   /**  (live) */
@@ -2115,6 +2632,8 @@ export type Subscription = {
   hashcircle?: Maybe<Scalars["Int"]>;
   /**  (live) */
   hashpoint?: Maybe<Scalars["Int"]>;
+  /** Reads a single `Building` using its globally unique `ID`. (live) */
+  buildingByNodeId?: Maybe<Building>;
   /** Reads a single `Fleet` using its globally unique `ID`. (live) */
   fleetByNodeId?: Maybe<Fleet>;
   /** Reads a single `Game` using its globally unique `ID`. (live) */
@@ -2123,6 +2642,8 @@ export type Subscription = {
   personByNodeId?: Maybe<Person>;
   /** Reads a single `Planet` using its globally unique `ID`. (live) */
   planetByNodeId?: Maybe<Planet>;
+  /** Reads a single `PlanetBuilding` using its globally unique `ID`. (live) */
+  planetBuildingByNodeId?: Maybe<PlanetBuilding>;
   /** Reads a single `Player` using its globally unique `ID`. (live) */
   playerByNodeId?: Maybe<Player>;
   /** Reads a single `Race` using its globally unique `ID`. (live) */
@@ -2147,6 +2668,32 @@ export type Subscription = {
  */
 export type SubscriptionNodeArgs = {
   nodeId: Scalars["ID"];
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
+export type SubscriptionBuildingsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<BuildingsOrderBy>>;
+  condition?: Maybe<BuildingCondition>;
+  filter?: Maybe<BuildingFilter>;
 };
 
 /**
@@ -2268,6 +2815,32 @@ export type SubscriptionPlanetsArgs = {
  *
  * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
  */
+export type SubscriptionPlanetBuildingsArgs = {
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  offset?: Maybe<Scalars["Int"]>;
+  before?: Maybe<Scalars["Cursor"]>;
+  after?: Maybe<Scalars["Cursor"]>;
+  orderBy?: Maybe<Array<PlanetBuildingsOrderBy>>;
+  condition?: Maybe<PlanetBuildingCondition>;
+  filter?: Maybe<PlanetBuildingFilter>;
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
 export type SubscriptionPlayersArgs = {
   first?: Maybe<Scalars["Int"]>;
   last?: Maybe<Scalars["Int"]>;
@@ -2344,6 +2917,25 @@ export type SubscriptionVisionsArgs = {
  *
  * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
  */
+export type SubscriptionBuildingArgs = {
+  id: Scalars["UUID"];
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
 export type SubscriptionFleetArgs = {
   id: Scalars["UUID"];
 };
@@ -2403,6 +2995,26 @@ export type SubscriptionPersonArgs = {
  */
 export type SubscriptionPlanetArgs = {
   id: Scalars["UUID"];
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
+export type SubscriptionPlanetBuildingArgs = {
+  planetId: Scalars["UUID"];
+  buildingId: Scalars["UUID"];
 };
 
 /**
@@ -2497,6 +3109,25 @@ export type SubscriptionHashpointArgs = {
  *
  * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
  */
+export type SubscriptionBuildingByNodeIdArgs = {
+  nodeId: Scalars["ID"];
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
 export type SubscriptionFleetByNodeIdArgs = {
   nodeId: Scalars["ID"];
 };
@@ -2555,6 +3186,25 @@ export type SubscriptionPersonByNodeIdArgs = {
  * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
  */
 export type SubscriptionPlanetByNodeIdArgs = {
+  nodeId: Scalars["ID"];
+};
+
+/**
+ * The root subscription type: contains events and live queries you can subscribe to with the `subscription` operation.
+ *
+ * #### Live Queries
+ *
+ * Live query fields are differentiated by containing `(live)` at the end of their description, they are added for each field in the `Query` type. When you subscribe to a live query field, the selection set will be evaluated and sent to the client, and then most things\* that would cause the output of the selection set to change will trigger the selection set to be re-evaluated and the results to be re-sent to the client.
+ *
+ * _(\* Not everything: typically only changes to persisted data referenced by the query are detected, not computed fields.)_
+ *
+ * Live queries can be very expensive, so try and keep them small and focussed.
+ *
+ * #### Events
+ *
+ * Event fields will run their selection set when, and only when, the specified server-side event occurs. This makes them a lot more efficient than Live Queries, but it is still recommended that you keep payloads fairly small.
+ */
+export type SubscriptionPlanetBuildingByNodeIdArgs = {
   nodeId: Scalars["ID"];
 };
 

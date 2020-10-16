@@ -17,6 +17,10 @@ create table space.planet_building (
   primary key (planet_id, building_id)
 );
 
-create index on space.planet ( planet_id );
-create index on space.planet ( building_id );
-create index on space.planet ( planet_id, building_id );
+create index on space.planet_building ( planet_id );
+create index on space.planet_building ( building_id );
+create index on space.planet_building ( planet_id, building_id );
+
+grant select on table space.planet_building to space_person;
+alter table space.planet_building enable row level security;
+

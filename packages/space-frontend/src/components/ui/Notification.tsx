@@ -124,12 +124,8 @@ export function NotificationHub({
             className={classNames.box}
             initial={{ opacity: 0, transform: 'translateX(100%)' }}
             animate={{ opacity: 1, transform: 'translateX(0%)' }}
-            exit={{
-              opacity: 0,
-              scaleY: 0.5,
-              height: 0,
-              transition: { duration: 0.2 },
-            }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            layout
           >
             <Notification {...item} />
           </motion.div>

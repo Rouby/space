@@ -43,3 +43,6 @@ create policy select_planet on space.planet for select
 
 create policy select_fleet on space.fleet for select
   using (space.is_visible(position) and game_id = space.current_game_id());
+
+create policy select_planet_building on space.planet_building for select
+  using (exists (select id from space.planet where id = planet_id));
