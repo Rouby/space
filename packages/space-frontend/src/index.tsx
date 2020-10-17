@@ -50,7 +50,7 @@ unstable_createRoot(root).render(
         <StyleProvider>
           <NotificationProvider>
             <BrowserRouter>
-              <React.Suspense fallback="Loading app...">
+              <React.Suspense fallback="Translating app...">
                 <IntlProvider>
                   <App />
                 </IntlProvider>

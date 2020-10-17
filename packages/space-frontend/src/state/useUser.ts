@@ -32,5 +32,5 @@ export function useUser() {
     }
   }, [currentPerson, errors]);
 
-  return currentPerson;
+  return [currentPerson, resetJwt] as const;
 }

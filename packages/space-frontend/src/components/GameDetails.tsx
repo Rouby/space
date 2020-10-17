@@ -98,7 +98,7 @@ export function GameDetails({}: GameDetailsProps): React.ReactElement {
 
   const navigate = useNavigate();
 
-  const user = useUser();
+  const [user] = useUser();
 
   const isAuthor = user?.id === game?.author?.id;
   const isStarting = game?.state === GameState.Starting;
@@ -223,7 +223,7 @@ function PlayerList({ gameId, gameHasStarted }: PlayerListProps) {
     }
   `);
 
-  const user = useUser();
+  const [user] = useUser();
 
   return (
     <ol>

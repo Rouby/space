@@ -24,7 +24,7 @@ export function useGraphQLMutation<
     .flatMap((n) => n.variableDefinitions)
     .some((v) => v?.variable.name.value === 'currentUserId');
 
-  const user = useUser();
+  const [user] = useUser();
 
   return useMutation<
     { data: TData; errors: GraphQLError[] },

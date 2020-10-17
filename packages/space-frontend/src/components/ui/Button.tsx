@@ -131,6 +131,7 @@ export function Button({
     link: {
       borderStyle: 'solid',
       '--button-background-color': 'transparent',
+      '--button-disabled-background-color': 'transparent',
       '--button-border-color': 'transparent',
       '--button-highlight-border-color': 'transparent',
       '--button-disabled-border-color': 'transparent',

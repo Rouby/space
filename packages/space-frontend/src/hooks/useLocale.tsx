@@ -10,20 +10,14 @@ export function useLocale() {
   return React.useContext(LocaleContext);
 }
 
-let initial = true;
-
 export function IntlProvider({ children }: { children: React.ReactNode }) {
   const context = React.useState(navigator.language);
-  // const context = useRecoilState(localeAtom);
   const { data: messages } = useQuery(
     `messages.${context[0]}`,
-    async () =>
-      process.env.NODE_ENV === 'production'
-        ? fetch(`static/locales/${context[0]}.json`)
-        : initial
-        ? (initial = false) ||
-          new Promise<{}>((resolve) => setTimeout(resolve, 0))
-        : new Promise<{}>((resolve) => setTimeout(resolve, 1000)),
+    () =>
+      fetch(`static/locales/${context[0]}.json`).then((data) =>
+        data.ok ? data.json() : {},
+      ),
     { staleTime: Infinity },
   );
 

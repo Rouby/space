@@ -3,16 +3,11 @@ import * as React from 'react';
 import { IconType } from 'react-icons';
 import { AiOutlineUser } from 'react-icons/ai';
 import { media } from 'typestyle';
-import { useStylesheet } from '../../hooks';
+import { useClickOutside, useStylesheet } from '../../hooks';
 import { elevation, units } from '../../style';
 
 interface LayoutProps {
-  children: (
-    | React.ReactElement<LayoutHeaderProps>
-    | null
-    | undefined
-    | string
-  )[];
+  children: React.ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
@@ -44,7 +39,7 @@ export function LayoutHeader({ children }: LayoutHeaderProps) {
     box: {
       position: 'relative',
       background: 'ghostwhite',
-      width: '100%',
+      width: '100vw',
       height: units(3),
       minWidth: 325,
       maxWidth: '70vw',
@@ -59,7 +54,7 @@ export function LayoutHeader({ children }: LayoutHeaderProps) {
     items: {
       display: 'grid',
       alignItems: 'center',
-      gridAutoColumns: `auto`,
+      gridAutoColumns: `min-content`,
       gridGap: units(1),
       gridTemplateRows: units(3),
       gridAutoFlow: 'column',
@@ -81,19 +76,40 @@ export function LayoutHeader({ children }: LayoutHeaderProps) {
   });
 
   return (
-    <div className={classNames.container}>
+    <motion.div
+      transition={{ bounce: 0 }}
+      initial={{ transform: 'translateY(-100%)' }}
+      animate={{ transform: 'translateY(0%)' }}
+      exit={{ transform: 'translateY(-100%)' }}
+      className={classNames.container}
+    >
       <div className={classNames.box}>
         <div className={classNames.items}>{children}</div>
         <div className={classNames.corner} />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-interface LayoutContentProps {}
+interface LayoutContentProps {
+  children: React.ReactNode;
+}
 
-export function LayoutContent({}: LayoutContentProps) {
-  return <div>content pls</div>;
+export function LayoutContent({ children }: LayoutContentProps) {
+  const classNames = useStylesheet({
+    container: {
+      display: 'grid',
+      alignItems: 'center',
+      justifyItems: 'center',
+      width: '100%',
+      height: '100%',
+    },
+  });
+  return (
+    <motion.div className={classNames.container}>
+      <div>{children}</div>
+    </motion.div>
+  );
 }
 
 interface LayoutAsideProps {
@@ -117,7 +133,7 @@ export function LayoutAside({ children }: LayoutAsideProps) {
     },
   });
 
-  return <div className={classNames.container}>{children}</div>;
+  return <motion.div className={classNames.container}>{children}</motion.div>;
 }
 
 interface LayoutAvatarProps {
@@ -162,6 +178,13 @@ export function LayoutAvatar({ icon, name, children }: LayoutAvatarProps) {
     name: {
       paddingRight: units(1),
     },
+    option: {
+      $nest: {
+        '&:last-child': {
+          paddingBottom: units(1),
+        },
+      },
+    },
   });
 
   const [isOpen, setOpen] = React.useState(false);
@@ -173,20 +196,37 @@ export function LayoutAvatar({ icon, name, children }: LayoutAvatarProps) {
 
   const Icon = icon ?? AiOutlineUser;
 
+  const ref = useClickOutside<HTMLDivElement>(() => {
+    setOpen(false);
+  });
+
   return (
     <motion.div
+      ref={ref}
       className={classNames.container}
+      initial={{
+        scale: 0,
+        width: units(4),
+        height: units(4),
+      }}
       animate={isOpen ? 'open' : 'closed'}
+      exit={{
+        scale: 0,
+        width: units(4),
+        height: units(4),
+        opacity: 0,
+      }}
       variants={{
         open: {
+          scale: 1,
           width: 'auto',
           height: 'auto',
-          paddingBottom: units(1),
           transition: {
             staggerChildren: 0.1,
           },
         },
         closed: {
+          scale: 1,
           width: units(4),
           height: units(4),
         },
@@ -203,9 +243,19 @@ export function LayoutAvatar({ icon, name, children }: LayoutAvatarProps) {
           </motion.div>
         )}
       </div>
-      {React.Children.map(children, (child) => (
-        <motion.div variants={itemVariants}>{child}</motion.div>
-      ))}
+      {React.Children.map(
+        children,
+        (child) =>
+          child && (
+            <motion.div
+              variants={itemVariants}
+              className={classNames.option}
+              onClick={() => setOpen(false)}
+            >
+              {child}
+            </motion.div>
+          ),
+      )}
     </motion.div>
   );
 }

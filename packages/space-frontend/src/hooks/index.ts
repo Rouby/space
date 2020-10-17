@@ -1,3 +1,4 @@
+export * from './useClickOutside';
 export * from './useGraphQL';
 export * from './useLocale';
 export * from './useNotification';
