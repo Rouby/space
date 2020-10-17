@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RecoilRoot, RecoilState, RecoilValue, useRecoilValue } from 'recoil';
-import { gameId, jwt, locale } from './atoms';
+import { gameId, jwt } from './atoms';
 
 interface StateRootProps {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ export function StateRoot({ children }: StateRootProps): React.ReactElement {
   );
 }
 
-const persistedAtoms = [jwt, locale, gameId];
+const persistedAtoms = [jwt, gameId];
 
 function Persistence() {
   persistedAtoms.forEach(usePersistence);

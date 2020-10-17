@@ -11,7 +11,16 @@ export function useLocale() {
 }
 
 export function IntlProvider({ children }: { children: React.ReactNode }) {
-  const context = React.useState(navigator.language);
+  const validLocales = ['en-US'];
+
+  const context = React.useState(
+    () =>
+      navigator.languages.find((l) => validLocales.includes(l)) ??
+      navigator.languages
+        .map((l) => l.split('-')[0])
+        .find((l) => validLocales.map((o) => o.split('-')[0]).includes(l)) ??
+      validLocales[0],
+  );
   const { data: messages } = useQuery(
     `messages.${context[0]}`,
     () =>

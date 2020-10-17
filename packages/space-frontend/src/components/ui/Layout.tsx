@@ -247,11 +247,7 @@ export function LayoutAvatar({ icon, name, children }: LayoutAvatarProps) {
         children,
         (child) =>
           child && (
-            <motion.div
-              variants={itemVariants}
-              className={classNames.option}
-              onClick={() => setOpen(false)}
-            >
+            <motion.div variants={itemVariants} className={classNames.option}>
               {child}
             </motion.div>
           ),

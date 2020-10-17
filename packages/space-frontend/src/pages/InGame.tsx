@@ -1,42 +1,28 @@
 import gql from 'graphql-tag';
 import * as React from 'react';
-import { BiBadge, BiBadgeCheck } from 'react-icons/bi';
-import {
-  EndTurnMutation,
-  EndTurnMutationVariables,
-  GalaxyMapQuery,
-  GalaxyMapQueryVariables,
-  TurnEndedSubscription,
-  TurnEndedSubscriptionVariables,
-} from '../api/types';
-import { Button } from '../components/ui';
-import {
-  useGraphQLMutation,
-  useGraphQLQuery,
-  useGraphQLSubscription,
-  useStylesheet,
-} from '../hooks';
+import { GalaxyMapQuery, GalaxyMapQueryVariables } from '../api/types';
+import { useGraphQLQuery, useStylesheet } from '../hooks';
 
 export function InGamePage() {
   return (
     <>
-      INGAME
       <GalaxyMap />
-      <div style={{ position: 'fixed', right: 0, bottom: 0 }}>
-        <EndTurnButton />
-      </div>
     </>
   );
 }
 
 function GalaxyMap() {
   const classNames = useStylesheet({
+    container: {
+      background: 'black',
+      width: '100vw',
+      height: '100vh',
+      overflow: 'auto',
+    },
     map: {
       position: 'relative',
-      background: 'black',
-      width: '100%',
-      height: '80vh',
-      overflow: 'auto',
+      background: 'rgba(255,0,0,0.5)',
+      display: 'inline-block',
     },
     vision: {
       position: 'absolute',
@@ -86,56 +72,87 @@ function GalaxyMap() {
     `,
   );
 
-  const boundsX = planets?.nodes.reduce(
-    ([min, max], planet) =>
-      [
-        Math.min(min, planet.position.x),
-        Math.max(max, planet.position.x),
-      ] as const,
-    [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER] as const,
-  ) ?? [0, 0];
-  const boundsY = planets?.nodes.reduce(
-    ([min, max], planet) =>
-      [
-        Math.min(min, planet.position.y),
-        Math.max(max, planet.position.y),
-      ] as const,
-    [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER] as const,
-  ) ?? [0, 0];
+  const [minX, minY, maxX, maxY] = visions?.nodes.reduce(
+    ([minX, minY, maxX, maxY], vision) => {
+      const circle = parseCircle(vision.circle);
+      if (circle) {
+        return [
+          Math.min(minX, circle.x - circle.radius),
+          Math.min(minY, circle.y - circle.radius),
+          Math.max(maxX, circle.x + circle.radius),
+          Math.max(maxY, circle.y + circle.radius),
+        ] as const;
+      }
+      return [minX, minY, maxX, maxY] as const;
+    },
+    [
+      Number.MAX_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER,
+      Number.MIN_SAFE_INTEGER,
+      Number.MIN_SAFE_INTEGER,
+    ] as const,
+  ) ?? [0, 0, 0, 0];
 
-  const padding = 20;
+  const [container, width, height] = useElementSize<HTMLDivElement>();
+  const visibleWidth = maxX - minX;
+  const visibleHeight = maxY - minY;
+
+  // console.log(visibleWidth, visibleHeight, boundsX, boundsY);
+
+  const [mapPadding, setMapPadding] = React.useState([0, 0] as [
+    number,
+    number,
+  ]);
+
+  React.useLayoutEffect(() => {
+    if (container.current) {
+      setMapPadding([
+        Math.max(0, width / 2 - visibleWidth / 2),
+        Math.max(0, height / 2 - visibleHeight / 2),
+      ]);
+    }
+  }, [visibleWidth, visibleHeight, width, height]);
 
   return (
-    <div className={classNames.map}>
-      {visions?.nodes.map((vision, idx) => {
-        const circle = parseCircle(vision.circle);
-        if (!circle) {
-          return null;
-        }
-        return (
+    <div className={classNames.container} ref={container}>
+      <div
+        className={classNames.map}
+        style={{
+          width: visibleWidth,
+          height: visibleHeight,
+          transform: `translate(${mapPadding[0]}px, ${mapPadding[1]}px)`,
+        }}
+      >
+        {visions?.nodes.map((vision, idx) => {
+          const circle = parseCircle(vision.circle);
+          if (!circle) {
+            return null;
+          }
+          return (
+            <div
+              key={idx}
+              className={classNames.vision}
+              style={{
+                left: circle.x - minX,
+                top: circle.y - minY,
+                width: circle.radius * 2,
+                height: circle.radius * 2,
+              }}
+            />
+          );
+        })}
+        {planets?.nodes.map((planet) => (
           <div
-            key={idx}
-            className={classNames.vision}
+            key={planet.id}
+            title={planet.name}
+            className={classNames.planet}
             style={{
-              left: circle.x - boundsX[0] + padding,
-              top: circle.y - boundsY[0] + padding,
-              width: circle.radius * 2,
-              height: circle.radius * 2,
+              left: planet.position.x - minX,
+              top: planet.position.y - minY,
             }}
-          />
-        );
-      })}
-      {planets?.nodes.map((planet) => (
-        <div
-          key={planet.id}
-          title={planet.name}
-          className={classNames.planet}
-          style={{
-            left: planet.position.x - boundsX[0] + padding,
-            top: planet.position.y - boundsY[0] + padding,
-          }}
-        ></div>
-      ))}
+          ></div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -149,42 +166,47 @@ function parseCircle(str?: string | null) {
   return undefined;
 }
 
-function EndTurnButton() {
-  const {
-    data: {
-      data: { currentPlayer },
-    },
-  } = useGraphQLSubscription<
-    TurnEndedSubscription,
-    TurnEndedSubscriptionVariables
-  >(
-    gql`
-      subscription TurnEnded {
-        currentPlayer {
-          turnEnded
+type BoxSize = { blockSize: number; inlineSize: number };
+declare var ResizeObserver: new (
+  cb: (
+    entries: {
+      target: Element;
+      contentRect: DOMRectReadOnly;
+      borderBoxSize: BoxSize;
+      contentBoxSize: BoxSize;
+    }[],
+  ) => void,
+) => {
+  observe(target: Element): void;
+  unobserve(target: Element): void;
+  disconnect(): void;
+};
+
+function useElementSize<T extends HTMLElement>() {
+  const ref = React.useRef<T>(null);
+
+  const [width, setWidth] = React.useState(0);
+  const [height, setHeight] = React.useState(0);
+
+  const [observer] = React.useState(
+    () =>
+      new ResizeObserver((entries) => {
+        const entry = entries.find((e) => e.target === ref.current);
+        if (entry) {
+          setWidth(entry.contentRect.width);
+          setHeight(entry.contentRect.height);
         }
-      }
-    `,
+      }),
   );
 
-  const [endTurn] = useGraphQLMutation<
-    EndTurnMutation,
-    EndTurnMutationVariables
-  >(
-    gql`
-      mutation EndTurn {
-        endTurn(input: {}) {
-          boolean
-        }
-      }
-    `,
-  );
+  React.useEffect(() => {
+    if (ref.current) {
+      const elem = ref.current;
+      observer.observe(elem);
+      return () => observer.unobserve(elem);
+    }
+    return;
+  });
 
-  return (
-    <Button
-      variant="primary"
-      icon={currentPlayer?.turnEnded ? BiBadgeCheck : BiBadge}
-      onClick={() => endTurn()}
-    ></Button>
-  );
+  return [ref, width, height] as const;
 }

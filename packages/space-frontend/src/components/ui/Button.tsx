@@ -2,11 +2,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { To } from 'history';
 import * as React from 'react';
 import { IconType } from 'react-icons';
-import { AiOutlineLoading } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { classes } from 'typestyle';
 import { useKeyframes, useStylesheet } from '../../hooks';
 import { colors, transition, units } from '../../style';
+import { Spinner } from './Spinner';
 
 interface ButtonProps
   extends React.DetailedHTMLProps<
@@ -212,7 +212,7 @@ export function Button({
   }, [loading]);
 
   if (currentlyLoading) {
-    Icon = AiOutlineLoading;
+    Icon = Spinner;
   }
 
   const navigate = useNavigate();
@@ -256,9 +256,7 @@ export function Button({
             exit={{ width: 0, opacity: 0 }}
             className={classNames.icon}
           >
-            <Icon
-              className={classes(currentlyLoading && classNames.spinning)}
-            />
+            <Icon />
           </motion.div>
         )}
       </AnimatePresence>
