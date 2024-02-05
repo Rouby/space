@@ -6,6 +6,8 @@ import viteConfig from './vite.config';
 }
 
 {
+  console.log('building server files...');
+
   const time = Date.now();
 
   await Bun.build({
@@ -16,5 +18,5 @@ import viteConfig from './vite.config';
     external: Object.keys(require('./package.json').dependencies),
   });
 
-  console.log('✓ built in:', Date.now() - time, 'ms');
+  console.log('✓ built in', Date.now() - time, 'ms');
 }
