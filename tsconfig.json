@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"strictNullChecks": true,
+
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"jsx": "react-jsx",
+
+		"types": ["node", "react/canary"]
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"]
+}
