@@ -102,9 +102,6 @@ jobs:
           yarn install --immutable --immutable-cache
           # yarn workspace @space/integration playwright install --with-deps
 
-      - name: 🔨 Build
-        run: yarn build
-
       - name: 🔗 Run tests
         run: yarn integrate
         env:
