@@ -52,6 +52,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/name: {{ include "space.name" . }}-backend
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+{{- define "space.selectorLabelsDatabase" -}}
+app.kubernetes.io/name: {{ include "space.name" . }}-database
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
 
 {{/*
 Create the name of the service account to use

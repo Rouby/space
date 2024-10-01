@@ -1,60 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "space.fullname" . }}-frontend
-  labels:
-    {{- include "space.labels" . | nindent 4 }}
-    {{- include "space.selectorLabelsFrontend" . | nindent 4 }}
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      {{- include "space.selectorLabelsFrontend" . | nindent 6 }}
-  template:
-    metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      labels:
-        {{- include "space.labels" . | nindent 8 }}
-        {{- include "space.selectorLabelsFrontend" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-    spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      containers:
-        - name: {{ include "space.fullname" . }}-frontend
-          securityContext:
-            {}
-          image: "{{ .Values.image.repository }}-frontend:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 3000
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-            limits:
-              cpu: 250m
-              memory: 256Mi
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: {{ include "space.fullname" . }}-backend
   labels:
     {{- include "space.labels" . | nindent 4 }}
@@ -89,6 +35,9 @@ spec:
             {}
           image: "{{ .Values.image.repository }}-backend:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DB_CONNECTION_STRING
+              value: postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ include "space.fullname" . }}-database:5432/{{ .Values.database.name }}
           envFrom:
             - secretRef:
                 name: deployment-secrets

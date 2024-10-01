@@ -34,10 +34,6 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
-  port: 8080
-
 ingress:
   enabled: true
   className: "nginx"
@@ -48,6 +44,11 @@ ingress:
     - secretName: space-tls
       hosts:
         - staging.space.aiacta.com
+
+database:
+  user: space
+  password: space
+  name: space
 
 volumes: {}
 
