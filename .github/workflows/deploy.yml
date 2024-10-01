@@ -100,7 +100,7 @@ jobs:
       - name: 📥 Install deps
         run: |
           yarn install --immutable --immutable-cache
-          yarn workspace @space/integration playwright install --with-deps
+          # yarn workspace @space/integration playwright install --with-deps
 
       - name: 🔨 Build
         run: yarn build
