@@ -3,11 +3,9 @@
 		"strict": true,
 		"strictNullChecks": true,
 
-		"module": "ESNext",
-		"moduleResolution": "Bundler",
-		"jsx": "react-jsx",
+		"noEmit": true,
 
-		"types": ["node", "react/canary"]
-	},
-	"include": ["src/**/*.ts", "src/**/*.tsx"]
+		"module": "ESNext",
+		"moduleResolution": "Bundler"
+	}
 }

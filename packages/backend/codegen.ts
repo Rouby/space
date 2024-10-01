@@ -1,0 +1,19 @@
+import { defineConfig } from "@eddeee888/gcg-typescript-resolver-files";
+import type { CodegenConfig } from "@graphql-codegen/cli";
+
+const config: CodegenConfig = {
+	schema: "./src/**/schema.graphql",
+	generates: {
+		"./src/schema": defineConfig({
+			typesPluginsConfig: { contextType: "graphql-yoga#YogaInitialContext" },
+			scalarsOverrides: {
+				Vector: {
+					type: "{x:number;y:number}",
+				},
+			},
+			emitLegacyCommonJSImports: false,
+		}),
+	},
+};
+
+export default config;
