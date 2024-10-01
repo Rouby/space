@@ -40,9 +40,13 @@ spec:
               containerPort: 3000
               protocol: TCP
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
           resources:
             limits:
               cpu: 250m
@@ -93,9 +97,13 @@ spec:
               containerPort: 3000
               protocol: TCP
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
           resources:
             limits:
               cpu: 1000m

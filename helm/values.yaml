@@ -49,9 +49,6 @@ ingress:
       hosts:
         - staging.space.aiacta.com
 
-livenessProbe: {}
-readinessProbe: {}
-
 volumes: {}
 
 volumeMounts: {}
