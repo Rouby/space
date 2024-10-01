@@ -25,12 +25,14 @@ spec:
       http:
         paths:
           - path: /graphql
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ $fullName }}-backend
                 port:
                   number: 3000
           - path: /
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ $fullName }}-frontend
