@@ -98,11 +98,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /graphql
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /graphql
               port: http
           resources:
             limits:
