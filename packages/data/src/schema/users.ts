@@ -1,6 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import { pgTable, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
-import { passwords } from "./passwords";
+import { passwords } from "./passwords.ts";
 
 export const users = pgTable(
 	"users",

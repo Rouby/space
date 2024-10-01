@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { pgTable, uuid, varchar } from "drizzle-orm/pg-core";
-import { users } from "./users";
+import { users } from "./users.ts";
 
 export const passwords = pgTable("passwords", {
 	userId: uuid("userId")
