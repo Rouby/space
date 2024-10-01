@@ -258,11 +258,6 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: 📦 Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend
-
       - name: 📥 Setup kubeconfig
         run: |
           New-Item -ItemType Directory -Path "$HOME\.kube" -Force
