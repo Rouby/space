@@ -12,7 +12,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "space.fullname" . }}-frontend
+  name: {{ include "space.fullname" . }}-database
   labels:
     {{- include "space.labels" . | nindent 4 }}
     {{- include "space.selectorLabelsDatabase" . | nindent 4 }}
