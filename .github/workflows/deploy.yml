@@ -236,52 +236,50 @@ jobs:
           rm -rf /tmp/.buildxfrontend-cache
           mv /tmp/.buildxfrontend-cache-new /tmp/.buildxfrontend-cache
 
-  # deploy:
-  #   name: 🚀 Deploy
-  #   runs-on: self-hosted
-  #   needs: [lint, typecheck, test, integration, build-backend, build-frontend]
-  #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-  #   strategy:
-  #     matrix:
-  #       env_name: [staging, production]
+  deploy:
+    name: 🚀 Deploy
+    runs-on: self-hosted
+    needs: [lint, typecheck, test, integration, build-backend, build-frontend]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    strategy:
+      matrix:
+        env_name: [staging, production]
 
-  #   concurrency:
-  #     group: deploy-${{ matrix.env_name }}
-  #     # allow cancel if not reviewed
-  #     cancel-in-progress: ${{ matrix.env_name == 'production' }}
+    concurrency:
+      group: deploy-${{ matrix.env_name }}
+      # allow cancel if not reviewed
+      cancel-in-progress: ${{ matrix.env_name == 'production' }}
 
-  #   environment:
-  #     name: ${{ matrix.env_name }}
-  #     url: "https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com"
+    environment:
+      name: ${{ matrix.env_name }}
+      url: "https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com"
 
-  #   steps:
-  #     - name: ⬇️ Checkout repo
-  #       uses: actions/checkout@v4
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
 
-  #     - name: 📦 Download artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: frontend
+      - name: 📦 Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend
 
-  #     - name: 📥 Setup kubeconfig
-  #       run: |
-  #         New-Item -ItemType Directory -Path "$HOME\.kube" -Force
-  #         $env:KUBECONFIG_CONTENT = "${{ secrets.KUBECONFIG }}"
-  #         $env:KUBECONFIG_CONTENT | Out-File -FilePath "$HOME\.kube\config" -Force -Encoding UTF8
-  #     - name: 🚀 Deploy
-  #       run: |
-  #         $env:JWT_SECRET = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('${{ secrets.JWT_SECRET }}'))
-  #         $env:APP_ORIGIN = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com"))
+      - name: 📥 Setup kubeconfig
+        run: |
+          New-Item -ItemType Directory -Path "$HOME\.kube" -Force
+          $env:KUBECONFIG_CONTENT = "${{ secrets.KUBECONFIG }}"
+          $env:KUBECONFIG_CONTENT | Out-File -FilePath "$HOME\.kube\config" -Force -Encoding UTF8
+      - name: 🚀 Deploy
+        run: |
+          $env:JWT_SECRET = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('${{ secrets.JWT_SECRET }}'))
+          $env:APP_ORIGIN = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com"))
 
-  #         helm upgrade space -n "space-${{ matrix.env_name }}" --install --create-namespace `
-  #             --set image.repository=ghcr.io/rouby/space-backend `
-  #             --set image.tag="${{ github.ref_name }}-${{ github.sha }}" `
-  #             --set ingress.hosts[0].host="${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com" `
-  #             --set ingress.hosts[0].paths[0].path="/" `
-  #             --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific" `
-  #             --set ingress.clusterIssuer="letsencrypt-production" `
-  #             --set ingress.tls[0].hosts="{${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com}" `
-  #             --set ingress.tls[0].secretName="space-tls" `
-  #             --set-string secrets.JWT_SECRET="$env:JWT_SECRET" `
-  #             --set-string secrets.APP_ORIGIN="$env:APP_ORIGIN" `
-  #             ./helm
+          helm upgrade space -n "space-${{ matrix.env_name }}" --install --create-namespace `
+              --set image.repository=ghcr.io/rouby/space `
+              --set image.tag="${{ github.ref_name }}-${{ github.sha }}" `
+              --set ingress.host="${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com" `
+              --set ingress.clusterIssuer="letsencrypt-production" `
+              --set ingress.tls[0].hosts="{${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com}" `
+              --set ingress.tls[0].secretName="space-tls" `
+              --set-string secrets.JWT_SECRET="$env:JWT_SECRET" `
+              --set-string secrets.APP_ORIGIN="$env:APP_ORIGIN" `
+              ./helm
