@@ -236,10 +236,72 @@ jobs:
           rm -rf /tmp/.buildxfrontend-cache
           mv /tmp/.buildxfrontend-cache-new /tmp/.buildxfrontend-cache
 
+  build-migrations:
+    name: 🏗️ Build migrations
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: build-migrations-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⚡️ Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildxmigrations-cache
+          key: ${{ runner.os }}-buildxmigrations-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildxmigrations-
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐳 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐳 Docker build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: packages/data/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/rouby/space-migrations:latest
+            ghcr.io/rouby/space-migrations:${{ github.ref_name }}-${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildxmigrations-cache
+          cache-to: type=local,dest=/tmp/.buildxmigrations-cache-new,mode=max
+
+      - # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildxmigrations-cache
+          mv /tmp/.buildxmigrations-cache-new /tmp/.buildxmigrations-cache
+
   deploy:
     name: 🚀 Deploy
     runs-on: self-hosted
-    needs: [lint, typecheck, test, integration, build-backend, build-frontend]
+    needs:
+      - lint
+      - typecheck
+      - test
+      - integration
+      - build-backend
+      - build-frontend
+      - build-migrations
+
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     strategy:
       matrix:
