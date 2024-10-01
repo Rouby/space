@@ -33,7 +33,7 @@ spec:
                 name: {{ $fullName }}-backend
                 port:
                   number: 3000
-          - path: "/((?:graphql/.*|.*(?:css|js|png|map)$))|(.*)"
+          - path: "/((?:(?!graphql).*))"
             pathType: Prefix
             backend:
               service:
