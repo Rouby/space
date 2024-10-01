@@ -1,0 +1,288 @@
+name: 🚀 Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+
+jobs:
+  lint:
+    name: ⬣ Lint
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: lint-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: 📥 Install deps
+        run: yarn install --immutable --immutable-cache
+
+      - name: 🔬 Lint
+        run: yarn lint
+
+  typecheck:
+    name: ʦ TypeScript
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: typecheck-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: 📥 Install deps
+        run: yarn install --immutable --immutable-cache
+
+      - name: 🔎 Type check
+        run: yarn typecheck
+
+  test:
+    name: 🧪 Unit tests
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: test-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: 📥 Install deps
+        run: yarn install --immutable --immutable-cache
+
+      - name: 🧪 Run vitest
+        run: yarn test -- --coverage
+
+  integration:
+    name: 🔗 Integration tests
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: integration-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: 📥 Install deps
+        run: |
+          yarn install --immutable --immutable-cache
+          yarn workspace @space/integration playwright install --with-deps
+
+      - name: 🔨 Build
+        run: yarn build
+
+      - name: 🔗 Run tests
+        run: yarn integrate
+        env:
+          JWT_SECRET: kitty
+          LOG_LEVEL: trace
+
+      - name: 📦 Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: packages/integration/playwright-report/
+          retention-days: 30
+
+  build-backend:
+    name: 🏗️ Build backend
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: build-backend-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⚡️ Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐳 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐳 Docker build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/rouby/space-backend:latest
+            ghcr.io/rouby/space-backend:${{ github.ref_name }}-${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  build-frontend:
+    name: 🏗️ Build frontend
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: build-frontend-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: 📥 Install deps
+        run: yarn install --immutable --immutable-cache
+
+      - name: 🔨 Build
+        run: yarn workspace @space/frontend build
+
+      - name: ⚡️ Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildxfrontend-cache
+          key: ${{ runner.os }}-buildxfrontend-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildxfrontend-
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐳 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐳 Docker build
+        uses: docker/build-push-action@v5
+        with:
+          context: packages/frontend/dist
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/rouby/space-frontend:latest
+            ghcr.io/rouby/space-frontend:${{ github.ref_name }}-${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildxfrontend-cache
+          cache-to: type=local,dest=/tmp/.buildxfrontend-cache-new,mode=max
+
+      - # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildxfrontend-cache
+          mv /tmp/.buildxfrontend-cache-new /tmp/.buildxfrontend-cache
+
+  # deploy:
+  #   name: 🚀 Deploy
+  #   runs-on: self-hosted
+  #   needs: [lint, typecheck, test, integration, build-backend, build-frontend]
+  #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  #   strategy:
+  #     matrix:
+  #       env_name: [staging, production]
+
+  #   concurrency:
+  #     group: deploy-${{ matrix.env_name }}
+  #     # allow cancel if not reviewed
+  #     cancel-in-progress: ${{ matrix.env_name == 'production' }}
+
+  #   environment:
+  #     name: ${{ matrix.env_name }}
+  #     url: "https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com"
+
+  #   steps:
+  #     - name: ⬇️ Checkout repo
+  #       uses: actions/checkout@v4
+
+  #     - name: 📦 Download artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: frontend
+
+  #     - name: 📥 Setup kubeconfig
+  #       run: |
+  #         New-Item -ItemType Directory -Path "$HOME\.kube" -Force
+  #         $env:KUBECONFIG_CONTENT = "${{ secrets.KUBECONFIG }}"
+  #         $env:KUBECONFIG_CONTENT | Out-File -FilePath "$HOME\.kube\config" -Force -Encoding UTF8
+  #     - name: 🚀 Deploy
+  #       run: |
+  #         $env:JWT_SECRET = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('${{ secrets.JWT_SECRET }}'))
+  #         $env:APP_ORIGIN = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com"))
+
+  #         helm upgrade space -n "space-${{ matrix.env_name }}" --install --create-namespace `
+  #             --set image.repository=ghcr.io/rouby/space-backend `
+  #             --set image.tag="${{ github.ref_name }}-${{ github.sha }}" `
+  #             --set ingress.hosts[0].host="${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com" `
+  #             --set ingress.hosts[0].paths[0].path="/" `
+  #             --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific" `
+  #             --set ingress.clusterIssuer="letsencrypt-production" `
+  #             --set ingress.tls[0].hosts="{${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com}" `
+  #             --set ingress.tls[0].secretName="space-tls" `
+  #             --set-string secrets.JWT_SECRET="$env:JWT_SECRET" `
+  #             --set-string secrets.APP_ORIGIN="$env:APP_ORIGIN" `
+  #             ./helm

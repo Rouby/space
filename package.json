@@ -1,5 +1,11 @@
 {
 	"name": "space",
+	"scripts": {
+		"lint": "biome lint",
+		"typecheck": "yarn workspaces foreach -Ap run typecheck",
+		"test": "yarn workspaces foreach -Ap run test",
+		"integrate": "yarn workspaces foreach -Ap run integrate"
+	},
 	"type": "module",
 	"packageManager": "yarn@4.4.1",
 	"devDependencies": {
