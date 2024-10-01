@@ -3,14 +3,17 @@ import {
 	extractFromCookie,
 	useJWT,
 } from "@graphql-yoga/plugin-jwt";
+import { getConnection, getDrizzle } from "@space/data";
 import { useCookies } from "@whatwg-node/server-plugin-cookies";
-import { createSchema, createYoga } from "graphql-yoga";
+import { createSchema, createYoga, useExtendContext } from "graphql-yoga";
 import { createServer } from "node:http";
 import { resolvers } from "./schema/resolvers.generated.ts";
 import { typeDefs } from "./schema/typeDefs.generated.ts";
 
 const signingKey = process.env.JWT_SECRET || "electric-kitten";
 const port = process.env.PORT || 3000;
+
+const pgConnection = await getConnection();
 
 const yoga = createYoga({
 	schema: createSchema({ typeDefs, resolvers }),
@@ -34,6 +37,12 @@ const yoga = createYoga({
 				invalidToken: true,
 			},
 		}),
+
+		useExtendContext(async () => {
+			return {
+				drizzle: getDrizzle(pgConnection),
+			};
+		}),
 	],
 });
 
@@ -46,10 +55,14 @@ server.listen(port, () => {
 });
 
 for (const signal of ["SIGHUP", "SIGINT", "SIGTERM"]) {
-	process.on(signal, () => {
-		console.log("Restarting...");
-		server.close(() => {
-			process.exit(0);
-		});
+	process.on(signal, async () => {
+		console.log("Stopping...");
+
+		await Promise.all([
+			new Promise((res) => server.close(res)),
+			pgConnection.end(),
+		]);
+
+		process.exit(0);
 	});
 }

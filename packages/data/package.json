@@ -1,0 +1,21 @@
+{
+	"name": "@space/data",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./src/index.ts"
+		},
+		"./schema": {
+			"import": "./src/schema.ts"
+		}
+	},
+	"module": "src/index.ts",
+	"dependencies": {
+		"drizzle-orm": "0.33.0",
+		"pg": "8.13.0"
+	},
+	"devDependencies": {
+		"@types/pg": "8.11.10",
+		"drizzle-kit": "0.24.2"
+	}
+}

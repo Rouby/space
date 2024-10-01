@@ -7,14 +7,7 @@ import codegen from "vite-plugin-graphql-codegen";
 export default defineConfig(({ command }) => ({
 	plugins: [
 		...(command === "build" ? [] : [TanStackRouterVite(), codegen()]),
-		react({
-			plugins: [
-				// [
-				// 	"@graphql-codegen/client-preset-swc-plugin",
-				// 	{ artifactDirectory: "./src/gql", gqlTagName: "graphql" },
-				// ],
-			],
-		}),
+		react(),
 	],
 	server: {
 		proxy: {

@@ -5,7 +5,7 @@ const config: CodegenConfig = {
 	schema: "./src/**/schema.graphql",
 	generates: {
 		"./src/schema": defineConfig({
-			typesPluginsConfig: { contextType: "graphql-yoga#YogaInitialContext" },
+			typesPluginsConfig: { contextType: "../context#Context" },
 			scalarsOverrides: {
 				Vector: {
 					type: "{x:number;y:number}",

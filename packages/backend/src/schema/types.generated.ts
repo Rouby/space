@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { YogaInitialContext } from 'graphql-yoga';
+import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -27,12 +27,20 @@ export type Game = {
 export type Mutation = {
   __typename?: 'Mutation';
   loginWithPassword: User;
+  registerWithPassword: User;
 };
 
 
 export type MutationloginWithPasswordArgs = {
   email: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
+  password: Scalars['String']['input'];
+};
+
+
+export type MutationregisterWithPasswordArgs = {
+  email: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
 export type Planet = {
@@ -150,29 +158,30 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
 };
 
-export type GameResolvers<ContextType = YogaInitialContext, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
+export type GameResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MutationResolvers<ContextType = YogaInitialContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email'>>;
+export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
+  registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
 };
 
-export type PlanetResolvers<ContextType = YogaInitialContext, ParentType extends ResolversParentTypes['Planet'] = ResolversParentTypes['Planet']> = {
+export type PlanetResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Planet'] = ResolversParentTypes['Planet']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = YogaInitialContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   planets?: Resolver<Array<ResolversTypes['Planet']>, ParentType, ContextType>;
 };
 
-export type UserResolvers<ContextType = YogaInitialContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -183,7 +192,7 @@ export interface VectorScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'Vector';
 }
 
-export type Resolvers<ContextType = YogaInitialContext> = {
+export type Resolvers<ContextType = Context> = {
   Game?: GameResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Planet?: PlanetResolvers<ContextType>;

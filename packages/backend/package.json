@@ -10,6 +10,7 @@
 		"@graphql-codegen/cli": "5.0.2",
 		"@swc/cli": "0.4.1-nightly.20240914",
 		"@swc/core": "1.7.26",
+		"@types/bcrypt": "5.0.2",
 		"@types/node": "22.6.1",
 		"nodemon": "3.1.7",
 		"tsx": "4.19.1",
@@ -31,7 +32,9 @@
 	"dependencies": {
 		"@graphql-yoga/plugin-defer-stream": "3.7.0",
 		"@graphql-yoga/plugin-jwt": "3.1.0",
+		"@space/data": "workspace:*",
 		"@whatwg-node/server-plugin-cookies": "1.0.3",
+		"bcrypt": "5.1.1",
 		"dayjs": "1.11.13",
 		"graphql": "16.9.0",
 		"graphql-scalars": "1.23.0",
