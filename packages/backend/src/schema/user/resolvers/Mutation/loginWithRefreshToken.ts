@@ -1,7 +1,7 @@
 import { createGraphQLError } from "graphql-yoga";
-import { domain } from "../../../../config.js";
+import { domain } from "../../../../config.ts";
 import type { MutationResolvers } from "./../../../types.generated.js";
-import { signToken, verifyToken } from "./token.js";
+import { signToken, verifyToken } from "./token.ts";
 export const loginWithRefreshToken: NonNullable<
 	MutationResolvers["loginWithRefreshToken"]
 > = async (_parent, _arg, ctx) => {

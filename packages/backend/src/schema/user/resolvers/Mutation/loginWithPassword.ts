@@ -1,6 +1,6 @@
 import { compare } from "bcrypt";
 import { createGraphQLError } from "graphql-yoga";
-import { domain } from "../../../../config";
+import { domain } from "../../../../config.ts";
 import type { MutationResolvers } from "./../../../types.generated";
 import { signToken } from "./token";
 export const loginWithPassword: NonNullable<
