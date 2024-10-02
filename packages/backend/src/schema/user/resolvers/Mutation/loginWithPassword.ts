@@ -1,8 +1,8 @@
 import { compare } from "bcrypt";
 import { createGraphQLError } from "graphql-yoga";
 import { domain } from "../../../../config.ts";
-import type { MutationResolvers } from "./../../../types.generated";
-import { signToken } from "./token";
+import type { MutationResolvers } from "./../../../types.generated.js";
+import { signToken } from "./token.ts";
 export const loginWithPassword: NonNullable<
 	MutationResolvers["loginWithPassword"]
 > = async (_parent, { email, password }, ctx) => {
