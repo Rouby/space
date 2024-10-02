@@ -1,9 +1,78 @@
 {
-	"id": "5382252b-e8dd-4a85-9777-8853dcda1cc8",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "07418f2e-4ad0-422c-8763-99a36c8c9291",
+	"prevId": "5382252b-e8dd-4a85-9777-8853dcda1cc8",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
+		"public.games": {
+			"name": "games",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"name": {
+					"name": "name",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"public.players": {
+			"name": "players",
+			"schema": "",
+			"columns": {
+				"userId": {
+					"name": "userId",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"gameId": {
+					"name": "gameId",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"players_userId_users_id_fk": {
+					"name": "players_userId_users_id_fk",
+					"tableFrom": "players",
+					"tableTo": "users",
+					"columnsFrom": ["userId"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"players_gameId_games_id_fk": {
+					"name": "players_gameId_games_id_fk",
+					"tableFrom": "players",
+					"tableTo": "games",
+					"columnsFrom": ["gameId"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"players_userId_gameId_pk": {
+					"name": "players_userId_gameId_pk",
+					"columns": ["userId", "gameId"]
+				}
+			},
+			"uniqueConstraints": {}
+		},
 		"public.passwords": {
 			"name": "passwords",
 			"schema": "",

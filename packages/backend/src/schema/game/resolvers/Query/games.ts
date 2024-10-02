@@ -6,10 +6,5 @@ export const games: NonNullable<QueryResolvers["games"]> = async (
 ) => {
 	ctx.throwWithoutClaim("urn:space:claim");
 
-	/* Implement Query.games resolver logic here */
-
-	return [
-		{ id: "123", name: "Test" },
-		{ id: "124", name: "Test" },
-	];
+	return ctx.drizzle.query.games.findMany();
 };

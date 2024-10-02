@@ -1,11 +1,11 @@
 scalar Vector
 
 type Planet {
-  id: ID!
-  name: String!
-  position: Vector!
+	id: ID!
+	name: String!
+	position: Vector!
 }
 
 type Query {
-  planets: [Planet!]!
+	planets: [Planet!]!
 }

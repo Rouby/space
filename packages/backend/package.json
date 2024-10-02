@@ -18,13 +18,8 @@
 	},
 	"nodemonConfig": {
 		"exec": "node --import=tsx --env-file=.env",
-		"ignore": [
-			"**/*.spec.ts"
-		],
-		"watch": [
-			"src/main.ts",
-			"src/schema/**/*.ts"
-		],
+		"ignore": ["**/*.spec.ts"],
+		"watch": ["src/main.ts", "src/schema/**/*.ts"],
 		"ext": "ts,tsx",
 		"signal": "SIGHUP",
 		"delay": 500

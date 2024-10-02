@@ -3,6 +3,7 @@ import { authExchange } from "@urql/exchange-auth";
 import { cacheExchange } from "@urql/exchange-graphcache";
 import { createClient, fetchExchange } from "urql";
 import { graphql } from "./gql";
+import type { CreateGameMutation } from "./gql/graphql";
 import schema from "./gql/introspection.json";
 
 export const client = createClient({
@@ -18,6 +19,12 @@ export const client = createClient({
 					},
 					registerWithPassword: (_, __, cache) => {
 						cache.invalidate("Query", "me");
+					},
+					createGame: (result: CreateGameMutation, __, cache) => {
+						const games = cache.resolve("Query", "games");
+						if (Array.isArray(games)) {
+							cache.link("Query", "games", [...games, result.createGame]);
+						}
 					},
 				},
 			},

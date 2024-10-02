@@ -4,6 +4,7 @@ type Game {
 }
 
 type Mutation {
+  createGame(name: String!): Game!
   loginWithPassword(email: String!, password: String!): User!
   loginWithRefreshToken: User!
   registerWithPassword(email: String!, name: String!, password: String!): User!

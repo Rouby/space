@@ -1,8 +1,12 @@
 type Game {
-  id: ID!
-  name: String!
+	id: ID!
+	name: String!
 }
 
 type Query {
-  games: [Game!]!
+	games: [Game!]!
+}
+
+type Mutation {
+	createGame(name: String!): Game!
 }

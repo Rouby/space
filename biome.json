@@ -3,6 +3,16 @@
 	"organizeImports": {
 		"enabled": true
 	},
+	"formatter": {
+		"enabled": true,
+		"ignore": [
+			"**/gql/*.ts",
+			"**/dist/**/*",
+			"**/*.generated.ts",
+			"**/*.gen.ts",
+			"./.pnp.cjs"
+		]
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
