@@ -1,30 +1,39 @@
 import { devtoolsExchange } from "@urql/devtools";
 import { authExchange } from "@urql/exchange-auth";
-import { offlineExchange } from "@urql/exchange-graphcache";
-import { makeDefaultStorage } from "@urql/exchange-graphcache/default-storage";
+import { cacheExchange } from "@urql/exchange-graphcache";
 import { createClient, fetchExchange } from "urql";
+import { graphql } from "./gql";
 import schema from "./gql/introspection.json";
 
 export const client = createClient({
 	url: "/graphql",
 	exchanges: [
 		devtoolsExchange,
-		offlineExchange({
-			storage: makeDefaultStorage({ idbName: "space-graphcache-v1" }),
-			schema,
-		}),
-		authExchange(async (ctx) => ({
+		cacheExchange({ schema }),
+		authExchange(async (utils) => ({
 			addAuthToOperation(operation) {
 				return operation;
 			},
 			didAuthError(error, operation) {
-				return false;
+				return error.graphQLErrors.some(
+					(err) => err.extensions.code === "NOT_AUTHORIZED",
+				);
 			},
-			async refreshAuth() {},
+			async refreshAuth() {
+				await utils.mutate(
+					graphql(`
+					mutation RefreshAuth {
+						loginWithRefreshToken {
+							id
+						}
+					}`),
+					{},
+				);
+			},
 		})),
 		fetchExchange,
 	],
 	suspense: true,
 	fetchSubscriptions: true,
-	requestPolicy: "network-only",
+	requestPolicy: "cache-and-network",
 });

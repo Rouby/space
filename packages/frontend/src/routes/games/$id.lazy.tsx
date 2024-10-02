@@ -18,8 +18,6 @@ export const Route = createLazyFileRoute("/games/$id")({
 function IngameLayout() {
 	const { css } = useStyles();
 
-	const classes = {};
-
 	return (
 		<div
 			className={css({
@@ -78,33 +76,6 @@ function IngameLayout() {
 						</Link>
 					</div>
 				</Section>
-				{/* 
-				<Section>
-					<Group className={classes.collectionsHeader} justify="space-between">
-						<Text size="xs" fw={500} c="dimmed">
-							Collections
-						</Text>
-						<Tooltip label="Create collection" withArrow position="right">
-							<ActionIcon variant="default" size={18}>
-								<IconPlus
-									style={{ width: rem(12), height: rem(12) }}
-									stroke={1.5}
-								/>
-							</ActionIcon>
-						</Tooltip>
-					</Group>
-					<div className={classes.collections}>
-						<RouterLink
-							onClick={(event) => event.preventDefault()}
-							className={classes.collectionLink}
-						>
-							<span style={{ marginRight: rem(9), fontSize: rem(16) }}>
-								EMOJI
-							</span>{" "}
-							label
-						</RouterLink>
-					</div>
-				</Section> */}
 			</nav>
 
 			<main>

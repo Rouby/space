@@ -1,7 +1,8 @@
 import { compare } from "bcrypt";
 import { createGraphQLError } from "graphql-yoga";
-import { SignJWT } from "jose";
+import { domain } from "../../../../config";
 import type { MutationResolvers } from "./../../../types.generated";
+import { signToken } from "./token";
 export const loginWithPassword: NonNullable<
 	MutationResolvers["loginWithPassword"]
 > = async (_parent, { email, password }, ctx) => {
@@ -20,22 +21,41 @@ export const loginWithPassword: NonNullable<
 		throw createGraphQLError("User not found");
 	}
 
-	ctx.request.cookieStore?.set({
-		domain: "localhost",
-		expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-		httpOnly: true,
-		name: "token",
-		sameSite: "strict",
-		value: await new SignJWT({ "urn:example:claim": true })
-			.setProtectedHeader({ alg: "HS256" })
-			.setIssuedAt()
-			.setIssuer("urn:sapce:issuer")
-			.setAudience("urn:space:audience")
-			.setExpirationTime("2h")
-			.sign(
-				new TextEncoder().encode(process.env.JWT_SECRET || "electric-kitten"),
-			),
-	});
+	{
+		// 10 minutes
+		const expirationTime = new Date(Date.now() + 1000 * 60 * 10);
+		const accessToken = await signToken(
+			user.id,
+			{ "urn:space:claim": true },
+			expirationTime,
+		);
+		ctx.request.cookieStore?.set({
+			domain,
+			expires: expirationTime,
+			httpOnly: false,
+			sameSite: "strict",
+			name: "accessToken",
+			value: accessToken,
+		});
+	}
+	{
+		// 1 year
+		const expirationTime = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365);
+		const refreshToken = await signToken(
+			user.id,
+			{ "urn:space:refreshLogin": true },
+			expirationTime,
+		);
+		ctx.request.cookieStore?.set({
+			domain,
+			expires: expirationTime,
+			httpOnly: true,
+			sameSite: "strict",
+			name: "refreshToken",
+			value: refreshToken,
+		});
+		// store refreshToken in database
+	}
 
 	return user;
 };

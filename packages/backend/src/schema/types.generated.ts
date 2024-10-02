@@ -27,6 +27,7 @@ export type Game = {
 export type Mutation = {
   __typename?: 'Mutation';
   loginWithPassword: User;
+  loginWithRefreshToken: User;
   registerWithPassword: User;
 };
 
@@ -166,6 +167,7 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
+  loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
 };
 
