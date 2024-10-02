@@ -13,7 +13,7 @@ export const loginWithRefreshToken: NonNullable<
 		throw createGraphQLError("No refresh token found");
 	}
 
-	const { sub } = await verifyToken(refreshToken);
+	const { sub } = await verifyToken(refreshToken).catch(() => ({ sub: null }));
 
 	if (!sub) {
 		throw createGraphQLError("Invalid refresh token");
@@ -21,9 +21,6 @@ export const loginWithRefreshToken: NonNullable<
 
 	const user = await ctx.drizzle.query.users.findFirst({
 		where: (users, { eq }) => eq(users.id, sub),
-		with: {
-			password: true,
-		},
 	});
 
 	if (!user) {

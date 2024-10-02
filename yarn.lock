@@ -3039,6 +3039,7 @@ __metadata:
     dayjs: "npm:1.11.13"
     framer-motion: "npm:11.9.0"
     graphql: "npm:16.9.0"
+    jose: "npm:5.9.3"
     postcss: "npm:8.4.47"
     postcss-preset-mantine: "npm:1.17.0"
     postcss-simple-vars: "npm:7.0.1"

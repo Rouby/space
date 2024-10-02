@@ -54,6 +54,7 @@ export type Planet = {
 export type Query = {
   __typename?: 'Query';
   games: Array<Game>;
+  me?: Maybe<User>;
   planets: Array<Planet>;
 };
 
@@ -180,6 +181,7 @@ export type PlanetResolvers<ContextType = Context, ParentType extends ResolversP
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   planets?: Resolver<Array<ResolversTypes['Planet']>, ParentType, ContextType>;
 };
 

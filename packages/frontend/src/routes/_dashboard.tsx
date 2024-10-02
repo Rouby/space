@@ -27,6 +27,8 @@ import {
 } from "@tanstack/react-router";
 import { forwardRef } from "react";
 import { useStyles } from "tss-react";
+import { useAuth } from "../Auth";
+import { UserButton } from "../features/UserButton/UserButton";
 import { mq, theme, vars } from "../theme";
 
 export const Route = createFileRoute("/_dashboard")({
@@ -39,6 +41,8 @@ function DashboardLayout() {
 	const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
 		useDisclosure(false);
 	const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
+
+	const { me } = useAuth();
 
 	return (
 		<>
@@ -122,14 +126,20 @@ function DashboardLayout() {
 							<Link to="/learn">Learn</Link>
 						</Group>
 
-						<Group visibleFrom="sm">
-							<Button variant="default" component={RouterLink} to="/signin">
-								Log in
-							</Button>
-							<Button component={RouterLink} to="/signin">
-								Sign up
-							</Button>
-						</Group>
+						{me ? (
+							<UserButton />
+						) : (
+							<>
+								<Group visibleFrom="sm">
+									<Button variant="default" component={RouterLink} to="/signin">
+										Log in
+									</Button>
+									<Button component={RouterLink} to="/signin">
+										Sign up
+									</Button>
+								</Group>
+							</>
+						)}
 
 						<Burger
 							opened={drawerOpened}

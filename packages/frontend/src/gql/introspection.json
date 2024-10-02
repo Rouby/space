@@ -195,6 +195,15 @@
             "args": []
           },
           {
+            "name": "me",
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "planets",
             "type": {
               "kind": "NON_NULL",

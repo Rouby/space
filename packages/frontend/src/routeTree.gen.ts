@@ -18,7 +18,8 @@ import { Route as DashboardIndexImport } from './routes/_dashboard/index'
 import { Route as DashboardSigninImport } from './routes/_dashboard/signin'
 import { Route as DashboardLearnImport } from './routes/_dashboard/learn'
 import { Route as DashboardFeaturesImport } from './routes/_dashboard/features'
-import { Route as DashboardGamesIndexImport } from './routes/_dashboard/games/index'
+import { Route as DashboardAuthenticatedImport } from './routes/_dashboard/_authenticated'
+import { Route as DashboardAuthenticatedGamesIndexImport } from './routes/_dashboard/_authenticated.games/index'
 
 // Create Virtual Routes
 
@@ -56,10 +57,16 @@ const DashboardFeaturesRoute = DashboardFeaturesImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardGamesIndexRoute = DashboardGamesIndexImport.update({
-  path: '/games/',
+const DashboardAuthenticatedRoute = DashboardAuthenticatedImport.update({
+  id: '/_authenticated',
   getParentRoute: () => DashboardRoute,
 } as any)
+
+const DashboardAuthenticatedGamesIndexRoute =
+  DashboardAuthenticatedGamesIndexImport.update({
+    path: '/games/',
+    getParentRoute: () => DashboardAuthenticatedRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -71,6 +78,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
+    }
+    '/_dashboard/_authenticated': {
+      id: '/_dashboard/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DashboardAuthenticatedImport
+      parentRoute: typeof DashboardImport
     }
     '/_dashboard/features': {
       id: '/_dashboard/features'
@@ -107,32 +121,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof DashboardImport
     }
-    '/_dashboard/games/': {
-      id: '/_dashboard/games/'
+    '/_dashboard/_authenticated/games/': {
+      id: '/_dashboard/_authenticated/games/'
       path: '/games'
       fullPath: '/games'
-      preLoaderRoute: typeof DashboardGamesIndexImport
-      parentRoute: typeof DashboardImport
+      preLoaderRoute: typeof DashboardAuthenticatedGamesIndexImport
+      parentRoute: typeof DashboardAuthenticatedImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardAuthenticatedRouteChildren {
+  DashboardAuthenticatedGamesIndexRoute: typeof DashboardAuthenticatedGamesIndexRoute
+}
+
+const DashboardAuthenticatedRouteChildren: DashboardAuthenticatedRouteChildren =
+  {
+    DashboardAuthenticatedGamesIndexRoute:
+      DashboardAuthenticatedGamesIndexRoute,
+  }
+
+const DashboardAuthenticatedRouteWithChildren =
+  DashboardAuthenticatedRoute._addFileChildren(
+    DashboardAuthenticatedRouteChildren,
+  )
+
 interface DashboardRouteChildren {
+  DashboardAuthenticatedRoute: typeof DashboardAuthenticatedRouteWithChildren
   DashboardFeaturesRoute: typeof DashboardFeaturesRoute
   DashboardLearnRoute: typeof DashboardLearnRoute
   DashboardSigninRoute: typeof DashboardSigninRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardGamesIndexRoute: typeof DashboardGamesIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAuthenticatedRoute: DashboardAuthenticatedRouteWithChildren,
   DashboardFeaturesRoute: DashboardFeaturesRoute,
   DashboardLearnRoute: DashboardLearnRoute,
   DashboardSigninRoute: DashboardSigninRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  DashboardGamesIndexRoute: DashboardGamesIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -140,33 +169,35 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
-  '': typeof DashboardRouteWithChildren
+  '': typeof DashboardAuthenticatedRouteWithChildren
   '/features': typeof DashboardFeaturesRoute
   '/learn': typeof DashboardLearnRoute
   '/signin': typeof DashboardSigninRoute
   '/games/$id': typeof GamesIdLazyRoute
   '/': typeof DashboardIndexRoute
-  '/games': typeof DashboardGamesIndexRoute
+  '/games': typeof DashboardAuthenticatedGamesIndexRoute
 }
 
 export interface FileRoutesByTo {
+  '': typeof DashboardAuthenticatedRouteWithChildren
   '/features': typeof DashboardFeaturesRoute
   '/learn': typeof DashboardLearnRoute
   '/signin': typeof DashboardSigninRoute
   '/games/$id': typeof GamesIdLazyRoute
   '/': typeof DashboardIndexRoute
-  '/games': typeof DashboardGamesIndexRoute
+  '/games': typeof DashboardAuthenticatedGamesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_dashboard': typeof DashboardRouteWithChildren
+  '/_dashboard/_authenticated': typeof DashboardAuthenticatedRouteWithChildren
   '/_dashboard/features': typeof DashboardFeaturesRoute
   '/_dashboard/learn': typeof DashboardLearnRoute
   '/_dashboard/signin': typeof DashboardSigninRoute
   '/games/$id': typeof GamesIdLazyRoute
   '/_dashboard/': typeof DashboardIndexRoute
-  '/_dashboard/games/': typeof DashboardGamesIndexRoute
+  '/_dashboard/_authenticated/games/': typeof DashboardAuthenticatedGamesIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -180,16 +211,17 @@ export interface FileRouteTypes {
     | '/'
     | '/games'
   fileRoutesByTo: FileRoutesByTo
-  to: '/features' | '/learn' | '/signin' | '/games/$id' | '/' | '/games'
+  to: '' | '/features' | '/learn' | '/signin' | '/games/$id' | '/' | '/games'
   id:
     | '__root__'
     | '/_dashboard'
+    | '/_dashboard/_authenticated'
     | '/_dashboard/features'
     | '/_dashboard/learn'
     | '/_dashboard/signin'
     | '/games/$id'
     | '/_dashboard/'
-    | '/_dashboard/games/'
+    | '/_dashboard/_authenticated/games/'
   fileRoutesById: FileRoutesById
 }
 
@@ -222,11 +254,18 @@ export const routeTree = rootRoute
     "/_dashboard": {
       "filePath": "_dashboard.tsx",
       "children": [
+        "/_dashboard/_authenticated",
         "/_dashboard/features",
         "/_dashboard/learn",
         "/_dashboard/signin",
-        "/_dashboard/",
-        "/_dashboard/games/"
+        "/_dashboard/"
+      ]
+    },
+    "/_dashboard/_authenticated": {
+      "filePath": "_dashboard/_authenticated.tsx",
+      "parent": "/_dashboard",
+      "children": [
+        "/_dashboard/_authenticated/games/"
       ]
     },
     "/_dashboard/features": {
@@ -248,9 +287,9 @@ export const routeTree = rootRoute
       "filePath": "_dashboard/index.tsx",
       "parent": "/_dashboard"
     },
-    "/_dashboard/games/": {
-      "filePath": "_dashboard/games/index.tsx",
-      "parent": "/_dashboard"
+    "/_dashboard/_authenticated/games/": {
+      "filePath": "_dashboard/_authenticated.games/index.tsx",
+      "parent": "/_dashboard/_authenticated"
     }
   }
 }

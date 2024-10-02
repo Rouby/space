@@ -4,6 +4,10 @@ type User {
   email: String!
 }
 
+type Query {
+  me: User
+}
+
 type Mutation {
   registerWithPassword(name: String!, email: String!, password: String!): User!
 

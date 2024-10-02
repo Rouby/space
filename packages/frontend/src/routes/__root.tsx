@@ -1,4 +1,4 @@
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { lazy } from "react";
 
 const TanStackRouterDevtools = import.meta.env.PROD
@@ -9,7 +9,11 @@ const TanStackRouterDevtools = import.meta.env.PROD
 			})),
 		);
 
-export const Route = createRootRoute({
+interface MyRouterContext {
+	me: { id: string } | null;
+}
+
+export const Route = createRootRouteWithContext<MyRouterContext>()({
 	component: () => (
 		<>
 			<Outlet />

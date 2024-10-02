@@ -17,6 +17,7 @@ type Planet {
 
 type Query {
   games: [Game!]!
+  me: User
   planets: [Planet!]!
 }
 
