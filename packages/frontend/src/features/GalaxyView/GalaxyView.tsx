@@ -1,3 +1,4 @@
+import { useParams } from "@tanstack/react-router";
 import {
 	type MotionValue,
 	motion,
@@ -10,15 +11,22 @@ import { useQuery } from "urql";
 import { graphql } from "../../gql";
 
 export function GalaxyView() {
+	const { id } = useParams({
+		from: "/games/$id",
+	});
+
 	const [{ data }] = useQuery({
 		query: graphql(`
-query Galaxy {
-  planets {
+query Galaxy($id: ID!) {
+  game(id: $id) {
     id
-    name
-    position
+		starSystems {
+			id
+			position
+		}
   }
 }`),
+		variables: { id },
 	});
 
 	const { css } = useStyles();
@@ -82,7 +90,7 @@ query Galaxy {
 				overflow: "hidden",
 			})}
 		>
-			{data?.planets.map((planet) => (
+			{data?.game.starSystems.map((planet) => (
 				<Planet
 					key={planet.id}
 					translateX={translateX}

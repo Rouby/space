@@ -1,20 +1,41 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1727820115640,
-			"tag": "0000_closed_the_phantom",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1727909886638,
-			"tag": "0001_closed_blockbuster",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1727820115640,
+      "tag": "0000_closed_the_phantom",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1727909886638,
+      "tag": "0001_closed_blockbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1727947741627,
+      "tag": "0002_workable_norrin_radd",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1727947842627,
+      "tag": "0003_blue_silver_samurai",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1727950820335,
+      "tag": "0004_wise_the_twelve",
+      "breakpoints": true
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 import { Button, PasswordInput, Text, TextInput } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useMutation } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
@@ -37,7 +38,16 @@ function SignInPage() {
 
 	const { redirect: redirectTo } = Route.useSearch();
 	const navigate = Route.useNavigate();
-	const { invalidate } = useAuth();
+	const { me, invalidate } = useAuth();
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only redirect if me changes
+	useEffect(() => {
+		if (me) {
+			navigate({ to: (redirectTo as never) ?? "/" });
+		}
+	}, [me]);
+
+	console.log(me);
 
 	return (
 		<>

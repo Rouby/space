@@ -1,4 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
+import { StarSystemMapper } from './starSystem/schema.mappers.js';
 import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
@@ -15,6 +17,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: Date | string; output: Date | string; }
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
 
@@ -22,19 +25,29 @@ export type Game = {
   __typename?: 'Game';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  players: Array<Player>;
+  starSystems: Array<StarSystem>;
+  startedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   createGame: Game;
+  joinGame: Game;
   loginWithPassword: User;
   loginWithRefreshToken: User;
   registerWithPassword: User;
+  startGame: Game;
 };
 
 
 export type MutationcreateGameArgs = {
   name: Scalars['String']['input'];
+};
+
+
+export type MutationjoinGameArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -50,18 +63,34 @@ export type MutationregisterWithPasswordArgs = {
   password: Scalars['String']['input'];
 };
 
-export type Planet = {
-  __typename?: 'Planet';
+
+export type MutationstartGameArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type Player = {
+  __typename?: 'Player';
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  position: Scalars['Vector']['output'];
+  user: User;
 };
 
 export type Query = {
   __typename?: 'Query';
+  game: Game;
   games: Array<Game>;
   me?: Maybe<User>;
-  planets: Array<Planet>;
+};
+
+
+export type QuerygameArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type StarSystem = {
+  __typename?: 'StarSystem';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  position: Scalars['Vector']['output'];
 };
 
 export type User = {
@@ -142,12 +171,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Game: ResolverTypeWrapper<Game>;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  Game: ResolverTypeWrapper<GameMapper>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
-  Planet: ResolverTypeWrapper<Planet>;
+  Player: ResolverTypeWrapper<PlayerMapper>;
   Query: ResolverTypeWrapper<{}>;
+  StarSystem: ResolverTypeWrapper<StarSystemMapper>;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -155,41 +186,58 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Game: Game;
+  DateTime: Scalars['DateTime']['output'];
+  Game: GameMapper;
   ID: Scalars['ID']['output'];
   String: Scalars['String']['output'];
   Mutation: {};
-  Planet: Planet;
+  Player: PlayerMapper;
   Query: {};
+  StarSystem: StarSystemMapper;
   User: User;
   Vector: Scalars['Vector']['output'];
   Boolean: Scalars['Boolean']['output'];
 };
 
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
+}
+
 export type GameResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  players?: Resolver<Array<ResolversTypes['Player']>, ParentType, ContextType>;
+  starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
+  startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
+  joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationjoinGameArgs, 'id'>>;
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
+  startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
 };
 
-export type PlanetResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Planet'] = ResolversParentTypes['Planet']> = {
+export type PlayerResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  game?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<QuerygameArgs, 'id'>>;
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  planets?: Resolver<Array<ResolversTypes['Planet']>, ParentType, ContextType>;
+};
+
+export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -204,10 +252,12 @@ export interface VectorScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type Resolvers<ContextType = Context> = {
+  DateTime?: GraphQLScalarType;
   Game?: GameResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  Planet?: PlanetResolvers<ContextType>;
+  Player?: PlayerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  StarSystem?: StarSystemResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;
 };

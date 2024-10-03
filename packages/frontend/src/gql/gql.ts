@@ -14,8 +14,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "mutation RefreshLogin {\n    loginWithRefreshToken {\n      id\n    }\n  }": types.RefreshLoginDocument,
-    "\nquery Galaxy {\n  planets {\n    id\n    name\n    position\n  }\n}": types.GalaxyDocument,
-    "\nquery Games {\n  games {\n    id\n    name\n  }\n}": types.GamesDocument,
+    "\nquery Galaxy($id: ID!) {\n  game(id: $id) {\n    id\n\t\tstarSystems {\n\t\t\tid\n\t\t\tposition\n\t\t}\n  }\n}": types.GalaxyDocument,
+    "query GameLobby($id: ID!) {\n      game(id: $id) {\n        id\n        name\n        players {\n          id\n          user {\n            id\n            name\n          }\n        }\n      }\n    }": types.GameLobbyDocument,
+    "mutation StartGame($id:ID!) {\n    startGame(id: $id) {\n      id\n      startedAt\n    }\n  }": types.StartGameDocument,
+    "\nquery Games {\n  games {\n    id\n    name\n\t\tstartedAt\t\n\t\tplayers {\n\t\t\tid\n\t\t\tuser {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n  }\n}": types.GamesDocument,
+    "mutation JoinGame($id: ID!) {\n\t\tjoinGame(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tplayers {\n\t\t\t\tid\n\t\t\t\tuser {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}": types.JoinGameDocument,
     "\nmutation SignIn($email:String!, $password:String!) {\n  loginWithPassword(email: $email, password: $password) {\n    id\n    name\n  }\n}": types.SignInDocument,
     "mutation CreateGame($name: String!) {\n\t\tcreateGame(name: $name) {\n\t\t\tid\n\t\t\tname\n\t\t}}": types.CreateGameDocument,
     "\n    mutation SignIn($email: String!, $password: String!) {\n      loginWithPassword(email: $email, password: $password) {\n        id\n        name\n      }\n    }": types.SignInDocument,
@@ -44,11 +47,23 @@ export function graphql(source: "mutation RefreshLogin {\n    loginWithRefreshTo
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\nquery Galaxy {\n  planets {\n    id\n    name\n    position\n  }\n}"): (typeof documents)["\nquery Galaxy {\n  planets {\n    id\n    name\n    position\n  }\n}"];
+export function graphql(source: "\nquery Galaxy($id: ID!) {\n  game(id: $id) {\n    id\n\t\tstarSystems {\n\t\t\tid\n\t\t\tposition\n\t\t}\n  }\n}"): (typeof documents)["\nquery Galaxy($id: ID!) {\n  game(id: $id) {\n    id\n\t\tstarSystems {\n\t\t\tid\n\t\t\tposition\n\t\t}\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\nquery Games {\n  games {\n    id\n    name\n  }\n}"): (typeof documents)["\nquery Games {\n  games {\n    id\n    name\n  }\n}"];
+export function graphql(source: "query GameLobby($id: ID!) {\n      game(id: $id) {\n        id\n        name\n        players {\n          id\n          user {\n            id\n            name\n          }\n        }\n      }\n    }"): (typeof documents)["query GameLobby($id: ID!) {\n      game(id: $id) {\n        id\n        name\n        players {\n          id\n          user {\n            id\n            name\n          }\n        }\n      }\n    }"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation StartGame($id:ID!) {\n    startGame(id: $id) {\n      id\n      startedAt\n    }\n  }"): (typeof documents)["mutation StartGame($id:ID!) {\n    startGame(id: $id) {\n      id\n      startedAt\n    }\n  }"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\nquery Games {\n  games {\n    id\n    name\n\t\tstartedAt\t\n\t\tplayers {\n\t\t\tid\n\t\t\tuser {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n  }\n}"): (typeof documents)["\nquery Games {\n  games {\n    id\n    name\n\t\tstartedAt\t\n\t\tplayers {\n\t\t\tid\n\t\t\tuser {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation JoinGame($id: ID!) {\n\t\tjoinGame(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tplayers {\n\t\t\t\tid\n\t\t\t\tuser {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}"): (typeof documents)["mutation JoinGame($id: ID!) {\n\t\tjoinGame(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tplayers {\n\t\t\t\tid\n\t\t\t\tuser {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

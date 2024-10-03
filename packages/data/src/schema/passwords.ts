@@ -5,7 +5,7 @@ import { users } from "./users.ts";
 export const passwords = pgTable("passwords", {
 	userId: uuid("userId")
 		.primaryKey()
-		.references(() => users.id),
+		.references(() => users.id, { onDelete: "cascade" }),
 	hash: varchar("hash").notNull(),
 });
 

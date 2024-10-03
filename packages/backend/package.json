@@ -4,7 +4,6 @@
 		"dev": "nodemon -q ./src/main.ts"
 	},
 	"type": "module",
-	"packageManager": "yarn@4.4.1",
 	"devDependencies": {
 		"@eddeee888/gcg-typescript-resolver-files": "0.10.4",
 		"@graphql-codegen/cli": "5.0.2",

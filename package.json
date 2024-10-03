@@ -4,7 +4,12 @@
 		"lint": "biome lint",
 		"typecheck": "yarn workspaces foreach -Ap run typecheck",
 		"test": "yarn workspaces foreach -Ap run test",
-		"integrate": "yarn workspaces foreach -Ap run integrate"
+		"integrate": "yarn workspaces foreach -Ap run integrate",
+		"dev:backend": "yarn workspace @space/backend dev",
+		"dev:frontend": "yarn workspace @space/frontend dev",
+		"db:generate": "yarn workspace @space/data drizzle-kit generate",
+		"db:push": "yarn workspace @space/data drizzle-kit push",
+		"codegen": "yarn workspace @space/backend graphql-codegen && biome format --write packages/backend/src/schema"
 	},
 	"type": "module",
 	"packageManager": "yarn@4.4.1",
@@ -13,8 +18,6 @@
 		"typescript": "5.5.4"
 	},
 	"workspaces": {
-		"packages": [
-			"packages/*"
-		]
+		"packages": ["packages/*"]
 	}
 }

@@ -1,0 +1,11 @@
+scalar Vector
+
+type StarSystem {
+	id: ID!
+	name: String!
+	position: Vector!
+}
+
+extend type Game {
+	starSystems: [StarSystem!]!
+}

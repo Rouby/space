@@ -1,25 +1,37 @@
+scalar DateTime
+
 type Game {
   id: ID!
   name: String!
+  players: [Player!]!
+  starSystems: [StarSystem!]!
+  startedAt: DateTime
 }
 
 type Mutation {
   createGame(name: String!): Game!
+  joinGame(id: ID!): Game!
   loginWithPassword(email: String!, password: String!): User!
   loginWithRefreshToken: User!
   registerWithPassword(email: String!, name: String!, password: String!): User!
+  startGame(id: ID!): Game!
 }
 
-type Planet {
+type Player {
   id: ID!
-  name: String!
-  position: Vector!
+  user: User!
 }
 
 type Query {
+  game(id: ID!): Game!
   games: [Game!]!
   me: User
-  planets: [Planet!]!
+}
+
+type StarSystem {
+  id: ID!
+  name: String!
+  position: Vector!
 }
 
 type User {

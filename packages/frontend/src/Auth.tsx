@@ -47,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		invalidate();
+		window.addEventListener("change", invalidate);
+		return () => window.removeEventListener("change", invalidate);
 	}, [invalidate]);
 
 	return (

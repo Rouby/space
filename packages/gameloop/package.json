@@ -1,0 +1,8 @@
+{
+	"name": "@space/gameloop",
+	"type": "module",
+	"dependencies": {
+		"@space/data": "workspace:*"
+	},
+	"devDependencies": {}
+}

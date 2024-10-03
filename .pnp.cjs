@@ -10981,6 +10981,7 @@ const RAW_RUNTIME_STATE =
           ["drizzle-kit", "npm:0.24.2"],\
           ["@drizzle-team/brocli", "npm:0.10.1"],\
           ["@esbuild-kit/esm-loader", "npm:2.6.5"],\
+          ["drizzle-orm", "virtual:ed6f619edc11a4c25209b17920ae0a90eadcce70584ac2e31a0efe387b62966f03369bebc2f399b0312183cb1b4f38a7521851a948822e0094f5dd21fbc3a3e5#npm:0.33.0"],\
           ["esbuild", "npm:0.19.12"],\
           ["esbuild-register", "virtual:ed6f619edc11a4c25209b17920ae0a90eadcce70584ac2e31a0efe387b62966f03369bebc2f399b0312183cb1b4f38a7521851a948822e0094f5dd21fbc3a3e5#npm:3.6.0"]\
         ],\
@@ -11042,6 +11043,111 @@ const RAW_RUNTIME_STATE =
           ["kysely", null],\
           ["mysql2", null],\
           ["pg", "virtual:b247d93090cc7ee445bac8d54c0fafab5bdc03b582f06c48317cf10cd2497e05caaa7ce21671e8eb0995a529a5addeca30eeb49fae926013f333d7ea4e81f3e3#npm:8.13.0"],\
+          ["postgres", null],\
+          ["prisma", null],\
+          ["react", null],\
+          ["sql.js", null],\
+          ["sqlite3", null]\
+        ],\
+        "packagePeers": [\
+          "@aws-sdk/client-rds-data",\
+          "@cloudflare/workers-types",\
+          "@electric-sql/pglite",\
+          "@libsql/client",\
+          "@neondatabase/serverless",\
+          "@op-engineering/op-sqlite",\
+          "@opentelemetry/api",\
+          "@planetscale/database",\
+          "@prisma/client",\
+          "@tidbcloud/serverless",\
+          "@types/aws-sdk__client-rds-data",\
+          "@types/better-sqlite3",\
+          "@types/bun-types",\
+          "@types/cloudflare__workers-types",\
+          "@types/electric-sql__pglite",\
+          "@types/expo-sqlite",\
+          "@types/knex",\
+          "@types/kysely",\
+          "@types/libsql__client",\
+          "@types/mysql2",\
+          "@types/neondatabase__serverless",\
+          "@types/op-engineering__op-sqlite",\
+          "@types/opentelemetry__api",\
+          "@types/pg",\
+          "@types/planetscale__database",\
+          "@types/postgres",\
+          "@types/prisma",\
+          "@types/prisma__client",\
+          "@types/react",\
+          "@types/sql.js",\
+          "@types/sqlite3",\
+          "@types/tidbcloud__serverless",\
+          "@types/vercel__postgres",\
+          "@types/xata.io__client",\
+          "@vercel/postgres",\
+          "@xata.io/client",\
+          "better-sqlite3",\
+          "bun-types",\
+          "expo-sqlite",\
+          "knex",\
+          "kysely",\
+          "mysql2",\
+          "pg",\
+          "postgres",\
+          "prisma",\
+          "react",\
+          "sql.js",\
+          "sqlite3"\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["virtual:ed6f619edc11a4c25209b17920ae0a90eadcce70584ac2e31a0efe387b62966f03369bebc2f399b0312183cb1b4f38a7521851a948822e0094f5dd21fbc3a3e5#npm:0.33.0", {\
+        "packageLocation": "./.yarn/__virtual__/drizzle-orm-virtual-23971323f3/0/cache/drizzle-orm-npm-0.33.0-74d2936dbe-62626e355c.zip/node_modules/drizzle-orm/",\
+        "packageDependencies": [\
+          ["drizzle-orm", "virtual:ed6f619edc11a4c25209b17920ae0a90eadcce70584ac2e31a0efe387b62966f03369bebc2f399b0312183cb1b4f38a7521851a948822e0094f5dd21fbc3a3e5#npm:0.33.0"],\
+          ["@aws-sdk/client-rds-data", null],\
+          ["@cloudflare/workers-types", null],\
+          ["@electric-sql/pglite", null],\
+          ["@libsql/client", null],\
+          ["@neondatabase/serverless", null],\
+          ["@op-engineering/op-sqlite", null],\
+          ["@opentelemetry/api", null],\
+          ["@planetscale/database", null],\
+          ["@prisma/client", null],\
+          ["@tidbcloud/serverless", null],\
+          ["@types/aws-sdk__client-rds-data", null],\
+          ["@types/better-sqlite3", null],\
+          ["@types/bun-types", null],\
+          ["@types/cloudflare__workers-types", null],\
+          ["@types/electric-sql__pglite", null],\
+          ["@types/expo-sqlite", null],\
+          ["@types/knex", null],\
+          ["@types/kysely", null],\
+          ["@types/libsql__client", null],\
+          ["@types/mysql2", null],\
+          ["@types/neondatabase__serverless", null],\
+          ["@types/op-engineering__op-sqlite", null],\
+          ["@types/opentelemetry__api", null],\
+          ["@types/pg", null],\
+          ["@types/planetscale__database", null],\
+          ["@types/postgres", null],\
+          ["@types/prisma", null],\
+          ["@types/prisma__client", null],\
+          ["@types/react", null],\
+          ["@types/sql.js", null],\
+          ["@types/sqlite3", null],\
+          ["@types/tidbcloud__serverless", null],\
+          ["@types/vercel__postgres", null],\
+          ["@types/xata.io__client", null],\
+          ["@vercel/postgres", null],\
+          ["@xata.io/client", null],\
+          ["better-sqlite3", null],\
+          ["bun-types", null],\
+          ["expo-sqlite", null],\
+          ["knex", null],\
+          ["kysely", null],\
+          ["mysql2", null],\
+          ["pg", null],\
           ["postgres", null],\
           ["prisma", null],\
           ["react", null],\
