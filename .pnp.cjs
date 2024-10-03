@@ -25,6 +25,10 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "@space/frontend",\
       "reference": "workspace:packages/frontend"\
+    },\
+    {\
+      "name": "@space/gameloop",\
+      "reference": "workspace:packages/gameloop"\
     }\
   ],\
   "enableTopLevelFallback": true,\
@@ -923,6 +927,10 @@ const RAW_RUNTIME_STATE =
     [\
       "@space/frontend",\
       "workspace:packages/frontend"\
+    ],\
+    [\
+      "@space/gameloop",\
+      "workspace:packages/gameloop"\
     ],\
     [\
       "@swc/cli",\
@@ -7983,6 +7991,16 @@ const RAW_RUNTIME_STATE =
           ["urql", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:4.1.0"],\
           ["vite", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:5.4.8"],\
           ["vite-plugin-graphql-codegen", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:3.3.8"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@space/gameloop", [\
+      ["workspace:packages/gameloop", {\
+        "packageLocation": "./packages/gameloop/",\
+        "packageDependencies": [\
+          ["@space/gameloop", "workspace:packages/gameloop"],\
+          ["@space/data", "workspace:packages/data"]\
         ],\
         "linkType": "SOFT"\
       }]\

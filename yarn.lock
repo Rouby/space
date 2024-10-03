@@ -3053,6 +3053,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@space/gameloop@workspace:packages/gameloop":
+  version: 0.0.0-use.local
+  resolution: "@space/gameloop@workspace:packages/gameloop"
+  dependencies:
+    "@space/data": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@swc/cli@npm:0.4.1-nightly.20240914":
   version: 0.4.1-nightly.20240914
   resolution: "@swc/cli@npm:0.4.1-nightly.20240914"

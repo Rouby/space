@@ -3,6 +3,5 @@
 	"type": "module",
 	"dependencies": {
 		"@space/data": "workspace:*"
-	},
-	"devDependencies": {}
+	}
 }

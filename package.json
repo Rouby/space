@@ -18,6 +18,8 @@
 		"typescript": "5.5.4"
 	},
 	"workspaces": {
-		"packages": ["packages/*"]
+		"packages": [
+			"packages/*"
+		]
 	}
 }
