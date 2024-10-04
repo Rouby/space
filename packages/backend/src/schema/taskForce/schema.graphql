@@ -1,0 +1,59 @@
+type TaskForce {
+	id: ID!
+	name: String!
+	position: Vector!
+	orders: [TaskForceOrder!]!
+	owner: User!
+}
+
+interface TaskForceOrder {
+	id: ID!
+	type: TaskForceOrderType!
+}
+
+enum TaskForceOrderType {
+	move
+}
+
+type TaskForceMoveOrder implements TaskForceOrder {
+	id: ID!
+	type: TaskForceOrderType!
+	destination: Vector!
+}
+
+type TaskForceCommision {
+	id: ID!
+	progress: Float!
+	total: Float!
+}
+
+type TaskForceCommisionFinished {
+	id: ID!
+	taskForce: TaskForce
+}
+
+extend type Game {
+	taskForces: [TaskForce!]!
+}
+
+extend type StarSystem {
+	taskForceCommisions: [TaskForceCommision!]!
+	taskForces: [TaskForce!]!
+}
+
+type Query {
+	taskForceCommision(id: ID!): TaskForceCommision!
+}
+
+type Mutation {
+	createTaskForceCommision(starSystemId: ID!): TaskForceCommision!
+
+	moveTaskForce(id: ID!, position: Vector!): TaskForce!
+}
+
+type Subscription {
+	taskForceCommisionProgress(id: ID!): TaskForceCommision!
+	taskForceCommisionFinished(id: ID!): TaskForceCommisionFinished!
+
+	trackTaskForces: TaskForce!
+}

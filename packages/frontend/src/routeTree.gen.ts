@@ -25,6 +25,11 @@ import { Route as DashboardAuthenticatedGamesLobbyIdImport } from './routes/_das
 // Create Virtual Routes
 
 const GamesIdLazyImport = createFileRoute('/games/$id')()
+const GamesIdStarSystemStarSystemIdLazyImport = createFileRoute(
+  '/games/$id/star-system/$starSystemId',
+)()
+const GamesIdStarSystemStarSystemIdCommisionTaskForceLazyImport =
+  createFileRoute('/games/$id/star-system/$starSystemId/commision-task-force')()
 
 // Create/Update Routes
 
@@ -68,6 +73,26 @@ const DashboardAuthenticatedGamesIndexRoute =
     path: '/games/',
     getParentRoute: () => DashboardAuthenticatedRoute,
   } as any)
+
+const GamesIdStarSystemStarSystemIdLazyRoute =
+  GamesIdStarSystemStarSystemIdLazyImport.update({
+    path: '/star-system/$starSystemId',
+    getParentRoute: () => GamesIdLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/games/$id/star-system.$starSystemId.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute =
+  GamesIdStarSystemStarSystemIdCommisionTaskForceLazyImport.update({
+    path: '/commision-task-force',
+    getParentRoute: () => GamesIdStarSystemStarSystemIdLazyRoute,
+  } as any).lazy(() =>
+    import(
+      './routes/games/$id/star-system.$starSystemId/commision-task-force.lazy'
+    ).then((d) => d.Route),
+  )
 
 const DashboardAuthenticatedGamesLobbyIdRoute =
   DashboardAuthenticatedGamesLobbyIdImport.update({
@@ -128,6 +153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof DashboardImport
     }
+    '/games/$id/star-system/$starSystemId': {
+      id: '/games/$id/star-system/$starSystemId'
+      path: '/star-system/$starSystemId'
+      fullPath: '/games/$id/star-system/$starSystemId'
+      preLoaderRoute: typeof GamesIdStarSystemStarSystemIdLazyImport
+      parentRoute: typeof GamesIdLazyImport
+    }
     '/_dashboard/_authenticated/games/': {
       id: '/_dashboard/_authenticated/games/'
       path: '/games'
@@ -141,6 +173,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/games/lobby/$id'
       preLoaderRoute: typeof DashboardAuthenticatedGamesLobbyIdImport
       parentRoute: typeof DashboardAuthenticatedImport
+    }
+    '/games/$id/star-system/$starSystemId/commision-task-force': {
+      id: '/games/$id/star-system/$starSystemId/commision-task-force'
+      path: '/commision-task-force'
+      fullPath: '/games/$id/star-system/$starSystemId/commision-task-force'
+      preLoaderRoute: typeof GamesIdStarSystemStarSystemIdCommisionTaskForceLazyImport
+      parentRoute: typeof GamesIdStarSystemStarSystemIdLazyImport
     }
   }
 }
@@ -185,15 +224,45 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface GamesIdStarSystemStarSystemIdLazyRouteChildren {
+  GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute: typeof GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
+}
+
+const GamesIdStarSystemStarSystemIdLazyRouteChildren: GamesIdStarSystemStarSystemIdLazyRouteChildren =
+  {
+    GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute:
+      GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute,
+  }
+
+const GamesIdStarSystemStarSystemIdLazyRouteWithChildren =
+  GamesIdStarSystemStarSystemIdLazyRoute._addFileChildren(
+    GamesIdStarSystemStarSystemIdLazyRouteChildren,
+  )
+
+interface GamesIdLazyRouteChildren {
+  GamesIdStarSystemStarSystemIdLazyRoute: typeof GamesIdStarSystemStarSystemIdLazyRouteWithChildren
+}
+
+const GamesIdLazyRouteChildren: GamesIdLazyRouteChildren = {
+  GamesIdStarSystemStarSystemIdLazyRoute:
+    GamesIdStarSystemStarSystemIdLazyRouteWithChildren,
+}
+
+const GamesIdLazyRouteWithChildren = GamesIdLazyRoute._addFileChildren(
+  GamesIdLazyRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '': typeof DashboardAuthenticatedRouteWithChildren
   '/features': typeof DashboardFeaturesRoute
   '/learn': typeof DashboardLearnRoute
   '/signin': typeof DashboardSigninRoute
-  '/games/$id': typeof GamesIdLazyRoute
+  '/games/$id': typeof GamesIdLazyRouteWithChildren
   '/': typeof DashboardIndexRoute
+  '/games/$id/star-system/$starSystemId': typeof GamesIdStarSystemStarSystemIdLazyRouteWithChildren
   '/games': typeof DashboardAuthenticatedGamesIndexRoute
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
+  '/games/$id/star-system/$starSystemId/commision-task-force': typeof GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -201,10 +270,12 @@ export interface FileRoutesByTo {
   '/features': typeof DashboardFeaturesRoute
   '/learn': typeof DashboardLearnRoute
   '/signin': typeof DashboardSigninRoute
-  '/games/$id': typeof GamesIdLazyRoute
+  '/games/$id': typeof GamesIdLazyRouteWithChildren
   '/': typeof DashboardIndexRoute
+  '/games/$id/star-system/$starSystemId': typeof GamesIdStarSystemStarSystemIdLazyRouteWithChildren
   '/games': typeof DashboardAuthenticatedGamesIndexRoute
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
+  '/games/$id/star-system/$starSystemId/commision-task-force': typeof GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
 }
 
 export interface FileRoutesById {
@@ -214,10 +285,12 @@ export interface FileRoutesById {
   '/_dashboard/features': typeof DashboardFeaturesRoute
   '/_dashboard/learn': typeof DashboardLearnRoute
   '/_dashboard/signin': typeof DashboardSigninRoute
-  '/games/$id': typeof GamesIdLazyRoute
+  '/games/$id': typeof GamesIdLazyRouteWithChildren
   '/_dashboard/': typeof DashboardIndexRoute
+  '/games/$id/star-system/$starSystemId': typeof GamesIdStarSystemStarSystemIdLazyRouteWithChildren
   '/_dashboard/_authenticated/games/': typeof DashboardAuthenticatedGamesIndexRoute
   '/_dashboard/_authenticated/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
+  '/games/$id/star-system/$starSystemId/commision-task-force': typeof GamesIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -229,8 +302,10 @@ export interface FileRouteTypes {
     | '/signin'
     | '/games/$id'
     | '/'
+    | '/games/$id/star-system/$starSystemId'
     | '/games'
     | '/games/lobby/$id'
+    | '/games/$id/star-system/$starSystemId/commision-task-force'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
@@ -239,8 +314,10 @@ export interface FileRouteTypes {
     | '/signin'
     | '/games/$id'
     | '/'
+    | '/games/$id/star-system/$starSystemId'
     | '/games'
     | '/games/lobby/$id'
+    | '/games/$id/star-system/$starSystemId/commision-task-force'
   id:
     | '__root__'
     | '/_dashboard'
@@ -250,19 +327,21 @@ export interface FileRouteTypes {
     | '/_dashboard/signin'
     | '/games/$id'
     | '/_dashboard/'
+    | '/games/$id/star-system/$starSystemId'
     | '/_dashboard/_authenticated/games/'
     | '/_dashboard/_authenticated/games/lobby/$id'
+    | '/games/$id/star-system/$starSystemId/commision-task-force'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
-  GamesIdLazyRoute: typeof GamesIdLazyRoute
+  GamesIdLazyRoute: typeof GamesIdLazyRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
-  GamesIdLazyRoute: GamesIdLazyRoute,
+  GamesIdLazyRoute: GamesIdLazyRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -312,11 +391,21 @@ export const routeTree = rootRoute
       "parent": "/_dashboard"
     },
     "/games/$id": {
-      "filePath": "games/$id.lazy.tsx"
+      "filePath": "games/$id.lazy.tsx",
+      "children": [
+        "/games/$id/star-system/$starSystemId"
+      ]
     },
     "/_dashboard/": {
       "filePath": "_dashboard/index.tsx",
       "parent": "/_dashboard"
+    },
+    "/games/$id/star-system/$starSystemId": {
+      "filePath": "games/$id/star-system.$starSystemId.lazy.tsx",
+      "parent": "/games/$id",
+      "children": [
+        "/games/$id/star-system/$starSystemId/commision-task-force"
+      ]
     },
     "/_dashboard/_authenticated/games/": {
       "filePath": "_dashboard/_authenticated.games/index.tsx",
@@ -325,6 +414,10 @@ export const routeTree = rootRoute
     "/_dashboard/_authenticated/games/lobby/$id": {
       "filePath": "_dashboard/_authenticated.games/lobby.$id.tsx",
       "parent": "/_dashboard/_authenticated"
+    },
+    "/games/$id/star-system/$starSystemId/commision-task-force": {
+      "filePath": "games/$id/star-system.$starSystemId/commision-task-force.lazy.tsx",
+      "parent": "/games/$id/star-system/$starSystemId"
     }
   }
 }

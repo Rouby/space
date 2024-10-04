@@ -21,7 +21,7 @@ export const startGame: NonNullable<MutationResolvers["startGame"]> = async (
 		.set({ startedAt: new Date() })
 		.where(eq(games.id, id));
 
-	// TODO: start process?!
+	ctx.startGame(id);
 
 	return game;
 };

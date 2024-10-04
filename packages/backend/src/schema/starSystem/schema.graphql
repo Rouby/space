@@ -1,11 +1,14 @@
-scalar Vector
-
 type StarSystem {
 	id: ID!
 	name: String!
 	position: Vector!
+	owner: User
 }
 
 extend type Game {
 	starSystems: [StarSystem!]!
+}
+
+type Query {
+	starSystem(id: ID!): StarSystem!
 }

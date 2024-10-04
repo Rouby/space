@@ -1,5 +1,5 @@
-import { Avatar, Badge, Group, Text, UnstyledButton, rem } from "@mantine/core";
-import { IconChevronRight, IconView360 } from "@tabler/icons-react";
+import { Badge, rem } from "@mantine/core";
+import { IconView360 } from "@tabler/icons-react";
 import {
 	type LinkProps,
 	Outlet,
@@ -9,6 +9,7 @@ import {
 import { forwardRef } from "react";
 import { useStyles } from "tss-react";
 import { GalaxyView } from "../../features/GalaxyView/GalaxyView";
+import { UserButton } from "../../features/UserButton/UserButton";
 import { vars } from "../../theme";
 
 export const Route = createLazyFileRoute("/games/$id")({
@@ -78,7 +79,7 @@ function IngameLayout() {
 				</Section>
 			</nav>
 
-			<main>
+			<main className={css({ display: "grid" })}>
 				<GalaxyView />
 
 				<Outlet />
@@ -137,44 +138,3 @@ const Link = forwardRef<HTMLAnchorElement, LinkProps & { className?: string }>(
 		);
 	},
 );
-
-function UserButton() {
-	const { css } = useStyles();
-
-	return (
-		<UnstyledButton
-			className={css({
-				display: "block",
-				width: "100%",
-				padding: vars.spacing.md,
-				color: vars.colors.dark[0],
-
-				"&:hover": {
-					backgroundColor: vars.colors.dark[8],
-				},
-			})}
-		>
-			<Group>
-				<Avatar
-					src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png"
-					radius="xl"
-				/>
-
-				<div style={{ flex: 1 }}>
-					<Text size="sm" fw={500}>
-						Harriette Spoonlicker
-					</Text>
-
-					<Text c="dimmed" size="xs">
-						hspoonlicker@outlook.com
-					</Text>
-				</div>
-
-				<IconChevronRight
-					className={css({ width: rem(14), height: rem(14) })}
-					stroke={1.5}
-				/>
-			</Group>
-		</UnstyledButton>
-	);
-}

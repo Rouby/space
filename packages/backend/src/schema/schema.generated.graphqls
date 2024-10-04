@@ -6,13 +6,16 @@ type Game {
   players: [Player!]!
   starSystems: [StarSystem!]!
   startedAt: DateTime
+  taskForces: [TaskForce!]!
 }
 
 type Mutation {
   createGame(name: String!): Game!
+  createTaskForceCommision(starSystemId: ID!): TaskForceCommision!
   joinGame(id: ID!): Game!
   loginWithPassword(email: String!, password: String!): User!
   loginWithRefreshToken: User!
+  moveTaskForce(id: ID!, position: Vector!): TaskForce!
   registerWithPassword(email: String!, name: String!, password: String!): User!
   startGame(id: ID!): Game!
 }
@@ -26,12 +29,57 @@ type Query {
   game(id: ID!): Game!
   games: [Game!]!
   me: User
+  starSystem(id: ID!): StarSystem!
+  taskForceCommision(id: ID!): TaskForceCommision!
 }
 
 type StarSystem {
   id: ID!
   name: String!
+  owner: User
   position: Vector!
+  taskForceCommisions: [TaskForceCommision!]!
+  taskForces: [TaskForce!]!
+}
+
+type Subscription {
+  taskForceCommisionFinished(id: ID!): TaskForceCommisionFinished!
+  taskForceCommisionProgress(id: ID!): TaskForceCommision!
+  trackTaskForces: TaskForce!
+}
+
+type TaskForce {
+  id: ID!
+  name: String!
+  orders: [TaskForceOrder!]!
+  owner: User!
+  position: Vector!
+}
+
+type TaskForceCommision {
+  id: ID!
+  progress: Float!
+  total: Float!
+}
+
+type TaskForceCommisionFinished {
+  id: ID!
+  taskForce: TaskForce
+}
+
+type TaskForceMoveOrder implements TaskForceOrder {
+  destination: Vector!
+  id: ID!
+  type: TaskForceOrderType!
+}
+
+interface TaskForceOrder {
+  id: ID!
+  type: TaskForceOrderType!
+}
+
+enum TaskForceOrderType {
+  move
 }
 
 type User {

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, point, uuid, varchar } from "drizzle-orm/pg-core";
+import { json, pgTable, point, uuid, varchar } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
 import { users } from "./users.ts";
 
@@ -8,9 +8,15 @@ export const taskForces = pgTable("taskForces", {
 	gameId: uuid("gameId")
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	userId: uuid("userId")
+	ownerId: uuid("ownerId")
 		.notNull()
 		.references(() => users.id, { onDelete: "restrict" }),
 	name: varchar("name", { length: 256 }).notNull(),
 	position: point("position", { mode: "xy" }).notNull(),
+	orders: json("orders")
+		.notNull()
+		.$type<
+			{ id: string; type: "move"; destination: { x: number; y: number } }[]
+		>()
+		.default([]),
 });

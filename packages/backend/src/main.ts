@@ -5,6 +5,7 @@ import {
 	useJWT,
 } from "@graphql-yoga/plugin-jwt";
 import { getConnection, getDrizzle } from "@space/data";
+import { games, isNotNull } from "@space/data/schema";
 import { useCookies } from "@whatwg-node/server-plugin-cookies";
 import {
 	type YogaInitialContext,
@@ -16,11 +17,13 @@ import { createServer } from "node:http";
 import { extendContext } from "./context.ts";
 import { resolvers } from "./schema/resolvers.generated.ts";
 import { typeDefs } from "./schema/typeDefs.generated.ts";
+import { startWorker, stopWorkers } from "./workers.ts";
 
 const signingKey = process.env.JWT_SECRET || "electric-kitten";
 const port = process.env.PORT || 3000;
 
 const pgConnection = await getConnection();
+const drizzle = getDrizzle(pgConnection);
 
 const yoga = createYoga({
 	schema: createSchema({ typeDefs, resolvers }),
@@ -53,9 +56,10 @@ const yoga = createYoga({
 				);
 
 				return extendContext({
-					drizzle: getDrizzle(pgConnection),
+					drizzle,
 					userId: context.jwt?.payload.sub,
 					claims,
+					startGame: startWorker,
 				});
 			},
 		),
@@ -70,6 +74,14 @@ server.listen(port, () => {
 	);
 });
 
+drizzle.query.games
+	.findMany({ where: isNotNull(games.startedAt), columns: { id: true } })
+	.then((games) => {
+		for (const game of games) {
+			startWorker(game.id);
+		}
+	});
+
 for (const signal of ["SIGHUP", "SIGINT", "SIGTERM"]) {
 	process.on(signal, async () => {
 		console.log("Stopping...");
@@ -77,6 +89,7 @@ for (const signal of ["SIGHUP", "SIGINT", "SIGTERM"]) {
 		await Promise.all([
 			new Promise((res) => server.close(res)),
 			pgConnection.end(),
+			stopWorkers(),
 		]);
 
 		process.exit(0);

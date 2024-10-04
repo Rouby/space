@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+	boolean,
 	pgTable,
 	primaryKey,
 	timestamp,
@@ -12,6 +13,7 @@ export const games = pgTable("games", {
 	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
 	name: varchar("name", { length: 256 }).notNull(),
 	startedAt: timestamp("startedAt"),
+	setupCompleted: boolean("setupCompleted").notNull().default(false),
 });
 
 export const players = pgTable(
@@ -23,6 +25,7 @@ export const players = pgTable(
 		gameId: uuid("gameId")
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
+		color: varchar("color", { length: 7 }).notNull().default("#000000"),
 	},
 	(table) => ({ pk: primaryKey({ columns: [table.userId, table.gameId] }) }),
 );

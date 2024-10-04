@@ -1,6 +1,7 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
 import { StarSystemMapper } from './starSystem/schema.mappers.js';
+import { TaskForceMapper, TaskForceCommisionFinishedMapper, TaskForceOrderMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
@@ -9,7 +10,9 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+export type EnumResolverSignature<T, AllowedValues = any> = { [key in keyof T]?: AllowedValues };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string | number; }
@@ -28,14 +31,17 @@ export type Game = {
   players: Array<Player>;
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
+  taskForces: Array<TaskForce>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   createGame: Game;
+  createTaskForceCommision: TaskForceCommision;
   joinGame: Game;
   loginWithPassword: User;
   loginWithRefreshToken: User;
+  moveTaskForce: TaskForce;
   registerWithPassword: User;
   startGame: Game;
 };
@@ -43,6 +49,11 @@ export type Mutation = {
 
 export type MutationcreateGameArgs = {
   name: Scalars['String']['input'];
+};
+
+
+export type MutationcreateTaskForceCommisionArgs = {
+  starSystemId: Scalars['ID']['input'];
 };
 
 
@@ -54,6 +65,12 @@ export type MutationjoinGameArgs = {
 export type MutationloginWithPasswordArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationmoveTaskForceArgs = {
+  id: Scalars['ID']['input'];
+  position: Scalars['Vector']['input'];
 };
 
 
@@ -79,6 +96,8 @@ export type Query = {
   game: Game;
   games: Array<Game>;
   me?: Maybe<User>;
+  starSystem: StarSystem;
+  taskForceCommision: TaskForceCommision;
 };
 
 
@@ -86,12 +105,79 @@ export type QuerygameArgs = {
   id: Scalars['ID']['input'];
 };
 
+
+export type QuerystarSystemArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerytaskForceCommisionArgs = {
+  id: Scalars['ID']['input'];
+};
+
 export type StarSystem = {
   __typename?: 'StarSystem';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  owner?: Maybe<User>;
+  position: Scalars['Vector']['output'];
+  taskForceCommisions: Array<TaskForceCommision>;
+  taskForces: Array<TaskForce>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  taskForceCommisionFinished: TaskForceCommisionFinished;
+  taskForceCommisionProgress: TaskForceCommision;
+  trackTaskForces: TaskForce;
+};
+
+
+export type SubscriptiontaskForceCommisionFinishedArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type SubscriptiontaskForceCommisionProgressArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type TaskForce = {
+  __typename?: 'TaskForce';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  orders: Array<TaskForceOrder>;
+  owner: User;
   position: Scalars['Vector']['output'];
 };
+
+export type TaskForceCommision = {
+  __typename?: 'TaskForceCommision';
+  id: Scalars['ID']['output'];
+  progress: Scalars['Float']['output'];
+  total: Scalars['Float']['output'];
+};
+
+export type TaskForceCommisionFinished = {
+  __typename?: 'TaskForceCommisionFinished';
+  id: Scalars['ID']['output'];
+  taskForce?: Maybe<TaskForce>;
+};
+
+export type TaskForceMoveOrder = TaskForceOrder & {
+  __typename?: 'TaskForceMoveOrder';
+  destination: Scalars['Vector']['output'];
+  id: Scalars['ID']['output'];
+  type: TaskForceOrderType;
+};
+
+export type TaskForceOrder = {
+  id: Scalars['ID']['output'];
+  type: TaskForceOrderType;
+};
+
+export type TaskForceOrderType =
+  | 'move';
 
 export type User = {
   __typename?: 'User';
@@ -179,6 +265,14 @@ export type ResolversTypes = {
   Player: ResolverTypeWrapper<PlayerMapper>;
   Query: ResolverTypeWrapper<{}>;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
+  Subscription: ResolverTypeWrapper<{}>;
+  TaskForce: ResolverTypeWrapper<TaskForceMapper>;
+  TaskForceCommision: ResolverTypeWrapper<TaskForceCommision>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  TaskForceCommisionFinished: ResolverTypeWrapper<TaskForceCommisionFinishedMapper>;
+  TaskForceMoveOrder: ResolverTypeWrapper<Omit<TaskForceMoveOrder, 'type'> & { type: ResolversTypes['TaskForceOrderType'] }>;
+  TaskForceOrder: ResolverTypeWrapper<TaskForceOrderMapper>;
+  TaskForceOrderType: ResolverTypeWrapper<'move'>;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -194,6 +288,13 @@ export type ResolversParentTypes = {
   Player: PlayerMapper;
   Query: {};
   StarSystem: StarSystemMapper;
+  Subscription: {};
+  TaskForce: TaskForceMapper;
+  TaskForceCommision: TaskForceCommision;
+  Float: Scalars['Float']['output'];
+  TaskForceCommisionFinished: TaskForceCommisionFinishedMapper;
+  TaskForceMoveOrder: TaskForceMoveOrder;
+  TaskForceOrder: TaskForceOrderMapper;
   User: User;
   Vector: Scalars['Vector']['output'];
   Boolean: Scalars['Boolean']['output'];
@@ -209,14 +310,17 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   players?: Resolver<Array<ResolversTypes['Player']>, ParentType, ContextType>;
   starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
+  createTaskForceCommision?: Resolver<ResolversTypes['TaskForceCommision'], ParentType, ContextType, RequireFields<MutationcreateTaskForceCommisionArgs, 'starSystemId'>>;
   joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationjoinGameArgs, 'id'>>;
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  moveTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationmoveTaskForceArgs, 'id' | 'position'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
 };
@@ -231,14 +335,62 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   game?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<QuerygameArgs, 'id'>>;
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<QuerystarSystemArgs, 'id'>>;
+  taskForceCommision?: Resolver<ResolversTypes['TaskForceCommision'], ParentType, ContextType, RequireFields<QuerytaskForceCommisionArgs, 'id'>>;
 };
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  taskForceCommisions?: Resolver<Array<ResolversTypes['TaskForceCommision']>, ParentType, ContextType>;
+  taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  taskForceCommisionFinished?: SubscriptionResolver<ResolversTypes['TaskForceCommisionFinished'], "taskForceCommisionFinished", ParentType, ContextType, RequireFields<SubscriptiontaskForceCommisionFinishedArgs, 'id'>>;
+  taskForceCommisionProgress?: SubscriptionResolver<ResolversTypes['TaskForceCommision'], "taskForceCommisionProgress", ParentType, ContextType, RequireFields<SubscriptiontaskForceCommisionProgressArgs, 'id'>>;
+  trackTaskForces?: SubscriptionResolver<ResolversTypes['TaskForce'], "trackTaskForces", ParentType, ContextType>;
+};
+
+export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  orders?: Resolver<Array<ResolversTypes['TaskForceOrder']>, ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export type TaskForceCommisionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceCommision'] = ResolversParentTypes['TaskForceCommision']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  progress?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TaskForceCommisionFinishedResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceCommisionFinished'] = ResolversParentTypes['TaskForceCommisionFinished']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  taskForce?: Resolver<Maybe<ResolversTypes['TaskForce']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TaskForceMoveOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceMoveOrder'] = ResolversParentTypes['TaskForceMoveOrder']> = {
+  destination?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TaskForceOrderType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TaskForceOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceOrder'] = ResolversParentTypes['TaskForceOrder']> = {
+  __resolveType?: TypeResolveFn<'TaskForceMoveOrder', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TaskForceOrderType'], ParentType, ContextType>;
+};
+
+export type TaskForceOrderTypeResolvers = EnumResolverSignature<{ move?: any }, ResolversTypes['TaskForceOrderType']>;
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -258,6 +410,13 @@ export type Resolvers<ContextType = Context> = {
   Player?: PlayerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
+  TaskForce?: TaskForceResolvers<ContextType>;
+  TaskForceCommision?: TaskForceCommisionResolvers<ContextType>;
+  TaskForceCommisionFinished?: TaskForceCommisionFinishedResolvers<ContextType>;
+  TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
+  TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
+  TaskForceOrderType?: TaskForceOrderTypeResolvers;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;
 };

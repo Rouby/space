@@ -1,6 +1,12 @@
 {
 	"name": "@space/gameloop",
 	"type": "module",
+	"exports": {
+		".": {
+			"import": "./src/main.ts"
+		}
+	},
+	"module": "src/main.ts",
 	"dependencies": {
 		"@space/data": "workspace:*"
 	}

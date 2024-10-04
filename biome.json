@@ -28,7 +28,11 @@
 	},
 	"overrides": [
 		{
-			"include": ["./packages/backend/src/**/*", "./packages/data/src/**/*"],
+			"include": [
+				"./packages/backend/src/**/*",
+				"./packages/data/src/**/*",
+				"./packages/gameloop/src/**/*"
+			],
 			"linter": {
 				"rules": {
 					"correctness": {

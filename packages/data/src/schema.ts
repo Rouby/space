@@ -30,5 +30,6 @@ export * from "./schema/games.ts";
 export * from "./schema/passwords.ts";
 export * from "./schema/planets.ts";
 export * from "./schema/starSystems.ts";
+export * from "./schema/taskForceCommisions.ts";
 export * from "./schema/taskForces.ts";
 export * from "./schema/users.ts";
