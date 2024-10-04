@@ -8,6 +8,7 @@ WORKDIR /space
 ADD package.json yarn.lock .yarnrc.yml ./
 ADD ./packages/backend/package.json ./packages/backend/package.json
 ADD ./packages/data/package.json ./packages/data/package.json
+ADD ./packages/gameloop/package.json ./packages/gameloop/package.json
 COPY .yarn/ ./.yarn/
 
 RUN yarn config set nodeLinker node-modules
@@ -15,6 +16,7 @@ RUN yarn workspaces focus @space/backend --production
 
 ADD ./packages/backend/src ./packages/backend/src
 ADD ./packages/data/src ./packages/data/src
+ADD ./packages/gameloop/src ./packages/gameloop/src
 
 FROM node:22-alpine
 
