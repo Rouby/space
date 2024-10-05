@@ -50,6 +50,7 @@ type Subscription {
 
 type TaskForce {
   id: ID!
+  movementVector: Vector
   name: String!
   orders: [TaskForceOrder!]!
   owner: User!

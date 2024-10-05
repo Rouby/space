@@ -51,7 +51,11 @@ export function StarSystemDetails({ id }: { id: string }) {
 					</div>
 				))}
 			</div>
-			<Button component={Link} to="commision-task-force">
+			<Button
+				component={Link}
+				from="/games/$id/star-system/$starSystemId"
+				to="commision-task-force"
+			>
 				Commision a task force
 			</Button>
 		</>

@@ -10,6 +10,8 @@ import {
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { graphql } from "../../gql";
+import { StarSystem } from "./StarSystem";
+import { TaskForce } from "./TaskForce";
 
 export function GalaxyView() {
 	const { id } = useParams({ from: "/games/$id" });
@@ -42,6 +44,7 @@ query Galaxy($id: ID!) {
 					destination
 				}
 			}
+			movementVector
 		}
   }
 }`),
@@ -90,6 +93,7 @@ query Galaxy($id: ID!) {
 					destination
 				}
 			}
+			movementVector
 		}
 	}`),
 	});
@@ -165,6 +169,30 @@ query Galaxy($id: ID!) {
 			}}
 			width="100%"
 			height="100%"
+			ref={(node) => {
+				if (node) {
+					const { width, height } = node.getBoundingClientRect();
+					const { minX, minY, maxX, maxY } = data?.game.starSystems
+						.filter((system) => system.owner)
+						.reduce(
+							({ minX, minY, maxX, maxY }, { position }) => ({
+								minX: Math.min(minX, position.x),
+								minY: Math.min(minY, position.y),
+								maxX: Math.max(maxX, position.x),
+								maxY: Math.max(maxY, position.y),
+							}),
+							{
+								minX: Number.POSITIVE_INFINITY,
+								minY: Number.POSITIVE_INFINITY,
+								maxX: Number.NEGATIVE_INFINITY,
+								maxY: Number.NEGATIVE_INFINITY,
+							},
+						) ?? { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+					translateX.set(width / 2 - (minX + maxX) / 2);
+					translateY.set(height / 2 - (minY + maxY) / 2);
+				}
+			}}
+			style={{ background: "black" }}
 		>
 			<title>Galaxy View</title>
 			{data?.game.starSystems.map((starSystem) => (
@@ -176,8 +204,8 @@ query Galaxy($id: ID!) {
 					positionX={starSystem.position.x}
 					positionY={starSystem.position.y}
 				>
-					<circle
-						r="10"
+					<StarSystem
+						zoom={zoom}
 						onPointerDown={(event) => {
 							if (!selection) {
 								event.stopPropagation();
@@ -200,31 +228,31 @@ query Galaxy($id: ID!) {
 						positionX={taskForce.position.x}
 						positionY={taskForce.position.y}
 					>
-						<circle
-							r="5"
-							fill={
-								selection?.type === "TaskForce" && selection.id === taskForce.id
-									? "yellow"
-									: "red"
-							}
+						<TaskForce
 							onPointerDown={(event) => {
 								event.stopPropagation();
 								setSelection({ type: "TaskForce", id: taskForce.id });
 								didMove.current = true;
 							}}
+							selected={
+								selection?.type === "TaskForce" && selection.id === taskForce.id
+							}
+							movementVector={taskForce.movementVector}
 						/>
 					</G>
-					{taskForce.orders[0] && (
-						<MoveOrder
-							translateX={translateX}
-							translateY={translateY}
-							zoom={zoom}
-							positionX={taskForce.position.x}
-							positionY={taskForce.position.y}
-							destinationX={taskForce.orders[0].destination.x}
-							destinationY={taskForce.orders[0].destination.y}
-						/>
-					)}
+					{selection?.type === "TaskForce" &&
+						selection.id === taskForce.id &&
+						taskForce.orders[0] && (
+							<MoveOrder
+								translateX={translateX}
+								translateY={translateY}
+								zoom={zoom}
+								positionX={taskForce.position.x}
+								positionY={taskForce.position.y}
+								destinationX={taskForce.orders[0].destination.x}
+								destinationY={taskForce.orders[0].destination.y}
+							/>
+						)}
 				</Fragment>
 			))}
 		</motion.svg>
@@ -287,16 +315,16 @@ function MoveOrder({
 	const [, animate] = useAnimate();
 
 	useEffect(() => {
-		animate(positionX, currentPositionX, { duration: 1 });
+		animate(positionX, currentPositionX, { duration: 1, ease: "linear" });
 	}, [animate, positionX, currentPositionX]);
 	useEffect(() => {
-		animate(positionY, currentPositionY, { duration: 1 });
+		animate(positionY, currentPositionY, { duration: 1, ease: "linear" });
 	}, [animate, positionY, currentPositionY]);
 	useEffect(() => {
-		animate(destinationX, currentDestinationX, { duration: 1 });
+		animate(destinationX, currentDestinationX, { duration: 1, ease: "linear" });
 	}, [animate, destinationX, currentDestinationX]);
 	useEffect(() => {
-		animate(destinationY, currentDestinationY, { duration: 1 });
+		animate(destinationY, currentDestinationY, { duration: 1, ease: "linear" });
 	}, [animate, destinationY, currentDestinationY]);
 
 	const x = useTransform(() => translateX.get() + positionX.get() * zoom.get());

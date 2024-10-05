@@ -19,6 +19,10 @@ export const TaskForce: TaskForceResolvers = {
 		// typegeneration bugged?
 		return _parent.orders;
 	},
+	movementVector: async (_parent, _arg, _ctx) => {
+		// typegeneration bugged?
+		return _parent.movementVector;
+	},
 	owner: async (parent, _arg, ctx) => {
 		const owner = await ctx.drizzle.query.users.findFirst({
 			where: eq(users.id, parent.ownerId),

@@ -1,6 +1,6 @@
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
 export function DetailsDrawer({
 	size,
@@ -21,8 +21,9 @@ export function DetailsDrawer({
 			position="right"
 			size={size}
 			withCloseButton={false}
+			overlayProps={{ backgroundOpacity: 0.3, blur: 4 }}
 		>
-			{children}
+			<Suspense>{children}</Suspense>
 		</Drawer>
 	);
 }

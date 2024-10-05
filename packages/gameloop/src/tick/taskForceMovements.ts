@@ -9,33 +9,50 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 
 	for (const taskForce of tfs) {
 		let { position, orders } = taskForce;
-		let movement = 4;
+		const movementPerTick = 4;
+		let movement = movementPerTick;
+		let movementVector = null as { x: number; y: number } | null;
 
 		while (orders?.at(0)?.type === "move" && movement > 0) {
 			const [order] = orders;
 
-			const { x, y } = position;
-			const { x: dx, y: dy } = order.destination;
-			const [vx, vy] = [dx - x, dy - y];
-			const distance = Math.sqrt(vx * vx + vy * vy);
+			movementVector = {
+				x: order.destination.x - position.x,
+				y: order.destination.y - position.y,
+			};
+			const distance = Math.sqrt(
+				movementVector.x * movementVector.x +
+					movementVector.y * movementVector.y,
+			);
+			movementVector = {
+				x: movementVector.x / distance,
+				y: movementVector.y / distance,
+			};
 
 			if (distance <= movement) {
 				position = { ...order.destination };
 
 				orders = orders.slice(1);
 				movement -= distance;
+				movementVector = null;
 			} else {
-				const ratio = movement / distance;
-				position = { x: x + vx * ratio, y: y + vy * ratio };
+				position = {
+					x: position.x + movementVector.x * movement,
+					y: position.y + movementVector.y * movement,
+				};
 
 				movement = 0;
+				movementVector = {
+					x: movementVector.x * movementPerTick,
+					y: movementVector.y * movementPerTick,
+				};
 			}
 		}
 
 		if (position !== taskForce.position) {
 			await tx
 				.update(taskForces)
-				.set({ position, orders })
+				.set({ position, orders, movementVector })
 				.where(eq(taskForces.id, taskForce.id));
 
 			ctx.postMessage("taskForceMovement", {

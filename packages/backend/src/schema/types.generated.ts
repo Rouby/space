@@ -145,6 +145,7 @@ export type SubscriptiontaskForceCommisionProgressArgs = {
 export type TaskForce = {
   __typename?: 'TaskForce';
   id: Scalars['ID']['output'];
+  movementVector?: Maybe<Scalars['Vector']['output']>;
   name: Scalars['String']['output'];
   orders: Array<TaskForceOrder>;
   owner: User;
@@ -357,6 +358,7 @@ export type SubscriptionResolvers<ContextType = Context, ParentType extends Reso
 
 export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  movementVector?: Resolver<Maybe<ResolversTypes['Vector']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   orders?: Resolver<Array<ResolversTypes['TaskForceOrder']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;

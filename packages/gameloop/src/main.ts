@@ -35,7 +35,9 @@ setInterval(() => {
 		return;
 	}
 	ticking = true;
-	tick().finally(() => {
-		ticking = false;
-	});
+	tick()
+		.catch((err) => console.error(err))
+		.finally(() => {
+			ticking = false;
+		});
 }, 1000);

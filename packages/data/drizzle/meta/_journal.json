@@ -57,6 +57,13 @@
       "when": 1728039816799,
       "tag": "0007_brown_post",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1728128638137,
+      "tag": "0008_silly_diamondback",
+      "breakpoints": true
     }
   ]
 }

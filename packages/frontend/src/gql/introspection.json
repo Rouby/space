@@ -620,6 +620,14 @@
             "args": []
           },
           {
+            "name": "movementVector",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
             "name": "name",
             "type": {
               "kind": "NON_NULL",

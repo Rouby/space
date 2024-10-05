@@ -19,4 +19,5 @@ export const taskForces = pgTable("taskForces", {
 			{ id: string; type: "move"; destination: { x: number; y: number } }[]
 		>()
 		.default([]),
+	movementVector: point("movementVector", { mode: "xy" }),
 });
