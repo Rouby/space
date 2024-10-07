@@ -2,6 +2,7 @@ import pg from "pg";
 export const DatabaseError = pg.DatabaseError;
 
 export {
+	aliasedTable,
 	and,
 	between,
 	eq,

@@ -1,4 +1,4 @@
-import { eq, users } from "@space/data/schema";
+import { eq, games, users } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { TaskForceResolvers } from "./../../types.generated.js";
 export const TaskForce: TaskForceResolvers = {
@@ -33,5 +33,16 @@ export const TaskForce: TaskForceResolvers = {
 		}
 
 		return owner;
+	},
+	game: async (parent, _arg, ctx) => {
+		const game = await ctx.drizzle.query.games.findFirst({
+			where: eq(games.id, parent.gameId),
+		});
+
+		if (!game) {
+			throw createGraphQLError("Game not found");
+		}
+
+		return game;
 	},
 };

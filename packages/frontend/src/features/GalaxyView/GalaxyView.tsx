@@ -67,8 +67,19 @@ query Galaxy($id: ID!) {
 	const didMove = useRef(false);
 
 	const [, moveTaskForce] = useMutation(
-		graphql(`mutation MoveTaskForce($id: ID!, $position: Vector!) {
-		moveTaskForce(id: $id, position: $position) {
+		graphql(`mutation MoveTaskForce($id: ID!, $position: Vector!, $queueOrder: Boolean!) {
+		moveTaskForce(id: $id, position: $position) @skip(if: $queueOrder) {
+			id
+			orders {
+				id
+				type
+				...on TaskForceMoveOrder {
+					destination
+				}
+			}
+		}
+		
+		queueTaskForceMove(id: $id, position: $position) @include(if: $queueOrder) {
 			id
 			orders {
 				id
@@ -92,6 +103,9 @@ query Galaxy($id: ID!) {
 				...on TaskForceMoveOrder {
 					destination
 				}
+			}
+			game {
+				id
 			}
 			movementVector
 		}
@@ -123,6 +137,7 @@ query Galaxy($id: ID!) {
 									x: (event.clientX - x - translateX.get()) / zoom.get(),
 									y: (event.clientY - y - translateY.get()) / zoom.get(),
 								},
+								queueOrder: event.shiftKey,
 							});
 						}
 					} else {
@@ -132,6 +147,13 @@ query Galaxy($id: ID!) {
 				}
 			}}
 			onPointerMove={(event) => {
+				const { x, y } = event.currentTarget.getBoundingClientRect();
+				const position = {
+					x: (event.clientX - x - translateX.get()) / zoom.get(),
+					y: (event.clientY - y - translateY.get()) / zoom.get(),
+				};
+				console.log(position);
+
 				if (!dragging.current.active) return;
 
 				translateX.set(
@@ -242,17 +264,22 @@ query Galaxy($id: ID!) {
 					</G>
 					{selection?.type === "TaskForce" &&
 						selection.id === taskForce.id &&
-						taskForce.orders[0] && (
+						taskForce.orders.map((order, idx, orders) => (
 							<MoveOrder
+								key={order.id}
 								translateX={translateX}
 								translateY={translateY}
 								zoom={zoom}
-								positionX={taskForce.position.x}
-								positionY={taskForce.position.y}
-								destinationX={taskForce.orders[0].destination.x}
-								destinationY={taskForce.orders[0].destination.y}
+								positionX={
+									(orders[idx - 1]?.destination ?? taskForce.position).x
+								}
+								positionY={
+									(orders[idx - 1]?.destination ?? taskForce.position).y
+								}
+								destinationX={order.destination.x}
+								destinationY={order.destination.y}
 							/>
-						)}
+						))}
 				</Fragment>
 			))}
 		</motion.svg>

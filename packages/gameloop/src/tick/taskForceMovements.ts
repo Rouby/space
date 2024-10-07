@@ -55,7 +55,7 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 				.set({ position, orders, movementVector })
 				.where(eq(taskForces.id, taskForce.id));
 
-			ctx.postMessage("taskForceMovement", {
+			ctx.postMessage("taskForce:position", {
 				id: taskForce.id,
 				position,
 			});

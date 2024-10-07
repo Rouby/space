@@ -8,6 +8,7 @@ import type {
 	CommisionTaskForceMutationVariables,
 	CreateGameMutation,
 	TaskForceCommisionFinishedSubSubscription,
+	TaskForceMovementsSubscription,
 } from "./gql/graphql";
 import schema from "./gql/introspection.json";
 
@@ -60,13 +61,37 @@ export const client = createClient({
 							id: result.taskForceCommisionFinished.id,
 						});
 					},
-					// trackTaskForces: (result, _, cache) => {
-					// 	console.log(result.trackTaskForces);
-					// 	cache.writeFragment(gql`fragment _ on TaskForce { id, position }`, {
-					// 		id: result.trackTaskForces.id,
-					// 		position: result.trackTaskForces.position,
-					// 	});
-					// },
+					trackTaskForces: (
+						result: TaskForceMovementsSubscription,
+						_,
+						cache,
+					) => {
+						cache.updateQuery(
+							{
+								query: graphql(
+									`query UpdateCache($gameId: ID!) {
+										game(id: $gameId) {
+											taskForces {
+												id
+												position
+											}
+										}
+									}`,
+								),
+								variables: { gameId: result.trackTaskForces.game.id },
+							},
+							(data) => {
+								if (
+									!data?.game.taskForces.some(
+										(tf) => tf.id === result.trackTaskForces.id,
+									)
+								) {
+									data?.game.taskForces.push(result.trackTaskForces);
+								}
+								return data;
+							},
+						);
+					},
 				},
 			},
 		}),

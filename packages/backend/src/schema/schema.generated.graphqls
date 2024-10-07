@@ -16,6 +16,7 @@ type Mutation {
   loginWithPassword(email: String!, password: String!): User!
   loginWithRefreshToken: User!
   moveTaskForce(id: ID!, position: Vector!): TaskForce!
+  queueTaskForceMove(id: ID!, position: Vector!): TaskForce!
   registerWithPassword(email: String!, name: String!, password: String!): User!
   startGame(id: ID!): Game!
 }
@@ -45,10 +46,12 @@ type StarSystem {
 type Subscription {
   taskForceCommisionFinished(id: ID!): TaskForceCommisionFinished!
   taskForceCommisionProgress(id: ID!): TaskForceCommision!
+  trackMap: TrackEvent!
   trackTaskForces: TaskForce!
 }
 
 type TaskForce {
+  game: Game!
   id: ID!
   movementVector: Vector
   name: String!
@@ -81,6 +84,23 @@ interface TaskForceOrder {
 
 enum TaskForceOrderType {
   move
+}
+
+type TrackEvent {
+  id: ID!
+  trackable: Trackable!
+  type: TrackEventType!
+}
+
+enum TrackEventType {
+  appear
+  disappear
+  move
+}
+
+interface Trackable {
+  id: ID!
+  position: Vector!
 }
 
 type User {

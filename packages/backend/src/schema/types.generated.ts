@@ -42,6 +42,7 @@ export type Mutation = {
   loginWithPassword: User;
   loginWithRefreshToken: User;
   moveTaskForce: TaskForce;
+  queueTaskForceMove: TaskForce;
   registerWithPassword: User;
   startGame: Game;
 };
@@ -69,6 +70,12 @@ export type MutationloginWithPasswordArgs = {
 
 
 export type MutationmoveTaskForceArgs = {
+  id: Scalars['ID']['input'];
+  position: Scalars['Vector']['input'];
+};
+
+
+export type MutationqueueTaskForceMoveArgs = {
   id: Scalars['ID']['input'];
   position: Scalars['Vector']['input'];
 };
@@ -129,6 +136,7 @@ export type Subscription = {
   __typename?: 'Subscription';
   taskForceCommisionFinished: TaskForceCommisionFinished;
   taskForceCommisionProgress: TaskForceCommision;
+  trackMap: TrackEvent;
   trackTaskForces: TaskForce;
 };
 
@@ -144,6 +152,7 @@ export type SubscriptiontaskForceCommisionProgressArgs = {
 
 export type TaskForce = {
   __typename?: 'TaskForce';
+  game: Game;
   id: Scalars['ID']['output'];
   movementVector?: Maybe<Scalars['Vector']['output']>;
   name: Scalars['String']['output'];
@@ -179,6 +188,23 @@ export type TaskForceOrder = {
 
 export type TaskForceOrderType =
   | 'move';
+
+export type TrackEvent = {
+  __typename?: 'TrackEvent';
+  id: Scalars['ID']['output'];
+  trackable: Trackable;
+  type: TrackEventType;
+};
+
+export type TrackEventType =
+  | 'appear'
+  | 'disappear'
+  | 'move';
+
+export type Trackable = {
+  id: Scalars['ID']['output'];
+  position: Scalars['Vector']['output'];
+};
 
 export type User = {
   __typename?: 'User';
@@ -255,6 +281,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>;
 
 
+/** Mapping of interface types */
+export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
+  TaskForceOrder: ( Omit<TaskForceMoveOrder, 'type'> & { type: _RefType['TaskForceOrderType'] } & { __typename: 'TaskForceMoveOrder' } );
+  Trackable: never;
+};
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
@@ -274,6 +305,9 @@ export type ResolversTypes = {
   TaskForceMoveOrder: ResolverTypeWrapper<Omit<TaskForceMoveOrder, 'type'> & { type: ResolversTypes['TaskForceOrderType'] }>;
   TaskForceOrder: ResolverTypeWrapper<TaskForceOrderMapper>;
   TaskForceOrderType: ResolverTypeWrapper<'move'>;
+  TrackEvent: ResolverTypeWrapper<Omit<TrackEvent, 'trackable' | 'type'> & { trackable: ResolversTypes['Trackable'], type: ResolversTypes['TrackEventType'] }>;
+  TrackEventType: ResolverTypeWrapper<'move' | 'appear' | 'disappear'>;
+  Trackable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Trackable']>;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -296,6 +330,8 @@ export type ResolversParentTypes = {
   TaskForceCommisionFinished: TaskForceCommisionFinishedMapper;
   TaskForceMoveOrder: TaskForceMoveOrder;
   TaskForceOrder: TaskForceOrderMapper;
+  TrackEvent: Omit<TrackEvent, 'trackable'> & { trackable: ResolversParentTypes['Trackable'] };
+  Trackable: ResolversInterfaceTypes<ResolversParentTypes>['Trackable'];
   User: User;
   Vector: Scalars['Vector']['output'];
   Boolean: Scalars['Boolean']['output'];
@@ -322,6 +358,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   moveTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationmoveTaskForceArgs, 'id' | 'position'>>;
+  queueTaskForceMove?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationqueueTaskForceMoveArgs, 'id' | 'position'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
 };
@@ -353,10 +390,12 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   taskForceCommisionFinished?: SubscriptionResolver<ResolversTypes['TaskForceCommisionFinished'], "taskForceCommisionFinished", ParentType, ContextType, RequireFields<SubscriptiontaskForceCommisionFinishedArgs, 'id'>>;
   taskForceCommisionProgress?: SubscriptionResolver<ResolversTypes['TaskForceCommision'], "taskForceCommisionProgress", ParentType, ContextType, RequireFields<SubscriptiontaskForceCommisionProgressArgs, 'id'>>;
+  trackMap?: SubscriptionResolver<ResolversTypes['TrackEvent'], "trackMap", ParentType, ContextType>;
   trackTaskForces?: SubscriptionResolver<ResolversTypes['TaskForce'], "trackTaskForces", ParentType, ContextType>;
 };
 
 export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
+  game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   movementVector?: Resolver<Maybe<ResolversTypes['Vector']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -394,6 +433,21 @@ export type TaskForceOrderResolvers<ContextType = Context, ParentType extends Re
 
 export type TaskForceOrderTypeResolvers = EnumResolverSignature<{ move?: any }, ResolversTypes['TaskForceOrderType']>;
 
+export type TrackEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackEvent'] = ResolversParentTypes['TrackEvent']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  trackable?: Resolver<ResolversTypes['Trackable'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TrackEventType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TrackEventTypeResolvers = EnumResolverSignature<{ appear?: any, disappear?: any, move?: any }, ResolversTypes['TrackEventType']>;
+
+export type TrackableResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Trackable'] = ResolversParentTypes['Trackable']> = {
+  __resolveType?: TypeResolveFn<null, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -419,6 +473,9 @@ export type Resolvers<ContextType = Context> = {
   TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
   TaskForceOrderType?: TaskForceOrderTypeResolvers;
+  TrackEvent?: TrackEventResolvers<ContextType>;
+  TrackEventType?: TrackEventTypeResolvers;
+  Trackable?: TrackableResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;
 };

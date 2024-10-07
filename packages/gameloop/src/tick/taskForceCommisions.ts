@@ -27,9 +27,13 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				})
 				.returning();
 
-			ctx.postMessage("taskForceCommisionCompleted", {
+			ctx.postMessage("taskForce:commisionFinished", {
 				id: commision.id,
 				taskForceId: taskForce[0].id,
+			});
+			ctx.postMessage("taskForce:position", {
+				id: taskForce[0].id,
+				position: commision.starSystem.position,
 			});
 		} else {
 			await tx
@@ -37,7 +41,7 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				.set({ progress: sql`${taskForceCommisions.progress} + 1` })
 				.where(eq(taskForceCommisions.id, commision.id));
 
-			ctx.postMessage("taskForceCommisionProgress", {
+			ctx.postMessage("taskForce:commisionProgress", {
 				id: commision.id,
 				progress,
 				total: commision.total,
