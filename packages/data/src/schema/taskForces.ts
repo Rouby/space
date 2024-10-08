@@ -1,6 +1,7 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { json, pgTable, point, uuid, varchar } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
+import { taskForceEngagementsToTaskForces } from "./taskForceEngagements.ts";
 import { users } from "./users.ts";
 
 export const taskForces = pgTable("taskForces", {
@@ -21,3 +22,11 @@ export const taskForces = pgTable("taskForces", {
 		.default([]),
 	movementVector: point("movementVector", { mode: "xy" }),
 });
+
+export const taskForcesRelations = relations(taskForces, ({ one, many }) => ({
+	owner: one(users, {
+		fields: [taskForces.ownerId],
+		references: [users.id],
+	}),
+	taskForceEngagmentsToTaskForces: many(taskForceEngagementsToTaskForces),
+}));

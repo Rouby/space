@@ -7,6 +7,7 @@ export const Game: Pick<
 	players: async (parent, _args, ctx) => {
 		return ctx.drizzle.query.players.findMany({
 			where: eq(players.gameId, parent.id),
+			with: { user: true },
 		});
 	},
 	id: async (_parent, _arg, _ctx) => {

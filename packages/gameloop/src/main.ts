@@ -28,16 +28,20 @@ if (!game.setupCompleted) {
 }
 
 // start game loop
+const tickRate = 100;
 let ticking = false;
 setInterval(() => {
 	if (ticking) {
-		console.warn("Tick took longer than 1s, skipping tick");
+		console.warn(`Tick took longer than ${tickRate}ms; skipping tick`);
 		return;
 	}
 	ticking = true;
+	const start = Date.now();
 	tick()
 		.catch((err) => console.error(err))
 		.finally(() => {
 			ticking = false;
+			const duration = Date.now() - start;
+			if (duration > tickRate) console.warn(`Tick took ${duration}ms`);
 		});
-}, 1000);
+}, tickRate);

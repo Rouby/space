@@ -1,0 +1,15 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"lib": ["ESNext"],
+		"allowImportingTsExtensions": true,
+
+		"types": ["node"]
+	},
+	"include": [
+		"tests/**/*.ts",
+		"playwright.config.ts",
+		"global-setup.ts",
+		"global-teardown.ts"
+	]
+}

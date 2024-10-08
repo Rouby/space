@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
 	pgTable,
@@ -29,3 +29,18 @@ export const players = pgTable(
 	},
 	(table) => ({ pk: primaryKey({ columns: [table.userId, table.gameId] }) }),
 );
+
+export const gamesRelations = relations(games, ({ many }) => ({
+	gamesToUsers: many(players),
+}));
+
+export const gamesToUsersRelations = relations(players, ({ one }) => ({
+	game: one(games, {
+		fields: [players.gameId],
+		references: [games.id],
+	}),
+	user: one(users, {
+		fields: [players.userId],
+		references: [users.id],
+	}),
+}));

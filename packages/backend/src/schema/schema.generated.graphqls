@@ -22,7 +22,9 @@ type Mutation {
 }
 
 type Player {
+  color: String!
   id: ID!
+  name: String!
   user: User!
 }
 
@@ -37,7 +39,7 @@ type Query {
 type StarSystem {
   id: ID!
   name: String!
-  owner: User
+  owner: Player
   position: Vector!
   taskForceCommisions: [TaskForceCommision!]!
   taskForces: [TaskForce!]!
@@ -56,7 +58,7 @@ type TaskForce {
   movementVector: Vector
   name: String!
   orders: [TaskForceOrder!]!
-  owner: User!
+  owner: Player!
   position: Vector!
 }
 

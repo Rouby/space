@@ -14,7 +14,7 @@ import { StarSystem } from "./StarSystem";
 import { TaskForce } from "./TaskForce";
 
 export function GalaxyView() {
-	const { id } = useParams({ from: "/games/$id" });
+	const { id } = useParams({ from: "/games/_authenticated/$id" });
 
 	const [{ data }] = useQuery({
 		query: graphql(`
@@ -27,6 +27,7 @@ query Galaxy($id: ID!) {
 			owner {
 				id
 				name
+				color
 			}
 		}
 		taskForces {
@@ -36,6 +37,7 @@ query Galaxy($id: ID!) {
 			owner {
 				id
 				name
+				color
 			}
 			orders {
 				id
@@ -113,6 +115,7 @@ query Galaxy($id: ID!) {
 	});
 
 	return (
+		// biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
 		<motion.svg
 			onContextMenu={(event) => {
 				event.preventDefault();
@@ -216,7 +219,6 @@ query Galaxy($id: ID!) {
 			}}
 			style={{ background: "black" }}
 		>
-			<title>Galaxy View</title>
 			{data?.game.starSystems.map((starSystem) => (
 				<G
 					key={starSystem.id}
@@ -251,6 +253,7 @@ query Galaxy($id: ID!) {
 						positionY={taskForce.position.y}
 					>
 						<TaskForce
+							owner={taskForce.owner}
 							onPointerDown={(event) => {
 								event.stopPropagation();
 								setSelection({ type: "TaskForce", id: taskForce.id });
@@ -306,10 +309,10 @@ function G({
 	const [, animate] = useAnimate();
 
 	useEffect(() => {
-		animate(positionX, currentPositionX, { duration: 1, ease: "linear" });
+		animate(positionX, currentPositionX, { duration: 0.1, ease: "linear" });
 	}, [animate, positionX, currentPositionX]);
 	useEffect(() => {
-		animate(positionY, currentPositionY, { duration: 1, ease: "linear" });
+		animate(positionY, currentPositionY, { duration: 0.1, ease: "linear" });
 	}, [animate, positionY, currentPositionY]);
 
 	const x = useMotionTemplate`calc(${translateX}px + (${positionX}px) * ${zoom})`;
@@ -342,16 +345,22 @@ function MoveOrder({
 	const [, animate] = useAnimate();
 
 	useEffect(() => {
-		animate(positionX, currentPositionX, { duration: 1, ease: "linear" });
+		animate(positionX, currentPositionX, { duration: 0.1, ease: "linear" });
 	}, [animate, positionX, currentPositionX]);
 	useEffect(() => {
-		animate(positionY, currentPositionY, { duration: 1, ease: "linear" });
+		animate(positionY, currentPositionY, { duration: 0.1, ease: "linear" });
 	}, [animate, positionY, currentPositionY]);
 	useEffect(() => {
-		animate(destinationX, currentDestinationX, { duration: 1, ease: "linear" });
+		animate(destinationX, currentDestinationX, {
+			duration: 0.1,
+			ease: "linear",
+		});
 	}, [animate, destinationX, currentDestinationX]);
 	useEffect(() => {
-		animate(destinationY, currentDestinationY, { duration: 1, ease: "linear" });
+		animate(destinationY, currentDestinationY, {
+			duration: 0.1,
+			ease: "linear",
+		});
 	}, [animate, destinationY, currentDestinationY]);
 
 	const x = useTransform(() => translateX.get() + positionX.get() * zoom.get());

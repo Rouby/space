@@ -69,8 +69,9 @@ export const client = createClient({
 						cache.updateQuery(
 							{
 								query: graphql(
-									`query UpdateCache($gameId: ID!) {
+									`query UpdateCacheTaskForces($gameId: ID!) {
 										game(id: $gameId) {
+											id
 											taskForces {
 												id
 												position

@@ -1,4 +1,4 @@
-import { eq, games, users } from "@space/data/schema";
+import { and, eq, games, players } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { TaskForceResolvers } from "./../../types.generated.js";
 export const TaskForce: TaskForceResolvers = {
@@ -24,8 +24,12 @@ export const TaskForce: TaskForceResolvers = {
 		return _parent.movementVector;
 	},
 	owner: async (parent, _arg, ctx) => {
-		const owner = await ctx.drizzle.query.users.findFirst({
-			where: eq(users.id, parent.ownerId),
+		const owner = await ctx.drizzle.query.players.findFirst({
+			where: and(
+				eq(players.userId, parent.ownerId),
+				eq(players.gameId, parent.gameId),
+			),
+			with: { user: true },
 		});
 
 		if (!owner) {

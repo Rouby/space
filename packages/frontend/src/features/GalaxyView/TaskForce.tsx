@@ -1,8 +1,10 @@
 export function TaskForce({
+	owner,
 	selected,
 	movementVector,
 	onPointerDown,
 }: {
+	owner?: { color: string } | null;
 	selected: boolean;
 	movementVector?: { x: number; y: number } | null;
 	onPointerDown: (event: React.PointerEvent) => void;
@@ -11,7 +13,7 @@ export function TaskForce({
 		<g>
 			<circle
 				r="5"
-				fill={selected ? "yellow" : "red"}
+				fill={selected ? "yellow" : (owner?.color ?? "gray")}
 				onPointerDown={onPointerDown}
 			/>
 			{movementVector && (

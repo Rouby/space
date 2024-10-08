@@ -359,7 +359,29 @@
         "name": "Player",
         "fields": [
           {
+            "name": "color",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "name",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -517,7 +539,7 @@
             "name": "owner",
             "type": {
               "kind": "OBJECT",
-              "name": "User",
+              "name": "Player",
               "ofType": null
             },
             "args": []
@@ -719,7 +741,7 @@
               "kind": "NON_NULL",
               "ofType": {
                 "kind": "OBJECT",
-                "name": "User",
+                "name": "Player",
                 "ofType": null
               }
             },

@@ -9,6 +9,8 @@ type Game {
 
 type Player {
 	id: ID!
+	name: String!
+	color: String!
 	user: User!
 }
 

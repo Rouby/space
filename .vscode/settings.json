@@ -16,5 +16,8 @@
 	"explorer.fileNesting.patterns": {
 		"schema.generated.graphqls": "resolvers.generated.ts, typeDefs.generated.ts, types.generated.ts",
 		"package.json": "yarn.lock, .pnp.cjs, .pnp.loader.mjs, .yarnrc.yml"
+	},
+	"playwright.env": {
+		"NODE_OPTIONS": "-r ../../.pnp.cjs"
 	}
 }

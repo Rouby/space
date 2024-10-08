@@ -1,4 +1,4 @@
-import { eq, users } from "@space/data/schema";
+import { and, eq, players } from "@space/data/schema";
 import type { StarSystemResolvers } from "./../../types.generated.js";
 export const StarSystem: Pick<
 	StarSystemResolvers,
@@ -21,8 +21,12 @@ export const StarSystem: Pick<
 			return null;
 		}
 
-		const owner = await ctx.drizzle.query.users.findFirst({
-			where: eq(users.id, parent.ownerId),
+		const owner = await ctx.drizzle.query.players.findFirst({
+			where: and(
+				eq(players.userId, parent.ownerId),
+				eq(players.gameId, parent.gameId),
+			),
+			with: { user: true },
 		});
 
 		if (!owner) {

@@ -94,7 +94,9 @@ export type MutationstartGameArgs = {
 
 export type Player = {
   __typename?: 'Player';
+  color: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   user: User;
 };
 
@@ -126,7 +128,7 @@ export type StarSystem = {
   __typename?: 'StarSystem';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  owner?: Maybe<User>;
+  owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
   taskForceCommisions: Array<TaskForceCommision>;
   taskForces: Array<TaskForce>;
@@ -157,7 +159,7 @@ export type TaskForce = {
   movementVector?: Maybe<Scalars['Vector']['output']>;
   name: Scalars['String']['output'];
   orders: Array<TaskForceOrder>;
-  owner: User;
+  owner: Player;
   position: Scalars['Vector']['output'];
 };
 
@@ -364,7 +366,9 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
 };
 
 export type PlayerResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
+  color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -380,7 +384,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   taskForceCommisions?: Resolver<Array<ResolversTypes['TaskForceCommision']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
@@ -400,7 +404,7 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
   movementVector?: Resolver<Maybe<ResolversTypes['Vector']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   orders?: Resolver<Array<ResolversTypes['TaskForceOrder']>, ParentType, ContextType>;
-  owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
