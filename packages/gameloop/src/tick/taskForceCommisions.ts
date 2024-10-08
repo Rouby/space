@@ -27,11 +27,16 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				})
 				.returning();
 
-			ctx.postMessage("taskForce:commisionFinished", {
+			ctx.postMessage({
+				type: "taskForce:commisionFinished",
 				id: commision.id,
+				systemId: commision.starSystem.id,
 				taskForceId: taskForce[0].id,
 			});
-			ctx.postMessage("taskForce:position", {
+			// TODO check all users in visible range
+			ctx.postMessage({
+				type: "taskForce:appeared",
+				userId: commision.starSystem.ownerId ?? "",
 				id: taskForce[0].id,
 				position: commision.starSystem.position,
 			});
@@ -41,8 +46,10 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				.set({ progress: sql`${taskForceCommisions.progress} + 1` })
 				.where(eq(taskForceCommisions.id, commision.id));
 
-			ctx.postMessage("taskForce:commisionProgress", {
+			ctx.postMessage({
+				type: "taskForce:commisionProgress",
 				id: commision.id,
+				systemId: commision.starSystem.id,
 				progress,
 				total: commision.total,
 			});

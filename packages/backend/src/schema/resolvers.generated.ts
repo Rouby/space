@@ -16,8 +16,7 @@ import    { registerWithPassword as Mutation_registerWithPassword } from './user
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
 import    { taskForceCommisionFinished as Subscription_taskForceCommisionFinished } from './taskForce/resolvers/Subscription/taskForceCommisionFinished.js';
 import    { taskForceCommisionProgress as Subscription_taskForceCommisionProgress } from './taskForce/resolvers/Subscription/taskForceCommisionProgress.js';
-import    { trackMap as Subscription_trackMap } from './starSystem/resolvers/Subscription/trackMap.js';
-import    { trackTaskForces as Subscription_trackTaskForces } from './taskForce/resolvers/Subscription/trackTaskForces.js';
+import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
 import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
@@ -28,14 +27,16 @@ import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
 import    { TaskForceCommision } from './taskForce/resolvers/TaskForceCommision.js';
 import    { TaskForceCommisionFinished } from './taskForce/resolvers/TaskForceCommisionFinished.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
-import    { TrackEvent } from './starSystem/resolvers/TrackEvent.js';
+import    { TrackEvent } from './base/resolvers/TrackEvent.js';
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
+import    { Positionable } from './base/resolvers/Positionable.js';
+import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
 import    { DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceCommision: Query_taskForceCommision },
       Mutation: { createGame: Mutation_createGame,createTaskForceCommision: Mutation_createTaskForceCommision,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,moveTaskForce: Mutation_moveTaskForce,queueTaskForceMove: Mutation_queueTaskForceMove,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame },
-      Subscription: { taskForceCommisionFinished: Subscription_taskForceCommisionFinished,taskForceCommisionProgress: Subscription_taskForceCommisionProgress,trackMap: Subscription_trackMap,trackTaskForces: Subscription_trackTaskForces },
+      Subscription: { taskForceCommisionFinished: Subscription_taskForceCommisionFinished,taskForceCommisionProgress: Subscription_taskForceCommisionProgress,trackGalaxy: Subscription_trackGalaxy },
       Game: { ...game_Game,...starSystem_Game,...taskForce_Game },
 Player: Player,
 StarSystem: { ...starSystem_StarSystem,...taskForce_StarSystem },
@@ -46,5 +47,7 @@ TaskForceMoveOrder: TaskForceMoveOrder,
 TrackEvent: TrackEvent,
 User: User,
 Vector: Vector,
+Positionable: Positionable,
+TaskForceOrder: TaskForceOrder,
 DateTime: DateTimeResolver
     }

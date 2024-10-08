@@ -28,6 +28,11 @@ type Player {
   user: User!
 }
 
+interface Positionable {
+  id: ID!
+  position: Vector!
+}
+
 type Query {
   game(id: ID!): Game!
   games: [Game!]!
@@ -36,7 +41,7 @@ type Query {
   taskForceCommision(id: ID!): TaskForceCommision!
 }
 
-type StarSystem {
+type StarSystem implements Positionable {
   id: ID!
   name: String!
   owner: Player
@@ -48,11 +53,10 @@ type StarSystem {
 type Subscription {
   taskForceCommisionFinished(id: ID!): TaskForceCommisionFinished!
   taskForceCommisionProgress(id: ID!): TaskForceCommision!
-  trackMap: TrackEvent!
-  trackTaskForces: TaskForce!
+  trackGalaxy(gameId: ID!): TrackEvent!
 }
 
-type TaskForce {
+type TaskForce implements Positionable {
   game: Game!
   id: ID!
   movementVector: Vector
@@ -89,20 +93,14 @@ enum TaskForceOrderType {
 }
 
 type TrackEvent {
-  id: ID!
-  trackable: Trackable!
+  subject: Positionable!
   type: TrackEventType!
 }
 
 enum TrackEventType {
   appear
   disappear
-  move
-}
-
-interface Trackable {
-  id: ID!
-  position: Vector!
+  update
 }
 
 type User {

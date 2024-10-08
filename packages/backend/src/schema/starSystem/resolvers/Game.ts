@@ -17,7 +17,7 @@ export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
 		);
 		const controlledSystems = aliasedTable(starSystems, "controlledSystems");
 
-		const sys = await ctx.drizzle
+		return ctx.drizzle
 			.select()
 			.from(starSystems)
 			.where(
@@ -55,7 +55,5 @@ export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
 					),
 				),
 			);
-
-		return sys;
 	},
 };

@@ -12,6 +12,16 @@ const config: CodegenConfig = {
 				},
 			},
 			emitLegacyCommonJSImports: false,
+			resolverGeneration: {
+				query: "*",
+				mutation: "*",
+				subscription: "*",
+				scalar: "*",
+				object: "*",
+				union: "",
+				interface: "*",
+				enum: "",
+			},
 		}),
 	},
 };

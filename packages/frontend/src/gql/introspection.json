@@ -407,6 +407,45 @@
         "interfaces": []
       },
       {
+        "kind": "INTERFACE",
+        "name": "Positionable",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "position",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [],
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "StarSystem"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TaskForce"
+          }
+        ]
+      },
+      {
         "kind": "OBJECT",
         "name": "Query",
         "fields": [
@@ -592,7 +631,12 @@
             "args": []
           }
         ],
-        "interfaces": []
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Positionable"
+          }
+        ]
       },
       {
         "kind": "OBJECT",
@@ -645,7 +689,7 @@
             ]
           },
           {
-            "name": "trackMap",
+            "name": "trackGalaxy",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -654,19 +698,18 @@
                 "ofType": null
               }
             },
-            "args": []
-          },
-          {
-            "name": "trackTaskForces",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "TaskForce",
-                "ofType": null
+            "args": [
+              {
+                "name": "gameId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
               }
-            },
-            "args": []
+            ]
           }
         ],
         "interfaces": []
@@ -759,7 +802,12 @@
             "args": []
           }
         ],
-        "interfaces": []
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Positionable"
+          }
+        ]
       },
       {
         "kind": "OBJECT",
@@ -913,23 +961,12 @@
         "name": "TrackEvent",
         "fields": [
           {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "trackable",
+            "name": "subject",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
                 "kind": "INTERFACE",
-                "name": "Trackable",
+                "name": "Positionable",
                 "ofType": null
               }
             },
@@ -948,36 +985,6 @@
           }
         ],
         "interfaces": []
-      },
-      {
-        "kind": "INTERFACE",
-        "name": "Trackable",
-        "fields": [
-          {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "position",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          }
-        ],
-        "interfaces": [],
-        "possibleTypes": []
       },
       {
         "kind": "OBJECT",

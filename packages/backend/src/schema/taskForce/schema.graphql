@@ -1,4 +1,4 @@
-type TaskForce {
+type TaskForce implements Positionable {
 	id: ID!
 	name: String!
 	position: Vector!
@@ -57,6 +57,4 @@ type Mutation {
 type Subscription {
 	taskForceCommisionProgress(id: ID!): TaskForceCommision!
 	taskForceCommisionFinished(id: ID!): TaskForceCommisionFinished!
-
-	trackTaskForces: TaskForce!
 }

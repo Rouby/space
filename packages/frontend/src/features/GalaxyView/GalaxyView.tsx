@@ -95,23 +95,17 @@ query Galaxy($id: ID!) {
 	);
 
 	useSubscription({
-		query: graphql(`subscription TaskForceMovements{
-		trackTaskForces {
-			id
-			position
-			orders {
+		query: graphql(`subscription TrackMap($gameId: ID!) {
+		trackGalaxy(gameId: $gameId) {
+		  type
+			subject {
+				__typename
 				id
-				type
-				...on TaskForceMoveOrder {
-					destination
-				}
+				position
 			}
-			game {
-				id
-			}
-			movementVector
 		}
 	}`),
+		variables: { gameId: id },
 	});
 
 	return (
@@ -144,9 +138,8 @@ query Galaxy($id: ID!) {
 							});
 						}
 					} else {
+						setSelection(null);
 					}
-
-					setSelection(null);
 				}
 			}}
 			onPointerMove={(event) => {

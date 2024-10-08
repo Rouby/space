@@ -1,5 +1,5 @@
 import { parentPort } from "node:worker_threads";
-import type { PubSubPublishArgsByKey } from "../../../backend/src/pubSub.ts";
+import type { GameEvent } from "../../../backend/src/events.ts";
 import { drizzle } from "../db.ts";
 import { tickTaskForceCommisions } from "./taskForceCommisions.ts";
 import { tickTaskForceMovements } from "./taskForceMovements.ts";
@@ -9,16 +9,13 @@ export type Transaction = FirstArgument<
 	FirstArgument<(typeof drizzle)["transaction"]>
 >;
 export type Context = {
-	postMessage: <TKey extends keyof PubSubPublishArgsByKey>(
-		routingKey: TKey,
-		args: PubSubPublishArgsByKey[TKey][0],
-	) => void;
+	postMessage: (event: GameEvent) => void;
 };
 
 export async function tick() {
-	const messages: { routingKey: string; args: unknown }[] = [];
+	const messages: GameEvent[] = [];
 	const ctx: Context = {
-		postMessage: (routingKey, args) => messages.push({ routingKey, args }),
+		postMessage: (event) => messages.push(event),
 	};
 
 	await drizzle.transaction(async (tx) => {

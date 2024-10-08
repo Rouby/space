@@ -18,7 +18,7 @@ export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 			"controlledTaskForces",
 		);
 
-		const tfs = await ctx.drizzle
+		return ctx.drizzle
 			.select()
 			.from(taskForces)
 			.where(
@@ -56,7 +56,5 @@ export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 					),
 				),
 			);
-
-		return tfs;
 	},
 };

@@ -1,7 +1,7 @@
 import type { JWTExtendContextFields } from "@graphql-yoga/plugin-jwt";
 import type { getDrizzle } from "@space/data";
 import { type YogaInitialContext, createGraphQLError } from "graphql-yoga";
-import { pubSub } from "./pubSub.ts";
+import { fromGameEvents } from "./workers.ts";
 
 export type Context = YogaInitialContext & {
 	jwt?: JWTExtendContextFields;
@@ -34,6 +34,6 @@ export function extendContext({
 			}
 		},
 		startGame,
-		pubSub,
+		fromGameEvents,
 	};
 }

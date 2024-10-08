@@ -1,1 +1,21 @@
 scalar Vector
+
+interface Positionable {
+	id: ID!
+	position: Vector!
+}
+
+enum TrackEventType {
+	appear
+	update
+	disappear
+}
+
+type TrackEvent {
+	type: TrackEventType!
+	subject: Positionable!
+}
+
+type Subscription {
+	trackGalaxy(gameId: ID!): TrackEvent!
+}

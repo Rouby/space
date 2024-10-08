@@ -8196,6 +8196,7 @@ const RAW_RUNTIME_STATE =
           ["graphql-yoga", "virtual:f03c1cbe6ef4a372abf25b7726afc7290a0ac83de87afcffac064917ad45216150aa2e3bc960a96991aee6ec13484ae86f66ed95fe4c6e61c34d7b0fb337e51a#npm:5.7.0"],\
           ["jose", "npm:5.9.3"],\
           ["nodemon", "npm:3.1.7"],\
+          ["rxjs", "npm:7.8.1"],\
           ["tsx", "npm:4.19.1"],\
           ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"]\
         ],\

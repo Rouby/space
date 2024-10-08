@@ -1,25 +1,8 @@
-type StarSystem {
+type StarSystem implements Positionable {
 	id: ID!
 	name: String!
 	position: Vector!
 	owner: Player
-}
-
-interface Trackable {
-	id: ID!
-	position: Vector!
-}
-
-enum TrackEventType {
-	move
-	appear
-	disappear
-}
-
-type TrackEvent {
-	id: ID!
-	type: TrackEventType!
-	trackable: Trackable!
 }
 
 extend type Game {
@@ -28,8 +11,4 @@ extend type Game {
 
 type Query {
 	starSystem(id: ID!): StarSystem!
-}
-
-type Subscription {
-	trackMap: TrackEvent!
 }

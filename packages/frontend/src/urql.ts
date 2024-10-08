@@ -8,7 +8,8 @@ import type {
 	CommisionTaskForceMutationVariables,
 	CreateGameMutation,
 	TaskForceCommisionFinishedSubSubscription,
-	TaskForceMovementsSubscription,
+	TrackMapSubscription,
+	TrackMapSubscriptionVariables,
 } from "./gql/graphql";
 import schema from "./gql/introspection.json";
 
@@ -61,37 +62,28 @@ export const client = createClient({
 							id: result.taskForceCommisionFinished.id,
 						});
 					},
-					trackTaskForces: (
-						result: TaskForceMovementsSubscription,
-						_,
+					trackGalaxy: (
+						result: TrackMapSubscription,
+						vars: TrackMapSubscriptionVariables,
 						cache,
 					) => {
-						cache.updateQuery(
-							{
-								query: graphql(
-									`query UpdateCacheTaskForces($gameId: ID!) {
-										game(id: $gameId) {
-											id
-											taskForces {
-												id
-												position
-											}
-										}
-									}`,
-								),
-								variables: { gameId: result.trackTaskForces.game.id },
-							},
-							(data) => {
-								if (
-									!data?.game.taskForces.some(
-										(tf) => tf.id === result.trackTaskForces.id,
-									)
-								) {
-									data?.game.taskForces.push(result.trackTaskForces);
-								}
-								return data;
-							},
-						);
+						if (result.trackGalaxy.subject.__typename === "TaskForce") {
+							const taskForces = cache.resolve(
+								{ __typename: "Game", id: vars.gameId },
+								"taskForces",
+							) as string[];
+							const cacheKey = cache.keyOfEntity(result.trackGalaxy.subject);
+							if (cacheKey && !taskForces.includes(cacheKey)) {
+								cache.link(
+									{ __typename: "Game", id: vars.gameId },
+									"taskForces",
+									result.trackGalaxy.subject,
+								);
+							}
+							if (result.trackGalaxy.type === "disappear") {
+								cache.invalidate(result.trackGalaxy.subject);
+							}
+						}
 					},
 				},
 			},
