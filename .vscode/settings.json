@@ -19,5 +19,8 @@
 	},
 	"playwright.env": {
 		"NODE_OPTIONS": "-r ../../.pnp.cjs"
+	},
+	"[sql]": {
+		"editor.defaultFormatter": "cweijan.vscode-postgresql-client2"
 	}
 }

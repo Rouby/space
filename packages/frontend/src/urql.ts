@@ -68,20 +68,21 @@ export const client = createClient({
 						cache,
 					) => {
 						if (result.trackGalaxy.subject.__typename === "TaskForce") {
-							const taskForces = cache.resolve(
-								{ __typename: "Game", id: vars.gameId },
-								"taskForces",
-							) as string[];
-							const cacheKey = cache.keyOfEntity(result.trackGalaxy.subject);
-							if (cacheKey && !taskForces.includes(cacheKey)) {
-								cache.link(
-									{ __typename: "Game", id: vars.gameId },
-									"taskForces",
-									result.trackGalaxy.subject,
-								);
-							}
 							if (result.trackGalaxy.type === "disappear") {
 								cache.invalidate(result.trackGalaxy.subject);
+							} else {
+								const taskForces = cache.resolve(
+									{ __typename: "Game", id: vars.gameId },
+									"taskForces",
+								) as string[];
+								const cacheKey = cache.keyOfEntity(result.trackGalaxy.subject);
+								if (cacheKey && !taskForces.includes(cacheKey)) {
+									cache.link(
+										{ __typename: "Game", id: vars.gameId },
+										"taskForces",
+										[...taskForces, cacheKey],
+									);
+								}
 							}
 						}
 					},

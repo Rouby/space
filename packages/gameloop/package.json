@@ -9,5 +9,8 @@
 	"module": "src/main.ts",
 	"dependencies": {
 		"@space/data": "workspace:*"
+	},
+	"devDependencies": {
+		"vitest": "2.1.2"
 	}
 }

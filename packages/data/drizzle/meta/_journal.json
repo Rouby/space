@@ -64,6 +64,13 @@
       "when": 1728128638137,
       "tag": "0008_silly_diamondback",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1728432055345,
+      "tag": "0009_freezing_ser_duncan",
+      "breakpoints": true
     }
   ]
 }
