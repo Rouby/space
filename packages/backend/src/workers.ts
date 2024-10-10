@@ -38,7 +38,5 @@ export function fromGameEvents(gameId: string) {
 		eventsPerGame.set(gameId, subject);
 	}
 
-	console.log("subbing fromGameEvents");
-
 	return from(subject);
 }

@@ -1,5 +1,5 @@
 import { eq, games } from "@space/data/schema";
-import { parentPort, workerData } from "node:worker_threads";
+import { parentPort } from "node:worker_threads";
 import { gameId } from "./config.ts";
 import { drizzle } from "./db.ts";
 import { setup } from "./setup/setup.ts";
@@ -12,7 +12,7 @@ parentPort?.on("message", (message) => {
 	}
 });
 
-console.log("Worker says hello", workerData);
+console.log(`Worker picked up game ${gameId}`);
 
 const game = await drizzle.query.games.findFirst({
 	where: eq(games.id, gameId),
