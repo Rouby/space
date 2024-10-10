@@ -1,9 +1,7 @@
 {
 	"name": "@space/integration",
 	"type": "module",
-	"scripts": {
-		"integrate": "playwright test"
-	},
+	"scripts": {},
 	"devDependencies": {
 		"@playwright/test": "1.47.2",
 		"@space/data": "workspace:*",
