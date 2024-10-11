@@ -19,8 +19,8 @@ const circle = customType<{ data: { x: number; y: number; radius: number } }>({
 });
 
 export const visibility = pgView("visibility", {
-	userId: uuid("userId"),
-	gameId: uuid("gameId"),
+	userId: uuid("userId").notNull(),
+	gameId: uuid("gameId").notNull(),
 	circle: circle("circle").notNull(),
 }).as(sql`
 CREATE VIEW "visibility" AS

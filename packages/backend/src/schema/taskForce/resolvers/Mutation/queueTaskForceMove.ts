@@ -1,4 +1,10 @@
-import { eq, taskForces } from "@space/data/schema";
+import {
+	and,
+	eq,
+	notExists,
+	taskForceEngagementsToTaskForces,
+	taskForces,
+} from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import { randomUUID } from "node:crypto";
 import type { MutationResolvers } from "./../../../types.generated.js";
@@ -8,7 +14,16 @@ export const queueTaskForceMove: NonNullable<
 	ctx.throwWithoutClaim("urn:space:claim");
 
 	const taskForce = await ctx.drizzle.query.taskForces.findFirst({
-		where: eq(taskForces.id, id),
+		where: and(
+			eq(taskForces.id, id),
+			// and not currently engaged in combat
+			notExists(
+				ctx.drizzle
+					.select()
+					.from(taskForceEngagementsToTaskForces)
+					.where(eq(taskForceEngagementsToTaskForces.taskForceId, id)),
+			),
+		),
 	});
 
 	if (!taskForce) {

@@ -68,20 +68,34 @@ export const client = createClient({
 						cache,
 					) => {
 						if (result.trackGalaxy.subject.__typename === "TaskForce") {
-							if (result.trackGalaxy.type === "disappear") {
-								cache.invalidate(result.trackGalaxy.subject);
-							} else {
+							if (
+								result.trackGalaxy.__typename === "PositionableApppearsEvent" ||
+								result.trackGalaxy.__typename === "PositionableDisappearsEvent"
+							) {
+								const remove =
+									result.trackGalaxy.__typename ===
+									"PositionableDisappearsEvent";
+
 								const taskForces = cache.resolve(
 									{ __typename: "Game", id: vars.gameId },
 									"taskForces",
 								) as string[];
 								const cacheKey = cache.keyOfEntity(result.trackGalaxy.subject);
-								if (cacheKey && !taskForces.includes(cacheKey)) {
-									cache.link(
-										{ __typename: "Game", id: vars.gameId },
-										"taskForces",
-										[...taskForces, cacheKey],
-									);
+
+								if (cacheKey) {
+									if (remove && taskForces.includes(cacheKey)) {
+										cache.link(
+											{ __typename: "Game", id: vars.gameId },
+											"taskForces",
+											taskForces.filter((id) => id !== cacheKey),
+										);
+									} else if (!remove && !taskForces.includes(cacheKey)) {
+										cache.link(
+											{ __typename: "Game", id: vars.gameId },
+											"taskForces",
+											[...taskForces, cacheKey],
+										);
+									}
 								}
 							}
 						}

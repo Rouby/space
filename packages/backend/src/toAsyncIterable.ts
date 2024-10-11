@@ -1,9 +1,6 @@
 import { type Observable, Subscription } from "rxjs";
 
-export function toAsyncIterable<T>(
-	obs: Observable<T>,
-	promiseCtor?: PromiseConstructorLike,
-): AsyncIterable<T> {
+export function toAsyncIterable<T>(obs: Observable<T>): AsyncIterable<T> {
 	return {
 		[Symbol.asyncIterator]() {
 			return new ObservableAsyncIterator(obs);

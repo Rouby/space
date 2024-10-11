@@ -7,6 +7,9 @@
 		},
 		"./schema": {
 			"import": "./src/schema.ts"
+		},
+		"./functions": {
+			"import": "./src/functions/index.ts"
 		}
 	},
 	"module": "src/index.ts",

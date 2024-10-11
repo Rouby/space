@@ -447,6 +447,63 @@
       },
       {
         "kind": "OBJECT",
+        "name": "PositionableApppearsEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Positionable",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "PositionableDisappearsEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Positionable",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "PositionableMovesEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "INTERFACE",
+                "name": "Positionable",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "Query",
         "fields": [
           {
@@ -693,14 +750,37 @@
             "type": {
               "kind": "NON_NULL",
               "ofType": {
-                "kind": "OBJECT",
-                "name": "TrackEvent",
+                "kind": "UNION",
+                "name": "TrackGalaxyEvent",
                 "ofType": null
               }
             },
             "args": [
               {
                 "name": "gameId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "trackStarSystem",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "UNION",
+                "name": "TrackStarSystemEvent",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "starSystemId",
                 "type": {
                   "kind": "NON_NULL",
                   "ofType": {
@@ -878,6 +958,25 @@
       },
       {
         "kind": "OBJECT",
+        "name": "TaskForceCommisionProgressEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceCommision",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "TaskForceMoveOrder",
         "fields": [
           {
@@ -957,34 +1056,32 @@
         ]
       },
       {
-        "kind": "OBJECT",
-        "name": "TrackEvent",
-        "fields": [
+        "kind": "UNION",
+        "name": "TrackGalaxyEvent",
+        "possibleTypes": [
           {
-            "name": "subject",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "INTERFACE",
-                "name": "Positionable",
-                "ofType": null
-              }
-            },
-            "args": []
+            "kind": "OBJECT",
+            "name": "PositionableApppearsEvent"
           },
           {
-            "name": "type",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
+            "kind": "OBJECT",
+            "name": "PositionableDisappearsEvent"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "PositionableMovesEvent"
           }
-        ],
-        "interfaces": []
+        ]
+      },
+      {
+        "kind": "UNION",
+        "name": "TrackStarSystemEvent",
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceCommisionProgressEvent"
+          }
+        ]
       },
       {
         "kind": "OBJECT",

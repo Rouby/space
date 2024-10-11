@@ -1,3 +1,4 @@
+import { userIdsWithVision } from "@space/data/functions";
 import { eq, sql, taskForceCommisions, taskForces } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
@@ -34,12 +35,21 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				taskForceId: taskForce[0].id,
 			});
 			// TODO check all users in visible range
-			ctx.postMessage({
-				type: "taskForce:appeared",
-				userId: commision.starSystem.ownerId ?? "",
-				id: taskForce[0].id,
-				position: commision.starSystem.position,
-			});
+			const usersWithVision = await userIdsWithVision(
+				tx,
+				gameId,
+				commision.starSystem.position,
+			);
+			console.log(usersWithVision);
+			for (const userId of usersWithVision) {
+				ctx.postMessage({
+					type: "taskForce:appeared",
+					userId,
+					id: taskForce[0].id,
+					position: commision.starSystem.position,
+					movementVector: null,
+				});
+			}
 		} else {
 			await tx
 				.update(taskForceCommisions)

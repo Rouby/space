@@ -5,17 +5,28 @@ interface Positionable {
 	position: Vector!
 }
 
-enum TrackEventType {
-	appear
-	update
-	disappear
-}
+union TrackGalaxyEvent =
+	| PositionableApppearsEvent
+	| PositionableMovesEvent
+	| PositionableDisappearsEvent
 
-type TrackEvent {
-	type: TrackEventType!
+type PositionableApppearsEvent {
+	subject: Positionable!
+}
+type PositionableMovesEvent {
+	subject: Positionable!
+}
+type PositionableDisappearsEvent {
 	subject: Positionable!
 }
 
+union TrackStarSystemEvent = TaskForceCommisionProgressEvent
+
+type TaskForceCommisionProgressEvent {
+	subject: TaskForceCommision!
+}
+
 type Subscription {
-	trackGalaxy(gameId: ID!): TrackEvent!
+	trackGalaxy(gameId: ID!): TrackGalaxyEvent!
+	trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
 }

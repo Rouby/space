@@ -142,11 +142,32 @@ query Galaxy($id: ID!) {
 	useSubscription({
 		query: graphql(`subscription TrackMap($gameId: ID!) {
 		trackGalaxy(gameId: $gameId) {
-		  type
-			subject {
-				__typename
-				id
-				position
+		  ... on PositionableApppearsEvent {
+				subject {
+					__typename
+					id
+					position
+					... on TaskForce {
+						movementVector
+					}
+				}
+			}
+		  ... on PositionableMovesEvent {
+				subject {
+					__typename
+					id
+					position
+					... on TaskForce {
+						movementVector
+					}
+				}
+			}
+		  ... on PositionableDisappearsEvent {
+				subject {
+					__typename
+					id
+					position
+				}
 			}
 		}
 	}`),

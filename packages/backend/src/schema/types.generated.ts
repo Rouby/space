@@ -105,6 +105,21 @@ export type Positionable = {
   position: Scalars['Vector']['output'];
 };
 
+export type PositionableApppearsEvent = {
+  __typename?: 'PositionableApppearsEvent';
+  subject: Positionable;
+};
+
+export type PositionableDisappearsEvent = {
+  __typename?: 'PositionableDisappearsEvent';
+  subject: Positionable;
+};
+
+export type PositionableMovesEvent = {
+  __typename?: 'PositionableMovesEvent';
+  subject: Positionable;
+};
+
 export type Query = {
   __typename?: 'Query';
   game: Game;
@@ -143,7 +158,8 @@ export type Subscription = {
   __typename?: 'Subscription';
   taskForceCommisionFinished: TaskForceCommisionFinished;
   taskForceCommisionProgress: TaskForceCommision;
-  trackGalaxy: TrackEvent;
+  trackGalaxy: TrackGalaxyEvent;
+  trackStarSystem: TrackStarSystemEvent;
 };
 
 
@@ -159,6 +175,11 @@ export type SubscriptiontaskForceCommisionProgressArgs = {
 
 export type SubscriptiontrackGalaxyArgs = {
   gameId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptiontrackStarSystemArgs = {
+  starSystemId: Scalars['ID']['input'];
 };
 
 export type TaskForce = Positionable & {
@@ -185,6 +206,11 @@ export type TaskForceCommisionFinished = {
   taskForce?: Maybe<TaskForce>;
 };
 
+export type TaskForceCommisionProgressEvent = {
+  __typename?: 'TaskForceCommisionProgressEvent';
+  subject: TaskForceCommision;
+};
+
 export type TaskForceMoveOrder = TaskForceOrder & {
   __typename?: 'TaskForceMoveOrder';
   destination: Scalars['Vector']['output'];
@@ -200,16 +226,9 @@ export type TaskForceOrder = {
 export type TaskForceOrderType =
   | 'move';
 
-export type TrackEvent = {
-  __typename?: 'TrackEvent';
-  subject: Positionable;
-  type: TrackEventType;
-};
+export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent;
 
-export type TrackEventType =
-  | 'appear'
-  | 'disappear'
-  | 'update';
+export type TrackStarSystemEvent = TaskForceCommisionProgressEvent;
 
 export type User = {
   __typename?: 'User';
@@ -285,6 +304,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
+  TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } );
+  TrackStarSystemEvent: ( TaskForceCommisionProgressEvent & { __typename: 'TaskForceCommisionProgressEvent' } );
+};
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
@@ -301,6 +325,9 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Player: ResolverTypeWrapper<PlayerMapper>;
   Positionable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Positionable']>;
+  PositionableApppearsEvent: ResolverTypeWrapper<Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
+  PositionableDisappearsEvent: ResolverTypeWrapper<Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
+  PositionableMovesEvent: ResolverTypeWrapper<Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   Query: ResolverTypeWrapper<{}>;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -308,11 +335,12 @@ export type ResolversTypes = {
   TaskForceCommision: ResolverTypeWrapper<TaskForceCommision>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   TaskForceCommisionFinished: ResolverTypeWrapper<TaskForceCommisionFinishedMapper>;
+  TaskForceCommisionProgressEvent: ResolverTypeWrapper<TaskForceCommisionProgressEvent>;
   TaskForceMoveOrder: ResolverTypeWrapper<Omit<TaskForceMoveOrder, 'type'> & { type: ResolversTypes['TaskForceOrderType'] }>;
   TaskForceOrder: ResolverTypeWrapper<TaskForceOrderMapper>;
   TaskForceOrderType: ResolverTypeWrapper<'move'>;
-  TrackEvent: ResolverTypeWrapper<Omit<TrackEvent, 'subject' | 'type'> & { subject: ResolversTypes['Positionable'], type: ResolversTypes['TrackEventType'] }>;
-  TrackEventType: ResolverTypeWrapper<'appear' | 'update' | 'disappear'>;
+  TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
+  TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -327,6 +355,9 @@ export type ResolversParentTypes = {
   Mutation: {};
   Player: PlayerMapper;
   Positionable: ResolversInterfaceTypes<ResolversParentTypes>['Positionable'];
+  PositionableApppearsEvent: Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
+  PositionableDisappearsEvent: Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
+  PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   Query: {};
   StarSystem: StarSystemMapper;
   Subscription: {};
@@ -334,9 +365,11 @@ export type ResolversParentTypes = {
   TaskForceCommision: TaskForceCommision;
   Float: Scalars['Float']['output'];
   TaskForceCommisionFinished: TaskForceCommisionFinishedMapper;
+  TaskForceCommisionProgressEvent: TaskForceCommisionProgressEvent;
   TaskForceMoveOrder: TaskForceMoveOrder;
   TaskForceOrder: TaskForceOrderMapper;
-  TrackEvent: Omit<TrackEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
+  TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
+  TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   User: User;
   Vector: Scalars['Vector']['output'];
   Boolean: Scalars['Boolean']['output'];
@@ -382,6 +415,21 @@ export type PositionableResolvers<ContextType = Context, ParentType extends Reso
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
 };
 
+export type PositionableApppearsEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PositionableApppearsEvent'] = ResolversParentTypes['PositionableApppearsEvent']> = {
+  subject?: Resolver<ResolversTypes['Positionable'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PositionableDisappearsEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PositionableDisappearsEvent'] = ResolversParentTypes['PositionableDisappearsEvent']> = {
+  subject?: Resolver<ResolversTypes['Positionable'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PositionableMovesEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PositionableMovesEvent'] = ResolversParentTypes['PositionableMovesEvent']> = {
+  subject?: Resolver<ResolversTypes['Positionable'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   game?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<QuerygameArgs, 'id'>>;
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
@@ -403,7 +451,8 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   taskForceCommisionFinished?: SubscriptionResolver<ResolversTypes['TaskForceCommisionFinished'], "taskForceCommisionFinished", ParentType, ContextType, RequireFields<SubscriptiontaskForceCommisionFinishedArgs, 'id'>>;
   taskForceCommisionProgress?: SubscriptionResolver<ResolversTypes['TaskForceCommision'], "taskForceCommisionProgress", ParentType, ContextType, RequireFields<SubscriptiontaskForceCommisionProgressArgs, 'id'>>;
-  trackGalaxy?: SubscriptionResolver<ResolversTypes['TrackEvent'], "trackGalaxy", ParentType, ContextType, RequireFields<SubscriptiontrackGalaxyArgs, 'gameId'>>;
+  trackGalaxy?: SubscriptionResolver<ResolversTypes['TrackGalaxyEvent'], "trackGalaxy", ParentType, ContextType, RequireFields<SubscriptiontrackGalaxyArgs, 'gameId'>>;
+  trackStarSystem?: SubscriptionResolver<ResolversTypes['TrackStarSystemEvent'], "trackStarSystem", ParentType, ContextType, RequireFields<SubscriptiontrackStarSystemArgs, 'starSystemId'>>;
 };
 
 export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
@@ -430,6 +479,11 @@ export type TaskForceCommisionFinishedResolvers<ContextType = Context, ParentTyp
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TaskForceCommisionProgressEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceCommisionProgressEvent'] = ResolversParentTypes['TaskForceCommisionProgressEvent']> = {
+  subject?: Resolver<ResolversTypes['TaskForceCommision'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type TaskForceMoveOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceMoveOrder'] = ResolversParentTypes['TaskForceMoveOrder']> = {
   destination?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -445,13 +499,13 @@ export type TaskForceOrderResolvers<ContextType = Context, ParentType extends Re
 
 export type TaskForceOrderTypeResolvers = EnumResolverSignature<{ move?: any }, ResolversTypes['TaskForceOrderType']>;
 
-export type TrackEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackEvent'] = ResolversParentTypes['TrackEvent']> = {
-  subject?: Resolver<ResolversTypes['Positionable'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['TrackEventType'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackGalaxyEvent'] = ResolversParentTypes['TrackGalaxyEvent']> = {
+  __resolveType?: TypeResolveFn<'PositionableApppearsEvent' | 'PositionableDisappearsEvent' | 'PositionableMovesEvent', ParentType, ContextType>;
 };
 
-export type TrackEventTypeResolvers = EnumResolverSignature<{ appear?: any, disappear?: any, update?: any }, ResolversTypes['TrackEventType']>;
+export type TrackStarSystemEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackStarSystemEvent'] = ResolversParentTypes['TrackStarSystemEvent']> = {
+  __resolveType?: TypeResolveFn<'TaskForceCommisionProgressEvent', ParentType, ContextType>;
+};
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -470,17 +524,21 @@ export type Resolvers<ContextType = Context> = {
   Mutation?: MutationResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
   Positionable?: PositionableResolvers<ContextType>;
+  PositionableApppearsEvent?: PositionableApppearsEventResolvers<ContextType>;
+  PositionableDisappearsEvent?: PositionableDisappearsEventResolvers<ContextType>;
+  PositionableMovesEvent?: PositionableMovesEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;
   TaskForceCommision?: TaskForceCommisionResolvers<ContextType>;
   TaskForceCommisionFinished?: TaskForceCommisionFinishedResolvers<ContextType>;
+  TaskForceCommisionProgressEvent?: TaskForceCommisionProgressEventResolvers<ContextType>;
   TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
   TaskForceOrderType?: TaskForceOrderTypeResolvers;
-  TrackEvent?: TrackEventResolvers<ContextType>;
-  TrackEventType?: TrackEventTypeResolvers;
+  TrackGalaxyEvent?: TrackGalaxyEventResolvers<ContextType>;
+  TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;
 };

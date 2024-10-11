@@ -33,6 +33,18 @@ interface Positionable {
   position: Vector!
 }
 
+type PositionableApppearsEvent {
+  subject: Positionable!
+}
+
+type PositionableDisappearsEvent {
+  subject: Positionable!
+}
+
+type PositionableMovesEvent {
+  subject: Positionable!
+}
+
 type Query {
   game(id: ID!): Game!
   games: [Game!]!
@@ -53,7 +65,8 @@ type StarSystem implements Positionable {
 type Subscription {
   taskForceCommisionFinished(id: ID!): TaskForceCommisionFinished!
   taskForceCommisionProgress(id: ID!): TaskForceCommision!
-  trackGalaxy(gameId: ID!): TrackEvent!
+  trackGalaxy(gameId: ID!): TrackGalaxyEvent!
+  trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
 }
 
 type TaskForce implements Positionable {
@@ -77,6 +90,10 @@ type TaskForceCommisionFinished {
   taskForce: TaskForce
 }
 
+type TaskForceCommisionProgressEvent {
+  subject: TaskForceCommision!
+}
+
 type TaskForceMoveOrder implements TaskForceOrder {
   destination: Vector!
   id: ID!
@@ -92,16 +109,9 @@ enum TaskForceOrderType {
   move
 }
 
-type TrackEvent {
-  subject: Positionable!
-  type: TrackEventType!
-}
+union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent
 
-enum TrackEventType {
-  appear
-  disappear
-  update
-}
+union TrackStarSystemEvent = TaskForceCommisionProgressEvent
 
 type User {
   email: String!

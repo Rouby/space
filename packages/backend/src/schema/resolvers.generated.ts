@@ -17,17 +17,21 @@ import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/st
 import    { taskForceCommisionFinished as Subscription_taskForceCommisionFinished } from './taskForce/resolvers/Subscription/taskForceCommisionFinished.js';
 import    { taskForceCommisionProgress as Subscription_taskForceCommisionProgress } from './taskForce/resolvers/Subscription/taskForceCommisionProgress.js';
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
+import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
 import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
 import    { Player } from './game/resolvers/Player.js';
+import    { PositionableApppearsEvent } from './base/resolvers/PositionableApppearsEvent.js';
+import    { PositionableDisappearsEvent } from './base/resolvers/PositionableDisappearsEvent.js';
+import    { PositionableMovesEvent } from './base/resolvers/PositionableMovesEvent.js';
 import    { StarSystem as starSystem_StarSystem } from './starSystem/resolvers/StarSystem.js';
 import    { StarSystem as taskForce_StarSystem } from './taskForce/resolvers/StarSystem.js';
 import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
 import    { TaskForceCommision } from './taskForce/resolvers/TaskForceCommision.js';
 import    { TaskForceCommisionFinished } from './taskForce/resolvers/TaskForceCommisionFinished.js';
+import    { TaskForceCommisionProgressEvent } from './base/resolvers/TaskForceCommisionProgressEvent.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
-import    { TrackEvent } from './base/resolvers/TrackEvent.js';
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
 import    { Positionable } from './base/resolvers/Positionable.js';
@@ -36,15 +40,18 @@ import    { DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceCommision: Query_taskForceCommision },
       Mutation: { createGame: Mutation_createGame,createTaskForceCommision: Mutation_createTaskForceCommision,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,moveTaskForce: Mutation_moveTaskForce,queueTaskForceMove: Mutation_queueTaskForceMove,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame },
-      Subscription: { taskForceCommisionFinished: Subscription_taskForceCommisionFinished,taskForceCommisionProgress: Subscription_taskForceCommisionProgress,trackGalaxy: Subscription_trackGalaxy },
+      Subscription: { taskForceCommisionFinished: Subscription_taskForceCommisionFinished,taskForceCommisionProgress: Subscription_taskForceCommisionProgress,trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
       Game: { ...game_Game,...starSystem_Game,...taskForce_Game },
 Player: Player,
+PositionableApppearsEvent: PositionableApppearsEvent,
+PositionableDisappearsEvent: PositionableDisappearsEvent,
+PositionableMovesEvent: PositionableMovesEvent,
 StarSystem: { ...starSystem_StarSystem,...taskForce_StarSystem },
 TaskForce: TaskForce,
 TaskForceCommision: TaskForceCommision,
 TaskForceCommisionFinished: TaskForceCommisionFinished,
+TaskForceCommisionProgressEvent: TaskForceCommisionProgressEvent,
 TaskForceMoveOrder: TaskForceMoveOrder,
-TrackEvent: TrackEvent,
 User: User,
 Vector: Vector,
 Positionable: Positionable,

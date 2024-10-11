@@ -1,11 +1,31 @@
-import { eq, taskForces } from "@space/data/schema";
+import {
+	and,
+	eq,
+	notExists,
+	taskForceEngagementsToTaskForces,
+	taskForces,
+} from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
 export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
-	const tfs = await tx.query.taskForces.findMany({
-		where: eq(taskForces.gameId, gameId),
-	});
+	const tfs = await tx
+		.select()
+		.from(taskForces)
+		.where(
+			and(
+				eq(taskForces.gameId, gameId),
+				// and not currently engaged in combat
+				notExists(
+					tx
+						.select()
+						.from(taskForceEngagementsToTaskForces)
+						.where(
+							eq(taskForceEngagementsToTaskForces.taskForceId, taskForces.id),
+						),
+				),
+			),
+		);
 
 	for (const taskForce of tfs) {
 		let { position, orders } = taskForce;
@@ -59,6 +79,7 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 				type: "taskForce:position",
 				id: taskForce.id,
 				position,
+				movementVector,
 			});
 		}
 	}

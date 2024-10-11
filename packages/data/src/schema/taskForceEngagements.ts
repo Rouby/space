@@ -3,6 +3,7 @@ import {
 	pgEnum,
 	pgTable,
 	point,
+	primaryKey,
 	real,
 	timestamp,
 	uuid,
@@ -44,6 +45,11 @@ export const taskForceEngagementsToTaskForces = pgTable(
 			.notNull()
 			.references(() => taskForces.id, { onDelete: "cascade" }),
 	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.taskForceEngagementId, table.taskForceId],
+		}),
+	}),
 );
 
 export const taskForceEngagementsToTaskForcesRelations = relations(

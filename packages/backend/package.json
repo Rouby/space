@@ -21,8 +21,9 @@
 			"**/*.spec.ts"
 		],
 		"watch": [
-			"src/main.ts",
-			"src/schema/**/*.ts"
+			"src/*.ts",
+			"src/schema/**/*.ts",
+			"../gameloop/src/**/*.ts"
 		],
 		"ext": "ts,tsx",
 		"signal": "SIGHUP",

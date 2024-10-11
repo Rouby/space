@@ -64,6 +64,7 @@ const yoga = createYoga({
 			},
 		),
 	],
+	fetchAPI: globalThis,
 });
 
 const server = createServer(yoga);

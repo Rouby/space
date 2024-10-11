@@ -12,11 +12,16 @@ import {
 	from,
 	map,
 	mergeMap,
+	pairwise,
+	raceWith,
 	startWith,
 	takeUntil,
 } from "rxjs";
 import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
-import type { SubscriptionResolvers } from "./../../../types.generated.js";
+import type {
+	ResolversTypes,
+	SubscriptionResolvers,
+} from "./../../../types.generated.js";
 export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 	subscribe: async (_parent, { gameId }, ctx) => {
 		ctx.throwWithoutClaim("urn:space:claim");
@@ -42,65 +47,91 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 				),
 			);
 
-		return toAsyncIterable(
-			ctx.fromGameEvents(gameId).pipe(
-				filter((event) => event.type === "taskForce:appeared"),
-				filter((event) => event.userId === ctx.userId),
-				map((event) => ({
-					type: "appear" as const,
+		const trackTaskForces = ctx.fromGameEvents(gameId).pipe(
+			// collect all appear-events
+			filter((event) => event.type === "taskForce:appeared"),
+			filter((event) => event.userId === ctx.userId),
+			map((event) => ({
+				__typename: "PositionableApppearsEvent" as const,
+				subject: {
+					__typename: "TaskForce",
+					id: event.id,
+					position: event.position,
+					movementVector: event.movementVector,
+				},
+			})),
+			// and initially feed all visible tfs as "appearing"
+			startWith(
+				...initialTfs.map((tf) => ({
+					__typename: "PositionableApppearsEvent" as const,
 					subject: {
 						__typename: "TaskForce",
-						id: event.id,
-						position: event.position,
+						id: tf.id,
+						position: tf.position,
+						movementVector: tf.movementVector,
 					},
 				})),
-				startWith(
-					...initialTfs.map((tf) => ({
-						type: "appear" as const,
-						subject: {
-							__typename: "TaskForce",
-							id: tf.id,
-							position: tf.position,
-						},
-					})),
-				),
-				mergeMap((appeared) =>
-					concat(
-						from([appeared]),
-						ctx.fromGameEvents(gameId).pipe(
-							filter((event) => event.type === "taskForce:position"),
-							filter((event) => event.id === appeared.subject.id),
-							map((event) => ({
-								type: "update" as const,
-								subject: {
-									__typename: "TaskForce",
-									id: event.id,
-									position: event.position,
-								},
-							})),
-							takeUntil(
-								ctx.fromGameEvents(gameId).pipe(
-									filter((event) => event.type === "taskForce:disappeared"),
-									filter((event) => event.userId === ctx.userId),
-									filter((event) => event.id === appeared.subject.id),
+			),
+			mergeMap((appeared) =>
+				// for each appear event, start emitting position updates
+				concat(
+					// double emit because pairwise does not emit on first event
+					from([appeared, appeared]),
+					ctx.fromGameEvents(gameId).pipe(
+						filter((event) => event.type === "taskForce:position"),
+						filter((event) => event.id === appeared.subject.id),
+						map((event) => ({
+							__typename: "PositionableMovesEvent" as const,
+							subject: {
+								__typename: "TaskForce",
+								id: event.id,
+								position: event.position,
+								movementVector: event.movementVector,
+							},
+						})),
+						// until the task force disappears or is destroyed
+						takeUntil(
+							ctx.fromGameEvents(gameId).pipe(
+								filter((event) => event.type === "taskForce:disappeared"),
+								filter((event) => event.id === appeared.subject.id),
+								filter((event) => event.userId === ctx.userId),
+								raceWith(
+									ctx.fromGameEvents(gameId).pipe(
+										filter((event) => event.type === "taskForce:destroyed"),
+										filter((event) => event.id === appeared.subject.id),
+									),
 								),
 							),
 						),
-						from([
-							{
-								type: "disappear" as const,
-								subject: {
-									__typename: "TaskForce",
-									id: appeared.subject.id,
-									// TODO: this should be the last known position
-									position: appeared.subject.position,
-								},
+					),
+					from([
+						{
+							__typename: "PositionableDisappearsEvent" as const,
+							subject: {
+								__typename: "TaskForce",
+								id: appeared.subject.id,
+								// position will be updated in mapping below
+								position: appeared.subject.position,
 							},
-						]),
+						},
+					]),
+				).pipe(
+					// keep track of current and previous event to update position on disappear as last-known position
+					pairwise(),
+					map(([prev, next]) =>
+						next.__typename === "PositionableDisappearsEvent"
+							? {
+									...next,
+									subject: { ...next.subject, position: prev.subject.position },
+								}
+							: next,
 					),
 				),
 			),
 		);
+
+		// @ts-expect-error: TODO: fix this
+		return toAsyncIterable<ResolversTypes["TrackGalaxyEvent"]>(trackTaskForces);
 	},
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	resolve: (input: any) => input,
