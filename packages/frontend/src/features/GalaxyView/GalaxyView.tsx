@@ -389,6 +389,44 @@ query Galaxy($id: ID!) {
 							))}
 					</Fragment>
 				))}
+
+				<filter
+					id="nnnoise-filter"
+					x="-20%"
+					y="-20%"
+					width="140%"
+					height="140%"
+					filterUnits="objectBoundingBox"
+					primitiveUnits="objectBoundingBox"
+					color-interpolation-filters="linearRGB"
+				>
+					<feTurbulence
+						type="fractalNoise"
+						baseFrequency="0.102"
+						numOctaves="4"
+						seed="15"
+						stitchTiles="stitch"
+						x="0%"
+						y="0%"
+						width="100%"
+						height="100%"
+						result="turbulence"
+					/>
+					<feSpecularLighting
+						surfaceScale="15"
+						specularConstant="0.75"
+						specularExponent="20"
+						lighting-color="#777777"
+						x="0%"
+						y="0%"
+						width="100%"
+						height="100%"
+						in="turbulence"
+						result="specularLighting"
+					>
+						<feDistantLight azimuth="3" elevation="100" />
+					</feSpecularLighting>
+				</filter>
 			</motion.svg>
 			<Coordinates
 				translateX={translateX}
@@ -520,21 +558,48 @@ function BackgroundTile({
 			row * tileSize * zoom.get(),
 	);
 
+	const coordinates = coordinateToGrid(
+		{
+			x: gridStartingX + column * tileSize,
+			y: gridStartingY + row * tileSize,
+		},
+		gridLevel,
+	);
+
+	const dx = useTransform(() => size.get() / 2);
+	const fontSize = useTransform(
+		() => (gridLevel === 0 ? 3000 : 300) * zoom.get(),
+	);
+
 	return (
 		<motion.g style={{ x, y }}>
 			<motion.rect
 				fill="black"
-				stroke="white"
+				strokeWidth={gridLevel === 0 ? 2 : 1}
+				stroke={
+					coordinates
+						? gridLevel === 0
+							? "rgba(255,255,255,.6)"
+							: "rgba(255,255,255,.4)"
+						: "rgba(255,255,255,.1)"
+				}
 				style={{ width: size, height: size }}
 			/>
-			<motion.text fill="white" alignmentBaseline="hanging">
-				{coordinateToGrid(
-					{
-						x: gridStartingX + column * tileSize,
-						y: gridStartingY + row * tileSize,
-					},
-					gridLevel,
-				)}
+			<motion.rect
+				filter="url(#nnnoise-filter)"
+				style={{ width: size, height: size }}
+			/>
+			<motion.text
+				dx={dx}
+				dy={dx}
+				fill="white"
+				textAnchor="middle"
+				alignmentBaseline="middle"
+				fontSize={fontSize}
+				pointerEvents="none"
+				opacity={0.1}
+			>
+				{coordinates}
 			</motion.text>
 		</motion.g>
 	);

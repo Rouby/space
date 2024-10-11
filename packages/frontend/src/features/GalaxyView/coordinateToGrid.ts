@@ -43,7 +43,7 @@ export function coordinateToGrid(
 				gridSize,
 		);
 
-		return domain?.[y]?.[x] ?? `${x},${y}`;
+		return domain?.[y]?.[x] ?? (level >= maxLevel ? `${x},${y}` : null);
 	}).join(" ");
 }
 
