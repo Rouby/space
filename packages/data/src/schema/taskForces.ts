@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
-import { json, pgTable, point, uuid, varchar } from "drizzle-orm/pg-core";
+import { json, pgTable, point, real, uuid, varchar } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
+import { shipDesigns } from "./shipDesigns.ts";
 import { taskForceEngagementsToTaskForces } from "./taskForceEngagements.ts";
 import { users } from "./users.ts";
 
@@ -21,6 +22,7 @@ export const taskForces = pgTable("taskForces", {
 		>()
 		.default([]),
 	movementVector: point("movementVector", { mode: "xy" }),
+	supply: real("supply").notNull().default(0),
 });
 
 export const taskForcesRelations = relations(taskForces, ({ one, many }) => ({
@@ -30,3 +32,27 @@ export const taskForcesRelations = relations(taskForces, ({ one, many }) => ({
 	}),
 	taskForceEngagmentsToTaskForces: many(taskForceEngagementsToTaskForces),
 }));
+
+export const shipsInTaskForces = pgTable("shipsInTaskForces", {
+	taskForceId: uuid("taskForceId")
+		.notNull()
+		.references(() => taskForces.id, { onDelete: "cascade" }),
+	shipId: uuid("shipId")
+		.notNull()
+		.references(() => taskForces.id, { onDelete: "restrict" }),
+	integrity: real("integrity").notNull(),
+});
+
+export const shipsInTaskForcesRelations = relations(
+	shipsInTaskForces,
+	({ one }) => ({
+		taskForce: one(taskForces, {
+			fields: [shipsInTaskForces.taskForceId],
+			references: [taskForces.id],
+		}),
+		design: one(shipDesigns, {
+			fields: [shipsInTaskForces.shipId],
+			references: [shipDesigns.id],
+		}),
+	}),
+);

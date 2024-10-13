@@ -1,0 +1,2 @@
+ALTER TABLE "starSystemResourceDepots" ALTER COLUMN "quantity" SET DATA TYPE numeric(30, 6);--> statement-breakpoint
+ALTER TABLE "starSystemResourceDiscoveries" ALTER COLUMN "remainingDeposits" SET DATA TYPE numeric(30, 6);

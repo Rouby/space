@@ -309,8 +309,7 @@ query Galaxy($id: ID!) {
 				{Array.from({ length: tileRows }, (_, row) =>
 					Array.from({ length: tileColumns }, (_, column) => (
 						<BackgroundTile
-							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-							key={`${row}-${column}`}
+							key={`${gridStartingX + column * tileSize},${gridStartingY + row * tileSize}`}
 							gridLevel={gridLevel}
 							column={column - 1}
 							row={row - 1}

@@ -25,6 +25,9 @@ import    { Player } from './game/resolvers/Player.js';
 import    { PositionableApppearsEvent } from './base/resolvers/PositionableApppearsEvent.js';
 import    { PositionableDisappearsEvent } from './base/resolvers/PositionableDisappearsEvent.js';
 import    { PositionableMovesEvent } from './base/resolvers/PositionableMovesEvent.js';
+import    { Resource } from './resource/resolvers/Resource.js';
+import    { ResourceDepot } from './starSystem/resolvers/ResourceDepot.js';
+import    { ResourceDiscovery } from './starSystem/resolvers/ResourceDiscovery.js';
 import    { StarSystem as starSystem_StarSystem } from './starSystem/resolvers/StarSystem.js';
 import    { StarSystem as taskForce_StarSystem } from './taskForce/resolvers/StarSystem.js';
 import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
@@ -35,6 +38,7 @@ import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
 import    { Positionable } from './base/resolvers/Positionable.js';
+import    { SensorRange } from './base/resolvers/SensorRange.js';
 import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
 import    { DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
@@ -46,6 +50,9 @@ Player: Player,
 PositionableApppearsEvent: PositionableApppearsEvent,
 PositionableDisappearsEvent: PositionableDisappearsEvent,
 PositionableMovesEvent: PositionableMovesEvent,
+Resource: Resource,
+ResourceDepot: ResourceDepot,
+ResourceDiscovery: ResourceDiscovery,
 StarSystem: { ...starSystem_StarSystem,...taskForce_StarSystem },
 TaskForce: TaskForce,
 TaskForceCommision: TaskForceCommision,
@@ -55,6 +62,7 @@ TaskForceMoveOrder: TaskForceMoveOrder,
 User: User,
 Vector: Vector,
 Positionable: Positionable,
+SensorRange: SensorRange,
 TaskForceOrder: TaskForceOrder,
 DateTime: DateTimeResolver
     }

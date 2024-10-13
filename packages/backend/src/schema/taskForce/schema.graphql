@@ -1,4 +1,4 @@
-type TaskForce implements Positionable {
+type TaskForce implements Positionable & SensorRange {
 	id: ID!
 	name: String!
 	position: Vector!
@@ -6,6 +6,7 @@ type TaskForce implements Positionable {
 	movementVector: Vector
 	owner: Player!
 	game: Game!
+	sensorRange: Float!
 }
 
 interface TaskForceOrder {

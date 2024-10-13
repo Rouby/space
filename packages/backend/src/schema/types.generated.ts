@@ -1,6 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
-import { StarSystemMapper } from './starSystem/schema.mappers.js';
+import { ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { TaskForceMapper, TaskForceCommisionFinishedMapper, TaskForceOrderMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
@@ -23,6 +23,8 @@ export type Scalars = {
   DateTime: { input: Date | string; output: Date | string; }
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
+
+export type Discovery = ResourceDiscovery;
 
 export type Game = {
   __typename?: 'Game';
@@ -144,12 +146,40 @@ export type QuerytaskForceCommisionArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type StarSystem = Positionable & {
+export type Resource = {
+  __typename?: 'Resource';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type ResourceDepot = {
+  __typename?: 'ResourceDepot';
+  id: Scalars['ID']['output'];
+  quantity: Scalars['Float']['output'];
+  resource: Resource;
+};
+
+export type ResourceDiscovery = {
+  __typename?: 'ResourceDiscovery';
+  id: Scalars['ID']['output'];
+  remainingDeposits: Scalars['Float']['output'];
+  resource: Resource;
+};
+
+export type SensorRange = {
+  id: Scalars['ID']['output'];
+  sensorRange: Scalars['Float']['output'];
+};
+
+export type StarSystem = Positionable & SensorRange & {
   __typename?: 'StarSystem';
+  discoveries: Array<Discovery>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
+  resourceDepots: Array<ResourceDepot>;
+  sensorRange: Scalars['Float']['output'];
   taskForceCommisions: Array<TaskForceCommision>;
   taskForces: Array<TaskForce>;
 };
@@ -182,7 +212,7 @@ export type SubscriptiontrackStarSystemArgs = {
   starSystemId: Scalars['ID']['input'];
 };
 
-export type TaskForce = Positionable & {
+export type TaskForce = Positionable & SensorRange & {
   __typename?: 'TaskForce';
   game: Game;
   id: Scalars['ID']['output'];
@@ -191,6 +221,7 @@ export type TaskForce = Positionable & {
   orders: Array<TaskForceOrder>;
   owner: Player;
   position: Scalars['Vector']['output'];
+  sensorRange: Scalars['Float']['output'];
 };
 
 export type TaskForceCommision = {
@@ -306,6 +337,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
+  Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } );
   TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } );
   TrackStarSystemEvent: ( TaskForceCommisionProgressEvent & { __typename: 'TaskForceCommisionProgressEvent' } );
 };
@@ -313,12 +345,14 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
   Positionable: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } );
+  SensorRange: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } );
   TaskForceOrder: ( Omit<TaskForceMoveOrder, 'type'> & { type: _RefType['TaskForceOrderType'] } & { __typename: 'TaskForceMoveOrder' } );
 };
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -329,11 +363,15 @@ export type ResolversTypes = {
   PositionableDisappearsEvent: ResolverTypeWrapper<Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   PositionableMovesEvent: ResolverTypeWrapper<Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   Query: ResolverTypeWrapper<{}>;
+  Resource: ResolverTypeWrapper<Resource>;
+  ResourceDepot: ResolverTypeWrapper<ResourceDepotMapper>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
+  SensorRange: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['SensorRange']>;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
   Subscription: ResolverTypeWrapper<{}>;
   TaskForce: ResolverTypeWrapper<TaskForceMapper>;
   TaskForceCommision: ResolverTypeWrapper<TaskForceCommision>;
-  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   TaskForceCommisionFinished: ResolverTypeWrapper<TaskForceCommisionFinishedMapper>;
   TaskForceCommisionProgressEvent: ResolverTypeWrapper<TaskForceCommisionProgressEvent>;
   TaskForceMoveOrder: ResolverTypeWrapper<Omit<TaskForceMoveOrder, 'type'> & { type: ResolversTypes['TaskForceOrderType'] }>;
@@ -349,6 +387,7 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   DateTime: Scalars['DateTime']['output'];
+  Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
   ID: Scalars['ID']['output'];
   String: Scalars['String']['output'];
@@ -359,11 +398,15 @@ export type ResolversParentTypes = {
   PositionableDisappearsEvent: Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   Query: {};
+  Resource: Resource;
+  ResourceDepot: ResourceDepotMapper;
+  Float: Scalars['Float']['output'];
+  ResourceDiscovery: ResourceDiscoveryMapper;
+  SensorRange: ResolversInterfaceTypes<ResolversParentTypes>['SensorRange'];
   StarSystem: StarSystemMapper;
   Subscription: {};
   TaskForce: TaskForceMapper;
   TaskForceCommision: TaskForceCommision;
-  Float: Scalars['Float']['output'];
   TaskForceCommisionFinished: TaskForceCommisionFinishedMapper;
   TaskForceCommisionProgressEvent: TaskForceCommisionProgressEvent;
   TaskForceMoveOrder: TaskForceMoveOrder;
@@ -378,6 +421,10 @@ export type ResolversParentTypes = {
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
+
+export type DiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Discovery'] = ResolversParentTypes['Discovery']> = {
+  __resolveType?: TypeResolveFn<'ResourceDiscovery', ParentType, ContextType>;
+};
 
 export type GameResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -438,11 +485,40 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   taskForceCommision?: Resolver<ResolversTypes['TaskForceCommision'], ParentType, ContextType, RequireFields<QuerytaskForceCommisionArgs, 'id'>>;
 };
 
+export type ResourceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ResourceDepotResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceDepot'] = ResolversParentTypes['ResourceDepot']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ResourceDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceDiscovery'] = ResolversParentTypes['ResourceDiscovery']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  remainingDeposits?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SensorRangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SensorRange'] = ResolversParentTypes['SensorRange']> = {
+  __resolveType?: TypeResolveFn<'StarSystem' | 'TaskForce', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  sensorRange?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+};
+
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
+  discoveries?: Resolver<Array<ResolversTypes['Discovery']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  resourceDepots?: Resolver<Array<ResolversTypes['ResourceDepot']>, ParentType, ContextType>;
+  sensorRange?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   taskForceCommisions?: Resolver<Array<ResolversTypes['TaskForceCommision']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -463,6 +539,7 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
   orders?: Resolver<Array<ResolversTypes['TaskForceOrder']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  sensorRange?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -520,6 +597,7 @@ export interface VectorScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type Resolvers<ContextType = Context> = {
   DateTime?: GraphQLScalarType;
+  Discovery?: DiscoveryResolvers<ContextType>;
   Game?: GameResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
@@ -528,6 +606,10 @@ export type Resolvers<ContextType = Context> = {
   PositionableDisappearsEvent?: PositionableDisappearsEventResolvers<ContextType>;
   PositionableMovesEvent?: PositionableMovesEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Resource?: ResourceResolvers<ContextType>;
+  ResourceDepot?: ResourceDepotResolvers<ContextType>;
+  ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;
+  SensorRange?: SensorRangeResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;

@@ -7,12 +7,16 @@ export async function setupGalaxy(tx: Transaction, ctx: Context) {
 
 	const stars = generateSpiralPositions();
 
-	const starSystemValues = stars.map((position, idx) => ({
-		gameId,
-		position,
-		name: `Star ${idx}`,
-		ownerId: null as string | null,
-	}));
+	const starSystemValues = stars.map(
+		(position, idx) =>
+			({
+				gameId,
+				position,
+				name: `Star ${idx}`,
+				ownerId: null as string | null,
+				discoverySlots: 1 + Math.floor(Math.random() * 4),
+			}) as typeof starSystems.$inferInsert,
+	);
 
 	for (const player of ctx.players) {
 		while (true) {
@@ -22,13 +26,12 @@ export async function setupGalaxy(tx: Transaction, ctx: Context) {
 				continue;
 			}
 			starSystemValues[playerStar].ownerId = player.userId;
+			starSystemValues[playerStar].discoverySlots = 5;
 			break;
 		}
 	}
 
 	await tx.insert(starSystems).values(starSystemValues);
-
-	return true;
 }
 
 function generateSpiralPositions() {

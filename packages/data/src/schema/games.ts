@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
+	integer,
 	pgTable,
 	primaryKey,
 	timestamp,
@@ -14,6 +15,7 @@ export const games = pgTable("games", {
 	name: varchar("name", { length: 256 }).notNull(),
 	startedAt: timestamp("startedAt"),
 	setupCompleted: boolean("setupCompleted").notNull().default(false),
+	version: integer("version").notNull().default(0),
 });
 
 export const players = pgTable(

@@ -11,6 +11,16 @@
     },
     "types": [
       {
+        "kind": "UNION",
+        "name": "Discovery",
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "ResourceDiscovery"
+          }
+        ]
+      },
+      {
         "kind": "OBJECT",
         "name": "Game",
         "fields": [
@@ -607,8 +617,176 @@
       },
       {
         "kind": "OBJECT",
+        "name": "Resource",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ResourceDepot",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "quantity",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "resource",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Resource",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ResourceDiscovery",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "remainingDeposits",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "resource",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Resource",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "SensorRange",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "sensorRange",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [],
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "StarSystem"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TaskForce"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
         "name": "StarSystem",
         "fields": [
+          {
+            "name": "discoveries",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "UNION",
+                    "name": "Discovery",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
           {
             "name": "id",
             "type": {
@@ -642,6 +820,35 @@
           },
           {
             "name": "position",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "resourceDepots",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "ResourceDepot",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "sensorRange",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -692,6 +899,10 @@
           {
             "kind": "INTERFACE",
             "name": "Positionable"
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "SensorRange"
           }
         ]
       },
@@ -880,12 +1091,27 @@
               }
             },
             "args": []
+          },
+          {
+            "name": "sensorRange",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
           }
         ],
         "interfaces": [
           {
             "kind": "INTERFACE",
             "name": "Positionable"
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "SensorRange"
           }
         ]
       },

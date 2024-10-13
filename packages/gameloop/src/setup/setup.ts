@@ -2,6 +2,7 @@ import { eq, games, players } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
 import { setupGalaxy } from "./galaxy.ts";
+import { setupResources } from "./resources.ts";
 
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
 export type Transaction = FirstArgument<
@@ -14,8 +15,12 @@ export async function setup() {
 		where: eq(players.gameId, gameId),
 	});
 
+	const ctx: Context = { players: playersInGame };
+
 	await drizzle.transaction(async (tx) => {
-		await setupGalaxy(tx, { players: playersInGame });
+		await setupResources(tx, ctx);
+
+		await setupGalaxy(tx, ctx);
 
 		await tx
 			.update(games)

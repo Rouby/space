@@ -10,6 +10,9 @@
 		},
 		"./functions": {
 			"import": "./src/functions/index.ts"
+		},
+		"./game-migrations": {
+			"import": "./src/gameMigrations/index.ts"
 		}
 	},
 	"module": "src/index.ts",

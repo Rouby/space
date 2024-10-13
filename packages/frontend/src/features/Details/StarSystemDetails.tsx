@@ -25,6 +25,24 @@ export function StarSystemDetails({ id }: { id: string }) {
 					name
 				}
 			}
+			discoveries {
+				... on ResourceDiscovery {
+					id
+					resource {
+						id
+						name
+					}
+					remainingDeposits
+				}
+			}
+			resourceDepots {
+				id
+				resource {
+					id
+					name
+				}	
+				quantity
+			}
 		}
 	}`,
 		),
@@ -48,6 +66,30 @@ export function StarSystemDetails({ id }: { id: string }) {
 					<div key={taskForce.id}>
 						{taskForce.owner ? `${taskForce.owner.name}'s ` : ""}
 						{taskForce.name}
+					</div>
+				))}
+			</div>
+			<div>
+				discoveries
+				{data?.starSystem.discoveries.map((discovery) => (
+					<div key={discovery.id}>
+						{discovery.resource.name} -{" "}
+						{new Intl.NumberFormat(undefined, {
+							maximumFractionDigits: 0,
+						}).format(discovery.remainingDeposits)}{" "}
+						units left
+					</div>
+				))}
+			</div>
+			<div>
+				depots
+				{data?.starSystem.resourceDepots.map((discovery) => (
+					<div key={discovery.id}>
+						{discovery.resource.name} -{" "}
+						{new Intl.NumberFormat(undefined, {
+							maximumFractionDigits: 0,
+						}).format(discovery.quantity)}{" "}
+						units stored
 					</div>
 				))}
 			</div>

@@ -49,4 +49,7 @@ export const TaskForce: TaskForceResolvers = {
 
 		return game;
 	},
+	sensorRange: async (_parent, _arg, _ctx) => {
+		return 100;
+	},
 };

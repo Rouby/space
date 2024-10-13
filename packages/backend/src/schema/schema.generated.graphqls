@@ -1,5 +1,7 @@
 scalar DateTime
 
+union Discovery = ResourceDiscovery
+
 type Game {
   id: ID!
   name: String!
@@ -53,11 +55,36 @@ type Query {
   taskForceCommision(id: ID!): TaskForceCommision!
 }
 
-type StarSystem implements Positionable {
+type Resource {
+  id: ID!
+  name: String!
+}
+
+type ResourceDepot {
+  id: ID!
+  quantity: Float!
+  resource: Resource!
+}
+
+type ResourceDiscovery {
+  id: ID!
+  remainingDeposits: Float!
+  resource: Resource!
+}
+
+interface SensorRange {
+  id: ID!
+  sensorRange: Float!
+}
+
+type StarSystem implements Positionable & SensorRange {
+  discoveries: [Discovery!]!
   id: ID!
   name: String!
   owner: Player
   position: Vector!
+  resourceDepots: [ResourceDepot!]!
+  sensorRange: Float!
   taskForceCommisions: [TaskForceCommision!]!
   taskForces: [TaskForce!]!
 }
@@ -69,7 +96,7 @@ type Subscription {
   trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
 }
 
-type TaskForce implements Positionable {
+type TaskForce implements Positionable & SensorRange {
   game: Game!
   id: ID!
   movementVector: Vector
@@ -77,6 +104,7 @@ type TaskForce implements Positionable {
   orders: [TaskForceOrder!]!
   owner: Player!
   position: Vector!
+  sensorRange: Float!
 }
 
 type TaskForceCommision {

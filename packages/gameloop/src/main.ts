@@ -1,3 +1,4 @@
+import { applyMigrations } from "@space/data/game-migrations";
 import { eq, games } from "@space/data/schema";
 import { parentPort } from "node:worker_threads";
 import { gameId } from "./config.ts";
@@ -26,6 +27,8 @@ if (!game) {
 if (!game.setupCompleted) {
 	await setup();
 }
+
+await drizzle.transaction((tx) => applyMigrations(tx, gameId));
 
 // start game loop
 const tickRate = 100;

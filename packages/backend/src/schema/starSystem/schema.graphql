@@ -1,8 +1,25 @@
-type StarSystem implements Positionable {
+type StarSystem implements Positionable & SensorRange {
 	id: ID!
 	name: String!
 	position: Vector!
 	owner: Player
+	sensorRange: Float!
+	discoveries: [Discovery!]!
+	resourceDepots: [ResourceDepot!]!
+}
+
+union Discovery = ResourceDiscovery
+
+type ResourceDiscovery {
+	id: ID!
+	resource: Resource!
+	remainingDeposits: Float!
+}
+
+type ResourceDepot {
+	id: ID!
+	resource: Resource!
+	quantity: Float!
 }
 
 extend type Game {
