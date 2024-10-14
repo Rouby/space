@@ -1,5 +1,8 @@
 import type { PlayerResolvers } from "./../../types.generated.js";
-export const Player: PlayerResolvers = {
+export const Player: Pick<
+	PlayerResolvers,
+	"color" | "id" | "name" | "user" | "__isTypeOf"
+> = {
 	id: async (parent, _arg, _ctx) => {
 		return `${parent.gameId}-${parent.userId}`;
 	},

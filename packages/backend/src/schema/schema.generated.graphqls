@@ -4,8 +4,10 @@ union Discovery = ResourceDiscovery
 
 type Game {
   id: ID!
+  me: Player
   name: String!
   players: [Player!]!
+  shipDesigns: [ShipDesign!]!
   starSystems: [StarSystem!]!
   startedAt: DateTime
   taskForces: [TaskForce!]!
@@ -13,6 +15,7 @@ type Game {
 
 type Mutation {
   createGame(name: String!): Game!
+  createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
   createTaskForceCommision(starSystemId: ID!): TaskForceCommision!
   joinGame(id: ID!): Game!
   loginWithPassword(email: String!, password: String!): User!
@@ -27,6 +30,7 @@ type Player {
   color: String!
   id: ID!
   name: String!
+  shipDesigns: [ShipDesign!]!
   user: User!
 }
 
@@ -60,6 +64,11 @@ type Resource {
   name: String!
 }
 
+type ResourceCost {
+  quantity: Float!
+  resource: Resource!
+}
+
 type ResourceDepot {
   id: ID!
   quantity: Float!
@@ -75,6 +84,37 @@ type ResourceDiscovery {
 interface SensorRange {
   id: ID!
   sensorRange: Float!
+}
+
+type ShipDesign {
+  armorRating: Float!
+  costs: [ResourceCost!]!
+  decommissioned: Boolean!
+  description: String!
+  hullRating: Float!
+  id: ID!
+  name: String!
+  owner: Player!
+  previousDesign: ShipDesign
+  shieldRating: Float!
+  speedRating: Float!
+  supplyCapacity: Float!
+  supplyNeed: Float!
+  weaponRating: Float!
+  zoneOfControlRating: Float!
+}
+
+input ShipDesignInput {
+  armorRating: Float!
+  description: String!
+  hullRating: Float!
+  name: String!
+  previousDesignId: ID
+  shieldRating: Float!
+  speedRating: Float!
+  supplyCapacity: Float!
+  weaponRating: Float!
+  zoneOfControlRating: Float!
 }
 
 type StarSystem implements Positionable & SensorRange {

@@ -215,7 +215,6 @@ query Galaxy($id: ID!) {
 						x: (event.clientX - x - translateX.get()) / zoom.get(),
 						y: (event.clientY - y - translateY.get()) / zoom.get(),
 					};
-					console.log(position);
 
 					if (!dragging.current.active) return;
 

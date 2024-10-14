@@ -1,0 +1,47 @@
+type ShipDesign {
+	id: ID!
+	name: String!
+	description: String!
+	owner: Player!
+	hullRating: Float!
+	speedRating: Float!
+	armorRating: Float!
+	shieldRating: Float!
+	weaponRating: Float!
+	zoneOfControlRating: Float!
+	supplyNeed: Float!
+	supplyCapacity: Float!
+	decommissioned: Boolean!
+	previousDesign: ShipDesign
+	costs: [ResourceCost!]!
+}
+
+type ResourceCost {
+	resource: Resource!
+	quantity: Float!
+}
+
+extend type Game {
+	shipDesigns: [ShipDesign!]!
+}
+
+extend type Player {
+	shipDesigns: [ShipDesign!]!
+}
+
+input ShipDesignInput {
+	name: String!
+	description: String!
+	hullRating: Float!
+	speedRating: Float!
+	armorRating: Float!
+	shieldRating: Float!
+	weaponRating: Float!
+	zoneOfControlRating: Float!
+	supplyCapacity: Float!
+	previousDesignId: ID
+}
+
+type Mutation {
+	createShipDesign(gameId: ID!, design: ShipDesignInput!): ShipDesign!
+}

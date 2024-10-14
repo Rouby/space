@@ -1,5 +1,5 @@
 import { Badge, rem } from "@mantine/core";
-import { IconView360 } from "@tabler/icons-react";
+import { type Icon, IconLicense, IconView360 } from "@tabler/icons-react";
 import {
 	type LinkProps,
 	Outlet,
@@ -43,37 +43,12 @@ function IngameLayout() {
 
 				<Section>
 					<div className={css({})}>
-						<Link to="/games/$id">
-							<div
-								className={css({
-									display: "flex",
-									alignItems: "center",
-									flex: 1,
-								})}
-							>
-								<IconView360
-									size={20}
-									className={css({
-										marginRight: vars.spacing.sm,
-										color: vars.colors.dark[2],
-									})}
-									stroke={1.5}
-								/>
-								<span>Overview</span>
-							</div>
+						<Link to="/games/$id" icon={IconView360}>
+							Overview
+						</Link>
 
-							<Badge
-								size="sm"
-								variant="filled"
-								className={css({
-									padding: 0,
-									width: rem(20),
-									height: rem(20),
-									pointerEvents: "none",
-								})}
-							>
-								2
-							</Badge>
+						<Link to="/games/$id/ship-designs" icon={IconLicense}>
+							Ship Designs
 						</Link>
 					</div>
 				</Section>
@@ -107,34 +82,68 @@ function Section({ children }: { children: React.ReactNode }) {
 	);
 }
 
-const Link = forwardRef<HTMLAnchorElement, LinkProps & { className?: string }>(
-	function Link(props, ref) {
-		const { css, cx } = useStyles();
+const Link = forwardRef<
+	HTMLAnchorElement,
+	LinkProps & { notificationCount?: number; icon: Icon; className?: string }
+>(function Link({ notificationCount, icon: IconElement, ...props }, ref) {
+	const { css, cx } = useStyles();
 
-		return (
-			<RouterLink
-				ref={ref}
-				{...props}
-				className={cx(
-					css({
-						display: "flex",
-						alignItems: "center",
-						width: "100%",
-						padding: `${vars.spacing.xs} ${vars.spacing.xs}`,
-						borderRadius: vars.radius.sm,
-						fontSize: vars.fontSizes.sm,
-						fontWeight: 500,
+	return (
+		<RouterLink
+			ref={ref}
+			{...props}
+			className={cx(
+				css({
+					display: "flex",
+					alignItems: "center",
+					width: "100%",
+					padding: `${vars.spacing.xs} ${vars.spacing.xs}`,
+					borderRadius: vars.radius.sm,
+					fontSize: vars.fontSizes.sm,
+					fontWeight: 500,
+					color: vars.colors.dark[0],
+					textDecoration: "none",
+
+					"&:hover": {
+						backgroundColor: vars.colors.dark[6],
 						color: vars.colors.dark[0],
-						textDecoration: "none",
+					},
+				}),
+				props.className,
+			)}
+		>
+			<div
+				className={css({
+					display: "flex",
+					alignItems: "center",
+					flex: 1,
+				})}
+			>
+				<IconElement
+					size={20}
+					className={css({
+						marginRight: vars.spacing.sm,
+						color: vars.colors.dark[2],
+					})}
+					stroke={1.5}
+				/>
+				<span>{typeof props.children !== "function" && props.children}</span>
+			</div>
 
-						"&:hover": {
-							backgroundColor: vars.colors.dark[6],
-							color: vars.colors.dark[0],
-						},
-					}),
-					props.className,
-				)}
-			/>
-		);
-	},
-);
+			{(notificationCount ?? 0) > 0 && (
+				<Badge
+					size="sm"
+					variant="filled"
+					className={css({
+						padding: 0,
+						width: rem(20),
+						height: rem(20),
+						pointerEvents: "none",
+					})}
+				>
+					{notificationCount}
+				</Badge>
+			)}
+		</RouterLink>
+	);
+});

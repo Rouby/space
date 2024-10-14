@@ -18,7 +18,9 @@ export const shipDesigns = pgTable("shipDesigns", {
 	gameId: uuid("gameId")
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	ownerId: uuid("ownerId").references(() => users.id, { onDelete: "restrict" }),
+	ownerId: uuid("ownerId")
+		.notNull()
+		.references(() => users.id, { onDelete: "restrict" }),
 	name: varchar("name", { length: 256 }).notNull(),
 	description: text("description").notNull(),
 	decommissioned: boolean("decommissioned").notNull().default(false),

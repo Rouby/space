@@ -7,6 +7,8 @@ import type {
 	CommisionTaskForceMutation,
 	CommisionTaskForceMutationVariables,
 	CreateGameMutation,
+	CreateShipDesignMutation,
+	CreateShipDesignMutationVariables,
 	TaskForceCommisionFinishedSubSubscription,
 	TrackMapSubscription,
 	TrackMapSubscriptionVariables,
@@ -47,6 +49,30 @@ export const client = createClient({
 								{ __typename: "StarSystem", id: args.starSystemId },
 								"taskForceCommisions",
 								[...commisions, result.createTaskForceCommision],
+							);
+						}
+					},
+					createShipDesign: (
+						result: CreateShipDesignMutation,
+						{ gameId }: CreateShipDesignMutationVariables,
+						cache,
+						info,
+					) => {
+						const designs = cache.resolve(
+							{
+								__typename: "Player",
+								id: `${gameId}-${info.variables.userId}`,
+							},
+							"shipDesigns",
+						);
+						if (Array.isArray(designs)) {
+							cache.link(
+								{
+									__typename: "Player",
+									id: `${gameId}-${info.variables.userId}`,
+								},
+								"shipDesigns",
+								[...designs, result.createShipDesign],
 							);
 						}
 					},

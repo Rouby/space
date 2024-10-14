@@ -14,11 +14,6 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "mutation RefreshLogin {\n    loginWithRefreshToken {\n      id\n    }\n  }": types.RefreshLoginDocument,
-    "mutation CommisionTaskForce($starSystemId: ID!) {\n    createTaskForceCommision(starSystemId: $starSystemId) {\n      id\n      progress\n      total\n    }\n  }": types.CommisionTaskForceDocument,
-    "query StarSystemDetails($id: ID!) {\n\t\tstarSystem(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tposition\n\t\t\ttaskForceCommisions {\n\t\t\t\tid\n\t\t\t\tprogress\n\t\t\t\ttotal\n\t\t\t}\n\t\t\ttaskForces {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t\tdiscoveries {\n\t\t\t\t... on ResourceDiscovery {\n\t\t\t\t\tid\n\t\t\t\t\tresource {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t}\n\t\t\t\t\tremainingDeposits\n\t\t\t\t}\n\t\t\t}\n\t\t\tresourceDepots {\n\t\t\t\tid\n\t\t\t\tresource {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\t\n\t\t\t\tquantity\n\t\t\t}\n\t\t}\n\t}": types.StarSystemDetailsDocument,
-    "query TaskForceCommision($id: ID!) {\n\t\ttaskForceCommision(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t}": types.TaskForceCommisionDocument,
-    "subscription TaskForceCommisionSub($id: ID!) {\n\t\ttaskForceCommisionProgress(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t\t}": types.TaskForceCommisionSubDocument,
-    "subscription TaskForceCommisionFinishedSub($id: ID!) {\n\t\ttaskForceCommisionFinished(id: $id) {\n\t\t\tid\n\t\t\ttaskForce{\n\t\t\t\tid\n\t\t\t\tposition\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t}": types.TaskForceCommisionFinishedSubDocument,
     "\nquery Galaxy($id: ID!) {\n  game(id: $id) {\n    id\n\t\tstarSystems {\n\t\t\tid\n\t\t\tposition\n\t\t\towner {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tcolor\n\t\t\t}\n\t\t}\n\t\ttaskForces {\n\t\t\tid\n\t\t\tname\n\t\t\tposition\n\t\t\towner {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tcolor\n\t\t\t}\n\t\t\torders {\n\t\t\t\tid\n\t\t\t\ttype\n\t\t\t\t...on TaskForceMoveOrder {\n\t\t\t\t\tdestination\n\t\t\t\t}\n\t\t\t}\n\t\t\tmovementVector\n\t\t}\n  }\n}": types.GalaxyDocument,
     "mutation MoveTaskForce($id: ID!, $position: Vector!, $queueOrder: Boolean!) {\n\t\tmoveTaskForce(id: $id, position: $position) @skip(if: $queueOrder) {\n\t\t\tid\n\t\t\torders {\n\t\t\t\tid\n\t\t\t\ttype\n\t\t\t\t...on TaskForceMoveOrder {\n\t\t\t\t\tdestination\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t\n\t\tqueueTaskForceMove(id: $id, position: $position) @include(if: $queueOrder) {\n\t\t\tid\n\t\t\torders {\n\t\t\t\tid\n\t\t\t\ttype\n\t\t\t\t...on TaskForceMoveOrder {\n\t\t\t\t\tdestination\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}": types.MoveTaskForceDocument,
     "subscription TrackMap($gameId: ID!) {\n\t\ttrackGalaxy(gameId: $gameId) {\n\t\t  ... on PositionableApppearsEvent {\n\t\t\t\tsubject {\n\t\t\t\t\t__typename\n\t\t\t\t\tid\n\t\t\t\t\tposition\n\t\t\t\t\t... on TaskForce {\n\t\t\t\t\t\tmovementVector\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t  ... on PositionableMovesEvent {\n\t\t\t\tsubject {\n\t\t\t\t\t__typename\n\t\t\t\t\tid\n\t\t\t\t\tposition\n\t\t\t\t\t... on TaskForce {\n\t\t\t\t\t\tmovementVector\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t  ... on PositionableDisappearsEvent {\n\t\t\t\tsubject {\n\t\t\t\t\t__typename\n\t\t\t\t\tid\n\t\t\t\t\tposition\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}": types.TrackMapDocument,
@@ -26,7 +21,14 @@ const documents = {
     "mutation StartGame($id:ID!) {\n    startGame(id: $id) {\n      id\n      startedAt\n    }\n  }": types.StartGameDocument,
     "\nquery Games {\n  games {\n    id\n    name\n\t\tstartedAt\t\n\t\tplayers {\n\t\t\tid\n\t\t\tuser {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n  }\n}": types.GamesDocument,
     "mutation JoinGame($id: ID!) {\n\t\tjoinGame(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tplayers {\n\t\t\t\tid\n\t\t\t\tuser {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}": types.JoinGameDocument,
+    "mutation CreateShipDesign($gameId: ID!, $design: ShipDesignInput!) {\n    createShipDesign(gameId: $gameId, design: $design) {\n      id\n      name\n    }\n  }": types.CreateShipDesignDocument,
+    "query ShipDesigns($gameId: ID!) {\n    game(id: $gameId) {\n      id\n      me {\n        id\n        shipDesigns {\n          id\n          name\n        }\n      }\n    }\n  }": types.ShipDesignsDocument,
     "\nmutation SignIn($email:String!, $password:String!) {\n  loginWithPassword(email: $email, password: $password) {\n    id\n    name\n  }\n}": types.SignInDocument,
+    "mutation CommisionTaskForce($starSystemId: ID!) {\n    createTaskForceCommision(starSystemId: $starSystemId) {\n      id\n      progress\n      total\n    }\n  }": types.CommisionTaskForceDocument,
+    "query StarSystemDetails($id: ID!) {\n\t\tstarSystem(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tposition\n\t\t\ttaskForceCommisions {\n\t\t\t\tid\n\t\t\t\tprogress\n\t\t\t\ttotal\n\t\t\t}\n\t\t\ttaskForces {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t\tdiscoveries {\n\t\t\t\t... on ResourceDiscovery {\n\t\t\t\t\tid\n\t\t\t\t\tresource {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t}\n\t\t\t\t\tremainingDeposits\n\t\t\t\t}\n\t\t\t}\n\t\t\tresourceDepots {\n\t\t\t\tid\n\t\t\t\tresource {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\t\n\t\t\t\tquantity\n\t\t\t}\n\t\t}\n\t}": types.StarSystemDetailsDocument,
+    "query TaskForceCommision($id: ID!) {\n\t\ttaskForceCommision(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t}": types.TaskForceCommisionDocument,
+    "subscription TaskForceCommisionSub($id: ID!) {\n\t\ttaskForceCommisionProgress(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t\t}": types.TaskForceCommisionSubDocument,
+    "subscription TaskForceCommisionFinishedSub($id: ID!) {\n\t\ttaskForceCommisionFinished(id: $id) {\n\t\t\tid\n\t\t\ttaskForce{\n\t\t\t\tid\n\t\t\t\tposition\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t}": types.TaskForceCommisionFinishedSubDocument,
     "mutation CreateGame($name: String!) {\n\t\tcreateGame(name: $name) {\n\t\t\tid\n\t\t\tname\n\t\t}}": types.CreateGameDocument,
     "\n    mutation SignIn($email: String!, $password: String!) {\n      loginWithPassword(email: $email, password: $password) {\n        id\n        name\n      }\n    }": types.SignInDocument,
     "\n    mutation SignUp($email: String!, $password: String!, $name:String!) {\n      registerWithPassword(email: $email, password: $password, name: $name) {\n        id\n        name\n      }\n    }": types.SignUpDocument,
@@ -51,26 +53,6 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation RefreshLogin {\n    loginWithRefreshToken {\n      id\n    }\n  }"): (typeof documents)["mutation RefreshLogin {\n    loginWithRefreshToken {\n      id\n    }\n  }"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "mutation CommisionTaskForce($starSystemId: ID!) {\n    createTaskForceCommision(starSystemId: $starSystemId) {\n      id\n      progress\n      total\n    }\n  }"): (typeof documents)["mutation CommisionTaskForce($starSystemId: ID!) {\n    createTaskForceCommision(starSystemId: $starSystemId) {\n      id\n      progress\n      total\n    }\n  }"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "query StarSystemDetails($id: ID!) {\n\t\tstarSystem(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tposition\n\t\t\ttaskForceCommisions {\n\t\t\t\tid\n\t\t\t\tprogress\n\t\t\t\ttotal\n\t\t\t}\n\t\t\ttaskForces {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t\tdiscoveries {\n\t\t\t\t... on ResourceDiscovery {\n\t\t\t\t\tid\n\t\t\t\t\tresource {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t}\n\t\t\t\t\tremainingDeposits\n\t\t\t\t}\n\t\t\t}\n\t\t\tresourceDepots {\n\t\t\t\tid\n\t\t\t\tresource {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\t\n\t\t\t\tquantity\n\t\t\t}\n\t\t}\n\t}"): (typeof documents)["query StarSystemDetails($id: ID!) {\n\t\tstarSystem(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tposition\n\t\t\ttaskForceCommisions {\n\t\t\t\tid\n\t\t\t\tprogress\n\t\t\t\ttotal\n\t\t\t}\n\t\t\ttaskForces {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t\tdiscoveries {\n\t\t\t\t... on ResourceDiscovery {\n\t\t\t\t\tid\n\t\t\t\t\tresource {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t}\n\t\t\t\t\tremainingDeposits\n\t\t\t\t}\n\t\t\t}\n\t\t\tresourceDepots {\n\t\t\t\tid\n\t\t\t\tresource {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\t\n\t\t\t\tquantity\n\t\t\t}\n\t\t}\n\t}"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "query TaskForceCommision($id: ID!) {\n\t\ttaskForceCommision(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t}"): (typeof documents)["query TaskForceCommision($id: ID!) {\n\t\ttaskForceCommision(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t}"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "subscription TaskForceCommisionSub($id: ID!) {\n\t\ttaskForceCommisionProgress(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t\t}"): (typeof documents)["subscription TaskForceCommisionSub($id: ID!) {\n\t\ttaskForceCommisionProgress(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t\t}"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "subscription TaskForceCommisionFinishedSub($id: ID!) {\n\t\ttaskForceCommisionFinished(id: $id) {\n\t\t\tid\n\t\t\ttaskForce{\n\t\t\t\tid\n\t\t\t\tposition\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t}"): (typeof documents)["subscription TaskForceCommisionFinishedSub($id: ID!) {\n\t\ttaskForceCommisionFinished(id: $id) {\n\t\t\tid\n\t\t\ttaskForce{\n\t\t\t\tid\n\t\t\t\tposition\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -102,7 +84,35 @@ export function graphql(source: "mutation JoinGame($id: ID!) {\n\t\tjoinGame(id:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "mutation CreateShipDesign($gameId: ID!, $design: ShipDesignInput!) {\n    createShipDesign(gameId: $gameId, design: $design) {\n      id\n      name\n    }\n  }"): (typeof documents)["mutation CreateShipDesign($gameId: ID!, $design: ShipDesignInput!) {\n    createShipDesign(gameId: $gameId, design: $design) {\n      id\n      name\n    }\n  }"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query ShipDesigns($gameId: ID!) {\n    game(id: $gameId) {\n      id\n      me {\n        id\n        shipDesigns {\n          id\n          name\n        }\n      }\n    }\n  }"): (typeof documents)["query ShipDesigns($gameId: ID!) {\n    game(id: $gameId) {\n      id\n      me {\n        id\n        shipDesigns {\n          id\n          name\n        }\n      }\n    }\n  }"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\nmutation SignIn($email:String!, $password:String!) {\n  loginWithPassword(email: $email, password: $password) {\n    id\n    name\n  }\n}"): (typeof documents)["\nmutation SignIn($email:String!, $password:String!) {\n  loginWithPassword(email: $email, password: $password) {\n    id\n    name\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation CommisionTaskForce($starSystemId: ID!) {\n    createTaskForceCommision(starSystemId: $starSystemId) {\n      id\n      progress\n      total\n    }\n  }"): (typeof documents)["mutation CommisionTaskForce($starSystemId: ID!) {\n    createTaskForceCommision(starSystemId: $starSystemId) {\n      id\n      progress\n      total\n    }\n  }"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query StarSystemDetails($id: ID!) {\n\t\tstarSystem(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tposition\n\t\t\ttaskForceCommisions {\n\t\t\t\tid\n\t\t\t\tprogress\n\t\t\t\ttotal\n\t\t\t}\n\t\t\ttaskForces {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t\tdiscoveries {\n\t\t\t\t... on ResourceDiscovery {\n\t\t\t\t\tid\n\t\t\t\t\tresource {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t}\n\t\t\t\t\tremainingDeposits\n\t\t\t\t}\n\t\t\t}\n\t\t\tresourceDepots {\n\t\t\t\tid\n\t\t\t\tresource {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\t\n\t\t\t\tquantity\n\t\t\t}\n\t\t}\n\t}"): (typeof documents)["query StarSystemDetails($id: ID!) {\n\t\tstarSystem(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tposition\n\t\t\ttaskForceCommisions {\n\t\t\t\tid\n\t\t\t\tprogress\n\t\t\t\ttotal\n\t\t\t}\n\t\t\ttaskForces {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t\tdiscoveries {\n\t\t\t\t... on ResourceDiscovery {\n\t\t\t\t\tid\n\t\t\t\t\tresource {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t}\n\t\t\t\t\tremainingDeposits\n\t\t\t\t}\n\t\t\t}\n\t\t\tresourceDepots {\n\t\t\t\tid\n\t\t\t\tresource {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\t\n\t\t\t\tquantity\n\t\t\t}\n\t\t}\n\t}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query TaskForceCommision($id: ID!) {\n\t\ttaskForceCommision(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t}"): (typeof documents)["query TaskForceCommision($id: ID!) {\n\t\ttaskForceCommision(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "subscription TaskForceCommisionSub($id: ID!) {\n\t\ttaskForceCommisionProgress(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t\t}"): (typeof documents)["subscription TaskForceCommisionSub($id: ID!) {\n\t\ttaskForceCommisionProgress(id: $id) {\n\t\t\tid\n\t\t\tprogress\n\t\t\ttotal\n\t\t}\n\t\t}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "subscription TaskForceCommisionFinishedSub($id: ID!) {\n\t\ttaskForceCommisionFinished(id: $id) {\n\t\t\tid\n\t\t\ttaskForce{\n\t\t\t\tid\n\t\t\t\tposition\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t}"): (typeof documents)["subscription TaskForceCommisionFinishedSub($id: ID!) {\n\t\ttaskForceCommisionFinished(id: $id) {\n\t\t\tid\n\t\t\ttaskForce{\n\t\t\t\tid\n\t\t\t\tposition\n\t\t\t\towner {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

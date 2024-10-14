@@ -5,6 +5,8 @@ type Game {
 	name: String!
 	startedAt: DateTime
 	players: [Player!]!
+
+	me: Player
 }
 
 type Player {

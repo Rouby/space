@@ -1,5 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
+import { ResourceCostMapper, ShipDesignMapper } from './shipDesign/schema.mappers.js';
 import { ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { TaskForceMapper, TaskForceCommisionFinishedMapper, TaskForceOrderMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
@@ -29,8 +30,10 @@ export type Discovery = ResourceDiscovery;
 export type Game = {
   __typename?: 'Game';
   id: Scalars['ID']['output'];
+  me?: Maybe<Player>;
   name: Scalars['String']['output'];
   players: Array<Player>;
+  shipDesigns: Array<ShipDesign>;
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
   taskForces: Array<TaskForce>;
@@ -39,6 +42,7 @@ export type Game = {
 export type Mutation = {
   __typename?: 'Mutation';
   createGame: Game;
+  createShipDesign: ShipDesign;
   createTaskForceCommision: TaskForceCommision;
   joinGame: Game;
   loginWithPassword: User;
@@ -52,6 +56,12 @@ export type Mutation = {
 
 export type MutationcreateGameArgs = {
   name: Scalars['String']['input'];
+};
+
+
+export type MutationcreateShipDesignArgs = {
+  design: ShipDesignInput;
+  gameId: Scalars['ID']['input'];
 };
 
 
@@ -99,6 +109,7 @@ export type Player = {
   color: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  shipDesigns: Array<ShipDesign>;
   user: User;
 };
 
@@ -152,6 +163,12 @@ export type Resource = {
   name: Scalars['String']['output'];
 };
 
+export type ResourceCost = {
+  __typename?: 'ResourceCost';
+  quantity: Scalars['Float']['output'];
+  resource: Resource;
+};
+
 export type ResourceDepot = {
   __typename?: 'ResourceDepot';
   id: Scalars['ID']['output'];
@@ -169,6 +186,38 @@ export type ResourceDiscovery = {
 export type SensorRange = {
   id: Scalars['ID']['output'];
   sensorRange: Scalars['Float']['output'];
+};
+
+export type ShipDesign = {
+  __typename?: 'ShipDesign';
+  armorRating: Scalars['Float']['output'];
+  costs: Array<ResourceCost>;
+  decommissioned: Scalars['Boolean']['output'];
+  description: Scalars['String']['output'];
+  hullRating: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  owner: Player;
+  previousDesign?: Maybe<ShipDesign>;
+  shieldRating: Scalars['Float']['output'];
+  speedRating: Scalars['Float']['output'];
+  supplyCapacity: Scalars['Float']['output'];
+  supplyNeed: Scalars['Float']['output'];
+  weaponRating: Scalars['Float']['output'];
+  zoneOfControlRating: Scalars['Float']['output'];
+};
+
+export type ShipDesignInput = {
+  armorRating: Scalars['Float']['input'];
+  description: Scalars['String']['input'];
+  hullRating: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
+  previousDesignId?: InputMaybe<Scalars['ID']['input']>;
+  shieldRating: Scalars['Float']['input'];
+  speedRating: Scalars['Float']['input'];
+  supplyCapacity: Scalars['Float']['input'];
+  weaponRating: Scalars['Float']['input'];
+  zoneOfControlRating: Scalars['Float']['input'];
 };
 
 export type StarSystem = Positionable & SensorRange & {
@@ -364,10 +413,14 @@ export type ResolversTypes = {
   PositionableMovesEvent: ResolverTypeWrapper<Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   Query: ResolverTypeWrapper<{}>;
   Resource: ResolverTypeWrapper<Resource>;
-  ResourceDepot: ResolverTypeWrapper<ResourceDepotMapper>;
+  ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  ResourceDepot: ResolverTypeWrapper<ResourceDepotMapper>;
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
   SensorRange: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['SensorRange']>;
+  ShipDesign: ResolverTypeWrapper<ShipDesignMapper>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  ShipDesignInput: ShipDesignInput;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
   Subscription: ResolverTypeWrapper<{}>;
   TaskForce: ResolverTypeWrapper<TaskForceMapper>;
@@ -381,7 +434,6 @@ export type ResolversTypes = {
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -399,10 +451,14 @@ export type ResolversParentTypes = {
   PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   Query: {};
   Resource: Resource;
-  ResourceDepot: ResourceDepotMapper;
+  ResourceCost: ResourceCostMapper;
   Float: Scalars['Float']['output'];
+  ResourceDepot: ResourceDepotMapper;
   ResourceDiscovery: ResourceDiscoveryMapper;
   SensorRange: ResolversInterfaceTypes<ResolversParentTypes>['SensorRange'];
+  ShipDesign: ShipDesignMapper;
+  Boolean: Scalars['Boolean']['output'];
+  ShipDesignInput: ShipDesignInput;
   StarSystem: StarSystemMapper;
   Subscription: {};
   TaskForce: TaskForceMapper;
@@ -415,7 +471,6 @@ export type ResolversParentTypes = {
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   User: User;
   Vector: Scalars['Vector']['output'];
-  Boolean: Scalars['Boolean']['output'];
 };
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
@@ -428,8 +483,10 @@ export type DiscoveryResolvers<ContextType = Context, ParentType extends Resolve
 
 export type GameResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  me?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   players?: Resolver<Array<ResolversTypes['Player']>, ParentType, ContextType>;
+  shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
@@ -438,6 +495,7 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
+  createShipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType, RequireFields<MutationcreateShipDesignArgs, 'design' | 'gameId'>>;
   createTaskForceCommision?: Resolver<ResolversTypes['TaskForceCommision'], ParentType, ContextType, RequireFields<MutationcreateTaskForceCommisionArgs, 'starSystemId'>>;
   joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationjoinGameArgs, 'id'>>;
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
@@ -452,6 +510,7 @@ export type PlayerResolvers<ContextType = Context, ParentType extends ResolversP
   color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -491,6 +550,12 @@ export type ResourceResolvers<ContextType = Context, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ResourceCostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceCost'] = ResolversParentTypes['ResourceCost']> = {
+  quantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ResourceDepotResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceDepot'] = ResolversParentTypes['ResourceDepot']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   quantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -509,6 +574,25 @@ export type SensorRangeResolvers<ContextType = Context, ParentType extends Resol
   __resolveType?: TypeResolveFn<'StarSystem' | 'TaskForce', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   sensorRange?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+};
+
+export type ShipDesignResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesign'] = ResolversParentTypes['ShipDesign']> = {
+  armorRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  costs?: Resolver<Array<ResolversTypes['ResourceCost']>, ParentType, ContextType>;
+  decommissioned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  hullRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
+  previousDesign?: Resolver<Maybe<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
+  shieldRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  speedRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  supplyCapacity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  supplyNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  weaponRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  zoneOfControlRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
@@ -607,9 +691,11 @@ export type Resolvers<ContextType = Context> = {
   PositionableMovesEvent?: PositionableMovesEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Resource?: ResourceResolvers<ContextType>;
+  ResourceCost?: ResourceCostResolvers<ContextType>;
   ResourceDepot?: ResourceDepotResolvers<ContextType>;
   ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;
   SensorRange?: SensorRangeResolvers<ContextType>;
+  ShipDesign?: ShipDesignResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;

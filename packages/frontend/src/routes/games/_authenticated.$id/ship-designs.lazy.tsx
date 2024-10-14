@@ -1,15 +1,14 @@
 import { Outlet, createLazyFileRoute } from "@tanstack/react-router";
 import { DetailsDrawer } from "../../../components/DetailsDrawer/DetailsDrawer";
-import { StarSystemDetails } from "../../../features/StarSystemDetails/StarSystemDetails";
+import { ShipDesigns } from "../../../features/ShipDesigns/ShipDesigns";
 
 export const Route = createLazyFileRoute(
-	"/games/_authenticated/$id/star-system/$starSystemId",
+	"/games/_authenticated/$id/ship-designs",
 )({
 	component: () => <Details />,
 });
 
 function Details() {
-	const { starSystemId } = Route.useParams();
 	const navigate = Route.useNavigate();
 
 	return (
@@ -18,12 +17,12 @@ function Details() {
 				size="70%"
 				onClose={() =>
 					navigate({
-						from: "/games/$id/star-system/$starSystemId",
-						to: "../..",
+						from: "/games/$id/ship-designs",
+						to: "..",
 					})
 				}
 			>
-				<StarSystemDetails id={starSystemId} />
+				<ShipDesigns />
 			</DetailsDrawer>
 
 			<Outlet />
