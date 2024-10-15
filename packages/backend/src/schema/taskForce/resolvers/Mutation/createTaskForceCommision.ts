@@ -65,6 +65,6 @@ export const createTaskForceCommision: NonNullable<
 			);
 		}
 
-		return taskForce;
+		return { ...taskForce, isVisible: true, lastUpdate: null };
 	});
 };

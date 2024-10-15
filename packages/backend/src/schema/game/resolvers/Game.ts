@@ -1,4 +1,4 @@
-import { eq, players } from "@space/data/schema";
+import { and, eq, players } from "@space/data/schema";
 import type { GameResolvers } from "./../../types.generated";
 export const Game: Pick<
 	GameResolvers,
@@ -24,7 +24,10 @@ export const Game: Pick<
 	},
 	me: async (parent, _args, ctx) => {
 		const player = await ctx.drizzle.query.players.findFirst({
-			where: eq(players.gameId, parent.id),
+			where: and(
+				eq(players.gameId, parent.id),
+				eq(players.userId, ctx.userId ?? ""),
+			),
 			with: { user: true },
 		});
 

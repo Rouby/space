@@ -89,7 +89,7 @@ export const taskForceShips = pgTable("taskForceShips", {
 		scale: 6,
 	})
 		.notNull()
-		.default("1"),
+		.default("0"),
 });
 
 export const taskForceShipRelations = relations(taskForceShips, ({ one }) => ({

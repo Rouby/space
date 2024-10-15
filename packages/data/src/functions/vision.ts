@@ -23,3 +23,27 @@ export async function userIdsWithVision(
 
 	return users.map((user) => user.userId);
 }
+
+export async function userHasVision(
+	db:
+		| ReturnType<typeof getDrizzle>
+		| FirstArgument<
+				FirstArgument<ReturnType<typeof getDrizzle>["transaction"]>
+		  >,
+	gameId: string,
+	userId: string,
+	point: { x: number; y: number },
+) {
+	const users = await db
+		.select()
+		.from(visibility)
+		.where(
+			and(
+				eq(visibility.gameId, gameId),
+				eq(visibility.userId, userId),
+				sql`${visibility.circle} @> point(${point.x},${point.y})`,
+			),
+		);
+
+	return users.length > 0;
+}

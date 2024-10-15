@@ -169,6 +169,20 @@
       "when": 1729003459696,
       "tag": "0023_abnormal_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1729011157346,
+      "tag": "0024_slimy_corsair",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1729015433100,
+      "tag": "0025_harsh_black_tarantula",
+      "breakpoints": true
     }
   ]
 }

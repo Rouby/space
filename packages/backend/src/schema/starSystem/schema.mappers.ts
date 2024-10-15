@@ -1,11 +1,22 @@
-import type {
-	starSystemResourceDepots,
-	starSystemResourceDiscoveries,
-	starSystems,
-} from "@space/data/schema";
+import type { VectorMapper } from "../base/schema.mappers";
 
-export type VectorMapper = { x: number; y: number };
-export type StarSystemMapper = typeof starSystems.$inferSelect;
-export type ResourceDiscoveryMapper =
-	typeof starSystemResourceDiscoveries.$inferSelect;
-export type ResourceDepotMapper = typeof starSystemResourceDepots.$inferSelect;
+export type StarSystemMapper = {
+	id: string;
+	name: string;
+	position: VectorMapper;
+	isVisible: boolean;
+	lastUpdate: Date;
+	ownerId: string | null;
+	gameId: string;
+};
+export type ResourceDiscoveryMapper = {
+	starSystemId: string;
+	resourceId: string;
+	discoveredAt: Date;
+	remainingDeposits: string;
+};
+export type ResourceDepotMapper = {
+	resourceId: string;
+	quantity: string;
+	starSystemId: string;
+};

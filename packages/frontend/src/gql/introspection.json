@@ -876,45 +876,6 @@
         "interfaces": []
       },
       {
-        "kind": "INTERFACE",
-        "name": "SensorRange",
-        "fields": [
-          {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "sensorRange",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          }
-        ],
-        "interfaces": [],
-        "possibleTypes": [
-          {
-            "kind": "OBJECT",
-            "name": "StarSystem"
-          },
-          {
-            "kind": "OBJECT",
-            "name": "TaskForce"
-          }
-        ]
-      },
-      {
         "kind": "OBJECT",
         "name": "ShipDesign",
         "fields": [
@@ -1099,16 +1060,13 @@
           {
             "name": "discoveries",
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "UNION",
-                    "name": "Discovery",
-                    "ofType": null
-                  }
+                  "kind": "UNION",
+                  "name": "Discovery",
+                  "ofType": null
                 }
               }
             },
@@ -1122,6 +1080,25 @@
                 "kind": "SCALAR",
                 "name": "Any"
               }
+            },
+            "args": []
+          },
+          {
+            "name": "isVisible",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "lastUpdate",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
             },
             "args": []
           },
@@ -1159,16 +1136,13 @@
           {
             "name": "resourceDepots",
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "ResourceDepot",
-                    "ofType": null
-                  }
+                  "kind": "OBJECT",
+                  "name": "ResourceDepot",
+                  "ofType": null
                 }
               }
             },
@@ -1177,11 +1151,8 @@
           {
             "name": "sensorRange",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+              "kind": "SCALAR",
+              "name": "Any"
             },
             "args": []
           },
@@ -1226,10 +1197,6 @@
           {
             "kind": "INTERFACE",
             "name": "Positionable"
-          },
-          {
-            "kind": "INTERFACE",
-            "name": "SensorRange"
           }
         ]
       },
@@ -1332,6 +1299,25 @@
             "args": []
           },
           {
+            "name": "isVisible",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "lastUpdate",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
             "name": "movementVector",
             "type": {
               "kind": "SCALAR",
@@ -1353,16 +1339,13 @@
           {
             "name": "orders",
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "INTERFACE",
-                    "name": "TaskForceOrder",
-                    "ofType": null
-                  }
+                  "kind": "INTERFACE",
+                  "name": "TaskForceOrder",
+                  "ofType": null
                 }
               }
             },
@@ -1371,12 +1354,9 @@
           {
             "name": "owner",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Player",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Player",
+              "ofType": null
             },
             "args": []
           },
@@ -1394,11 +1374,8 @@
           {
             "name": "sensorRange",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+              "kind": "SCALAR",
+              "name": "Any"
             },
             "args": []
           },
@@ -1425,10 +1402,6 @@
           {
             "kind": "INTERFACE",
             "name": "Positionable"
-          },
-          {
-            "kind": "INTERFACE",
-            "name": "SensorRange"
           }
         ]
       },
@@ -1614,17 +1587,6 @@
           },
           {
             "name": "name",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "progress",
             "type": {
               "kind": "NON_NULL",
               "ofType": {

@@ -9,7 +9,6 @@ import type {
 	CreateGameMutation,
 	CreateShipDesignMutation,
 	CreateShipDesignMutationVariables,
-	TaskForceCommisionFinishedSubSubscription,
 	TrackMapSubscription,
 	TrackMapSubscriptionVariables,
 } from "./gql/graphql";
@@ -41,12 +40,12 @@ export const client = createClient({
 						cache,
 					) => {
 						const commisions = cache.resolve(
-							{ __typename: "StarSystem", id: args.starSystemId },
+							{ __typename: "StarSystem", id: args.commision.starSystemId },
 							"taskForceCommisions",
 						);
 						if (Array.isArray(commisions)) {
 							cache.link(
-								{ __typename: "StarSystem", id: args.starSystemId },
+								{ __typename: "StarSystem", id: args.commision.starSystemId },
 								"taskForceCommisions",
 								[...commisions, result.createTaskForceCommision],
 							);
@@ -78,16 +77,6 @@ export const client = createClient({
 					},
 				},
 				Subscription: {
-					taskForceCommisionFinished: (
-						result: TaskForceCommisionFinishedSubSubscription,
-						_,
-						cache,
-					) => {
-						cache.invalidate({
-							__typename: "TaskForceCommision",
-							id: result.taskForceCommisionFinished.id,
-						});
-					},
 					trackGalaxy: (
 						result: TrackMapSubscription,
 						vars: TrackMapSubscriptionVariables,
@@ -110,11 +99,19 @@ export const client = createClient({
 
 								if (cacheKey) {
 									if (remove && taskForces.includes(cacheKey)) {
-										cache.link(
-											{ __typename: "Game", id: vars.gameId },
-											"taskForces",
-											taskForces.filter((id) => id !== cacheKey),
-										);
+										// cache.writeFragment(
+										// 	gql`fragment _ on TaskForce { id isVisible lastUpdate }`,
+										// 	{
+										// 		id: result.trackGalaxy.subject.id,
+										// 		isVisible: false,
+										// 		lastUpdate: new Date().toISOString(),
+										// 	},
+										// );
+										// cache.link(
+										// 	{ __typename: "Game", id: vars.gameId },
+										// 	"taskForces",
+										// 	taskForces.filter((id) => id !== cacheKey),
+										// );
 									} else if (!remove && !taskForces.includes(cacheKey)) {
 										cache.link(
 											{ __typename: "Game", id: vars.gameId },

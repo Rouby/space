@@ -5,11 +5,6 @@ interface Positionable {
 	position: Vector!
 }
 
-interface SensorRange {
-	id: ID!
-	sensorRange: Float!
-}
-
 union TrackGalaxyEvent =
 	| PositionableApppearsEvent
 	| PositionableMovesEvent

@@ -25,9 +25,12 @@ export {
 	notLike,
 	or,
 	sql,
+	type AnyColumn,
+	type GetColumnData,
 } from "drizzle-orm";
 
 export * from "./schema/games.ts";
+export * from "./schema/lastKnownStates.ts";
 export * from "./schema/passwords.ts";
 export * from "./schema/resources.ts";
 export * from "./schema/shipDesigns.ts";

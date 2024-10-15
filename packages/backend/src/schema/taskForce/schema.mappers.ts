@@ -1,15 +1,44 @@
-import type {
-	taskForceShipCommisions,
-	taskForceShips,
-	taskForces,
-} from "@space/data/schema";
+import type { VectorMapper } from "../base/schema.mappers";
+import type { TaskForceShipRole } from "../types.generated";
 
-export type TaskForceMapper = typeof taskForces.$inferSelect;
-export type TaskForceOrderMapper = TaskForceMapper["orders"][number];
-export type TaskForceShipCommisionMapper =
-	typeof taskForceShipCommisions.$inferSelect;
-export type TaskForceShipMapper = typeof taskForceShips.$inferSelect;
+export type TaskForceMapper = {
+	id: string;
+	name: string;
+	position: VectorMapper;
+	orders: TaskForceOrderMapper[] | null;
+	movementVector: VectorMapper | null;
+	isVisible: boolean;
+	lastUpdate: Date | null;
+	ownerId: string | null;
+	gameId: string;
+};
+export type TaskForceOrderMapper = {
+	id: string;
+	type: "move";
+	destination: { x: number; y: number };
+};
+export type TaskForceShipCommisionMapper = {
+	id: string;
+	gameId: string;
+	starSystemId: string;
+	shipDesignId: string;
+	taskForceId: string;
+	name: string;
+	role: TaskForceShipRole;
+};
+export type TaskForceShipMapper = {
+	id: string;
+	taskForceId: string;
+	shipDesignId: string;
+	name: string;
+	role: TaskForceShipRole;
+	hullState: string;
+	shieldState: string;
+	armorState: string;
+	weaponState: string;
+	supplyCarried: string;
+};
 export type TaskForceMoveOrderMapper = Extract<
-	(typeof taskForces.$inferSelect)["orders"][number],
+	TaskForceOrderMapper,
 	{ type: "move" }
 >;

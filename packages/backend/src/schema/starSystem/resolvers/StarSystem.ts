@@ -10,6 +10,8 @@ export const StarSystem: Pick<
 	StarSystemResolvers,
 	| "discoveries"
 	| "id"
+	| "isVisible"
+	| "lastUpdate"
 	| "name"
 	| "owner"
 	| "position"
@@ -17,18 +19,6 @@ export const StarSystem: Pick<
 	| "sensorRange"
 	| "__isTypeOf"
 > = {
-	id: async (_parent, _arg, _ctx) => {
-		// typegeneration bugged?
-		return _parent.id;
-	},
-	name: async (_parent, _arg, _ctx) => {
-		// typegeneration bugged?
-		return _parent.name;
-	},
-	position: async (_parent, _arg, _ctx) => {
-		// typegeneration bugged?
-		return _parent.position;
-	},
 	owner: async (parent, _arg, ctx) => {
 		if (!parent.ownerId) {
 			return null;
@@ -48,8 +38,8 @@ export const StarSystem: Pick<
 
 		return owner;
 	},
-	sensorRange: async (_parent, _arg, _ctx) => {
-		return 1000;
+	sensorRange: async (parent, _arg, _ctx) => {
+		return parent.ownerId ? 1000 : null;
 	},
 	discoveries: async (parent, _arg, ctx) => {
 		const resourceDiscoveries = await ctx.drizzle

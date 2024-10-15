@@ -38,7 +38,7 @@ export const queueTaskForceMove: NonNullable<
 		throw createGraphQLError("Task force not found");
 	}
 
-	const updated = await ctx.drizzle
+	const [updated] = await ctx.drizzle
 		.update(taskForces)
 		.set({
 			orders: [
@@ -49,5 +49,5 @@ export const queueTaskForceMove: NonNullable<
 		.where(eq(taskForces.id, id))
 		.returning();
 
-	return updated[0];
+	return { ...updated, isVisible: true, lastUpdate: null };
 };

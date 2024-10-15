@@ -1,5 +1,6 @@
 import type { JWTExtendContextFields } from "@graphql-yoga/plugin-jwt";
 import type { getDrizzle } from "@space/data";
+import { userHasVision } from "@space/data/functions";
 import { type YogaInitialContext, createGraphQLError } from "graphql-yoga";
 import { fromGameEvents } from "./workers.ts";
 
@@ -35,5 +36,12 @@ export function extendContext({
 		},
 		startGame,
 		fromGameEvents,
+
+		hasVision: async (gameId: string, point: { x: number; y: number }) => {
+			if (!userId) {
+				return false;
+			}
+			return userHasVision(drizzle, gameId, userId, point);
+		},
 	};
 }

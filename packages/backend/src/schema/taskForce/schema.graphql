@@ -7,17 +7,19 @@ enum TaskForceShipRole {
 	transport
 }
 
-type TaskForce implements Positionable & SensorRange {
+type TaskForce implements Positionable {
 	id: ID!
 	name: String!
 	position: Vector!
-	orders: [TaskForceOrder!]!
+	orders: [TaskForceOrder!]
 	movementVector: Vector
-	owner: Player!
+	owner: Player
 	game: Game!
-	sensorRange: Float!
+	sensorRange: Float
 	ships: [TaskForceShip!]!
 	commisions: [TaskForceShipCommision!]!
+	isVisible: Boolean!
+	lastUpdate: DateTime
 }
 
 type TaskForceShip {
@@ -39,7 +41,6 @@ type TaskForceShipCommision {
 	role: TaskForceShipRole!
 	shipDesign: ShipDesign!
 
-	progress: Float!
 	resourceNeeds: [ResourceNeed!]!
 }
 

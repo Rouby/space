@@ -87,11 +87,6 @@ type ResourceNeed {
   resource: Resource!
 }
 
-interface SensorRange {
-  id: ID!
-  sensorRange: Float!
-}
-
 type ShipDesign {
   armorRating: Float!
   costs: [ResourceCost!]!
@@ -123,14 +118,16 @@ input ShipDesignInput {
   zoneOfControlRating: Float!
 }
 
-type StarSystem implements Positionable & SensorRange {
-  discoveries: [Discovery!]!
+type StarSystem implements Positionable {
+  discoveries: [Discovery!]
   id: ID!
+  isVisible: Boolean!
+  lastUpdate: DateTime
   name: String!
   owner: Player
   position: Vector!
-  resourceDepots: [ResourceDepot!]!
-  sensorRange: Float!
+  resourceDepots: [ResourceDepot!]
+  sensorRange: Float
   taskForceShipCommisions: [TaskForceShipCommision!]!
   taskForces: [TaskForce!]!
 }
@@ -140,16 +137,18 @@ type Subscription {
   trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
 }
 
-type TaskForce implements Positionable & SensorRange {
+type TaskForce implements Positionable {
   commisions: [TaskForceShipCommision!]!
   game: Game!
   id: ID!
+  isVisible: Boolean!
+  lastUpdate: DateTime
   movementVector: Vector
   name: String!
-  orders: [TaskForceOrder!]!
-  owner: Player!
+  orders: [TaskForceOrder!]
+  owner: Player
   position: Vector!
-  sensorRange: Float!
+  sensorRange: Float
   ships: [TaskForceShip!]!
 }
 
@@ -189,7 +188,6 @@ type TaskForceShip {
 type TaskForceShipCommision {
   id: ID!
   name: String!
-  progress: Float!
   resourceNeeds: [ResourceNeed!]!
   role: TaskForceShipRole!
   shipDesign: ShipDesign!

@@ -1,11 +1,13 @@
-type StarSystem implements Positionable & SensorRange {
+type StarSystem implements Positionable {
 	id: ID!
 	name: String!
 	position: Vector!
 	owner: Player
-	sensorRange: Float!
-	discoveries: [Discovery!]!
-	resourceDepots: [ResourceDepot!]!
+	sensorRange: Float
+	discoveries: [Discovery!]
+	resourceDepots: [ResourceDepot!]
+	isVisible: Boolean!
+	lastUpdate: DateTime
 }
 
 union Discovery = ResourceDiscovery

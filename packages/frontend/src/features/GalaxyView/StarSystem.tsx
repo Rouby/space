@@ -4,9 +4,13 @@ import { Fragment } from "react/jsx-runtime";
 
 export function StarSystem({
 	zoom,
+	visible,
+	lastUpdate,
 	onPointerDown,
 }: {
 	zoom: MotionValue<number>;
+	visible: boolean;
+	lastUpdate: string;
 	onPointerDown: (event: React.PointerEvent) => void;
 }) {
 	const planets = [
@@ -51,11 +55,12 @@ export function StarSystem({
 		<g onPointerDown={onPointerDown}>
 			<circle
 				r="70"
-				filter={minified ? undefined : "url(#noise)"}
-				fill="orange"
+				filter={minified || !visible ? undefined : "url(#noise)"}
+				fill={visible ? "orange" : "gray"}
 				transform="scale(0.1)"
 			/>
 			{!minified &&
+				visible &&
 				planets.map((planet) => {
 					const dashSize = (planet.orbit * Math.PI * 2) / 36;
 					return (

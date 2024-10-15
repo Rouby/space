@@ -10,6 +10,7 @@ import {
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
+import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
 import { vars } from "../../theme";
 import { StarSystem } from "./StarSystem";
@@ -18,6 +19,8 @@ import { coordinateToGrid, gridSizes } from "./coordinateToGrid";
 
 export function GalaxyView() {
 	const { id } = useParams({ from: "/games/_authenticated/$id" });
+
+	const { me } = useAuth();
 
 	const [{ data }] = useQuery({
 		query: graphql(`
@@ -32,6 +35,8 @@ query Galaxy($id: ID!) {
 				name
 				color
 			}
+			isVisible
+			lastUpdate
 		}
 		taskForces {
 			id
@@ -49,6 +54,8 @@ query Galaxy($id: ID!) {
 				}
 			}
 			movementVector
+			isVisible
+			lastUpdate
 		}
   }
 }`),
@@ -145,6 +152,8 @@ query Galaxy($id: ID!) {
 					id
 					position
 					... on TaskForce {
+						isVisible
+						lastUpdate
 						movementVector
 					}
 				}
@@ -164,6 +173,10 @@ query Galaxy($id: ID!) {
 					__typename
 					id
 					position
+					... on TaskForce {
+						isVisible
+						lastUpdate
+					}
 				}
 			}
 		}
@@ -328,6 +341,8 @@ query Galaxy($id: ID!) {
 					>
 						<StarSystem
 							zoom={zoom}
+							visible={starSystem.isVisible}
+							lastUpdate={starSystem.lastUpdate}
 							onPointerDown={(event) => {
 								if (!selection) {
 									event.stopPropagation();
@@ -352,11 +367,17 @@ query Galaxy($id: ID!) {
 						>
 							<TaskForce
 								owner={taskForce.owner}
-								onPointerDown={(event) => {
-									event.stopPropagation();
-									setSelection({ type: "TaskForce", id: taskForce.id });
-									didMove.current = true;
-								}}
+								visible={taskForce.isVisible}
+								lastUpdate={taskForce.lastUpdate}
+								onPointerDown={
+									taskForce.owner?.id.endsWith(me?.id ?? "")
+										? (event) => {
+												event.stopPropagation();
+												setSelection({ type: "TaskForce", id: taskForce.id });
+												didMove.current = true;
+											}
+										: undefined
+								}
 								selected={
 									selection?.type === "TaskForce" &&
 									selection.id === taskForce.id
@@ -366,7 +387,7 @@ query Galaxy($id: ID!) {
 						</G>
 						{selection?.type === "TaskForce" &&
 							selection.id === taskForce.id &&
-							taskForce.orders.map((order, idx, orders) => (
+							taskForce.orders?.map((order, idx, orders) => (
 								<MoveOrder
 									key={order.id}
 									translateX={translateX}

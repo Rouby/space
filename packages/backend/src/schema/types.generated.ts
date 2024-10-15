@@ -191,11 +191,6 @@ export type ResourceNeed = {
   resource: Resource;
 };
 
-export type SensorRange = {
-  id: Scalars['ID']['output'];
-  sensorRange: Scalars['Float']['output'];
-};
-
 export type ShipDesign = {
   __typename?: 'ShipDesign';
   armorRating: Scalars['Float']['output'];
@@ -228,15 +223,17 @@ export type ShipDesignInput = {
   zoneOfControlRating: Scalars['Float']['input'];
 };
 
-export type StarSystem = Positionable & SensorRange & {
+export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
-  discoveries: Array<Discovery>;
+  discoveries?: Maybe<Array<Discovery>>;
   id: Scalars['ID']['output'];
+  isVisible: Scalars['Boolean']['output'];
+  lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
-  resourceDepots: Array<ResourceDepot>;
-  sensorRange: Scalars['Float']['output'];
+  resourceDepots?: Maybe<Array<ResourceDepot>>;
+  sensorRange?: Maybe<Scalars['Float']['output']>;
   taskForceShipCommisions: Array<TaskForceShipCommision>;
   taskForces: Array<TaskForce>;
 };
@@ -257,17 +254,19 @@ export type SubscriptiontrackStarSystemArgs = {
   starSystemId: Scalars['ID']['input'];
 };
 
-export type TaskForce = Positionable & SensorRange & {
+export type TaskForce = Positionable & {
   __typename?: 'TaskForce';
   commisions: Array<TaskForceShipCommision>;
   game: Game;
   id: Scalars['ID']['output'];
+  isVisible: Scalars['Boolean']['output'];
+  lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   movementVector?: Maybe<Scalars['Vector']['output']>;
   name: Scalars['String']['output'];
-  orders: Array<TaskForceOrder>;
-  owner: Player;
+  orders?: Maybe<Array<TaskForceOrder>>;
+  owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
-  sensorRange: Scalars['Float']['output'];
+  sensorRange?: Maybe<Scalars['Float']['output']>;
   ships: Array<TaskForceShip>;
 };
 
@@ -310,7 +309,6 @@ export type TaskForceShipCommision = {
   __typename?: 'TaskForceShipCommision';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  progress: Scalars['Float']['output'];
   resourceNeeds: Array<ResourceNeed>;
   role: TaskForceShipRole;
   shipDesign: ShipDesign;
@@ -417,7 +415,6 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
   Positionable: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } );
-  SensorRange: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } );
   TaskForceOrder: ( TaskForceMoveOrderMapper & { __typename: 'TaskForceMoveOrder' } );
 };
 
@@ -441,7 +438,6 @@ export type ResolversTypes = {
   ResourceDepot: ResolverTypeWrapper<ResourceDepotMapper>;
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
   ResourceNeed: ResolverTypeWrapper<ResourceNeedMapper>;
-  SensorRange: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['SensorRange']>;
   ShipDesign: ResolverTypeWrapper<ShipDesignMapper>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ShipDesignInput: ShipDesignInput;
@@ -482,7 +478,6 @@ export type ResolversParentTypes = {
   ResourceDepot: ResourceDepotMapper;
   ResourceDiscovery: ResourceDiscoveryMapper;
   ResourceNeed: ResourceNeedMapper;
-  SensorRange: ResolversInterfaceTypes<ResolversParentTypes>['SensorRange'];
   ShipDesign: ShipDesignMapper;
   Boolean: Scalars['Boolean']['output'];
   ShipDesignInput: ShipDesignInput;
@@ -606,12 +601,6 @@ export type ResourceNeedResolvers<ContextType = Context, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SensorRangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SensorRange'] = ResolversParentTypes['SensorRange']> = {
-  __resolveType?: TypeResolveFn<'StarSystem' | 'TaskForce', ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  sensorRange?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-};
-
 export type ShipDesignResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesign'] = ResolversParentTypes['ShipDesign']> = {
   armorRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   costs?: Resolver<Array<ResolversTypes['ResourceCost']>, ParentType, ContextType>;
@@ -632,13 +621,15 @@ export type ShipDesignResolvers<ContextType = Context, ParentType extends Resolv
 };
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
-  discoveries?: Resolver<Array<ResolversTypes['Discovery']>, ParentType, ContextType>;
+  discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
-  resourceDepots?: Resolver<Array<ResolversTypes['ResourceDepot']>, ParentType, ContextType>;
-  sensorRange?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  resourceDepots?: Resolver<Maybe<Array<ResolversTypes['ResourceDepot']>>, ParentType, ContextType>;
+  sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   taskForceShipCommisions?: Resolver<Array<ResolversTypes['TaskForceShipCommision']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -653,12 +644,14 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
   commisions?: Resolver<Array<ResolversTypes['TaskForceShipCommision']>, ParentType, ContextType>;
   game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   movementVector?: Resolver<Maybe<ResolversTypes['Vector']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  orders?: Resolver<Array<ResolversTypes['TaskForceOrder']>, ParentType, ContextType>;
-  owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
+  orders?: Resolver<Maybe<Array<ResolversTypes['TaskForceOrder']>>, ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
-  sensorRange?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   ships?: Resolver<Array<ResolversTypes['TaskForceShip']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -690,7 +683,6 @@ export type TaskForceShipResolvers<ContextType = Context, ParentType extends Res
 export type TaskForceShipCommisionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShipCommision'] = ResolversParentTypes['TaskForceShipCommision']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  progress?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   resourceNeeds?: Resolver<Array<ResolversTypes['ResourceNeed']>, ParentType, ContextType>;
   role?: Resolver<ResolversTypes['TaskForceShipRole'], ParentType, ContextType>;
   shipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType>;
@@ -739,7 +731,6 @@ export type Resolvers<ContextType = Context> = {
   ResourceDepot?: ResourceDepotResolvers<ContextType>;
   ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;
   ResourceNeed?: ResourceNeedResolvers<ContextType>;
-  SensorRange?: SensorRangeResolvers<ContextType>;
   ShipDesign?: ShipDesignResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;

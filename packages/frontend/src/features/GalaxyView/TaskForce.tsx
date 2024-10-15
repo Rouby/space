@@ -1,19 +1,25 @@
 export function TaskForce({
 	owner,
 	selected,
+	visible,
+	lastUpdate,
 	movementVector,
 	onPointerDown,
 }: {
 	owner?: { color: string } | null;
 	selected: boolean;
+	visible: boolean;
+	lastUpdate: string;
 	movementVector?: { x: number; y: number } | null;
-	onPointerDown: (event: React.PointerEvent) => void;
+	onPointerDown?: (event: React.PointerEvent) => void;
 }) {
 	return (
 		<g>
 			<circle
 				r="5"
-				fill={selected ? "yellow" : (owner?.color ?? "gray")}
+				fill={
+					visible ? (selected ? "yellow" : (owner?.color ?? "gray")) : "gray"
+				}
 				onPointerDown={onPointerDown}
 			/>
 			{movementVector && (

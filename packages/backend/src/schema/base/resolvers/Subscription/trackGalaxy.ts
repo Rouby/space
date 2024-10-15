@@ -58,6 +58,8 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 					id: event.id,
 					position: event.position,
 					movementVector: event.movementVector,
+					isVisible: true,
+					lastUpdate: null,
 				},
 			})),
 			// and initially feed all visible tfs as "appearing"
@@ -69,6 +71,8 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 						id: tf.id,
 						position: tf.position,
 						movementVector: tf.movementVector,
+						isVisible: true,
+						lastUpdate: null,
 					},
 				})),
 			),
@@ -110,6 +114,8 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 							subject: {
 								__typename: "TaskForce",
 								id: appeared.subject.id,
+								isVisible: false,
+								lastUpdate: new Date().toISOString(),
 								// position will be updated in mapping below
 								position: appeared.subject.position,
 							},

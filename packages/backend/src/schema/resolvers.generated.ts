@@ -42,7 +42,6 @@ import    { TaskForceShipCommisionProgressEvent } from './base/resolvers/TaskFor
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
 import    { Positionable } from './base/resolvers/Positionable.js';
-import    { SensorRange } from './base/resolvers/SensorRange.js';
 import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
 import    { DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
@@ -69,7 +68,6 @@ TaskForceShipCommisionProgressEvent: TaskForceShipCommisionProgressEvent,
 User: User,
 Vector: Vector,
 Positionable: Positionable,
-SensorRange: SensorRange,
 TaskForceOrder: TaskForceOrder,
 DateTime: DateTimeResolver
     }
