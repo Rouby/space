@@ -1,9 +1,18 @@
 import { relations, sql } from "drizzle-orm";
-import { pgTable, real, uuid } from "drizzle-orm/pg-core";
+import {
+	decimal,
+	pgTable,
+	primaryKey,
+	uuid,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
+import { resources } from "./resources.ts";
+import { shipDesigns } from "./shipDesigns.ts";
 import { starSystems } from "./starSystems.ts";
+import { taskForceShipRole, taskForces } from "./taskForces.ts";
 
-export const taskForceCommisions = pgTable("taskForceCommisions", {
+export const taskForceShipCommisions = pgTable("taskForceShipCommisions", {
 	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
 	gameId: uuid("gameId")
 		.notNull()
@@ -11,16 +20,47 @@ export const taskForceCommisions = pgTable("taskForceCommisions", {
 	starSystemId: uuid("starSystemId")
 		.notNull()
 		.references(() => starSystems.id, { onDelete: "cascade" }),
-	progress: real("progress").notNull().default(0),
-	total: real("total").notNull(),
+	shipDesignId: uuid("shipDesignId")
+		.notNull()
+		.references(() => shipDesigns.id, { onDelete: "cascade" }),
+	taskForceId: uuid("taskForceId")
+		.notNull()
+		.references(() => taskForces.id, { onDelete: "cascade" }),
+	name: varchar("name", { length: 256 }).notNull(),
+	role: taskForceShipRole("role").notNull(),
+	progress: decimal("progress", { precision: 30, scale: 6 }).notNull(),
 });
 
 export const taskForceCommisionsRelations = relations(
-	taskForceCommisions,
-	({ one }) => ({
+	taskForceShipCommisions,
+	({ one, many }) => ({
 		starSystem: one(starSystems, {
-			fields: [taskForceCommisions.starSystemId],
+			fields: [taskForceShipCommisions.starSystemId],
 			references: [starSystems.id],
+		}),
+		shipDesign: one(shipDesigns, {
+			fields: [taskForceShipCommisions.shipDesignId],
+			references: [shipDesigns.id],
+		}),
+		resourceNeeds: many(taskForceShipCommisionResourceNeeds),
+	}),
+);
+
+export const taskForceShipCommisionResourceNeeds = pgTable(
+	"taskForceShipCommisionResourceNeeds",
+	{
+		taskForceShipCommisionId: uuid("taskForceShipCommisionId")
+			.notNull()
+			.references(() => taskForceShipCommisions.id, { onDelete: "cascade" }),
+		resourceId: uuid("resourceId")
+			.notNull()
+			.references(() => resources.id, { onDelete: "restrict" }),
+		alotted: decimal("alotted", { precision: 30, scale: 6 }).notNull(),
+		needed: decimal("needed", { precision: 30, scale: 6 }).notNull(),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.taskForceShipCommisionId, table.resourceId],
 		}),
 	}),
 );

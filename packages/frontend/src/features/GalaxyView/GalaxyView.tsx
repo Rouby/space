@@ -44,7 +44,6 @@ query Galaxy($id: ID!) {
 			}
 			orders {
 				id
-				type
 				...on TaskForceMoveOrder {
 					destination
 				}
@@ -119,7 +118,6 @@ query Galaxy($id: ID!) {
 			id
 			orders {
 				id
-				type
 				...on TaskForceMoveOrder {
 					destination
 				}
@@ -130,7 +128,6 @@ query Galaxy($id: ID!) {
 			id
 			orders {
 				id
-				type
 				...on TaskForceMoveOrder {
 					destination
 				}

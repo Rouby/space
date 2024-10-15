@@ -3,8 +3,6 @@ export type GameEvent =
 	| TaskForcePosition
 	| TaskForceDisappeared
 	| TaskForceDestroyed
-	| TaskForceCommisionProgress
-	| TaskForceCommisionFinished
 	| TaskForceEngagementStarted
 	| TaskForceEngagementTaskForceJoined
 	| TaskForceEngagementPhaseProgress
@@ -35,20 +33,6 @@ interface TaskForceDestroyed {
 	type: "taskForce:destroyed";
 	id: string;
 	position: { x: number; y: number };
-}
-
-interface TaskForceCommisionProgress {
-	type: "taskForce:commisionProgress";
-	id: string;
-	systemId: string;
-	progress: number;
-	total: number;
-}
-interface TaskForceCommisionFinished {
-	type: "taskForce:commisionFinished";
-	id: string;
-	systemId: string;
-	taskForceId: string;
 }
 
 interface TaskForceEngagementStarted {

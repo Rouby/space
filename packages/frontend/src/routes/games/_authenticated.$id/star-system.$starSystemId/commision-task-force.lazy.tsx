@@ -9,7 +9,7 @@ export const Route = createLazyFileRoute(
 });
 
 function Details() {
-	const { starSystemId } = Route.useParams();
+	const { id, starSystemId } = Route.useParams();
 	const navigate = Route.useNavigate();
 
 	return (
@@ -23,7 +23,7 @@ function Details() {
 					})
 				}
 			>
-				<CommisionTaskForce starSystemId={starSystemId} />
+				<CommisionTaskForce starSystemId={starSystemId} gameId={id} />
 			</DetailsDrawer>
 
 			<Outlet />

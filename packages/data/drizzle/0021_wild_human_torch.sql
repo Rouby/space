@@ -1,0 +1,1 @@
+ALTER TABLE "taskForceShipCommisionResourceNeeds" ADD CONSTRAINT "taskForceShipCommisionResourceNeeds_taskForceShipCommisionId_resourceId_pk" PRIMARY KEY("taskForceShipCommisionId","resourceId");

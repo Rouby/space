@@ -1,7 +1,6 @@
 import { Button } from "@mantine/core";
 import { Link } from "@tanstack/react-router";
-import { Suspense } from "react";
-import { useQuery, useSubscription } from "urql";
+import { useQuery } from "urql";
 import { graphql } from "../../gql";
 
 export function StarSystemDetails({ id }: { id: string }) {
@@ -12,11 +11,6 @@ export function StarSystemDetails({ id }: { id: string }) {
 			id
 			name
 			position
-			taskForceCommisions {
-				id
-				progress
-				total
-			}
 			taskForces {
 				id
 				name
@@ -52,14 +46,6 @@ export function StarSystemDetails({ id }: { id: string }) {
 	return (
 		<>
 			details about this star systm {data?.starSystem.name}
-			<div>
-				Current commisions
-				{data?.starSystem.taskForceCommisions.map((commision) => (
-					<Suspense key={commision.id} fallback="...">
-						<TaskForceCommisionInProgress id={commision.id} />
-					</Suspense>
-				))}
-			</div>
 			<div>
 				Task forces in this star system
 				{data?.starSystem.taskForces.map((taskForce) => (
@@ -101,50 +87,5 @@ export function StarSystemDetails({ id }: { id: string }) {
 				Commision a task force
 			</Button>
 		</>
-	);
-}
-
-function TaskForceCommisionInProgress({ id }: { id: string }) {
-	const [{ data }] = useQuery({
-		query: graphql(`query TaskForceCommision($id: ID!) {
-		taskForceCommision(id: $id) {
-			id
-			progress
-			total
-		}
-	}`),
-		variables: { id },
-	});
-	useSubscription({
-		query: graphql(`subscription TaskForceCommisionSub($id: ID!) {
-		taskForceCommisionProgress(id: $id) {
-			id
-			progress
-			total
-		}
-		}`),
-		variables: { id },
-	});
-	useSubscription({
-		query: graphql(`subscription TaskForceCommisionFinishedSub($id: ID!) {
-		taskForceCommisionFinished(id: $id) {
-			id
-			taskForce{
-				id
-				position
-				owner {
-					id
-					name
-				}
-			}
-		}
-		}`),
-		variables: { id },
-	});
-
-	return (
-		<div>
-			{data?.taskForceCommision.progress}/{data?.taskForceCommision.total}
-		</div>
 	);
 }

@@ -1,3 +1,12 @@
+enum TaskForceShipRole {
+	capital
+	screen
+	carrier
+	scout
+	support
+	transport
+}
+
 type TaskForce implements Positionable & SensorRange {
 	id: ID!
 	name: String!
@@ -7,32 +16,40 @@ type TaskForce implements Positionable & SensorRange {
 	owner: Player!
 	game: Game!
 	sensorRange: Float!
+	ships: [TaskForceShip!]!
+	commisions: [TaskForceShipCommision!]!
+}
+
+type TaskForceShip {
+	id: ID!
+	name: String!
+	role: TaskForceShipRole!
+	shipDesign: ShipDesign!
+
+	hullState: Float!
+	shieldState: Float!
+	armorState: Float!
+	weaponState: Float!
+	supplyCarried: Float!
+}
+
+type TaskForceShipCommision {
+	id: ID!
+	name: String!
+	role: TaskForceShipRole!
+	shipDesign: ShipDesign!
+
+	progress: Float!
+	resourceNeeds: [ResourceNeed!]!
 }
 
 interface TaskForceOrder {
 	id: ID!
-	type: TaskForceOrderType!
-}
-
-enum TaskForceOrderType {
-	move
 }
 
 type TaskForceMoveOrder implements TaskForceOrder {
 	id: ID!
-	type: TaskForceOrderType!
 	destination: Vector!
-}
-
-type TaskForceCommision {
-	id: ID!
-	progress: Float!
-	total: Float!
-}
-
-type TaskForceCommisionFinished {
-	id: ID!
-	taskForce: TaskForce
 }
 
 extend type Game {
@@ -40,22 +57,29 @@ extend type Game {
 }
 
 extend type StarSystem {
-	taskForceCommisions: [TaskForceCommision!]!
+	taskForceShipCommisions: [TaskForceShipCommision!]!
 	taskForces: [TaskForce!]!
 }
 
 type Query {
-	taskForceCommision(id: ID!): TaskForceCommision!
+	taskForceShipCommision(id: ID!): TaskForceShipCommision!
+}
+
+input TaskForceCommisionInput {
+	starSystemId: ID!
+	name: String!
+	ships: [TaskForceCommisionShipInput!]!
+}
+
+input TaskForceCommisionShipInput {
+	name: String!
+	role: TaskForceShipRole!
+	shipDesignId: ID!
 }
 
 type Mutation {
-	createTaskForceCommision(starSystemId: ID!): TaskForceCommision!
+	createTaskForceCommision(commision: TaskForceCommisionInput!): TaskForce!
 
 	moveTaskForce(id: ID!, position: Vector!): TaskForce!
 	queueTaskForceMove(id: ID!, position: Vector!): TaskForce!
-}
-
-type Subscription {
-	taskForceCommisionProgress(id: ID!): TaskForceCommision!
-	taskForceCommisionFinished(id: ID!): TaskForceCommisionFinished!
 }

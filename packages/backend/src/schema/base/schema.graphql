@@ -25,10 +25,10 @@ type PositionableDisappearsEvent {
 	subject: Positionable!
 }
 
-union TrackStarSystemEvent = TaskForceCommisionProgressEvent
+union TrackStarSystemEvent = TaskForceShipCommisionProgressEvent
 
-type TaskForceCommisionProgressEvent {
-	subject: TaskForceCommision!
+type TaskForceShipCommisionProgressEvent {
+	subject: TaskForceShipCommision!
 }
 
 type Subscription {

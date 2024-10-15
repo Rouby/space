@@ -3,6 +3,7 @@ import {
 	eq,
 	notExists,
 	taskForceEngagementsToTaskForces,
+	taskForceShipCommisions,
 	taskForces,
 } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
@@ -22,6 +23,13 @@ export const queueTaskForceMove: NonNullable<
 					.select()
 					.from(taskForceEngagementsToTaskForces)
 					.where(eq(taskForceEngagementsToTaskForces.taskForceId, id)),
+			),
+			// and not currently building ships
+			notExists(
+				ctx.drizzle
+					.select()
+					.from(taskForceShipCommisions)
+					.where(eq(taskForceShipCommisions.taskForceId, id)),
 			),
 		),
 	});

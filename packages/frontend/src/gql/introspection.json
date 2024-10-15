@@ -204,13 +204,13 @@
               "kind": "NON_NULL",
               "ofType": {
                 "kind": "OBJECT",
-                "name": "TaskForceCommision",
+                "name": "TaskForce",
                 "ofType": null
               }
             },
             "args": [
               {
-                "name": "starSystemId",
+                "name": "commision",
                 "type": {
                   "kind": "NON_NULL",
                   "ofType": {
@@ -668,12 +668,12 @@
             ]
           },
           {
-            "name": "taskForceCommision",
+            "name": "taskForceShipCommision",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
                 "kind": "OBJECT",
-                "name": "TaskForceCommision",
+                "name": "TaskForceShipCommision",
                 "ofType": null
               }
             },
@@ -810,6 +810,47 @@
           },
           {
             "name": "remainingDeposits",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "resource",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Resource",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ResourceNeed",
+        "fields": [
+          {
+            "name": "alotted",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "needed",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1145,7 +1186,7 @@
             "args": []
           },
           {
-            "name": "taskForceCommisions",
+            "name": "taskForceShipCommisions",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1154,7 +1195,7 @@
                   "kind": "NON_NULL",
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "TaskForceCommision",
+                    "name": "TaskForceShipCommision",
                     "ofType": null
                   }
                 }
@@ -1196,52 +1237,6 @@
         "kind": "OBJECT",
         "name": "Subscription",
         "fields": [
-          {
-            "name": "taskForceCommisionFinished",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "TaskForceCommisionFinished",
-                "ofType": null
-              }
-            },
-            "args": [
-              {
-                "name": "id",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "name": "taskForceCommisionProgress",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "TaskForceCommision",
-                "ofType": null
-              }
-            },
-            "args": [
-              {
-                "name": "id",
-                "type": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "Any"
-                  }
-                }
-              }
-            ]
-          },
           {
             "name": "trackGalaxy",
             "type": {
@@ -1295,6 +1290,24 @@
         "kind": "OBJECT",
         "name": "TaskForce",
         "fields": [
+          {
+            "name": "commisions",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "TaskForceShipCommision",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
           {
             "name": "game",
             "type": {
@@ -1388,6 +1401,24 @@
               }
             },
             "args": []
+          },
+          {
+            "name": "ships",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "TaskForceShip",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
           }
         ],
         "interfaces": [
@@ -1400,92 +1431,6 @@
             "name": "SensorRange"
           }
         ]
-      },
-      {
-        "kind": "OBJECT",
-        "name": "TaskForceCommision",
-        "fields": [
-          {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "progress",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "total",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          }
-        ],
-        "interfaces": []
-      },
-      {
-        "kind": "OBJECT",
-        "name": "TaskForceCommisionFinished",
-        "fields": [
-          {
-            "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "taskForce",
-            "type": {
-              "kind": "OBJECT",
-              "name": "TaskForce",
-              "ofType": null
-            },
-            "args": []
-          }
-        ],
-        "interfaces": []
-      },
-      {
-        "kind": "OBJECT",
-        "name": "TaskForceCommisionProgressEvent",
-        "fields": [
-          {
-            "name": "subject",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "TaskForceCommision",
-                "ofType": null
-              }
-            },
-            "args": []
-          }
-        ],
-        "interfaces": []
       },
       {
         "kind": "OBJECT",
@@ -1504,17 +1449,6 @@
           },
           {
             "name": "id",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "type",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1546,9 +1480,111 @@
               }
             },
             "args": []
+          }
+        ],
+        "interfaces": [],
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceMoveOrder"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceShip",
+        "fields": [
+          {
+            "name": "armorState",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
           },
           {
-            "name": "type",
+            "name": "hullState",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "role",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "shieldState",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "shipDesign",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ShipDesign",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "supplyCarried",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "weaponState",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1559,13 +1595,107 @@
             "args": []
           }
         ],
-        "interfaces": [],
-        "possibleTypes": [
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceShipCommision",
+        "fields": [
           {
-            "kind": "OBJECT",
-            "name": "TaskForceMoveOrder"
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "progress",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "resourceNeeds",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "ResourceNeed",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "role",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "shipDesign",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ShipDesign",
+                "ofType": null
+              }
+            },
+            "args": []
           }
-        ]
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceShipCommisionProgressEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceShipCommision",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "UNION",
@@ -1591,7 +1721,7 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "TaskForceCommisionProgressEvent"
+            "name": "TaskForceShipCommisionProgressEvent"
           }
         ]
       },

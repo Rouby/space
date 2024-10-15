@@ -2,9 +2,9 @@ import { relations, sql } from "drizzle-orm";
 import {
 	type AnyPgColumn,
 	boolean,
+	decimal,
 	pgTable,
 	primaryKey,
-	real,
 	text,
 	uuid,
 	varchar,
@@ -28,23 +28,48 @@ export const shipDesigns = pgTable("shipDesigns", {
 		(): AnyPgColumn => shipDesigns.id,
 		{ onDelete: "restrict" },
 	),
-	hullRating: real("hullRating").notNull(),
-	speedRating: real("speedRating").notNull(),
-	armorRating: real("armorRating").notNull(),
-	shieldRating: real("shieldRating").notNull(),
-	weaponRating: real("weaponRating").notNull(),
-	zoneOfControlRating: real("zoneOfControlRating").notNull(),
-	supplyNeed: real("supplyNeed").notNull(),
-	supplyCapacity: real("supplyCapacity").notNull(),
+	hullRating: decimal("hullRating", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
+	speedRating: decimal("speedRating", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
+	armorRating: decimal("armorRating", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
+	shieldRating: decimal("shieldRating", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
+	weaponRating: decimal("weaponRating", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
+	zoneOfControlRating: decimal("zoneOfControlRating", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
+	supplyNeed: decimal("supplyNeed", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
+	supplyCapacity: decimal("supplyCapacity", {
+		precision: 30,
+		scale: 6,
+	}).notNull(),
 });
 
-export const shipDesignsRelations = relations(shipDesigns, ({ one }) => ({
+export const shipDesignsRelations = relations(shipDesigns, ({ one, many }) => ({
 	game: one(games, { fields: [shipDesigns.gameId], references: [games.id] }),
 	owner: one(users, { fields: [shipDesigns.ownerId], references: [users.id] }),
 	previousDesign: one(shipDesigns, {
 		fields: [shipDesigns.previousDesignId],
 		references: [shipDesigns.id],
 	}),
+	resourceCosts: many(shipDesignResourceCosts),
 }));
 
 export const shipDesignResourceCosts = pgTable(
@@ -56,11 +81,25 @@ export const shipDesignResourceCosts = pgTable(
 		resourceId: uuid("resourceId")
 			.notNull()
 			.references(() => resources.id, { onDelete: "restrict" }),
-		quantity: real("quantity").notNull(),
+		quantity: decimal("quantity", { precision: 30, scale: 6 }).notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({
 			columns: [table.shipDesignId, table.resourceId],
+		}),
+	}),
+);
+
+export const shipDesignResourceCostsRelations = relations(
+	shipDesignResourceCosts,
+	({ one }) => ({
+		resource: one(resources, {
+			fields: [shipDesignResourceCosts.resourceId],
+			references: [resources.id],
+		}),
+		shipDesign: one(shipDesigns, {
+			fields: [shipDesignResourceCosts.shipDesignId],
+			references: [shipDesigns.id],
 		}),
 	}),
 );
