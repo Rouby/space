@@ -16,6 +16,7 @@ export const games = pgTable("games", {
 	startedAt: timestamp("startedAt"),
 	setupCompleted: boolean("setupCompleted").notNull().default(false),
 	version: integer("version").notNull().default(0),
+	tickRate: integer("tickRate").notNull().default(100),
 });
 
 export const players = pgTable(

@@ -10,6 +10,7 @@ export const Route = createLazyFileRoute(
 
 function Details() {
 	const { id, starSystemId } = Route.useParams();
+
 	const navigate = Route.useNavigate();
 
 	return (
@@ -23,7 +24,11 @@ function Details() {
 					})
 				}
 			>
-				<CommisionTaskForce starSystemId={starSystemId} gameId={id} />
+				<CommisionTaskForce
+					starSystemId={starSystemId}
+					gameId={id}
+					onCommision={() => navigate({ to: ".." })}
+				/>
 			</DetailsDrawer>
 
 			<Outlet />

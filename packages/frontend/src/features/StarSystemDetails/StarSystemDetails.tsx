@@ -1,7 +1,28 @@
-import { Button } from "@mantine/core";
+import {
+	Button,
+	Card,
+	Center,
+	Image,
+	SimpleGrid,
+	Stack,
+	Text,
+	Title,
+	Tooltip,
+} from "@mantine/core";
 import { Link } from "@tanstack/react-router";
+import { Fragment } from "react/jsx-runtime";
+import { useStyles } from "tss-react";
 import { useQuery } from "urql";
+import {
+	formatTicksToRelativeTime,
+	formatUnit,
+	formatUnitPerTick,
+} from "../../format/formatNumber";
 import { graphql } from "../../gql";
+import { coordinateToGrid } from "../GalaxyView/coordinateToGrid";
+import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
+import placeholderDiscoveryArt from "./example-discovery.png";
+import placeholderStarsystemArt from "./example-starsystem-overview.png";
 
 export function StarSystemDetails({ id }: { id: string }) {
 	const [{ data }] = useQuery({
@@ -20,6 +41,7 @@ export function StarSystemDetails({ id }: { id: string }) {
 				}
 			}
 			discoveries {
+				__typename
 				... on ResourceDiscovery {
 					id
 					resource {
@@ -27,6 +49,10 @@ export function StarSystemDetails({ id }: { id: string }) {
 						name
 					}
 					remainingDeposits
+					miningRate
+				}
+				... on UnknownDiscovery {
+					id
 				}
 			}
 			resourceDepots {
@@ -43,42 +69,113 @@ export function StarSystemDetails({ id }: { id: string }) {
 		variables: { id },
 	});
 
+	const { css } = useStyles();
+
 	return (
 		<>
-			details about this star systm {data?.starSystem.name}
-			<div>
-				Task forces in this star system
-				{data?.starSystem.taskForces.map((taskForce) => (
-					<div key={taskForce.id}>
-						{taskForce.owner ? `${taskForce.owner.name}'s ` : ""}
-						{taskForce.name}
-					</div>
-				))}
-			</div>
-			<div>
-				discoveries
-				{data?.starSystem.discoveries.map((discovery) => (
-					<div key={discovery.id}>
-						{discovery.resource.name} -{" "}
-						{new Intl.NumberFormat(undefined, {
-							maximumFractionDigits: 0,
-						}).format(discovery.remainingDeposits)}{" "}
-						units left
-					</div>
-				))}
-			</div>
-			<div>
-				depots
-				{data?.starSystem.resourceDepots.map((discovery) => (
-					<div key={discovery.id}>
-						{discovery.resource.name} -{" "}
-						{new Intl.NumberFormat(undefined, {
-							maximumFractionDigits: 0,
-						}).format(discovery.quantity)}{" "}
-						units stored
-					</div>
-				))}
-			</div>
+			<Title order={2} mb="md">
+				{data?.starSystem.name}
+			</Title>
+			<SimpleGrid type="container" cols={{ base: 1, "500px": 2 }}>
+				<Stack>
+					<Card>
+						<Text variant="gradient">Location</Text>
+						<Text>{data && coordinateToGrid(data.starSystem.position, 2)}</Text>
+					</Card>
+					<Card>
+						<Text variant="gradient">Discoveries</Text>
+						{data?.starSystem.discoveries === null ? (
+							<>
+								Our scanners could not pick up information about possible
+								discoveries.
+							</>
+						) : (
+							<div
+								className={css({
+									display: "grid",
+									gridTemplateColumns: "repeat(auto-fit, 100px)",
+								})}
+							>
+								{data?.starSystem.discoveries?.map((discovery) => (
+									<Fragment key={discovery.id}>
+										{discovery.__typename === "ResourceDiscovery" ? (
+											<Tooltip
+												withArrow
+												label={
+													<>
+														<div>
+															Mining {formatUnitPerTick(discovery.miningRate)}
+														</div>
+														<div>
+															Depletes in{" "}
+															{formatTicksToRelativeTime(
+																discovery.remainingDeposits /
+																	discovery.miningRate,
+															)}
+														</div>
+													</>
+												}
+												position="bottom"
+											>
+												<Stack gap={0} align="center">
+													<span>{discovery.resource.name}</span>
+													<Image
+														src={placeholderDiscoveryArt}
+														maw={64}
+														mah={64}
+														radius="lg"
+													/>
+													<span>{formatUnit(discovery.remainingDeposits)}</span>
+												</Stack>
+											</Tooltip>
+										) : (
+											<Stack gap={0} align="center">
+												<span>???</span>
+												<Image
+													src={placeholderDiscoveryUnknownArt}
+													maw={64}
+													mah={64}
+													radius="lg"
+												/>
+												<span>???</span>
+											</Stack>
+										)}
+									</Fragment>
+								))}
+							</div>
+						)}
+					</Card>
+					<Card>
+						<Text variant="gradient">Resource depots</Text>
+						<div
+							className={css({
+								display: "grid",
+								gridTemplateColumns: "repeat(auto-fit, 100px)",
+							})}
+						>
+							{data?.starSystem.resourceDepots?.map((depot) => (
+								<Stack key={depot.id} gap={0} align="center">
+									<Center>{depot.resource.name}</Center>
+									<Image
+										src={placeholderDiscoveryArt}
+										maw={64}
+										mah={64}
+										radius="lg"
+									/>
+									<Center>
+										{new Intl.NumberFormat(undefined, {
+											style: "decimal",
+											notation: "compact",
+										}).format(depot.quantity)}{" "}
+										units
+									</Center>
+								</Stack>
+							))}
+						</div>
+					</Card>
+				</Stack>
+				<Image src={placeholderStarsystemArt} alt="star system" />
+			</SimpleGrid>
 			<Button
 				component={Link}
 				from="/games/$id/star-system/$starSystemId"

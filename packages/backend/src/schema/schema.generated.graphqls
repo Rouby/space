@@ -1,6 +1,6 @@
 scalar DateTime
 
-union Discovery = ResourceDiscovery
+union Discovery = ResourceDiscovery | UnknownDiscovery
 
 type Game {
   id: ID!
@@ -11,6 +11,7 @@ type Game {
   starSystems: [StarSystem!]!
   startedAt: DateTime
   taskForces: [TaskForce!]!
+  tickRate: Int!
 }
 
 type Mutation {
@@ -77,6 +78,7 @@ type ResourceDepot {
 
 type ResourceDiscovery {
   id: ID!
+  miningRate: Float!
   remainingDeposits: Float!
   resource: Resource!
 }
@@ -209,6 +211,10 @@ enum TaskForceShipRole {
 union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent
 
 union TrackStarSystemEvent = TaskForceShipCommisionProgressEvent
+
+type UnknownDiscovery {
+  id: ID!
+}
 
 type User {
   email: String!

@@ -1,4 +1,4 @@
-import { Button, Table } from "@mantine/core";
+import { Button, Table, Title } from "@mantine/core";
 import { Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "urql";
 import { graphql } from "../../gql";
@@ -17,6 +17,13 @@ export function ShipDesigns() {
         shipDesigns {
           id
           name
+					costs {
+						resource {
+							id
+							name
+						}	
+						quantity
+					}
         }
       }
     }
@@ -26,11 +33,12 @@ export function ShipDesigns() {
 
 	return (
 		<>
-			alistofdesigns
+			<Title order={2}>Available ship designs</Title>
 			<Table>
 				<Table.Thead>
 					<Table.Tr>
-						<Table.Th>Ship design</Table.Th>
+						<Table.Th>Name</Table.Th>
+						<Table.Th>Costs</Table.Th>
 
 						<Table.Th w={0} />
 					</Table.Tr>
@@ -39,8 +47,23 @@ export function ShipDesigns() {
 					{data?.game.me?.shipDesigns.map((design) => (
 						<Table.Tr key={design.id}>
 							<Table.Td>{design.name}</Table.Td>
+							<Table.Td>
+								{new Intl.ListFormat(undefined, { style: "narrow" }).format(
+									design.costs.map(
+										(cost) =>
+											`${new Intl.NumberFormat(undefined, {
+												style: "decimal",
+												notation: "compact",
+											}).format(cost.quantity)} ${cost.resource.name}`,
+									),
+								)}
+							</Table.Td>
 
-							<Table.Td>actions</Table.Td>
+							<Table.Td>
+								<Button size="compact-xs" color="red" disabled>
+									Decommision
+								</Button>
+							</Table.Td>
 						</Table.Tr>
 					))}
 				</Table.Tbody>

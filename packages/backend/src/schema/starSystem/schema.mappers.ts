@@ -8,6 +8,7 @@ export type StarSystemMapper = {
 	lastUpdate: Date;
 	ownerId: string | null;
 	gameId: string;
+	discoverySlots: number | null;
 };
 export type ResourceDiscoveryMapper = {
 	starSystemId: string;

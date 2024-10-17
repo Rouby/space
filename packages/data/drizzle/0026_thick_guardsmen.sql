@@ -1,0 +1,1 @@
+ALTER TABLE "games" ADD COLUMN "tickRate" integer DEFAULT 100 NOT NULL;

@@ -23,7 +23,7 @@ function Details() {
 					})
 				}
 			>
-				<ShipDesigner gameId={id} />
+				<ShipDesigner gameId={id} onCreate={() => navigate({ to: ".." })} />
 			</DetailsDrawer>
 
 			<Outlet />

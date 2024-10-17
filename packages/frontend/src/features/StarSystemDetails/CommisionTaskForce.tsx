@@ -15,7 +15,8 @@ import { TaskForceShipRole } from "../../gql/graphql";
 export function CommisionTaskForce({
 	starSystemId,
 	gameId,
-}: { starSystemId: string; gameId: string }) {
+	onCommision,
+}: { starSystemId: string; gameId: string; onCommision: () => void }) {
 	const [{ fetching }, commisionTaskForce] = useMutation(
 		graphql(`mutation CommisionTaskForce($commision: TaskForceCommisionInput!) {
     createTaskForceCommision(commision: $commision) {
@@ -25,7 +26,7 @@ export function CommisionTaskForce({
 	);
 
 	const [{ data }] = useQuery({
-		query: graphql(`query ShipDesigns($gameId: ID!) {
+		query: graphql(`query ShipDesignsForTaskForce($gameId: ID!) {
     game(id: $gameId) {
       id
       me {
@@ -46,7 +47,7 @@ export function CommisionTaskForce({
 		<div>
 			Commision a task force
 			<form
-				onSubmit={(evt) => {
+				onSubmit={async (evt) => {
 					evt.preventDefault();
 
 					const formData = new FormData(evt.currentTarget as HTMLFormElement);
@@ -61,9 +62,11 @@ export function CommisionTaskForce({
 						role: shipRoles[idx] as TaskForceShipRole,
 					}));
 
-					commisionTaskForce({
+					await commisionTaskForce({
 						commision: { starSystemId, name: "New TF", ships },
 					});
+
+					onCommision();
 				}}
 			>
 				<TextInput name="name" label="Task force name" required />

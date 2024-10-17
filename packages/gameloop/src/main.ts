@@ -31,7 +31,7 @@ if (!game.setupCompleted) {
 await drizzle.transaction((tx) => applyMigrations(tx, gameId));
 
 // start game loop
-const tickRate = 100;
+const tickRate = game.tickRate;
 let ticking = false;
 setInterval(() => {
 	if (ticking) {

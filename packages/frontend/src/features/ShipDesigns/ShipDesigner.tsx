@@ -1,17 +1,31 @@
 import {
+	ActionIcon,
+	AspectRatio,
 	Button,
-	Input,
-	InputWrapper,
+	Group,
 	NumberInput,
+	type NumberInputHandlers,
+	type NumberInputProps,
+	SimpleGrid,
+	Stack,
+	Text,
 	TextInput,
 } from "@mantine/core";
+import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
 import { useRef, useState } from "react";
+import { useStyles } from "tss-react";
 import { useMutation } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
 import type { CreateShipDesignMutationVariables } from "../../gql/graphql";
+import { vars } from "../../theme";
+import placeholderBlueprintBackground from "./example-blueprint-paper.png";
+import placeholderStatsBackground from "./example-stats-background.png";
 
-export function ShipDesigner({ gameId }: { gameId: string }) {
+export function ShipDesigner({
+	gameId,
+	onCreate,
+}: { gameId: string; onCreate: () => void }) {
 	const [predicted, setPredicted] = useState({
 		costs: 0,
 		supplyNeed: 0,
@@ -30,11 +44,13 @@ export function ShipDesigner({ gameId }: { gameId: string }) {
 
 	const auth = useAuth();
 
+	const { css } = useStyles();
+
 	return (
 		<>
 			<form
 				ref={formRef}
-				onSubmit={(evt) => {
+				onSubmit={async (evt) => {
 					evt.preventDefault();
 
 					const formData = new FormData(evt.currentTarget as HTMLFormElement);
@@ -53,75 +69,140 @@ export function ShipDesigner({ gameId }: { gameId: string }) {
 						supplyCapacity: +(formData.get("supplyCapacity") as string),
 					};
 
-					createShipDesign({
+					await createShipDesign({
 						gameId,
-						design,
 						userId: auth.me?.id,
+						design,
 					} as CreateShipDesignMutationVariables);
+
+					onCreate();
 				}}
 			>
-				<TextInput name="name" required label="Name" />
-				<TextInput name="description" required label="Description" />
-				<NumberInput
-					onChange={refreshValues}
-					required
-					name="hullRating"
-					label="Hull rating"
-					min={1}
-				/>
-				<NumberInput
-					onChange={refreshValues}
-					required
-					name="speedRating"
-					label="Speed rating"
-					min={0}
-				/>
-				<NumberInput
-					onChange={refreshValues}
-					required
-					name="armorRating"
-					label="Armor rating"
-					min={0}
-				/>
-				<NumberInput
-					onChange={refreshValues}
-					required
-					name="shieldRating"
-					label="Shield rating"
-					min={0}
-				/>
-				<NumberInput
-					onChange={refreshValues}
-					required
-					name="weaponRating"
-					label="Weapon rating"
-					min={0}
-				/>
-				<NumberInput
-					onChange={refreshValues}
-					required
-					name="zoneOfControlRating"
-					label="Zone of control rating"
-					min={0}
-				/>
-				<NumberInput
-					onChange={refreshValues}
-					required
-					name="supplyCapacity"
-					label="Supply capacity"
-					min={1}
-				/>
-
-				<InputWrapper label="Costs">
-					<Input readOnly value={`${predicted.costs} titanium`} />
-				</InputWrapper>
-				<InputWrapper label="Supply need">
-					<Input readOnly value={`${predicted.supplyNeed} units`} />
-				</InputWrapper>
-
-				<Button type="submit" loading={fetching}>
-					Create
-				</Button>
+				<Stack>
+					<TextInput name="name" required label="Name" />
+					<TextInput name="description" required label="Description" />
+					<SimpleGrid
+						type="container"
+						cols={{ base: 1, "800px": 2 }}
+						spacing={0}
+					>
+						<AspectRatio ratio={768 / 512}>
+							<div
+								className={css({
+									backgroundImage: `url(${placeholderBlueprintBackground})`,
+									backgroundSize: "cover",
+									backgroundRepeat: "no-repeat",
+									padding: vars.spacing.xl,
+									display: "grid",
+									gridTemplateColumns: "repeat(2, 1fr)",
+									alignItems: "baseline",
+								})}
+							>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="hullRating"
+									label="Hull"
+									min={1}
+								/>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="speedRating"
+									label="Speed"
+									min={0}
+								/>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="armorRating"
+									label="Armor"
+									min={0}
+								/>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="shieldRating"
+									label="Shield"
+									min={0}
+								/>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="weaponRating"
+									label="Weapon"
+									min={0}
+								/>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="zoneOfControlRating"
+									label="Zone of control"
+									min={0}
+								/>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="supplyCapacity"
+									label="Supply capacity"
+									min={1}
+								/>
+							</div>
+						</AspectRatio>
+						<SimpleGrid
+							cols={3}
+							className={css({
+								backgroundImage: `url(${placeholderStatsBackground})`,
+								backgroundSize: "cover",
+								backgroundRepeat: "no-repeat",
+								display: "grid",
+								color: vars.colors.black,
+							})}
+							px="md"
+							py="xs"
+						>
+							<Stack
+								gap={0}
+								className={css({
+									borderRight: "1px solid black",
+									paddingRight: vars.spacing.xs,
+								})}
+							>
+								<Text fw="bold">Base stats</Text>
+								<Group justify="space-between">
+									<span>Speed:</span>
+									<span>10</span>
+								</Group>
+							</Stack>
+							<Stack
+								gap={0}
+								className={css({
+									borderRight: "1px solid black",
+									paddingRight: vars.spacing.xs,
+								})}
+							>
+								<Text fw="bold">Combat stats</Text>
+								<Group justify="space-between">
+									<span>Damage:</span>
+									<span>10</span>
+								</Group>
+							</Stack>
+							<Stack gap={0}>
+								<Text fw="bold">Costs</Text>
+								<Text>
+									{new Intl.NumberFormat(undefined, {
+										style: "decimal",
+										notation: "compact",
+									}).format(predicted.costs)}{" "}
+									Titanium
+								</Text>
+							</Stack>
+						</SimpleGrid>
+					</SimpleGrid>
+					<Button type="submit" loading={fetching}>
+						Create
+					</Button>
+				</Stack>
 			</form>
 		</>
 	);
@@ -161,4 +242,30 @@ export function ShipDesigner({ gameId }: { gameId: string }) {
 			supplyNeed,
 		});
 	}
+}
+
+function NumberStepper({ label, ...props }: NumberInputProps) {
+	const handlersRef = useRef<NumberInputHandlers>(null);
+	return (
+		<Group gap={0}>
+			<NumberInput {...props} hideControls w={40} handlersRef={handlersRef} />
+			<Stack gap={0}>
+				<ActionIcon
+					size="xs"
+					color="dark"
+					onClick={() => handlersRef.current?.increment()}
+				>
+					<IconArrowUp />
+				</ActionIcon>
+				<ActionIcon
+					size="xs"
+					color="dark"
+					onClick={() => handlersRef.current?.decrement()}
+				>
+					<IconArrowDown />
+				</ActionIcon>
+			</Stack>
+			{label && <Text>{label}</Text>}
+		</Group>
+	);
 }

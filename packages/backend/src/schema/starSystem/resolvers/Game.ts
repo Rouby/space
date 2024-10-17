@@ -1,9 +1,8 @@
 import {
-	type AnyColumn,
-	type GetColumnData,
 	and,
 	eq,
 	lastKnownStates,
+	possiblyHidden,
 	sql,
 	starSystems,
 	visibility,
@@ -41,7 +40,3 @@ export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
 			);
 	},
 };
-
-function possiblyHidden<T extends AnyColumn>(column: T) {
-	return sql<GetColumnData<T> | null>`CASE WHEN ${visibility.circle} IS NOT NULL THEN to_jsonb(${column}) ELSE CASE WHEN ${lastKnownStates.state} IS NOT NULL THEN ${lastKnownStates.state}->'${sql.raw(column.name)}' ELSE NULL END END`;
-}

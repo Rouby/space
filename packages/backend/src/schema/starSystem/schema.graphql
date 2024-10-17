@@ -10,12 +10,17 @@ type StarSystem implements Positionable {
 	lastUpdate: DateTime
 }
 
-union Discovery = ResourceDiscovery
+union Discovery = ResourceDiscovery | UnknownDiscovery
 
 type ResourceDiscovery {
 	id: ID!
 	resource: Resource!
 	remainingDeposits: Float!
+	miningRate: Float!
+}
+
+type UnknownDiscovery {
+	id: ID!
 }
 
 type ResourceDepot {

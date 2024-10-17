@@ -42,6 +42,10 @@ export const StarSystem: Pick<
 		return parent.ownerId ? 1000 : null;
 	},
 	discoveries: async (parent, _arg, ctx) => {
+		if (parent.discoverySlots === null) {
+			return null;
+		}
+
 		const resourceDiscoveries = await ctx.drizzle
 			.select()
 			.from(starSystemResourceDiscoveries)
@@ -52,7 +56,14 @@ export const StarSystem: Pick<
 				__typename: "ResourceDiscovery" as const,
 				...d,
 			})),
-		].sort((d1, d2) => d1.discoveredAt.getTime() - d2.discoveredAt.getTime());
+			...Array.from({ length: parent.discoverySlots }, (_, idx) => ({
+				__typename: "UnknownDiscovery" as const,
+				id: `${parent.id}-unknown-${idx}`,
+				discoveredAt: new Date(),
+			})),
+		]
+			.slice(0, parent.discoverySlots)
+			.sort((d1, d2) => d1.discoveredAt.getTime() - d2.discoveredAt.getTime());
 	},
 	resourceDepots: async (parent, _arg, ctx) => {
 		const resourceDepots = await ctx.drizzle

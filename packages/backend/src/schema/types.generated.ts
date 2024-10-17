@@ -26,7 +26,7 @@ export type Scalars = {
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
 
-export type Discovery = ResourceDiscovery;
+export type Discovery = ResourceDiscovery | UnknownDiscovery;
 
 export type Game = {
   __typename?: 'Game';
@@ -38,6 +38,7 @@ export type Game = {
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
   taskForces: Array<TaskForce>;
+  tickRate: Scalars['Int']['output'];
 };
 
 export type Mutation = {
@@ -180,6 +181,7 @@ export type ResourceDepot = {
 export type ResourceDiscovery = {
   __typename?: 'ResourceDiscovery';
   id: Scalars['ID']['output'];
+  miningRate: Scalars['Float']['output'];
   remainingDeposits: Scalars['Float']['output'];
   resource: Resource;
 };
@@ -331,6 +333,11 @@ export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappear
 
 export type TrackStarSystemEvent = TaskForceShipCommisionProgressEvent;
 
+export type UnknownDiscovery = {
+  __typename?: 'UnknownDiscovery';
+  id: Scalars['ID']['output'];
+};
+
 export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
@@ -407,7 +414,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
-  Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } );
+  Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
   TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } );
   TrackStarSystemEvent: ( Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: _RefType['TaskForceShipCommision'] } & { __typename: 'TaskForceShipCommisionProgressEvent' } );
 };
@@ -425,6 +432,7 @@ export type ResolversTypes = {
   Game: ResolverTypeWrapper<GameMapper>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Player: ResolverTypeWrapper<PlayerMapper>;
   Positionable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Positionable']>;
@@ -454,6 +462,7 @@ export type ResolversTypes = {
   TaskForceShipRole: ResolverTypeWrapper<'capital' | 'screen' | 'carrier' | 'scout' | 'support' | 'transport'>;
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
+  UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
 };
@@ -465,6 +474,7 @@ export type ResolversParentTypes = {
   Game: GameMapper;
   ID: Scalars['ID']['output'];
   String: Scalars['String']['output'];
+  Int: Scalars['Int']['output'];
   Mutation: {};
   Player: PlayerMapper;
   Positionable: ResolversInterfaceTypes<ResolversParentTypes>['Positionable'];
@@ -493,6 +503,7 @@ export type ResolversParentTypes = {
   TaskForceShipCommisionProgressEvent: Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: ResolversParentTypes['TaskForceShipCommision'] };
   TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
+  UnknownDiscovery: UnknownDiscovery;
   User: User;
   Vector: Scalars['Vector']['output'];
 };
@@ -502,7 +513,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type DiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Discovery'] = ResolversParentTypes['Discovery']> = {
-  __resolveType?: TypeResolveFn<'ResourceDiscovery', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'ResourceDiscovery' | 'UnknownDiscovery', ParentType, ContextType>;
 };
 
 export type GameResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
@@ -514,6 +525,7 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
+  tickRate?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -589,6 +601,7 @@ export type ResourceDepotResolvers<ContextType = Context, ParentType extends Res
 
 export type ResourceDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceDiscovery'] = ResolversParentTypes['ResourceDiscovery']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  miningRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   remainingDeposits?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -704,6 +717,11 @@ export type TrackStarSystemEventResolvers<ContextType = Context, ParentType exte
   __resolveType?: TypeResolveFn<'TaskForceShipCommisionProgressEvent', ParentType, ContextType>;
 };
 
+export type UnknownDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UnknownDiscovery'] = ResolversParentTypes['UnknownDiscovery']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -743,6 +761,7 @@ export type Resolvers<ContextType = Context> = {
   TaskForceShipRole?: TaskForceShipRoleResolvers;
   TrackGalaxyEvent?: TrackGalaxyEventResolvers<ContextType>;
   TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;
+  UnknownDiscovery?: UnknownDiscoveryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;
 };

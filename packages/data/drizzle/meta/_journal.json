@@ -183,6 +183,13 @@
       "when": 1729015433100,
       "tag": "0025_harsh_black_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1729108122423,
+      "tag": "0026_thick_guardsmen",
+      "breakpoints": true
     }
   ]
 }

@@ -17,6 +17,10 @@
           {
             "kind": "OBJECT",
             "name": "ResourceDiscovery"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UnknownDiscovery"
           }
         ]
       },
@@ -131,6 +135,17 @@
                     "ofType": null
                   }
                 }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "tickRate",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
               }
             },
             "args": []
@@ -799,6 +814,17 @@
         "fields": [
           {
             "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "miningRate",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1686,6 +1712,24 @@
             "name": "TaskForceShipCommisionProgressEvent"
           }
         ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UnknownDiscovery",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "OBJECT",

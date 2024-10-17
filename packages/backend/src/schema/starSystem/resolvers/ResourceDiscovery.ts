@@ -20,4 +20,7 @@ export const ResourceDiscovery: ResourceDiscoveryResolvers = {
 
 		return resource;
 	},
+	miningRate: async (_parent, _arg, _ctx) => {
+		return 0.01;
+	},
 };

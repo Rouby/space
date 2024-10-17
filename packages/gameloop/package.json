@@ -4,6 +4,9 @@
 	"exports": {
 		".": {
 			"import": "./src/main.ts"
+		},
+		".": {
+			"import": "./src/main.ts"
 		}
 	},
 	"module": "src/main.ts",
