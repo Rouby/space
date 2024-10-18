@@ -7,7 +7,9 @@ export type GameEvent =
 	| TaskForceEngagementTaskForceJoined
 	| TaskForceEngagementPhaseProgress
 	| TaskForceEngagementChangePhase
-	| TaskForceEngagementEnded;
+	| TaskForceEngagementEnded
+	| StarSystemAppeared
+	| StarSystemDisappeared;
 
 interface TaskForceAppeared {
 	type: "taskForce:appeared";
@@ -64,4 +66,17 @@ interface TaskForceEngagementChangePhase {
 interface TaskForceEngagementEnded {
 	type: "taskForceEngagement:ended";
 	id: string;
+}
+
+interface StarSystemAppeared {
+	type: "starSystem:appeared";
+	id: string;
+	userId: string;
+	position: { x: number; y: number };
+}
+interface StarSystemDisappeared {
+	type: "starSystem:disappeared";
+	id: string;
+	userId: string;
+	position: { x: number; y: number };
 }

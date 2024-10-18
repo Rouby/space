@@ -1,38 +1,76 @@
+import { OutlineFilter } from "pixi-filters";
+import { Color, type Graphics, type PointData } from "pixi.js";
+import { useCallback } from "react";
+
 export function TaskForce({
-	owner,
-	selected,
-	visible,
-	lastUpdate,
-	movementVector,
-	onPointerDown,
+	id,
+	position,
+	isVisible,
+	isSelected,
+	ownerColor,
+	onClick,
+	sensorRange,
 }: {
-	owner?: { color: string } | null;
-	selected: boolean;
-	visible: boolean;
-	lastUpdate: string;
-	movementVector?: { x: number; y: number } | null;
-	onPointerDown?: (event: React.PointerEvent) => void;
+	id: string;
+	position: PointData;
+	isVisible: boolean;
+	isSelected?: boolean;
+	ownerColor?: string | null;
+	onClick: (id: string) => void;
+	sensorRange?: number | null;
 }) {
+	const color = isVisible
+		? (ownerColor ?? "white")
+		: ownerColor
+			? new Color(ownerColor).multiply(0.5).toHex()
+			: "gray";
+
+	const drawCircle = useCallback(
+		(graphics: Graphics) => {
+			graphics.clear();
+			graphics.setFillStyle({ color });
+			graphics.circle(0, 0, 10);
+			graphics.fill();
+		},
+		[color],
+	);
+
+	const drawSensorRange = useCallback(
+		(graphics: Graphics) => {
+			graphics.clear();
+			graphics.setStrokeStyle({ color: 0x0000ff, width: 2 });
+			graphics.circle(0, 0, sensorRange ?? 0);
+			graphics.stroke();
+		},
+		[sensorRange],
+	);
+
+	const onPointerUp = useCallback(() => {
+		onClick(id);
+	}, [onClick, id]);
+
 	return (
-		<g>
-			<circle
-				r="5"
-				fill={
-					visible ? (selected ? "yellow" : (owner?.color ?? "gray")) : "gray"
+		<container position={position}>
+			<graphics
+				draw={drawCircle}
+				interactive
+				cursor="pointer"
+				onPointerUp={onPointerUp}
+				filters={
+					isSelected
+						? [
+								new OutlineFilter({
+									quality: 1,
+									color: "blue",
+									thickness: 3,
+								}),
+							]
+						: []
 				}
-				onPointerDown={onPointerDown}
 			/>
-			{movementVector && (
-				<line
-					x1="0"
-					y1="0"
-					x2={movementVector.x * 10}
-					y2={movementVector.y * 10}
-					stroke="white"
-					strokeWidth="1"
-					strokeDasharray="3 2"
-				/>
+			{(sensorRange ?? 0) > 0 && isSelected && (
+				<graphics draw={drawSensorRange} />
 			)}
-		</g>
+		</container>
 	);
 }

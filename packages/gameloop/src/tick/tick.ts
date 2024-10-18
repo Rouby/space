@@ -3,6 +3,7 @@ import {
 	eq,
 	players,
 	sql,
+	starSystems,
 	taskForces,
 	visibility,
 } from "@space/data/schema";
@@ -50,7 +51,7 @@ export async function tick() {
 			await tx.execute(
 				sql`CREATE TEMPORARY TABLE ${visibilityPreTick} (
 					"userId" uuid NOT NULL,
-					"taskForceId" uuid NOT NULL,
+					"subjectId" uuid NOT NULL,
 					"position" "point" NOT NULL,
 					"visible" "circle"
 				) ON COMMIT DROP`,
@@ -59,7 +60,7 @@ export async function tick() {
 			const query = tx
 				.select({
 					userId: players.userId,
-					taskForceId: taskForces.id,
+					subjectId: taskForces.id,
 					position: taskForces.position,
 					visible: visibility.circle,
 				})
@@ -74,6 +75,26 @@ export async function tick() {
 						sql`${visibility.circle} @> ${taskForces.position}`,
 					),
 				)
+				.unionAll(
+					tx
+						.select({
+							userId: players.userId,
+							subjectId: starSystems.id,
+							position: starSystems.position,
+							visible: visibility.circle,
+						})
+						.from(players)
+						.fullJoin(starSystems, eq(players.gameId, starSystems.gameId))
+						.where(eq(players.gameId, sql.raw(`'${gameId}'`)))
+						.leftJoin(
+							visibility,
+							and(
+								eq(visibility.gameId, players.gameId),
+								eq(visibility.userId, players.userId),
+								sql`${visibility.circle} @> ${starSystems.position}`,
+							),
+						),
+				)
 				.toSQL();
 
 			await tx.execute(
@@ -82,7 +103,7 @@ export async function tick() {
 		}
 
 		async function notifyAboutVisibilityChanges() {
-			const Visibility = tx.$with("Visibility").as((qb) =>
+			const TaskForceVisibility = tx.$with("TaskForceVisibility").as((qb) =>
 				qb
 					.select({
 						userId: players.userId,
@@ -106,15 +127,15 @@ export async function tick() {
 						visibilityPreTick,
 						and(
 							eq(sql`${visibilityPreTick}."userId"`, players.userId),
-							eq(sql`${visibilityPreTick}."taskForceId"`, taskForces.id),
+							eq(sql`${visibilityPreTick}."subjectId"`, taskForces.id),
 						),
 					),
 			);
 
-			const visibilityChanges = await tx
-				.with(Visibility)
+			const taskForcesChanges = await tx
+				.with(TaskForceVisibility)
 				.select({
-					userId: Visibility.userId,
+					userId: TaskForceVisibility.userId,
 					taskForces: sql<
 						{
 							id: string;
@@ -122,12 +143,12 @@ export async function tick() {
 							visible: boolean;
 							previouslyVisible: boolean;
 						}[]
-					>`json_agg(json_build_object('id', ${Visibility.taskForceId}, 'position', json_build_object('x', ${Visibility.position}[0], 'y', ${Visibility.position}[1]), 'visible', CASE WHEN ${Visibility.visible} IS NOT NULL THEN true ELSE false END, 'previouslyVisible', CASE WHEN ${Visibility.pre_visible} IS NOT NULL THEN true ELSE false END))`,
+					>`json_agg(json_build_object('id', ${TaskForceVisibility.taskForceId}, 'position', json_build_object('x', ${TaskForceVisibility.position}[0], 'y', ${TaskForceVisibility.position}[1]), 'visible', CASE WHEN ${TaskForceVisibility.visible} IS NOT NULL THEN true ELSE false END, 'previouslyVisible', CASE WHEN ${TaskForceVisibility.pre_visible} IS NOT NULL THEN true ELSE false END))`,
 				})
-				.from(Visibility)
+				.from(TaskForceVisibility)
 				.groupBy(sql`"userId"`);
 
-			for (const { userId, taskForces } of visibilityChanges) {
+			for (const { userId, taskForces } of taskForcesChanges) {
 				if (userId) {
 					for (const {
 						id,
@@ -147,6 +168,80 @@ export async function tick() {
 							} else {
 								ctx.postMessage({
 									type: "taskForce:disappeared",
+									id,
+									position,
+									userId,
+								});
+							}
+						}
+					}
+				}
+			}
+
+			const StarSystemVisibility = tx.$with("StarSystemVisibility").as((qb) =>
+				qb
+					.select({
+						userId: players.userId,
+						starSystemId: starSystems.id,
+						position: starSystems.position,
+						visible: visibility.circle,
+						pre_visible: sql`${visibilityPreTick}."visible"`.as("pre_visible"),
+					})
+					.from(players)
+					.fullJoin(starSystems, eq(players.gameId, starSystems.gameId))
+					.where(eq(players.gameId, gameId))
+					.leftJoin(
+						visibility,
+						and(
+							eq(visibility.gameId, players.gameId),
+							eq(visibility.userId, players.userId),
+							sql`${visibility.circle} @> ${starSystems.position}`,
+						),
+					)
+					.leftJoin(
+						visibilityPreTick,
+						and(
+							eq(sql`${visibilityPreTick}."userId"`, players.userId),
+							eq(sql`${visibilityPreTick}."subjectId"`, starSystems.id),
+						),
+					),
+			);
+
+			const starSystemsChanges = await tx
+				.with(StarSystemVisibility)
+				.select({
+					userId: StarSystemVisibility.userId,
+					starSystems: sql<
+						{
+							id: string;
+							position: { x: number; y: number };
+							visible: boolean;
+							previouslyVisible: boolean;
+						}[]
+					>`json_agg(json_build_object('id', ${StarSystemVisibility.starSystemId}, 'position', json_build_object('x', ${StarSystemVisibility.position}[0], 'y', ${StarSystemVisibility.position}[1]), 'visible', CASE WHEN ${StarSystemVisibility.visible} IS NOT NULL THEN true ELSE false END, 'previouslyVisible', CASE WHEN ${StarSystemVisibility.pre_visible} IS NOT NULL THEN true ELSE false END))`,
+				})
+				.from(StarSystemVisibility)
+				.groupBy(sql`"userId"`);
+
+			for (const { userId, starSystems } of starSystemsChanges) {
+				if (userId) {
+					for (const {
+						id,
+						position,
+						visible,
+						previouslyVisible,
+					} of starSystems) {
+						if (visible !== previouslyVisible) {
+							if (visible) {
+								ctx.postMessage({
+									type: "starSystem:appeared",
+									id,
+									position,
+									userId,
+								});
+							} else {
+								ctx.postMessage({
+									type: "starSystem:disappeared",
 									id,
 									position,
 									userId,

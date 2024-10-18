@@ -3,6 +3,7 @@ import {
 	eq,
 	exists,
 	sql,
+	starSystems,
 	taskForces,
 	visibility,
 } from "@space/data/schema";
@@ -11,6 +12,7 @@ import {
 	filter,
 	from,
 	map,
+	merge,
 	mergeMap,
 	pairwise,
 	raceWith,
@@ -47,14 +49,14 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 				),
 			);
 
-		const trackTaskForces = ctx.fromGameEvents(gameId).pipe(
+		const taskForceEvents = ctx.fromGameEvents(gameId).pipe(
 			// collect all appear-events
 			filter((event) => event.type === "taskForce:appeared"),
 			filter((event) => event.userId === ctx.userId),
 			map((event) => ({
 				__typename: "PositionableApppearsEvent" as const,
 				subject: {
-					__typename: "TaskForce",
+					__typename: "TaskForce" as const,
 					id: event.id,
 					position: event.position,
 					movementVector: event.movementVector,
@@ -67,7 +69,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 				...initialTfs.map((tf) => ({
 					__typename: "PositionableApppearsEvent" as const,
 					subject: {
-						__typename: "TaskForce",
+						__typename: "TaskForce" as const,
 						id: tf.id,
 						position: tf.position,
 						movementVector: tf.movementVector,
@@ -87,7 +89,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 						map((event) => ({
 							__typename: "PositionableMovesEvent" as const,
 							subject: {
-								__typename: "TaskForce",
+								__typename: "TaskForce" as const,
 								id: event.id,
 								position: event.position,
 								movementVector: event.movementVector,
@@ -112,7 +114,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 						{
 							__typename: "PositionableDisappearsEvent" as const,
 							subject: {
-								__typename: "TaskForce",
+								__typename: "TaskForce" as const,
 								id: appeared.subject.id,
 								isVisible: false,
 								lastUpdate: new Date().toISOString(),
@@ -136,8 +138,78 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 			),
 		);
 
-		// @ts-expect-error: TODO: fix this
-		return toAsyncIterable<ResolversTypes["TrackGalaxyEvent"]>(trackTaskForces);
+		const initialSSs = await ctx.drizzle
+			.select()
+			.from(starSystems)
+			.where(
+				and(
+					eq(starSystems.gameId, gameId),
+					exists(
+						ctx.drizzle
+							.select({ circle: visibility.circle })
+							.from(visibility)
+							.where(
+								and(
+									eq(visibility.gameId, starSystems.gameId),
+									eq(visibility.userId, ctx.userId ?? ""),
+									sql`${visibility.circle} @> ${starSystems.position}`,
+								),
+							),
+					),
+				),
+			);
+
+		const starSystemEvents = ctx.fromGameEvents(gameId).pipe(
+			filter((event) => event.type === "starSystem:appeared"),
+			map((event) => ({
+				__typename: "PositionableApppearsEvent" as const,
+				subject: {
+					__typename: "StarSystem" as const,
+					id: event.id,
+					position: event.position,
+					isVisible: true,
+					lastUpdate: null,
+				},
+			})),
+			// and initially feed all visible sss as "appearing"
+			startWith(
+				...initialSSs.map((ss) => ({
+					__typename: "PositionableApppearsEvent" as const,
+					subject: {
+						__typename: "StarSystem" as const,
+						id: ss.id,
+						position: ss.position,
+						isVisible: true,
+						lastUpdate: null,
+					},
+				})),
+			),
+			mergeMap((appeared) =>
+				// for each appear event, emit appear and wait until disappear
+				concat(
+					from([appeared]),
+					ctx.fromGameEvents(gameId).pipe(
+						filter((event) => event.type === "starSystem:disappeared"),
+						filter((event) => event.id === appeared.subject.id),
+						map(() => ({
+							__typename: "PositionableDisappearsEvent" as const,
+							subject: {
+								__typename: "StarSystem" as const,
+								id: appeared.subject.id,
+								position: appeared.subject.position,
+								isVisible: false,
+								lastUpdate: new Date().toISOString(),
+							},
+						})),
+					),
+				),
+			),
+		);
+
+		return toAsyncIterable<ResolversTypes["TrackGalaxyEvent"]>(
+			// @ts-expect-error: TODO: fix this
+			merge(taskForceEvents, starSystemEvents),
+		);
 	},
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	resolve: (input: any) => input,

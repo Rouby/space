@@ -46,6 +46,3 @@ export function coordinateToGrid(
 		return domain?.[y]?.[x] ?? (level >= maxLevel ? `${x},${y}` : null);
 	}).join(" ");
 }
-
-coordinateToGrid({ x: -24000, y: -24000 }, 2); //?
-// coordinateToGrid({ x: -23000, y: -23000 }, 0); //?

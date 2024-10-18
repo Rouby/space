@@ -25,6 +25,7 @@ function IngameLayout() {
 				height: "100vh",
 				display: "grid",
 				gridTemplateColumns: `${rem(300)} 1fr`,
+				overflow: "hidden",
 			})}
 		>
 			<nav
