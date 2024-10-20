@@ -196,6 +196,7 @@ export type ShipDesign = {
   name: Scalars['String']['output'];
   owner: Player;
   previousDesign?: Maybe<ShipDesign>;
+  sensorRating: Scalars['Float']['output'];
   shieldRating: Scalars['Float']['output'];
   speedRating: Scalars['Float']['output'];
   supplyCapacity: Scalars['Float']['output'];
@@ -210,6 +211,7 @@ export type ShipDesignInput = {
   hullRating: Scalars['Float']['input'];
   name: Scalars['String']['input'];
   previousDesignId?: InputMaybe<Scalars['ID']['input']>;
+  sensorRating: Scalars['Float']['input'];
   shieldRating: Scalars['Float']['input'];
   speedRating: Scalars['Float']['input'];
   supplyCapacity: Scalars['Float']['input'];

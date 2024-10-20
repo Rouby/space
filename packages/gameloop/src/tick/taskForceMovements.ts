@@ -2,7 +2,10 @@ import {
 	and,
 	eq,
 	notExists,
+	sql,
 	taskForceEngagementsToTaskForces,
+	taskForceShips,
+	taskForceShipsWithStats,
 	taskForces,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
@@ -10,8 +13,17 @@ import type { Context, Transaction } from "./tick.ts";
 
 export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 	const tfs = await tx
-		.select()
+		.select({
+			id: taskForces.id,
+			position: taskForces.position,
+			orders: taskForces.orders,
+			maxSpeed: sql<string>`min(${taskForceShipsWithStats.speed})`,
+		})
 		.from(taskForces)
+		.innerJoin(
+			taskForceShipsWithStats,
+			eq(taskForces.id, taskForceShipsWithStats.taskForceId),
+		)
 		.where(
 			and(
 				eq(taskForces.gameId, gameId),
@@ -25,11 +37,12 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 						),
 				),
 			),
-		);
+		)
+		.groupBy(taskForces.id);
 
 	for (const taskForce of tfs) {
 		let { position, orders } = taskForce;
-		const movementPerTick = 4;
+		const movementPerTick = +taskForce.maxSpeed;
 		let movement = movementPerTick;
 		let movementVector = null as { x: number; y: number } | null;
 
@@ -70,6 +83,24 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 		}
 
 		if (position !== taskForce.position) {
+			const movementDone = movementPerTick - movement;
+
+			const shipsWithStats = await tx
+				.select()
+				.from(taskForceShipsWithStats)
+				.where(eq(taskForceShipsWithStats.taskForceId, taskForce.id));
+
+			for (const ship of shipsWithStats) {
+				const movementPercent = movementDone / +ship.speed;
+				const supplyCosts = movementPercent * +ship.movementSupplyNeed;
+				await tx
+					.update(taskForceShips)
+					.set({
+						supplyCarried: `${Math.max(0, +ship.supplyCarried - supplyCosts)}`,
+					})
+					.where(eq(taskForceShips.id, ship.id));
+			}
+
 			await tx
 				.update(taskForces)
 				.set({ position, orders, movementVector })

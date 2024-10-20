@@ -52,6 +52,7 @@ export function CommisionTaskForce({
 
 					const formData = new FormData(evt.currentTarget as HTMLFormElement);
 
+					const name = formData.get("name") as string;
 					const shipNames = formData.getAll("ship.name");
 					const shipDesigns = formData.getAll("ship.design");
 					const shipRoles = formData.getAll("ship.role");
@@ -63,7 +64,7 @@ export function CommisionTaskForce({
 					}));
 
 					await commisionTaskForce({
-						commision: { starSystemId, name: "New TF", ships },
+						commision: { starSystemId, name, ships },
 					});
 
 					onCommision();

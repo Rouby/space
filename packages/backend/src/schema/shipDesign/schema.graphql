@@ -9,6 +9,7 @@ type ShipDesign {
 	shieldRating: Float!
 	weaponRating: Float!
 	zoneOfControlRating: Float!
+	sensorRating: Float!
 	supplyNeed: Float!
 	supplyCapacity: Float!
 	decommissioned: Boolean!
@@ -38,6 +39,7 @@ input ShipDesignInput {
 	shieldRating: Float!
 	weaponRating: Float!
 	zoneOfControlRating: Float!
+	sensorRating: Float!
 	supplyCapacity: Float!
 	previousDesignId: ID
 }

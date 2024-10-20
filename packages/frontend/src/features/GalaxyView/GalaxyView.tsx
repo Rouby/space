@@ -173,7 +173,7 @@ query Galaxy($id: ID!) {
 								moveTaskForce({
 									id: selectedTaskForce,
 									position: d.point,
-									queueOrder: false,
+									queueOrder: d.shift,
 								});
 							}
 						}}
@@ -181,10 +181,16 @@ query Galaxy($id: ID!) {
 						<Sensors
 							sensors={[
 								...(data?.game.starSystems.filter(
-									(s) => (s.sensorRange ?? 0) > 0 && s.isVisible,
+									(s) =>
+										typeof s.sensorRange === "number" &&
+										s.sensorRange > 0 &&
+										s.isVisible,
 								) ?? []),
 								...(data?.game.taskForces.filter(
-									(s) => (s.sensorRange ?? 0) > 0 && s.isVisible,
+									(s) =>
+										typeof s.sensorRange === "number" &&
+										s.sensorRange > 0 &&
+										s.isVisible,
 								) ?? []),
 							]}
 						/>

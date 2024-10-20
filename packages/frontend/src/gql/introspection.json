@@ -1011,6 +1011,17 @@
             "args": []
           },
           {
+            "name": "sensorRating",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "shieldRating",
             "type": {
               "kind": "NON_NULL",

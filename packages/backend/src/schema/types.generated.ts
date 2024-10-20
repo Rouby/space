@@ -204,6 +204,7 @@ export type ShipDesign = {
   name: Scalars['String']['output'];
   owner: Player;
   previousDesign?: Maybe<ShipDesign>;
+  sensorRating: Scalars['Float']['output'];
   shieldRating: Scalars['Float']['output'];
   speedRating: Scalars['Float']['output'];
   supplyCapacity: Scalars['Float']['output'];
@@ -218,6 +219,7 @@ export type ShipDesignInput = {
   hullRating: Scalars['Float']['input'];
   name: Scalars['String']['input'];
   previousDesignId?: InputMaybe<Scalars['ID']['input']>;
+  sensorRating: Scalars['Float']['input'];
   shieldRating: Scalars['Float']['input'];
   speedRating: Scalars['Float']['input'];
   supplyCapacity: Scalars['Float']['input'];
@@ -624,6 +626,7 @@ export type ShipDesignResolvers<ContextType = Context, ParentType extends Resolv
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
   previousDesign?: Resolver<Maybe<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
+  sensorRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   shieldRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   speedRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   supplyCapacity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;

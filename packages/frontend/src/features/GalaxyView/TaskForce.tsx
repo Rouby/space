@@ -22,7 +22,7 @@ export function TaskForce({
 	const color = isVisible
 		? (ownerColor ?? "white")
 		: ownerColor
-			? new Color(ownerColor).multiply(0.5).toHex()
+			? new Color(ownerColor).multiply(0x999999).toHex()
 			: "gray";
 
 	const drawCircle = useCallback(

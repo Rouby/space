@@ -99,6 +99,7 @@ type ShipDesign {
   name: String!
   owner: Player!
   previousDesign: ShipDesign
+  sensorRating: Float!
   shieldRating: Float!
   speedRating: Float!
   supplyCapacity: Float!
@@ -113,6 +114,7 @@ input ShipDesignInput {
   hullRating: Float!
   name: String!
   previousDesignId: ID
+  sensorRating: Float!
   shieldRating: Float!
   speedRating: Float!
   supplyCapacity: Float!

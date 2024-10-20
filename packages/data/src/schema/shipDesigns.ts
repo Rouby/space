@@ -52,6 +52,12 @@ export const shipDesigns = pgTable("shipDesigns", {
 		precision: 30,
 		scale: 6,
 	}).notNull(),
+	sensorRating: decimal("sensorRating", {
+		precision: 30,
+		scale: 6,
+	})
+		.notNull()
+		.default("1"),
 	supplyNeed: decimal("supplyNeed", {
 		precision: 30,
 		scale: 6,

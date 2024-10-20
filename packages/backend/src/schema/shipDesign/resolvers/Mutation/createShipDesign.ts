@@ -19,7 +19,8 @@ export const createShipDesign: NonNullable<
 		design.armorRating +
 		design.weaponRating +
 		design.speedRating +
-		design.zoneOfControlRating;
+		design.zoneOfControlRating +
+		design.sensorRating;
 
 	const resourceCosts =
 		100 * design.hullRating +
@@ -28,6 +29,7 @@ export const createShipDesign: NonNullable<
 		10 * design.weaponRating +
 		10 * design.speedRating +
 		50 * design.zoneOfControlRating +
+		20 * design.sensorRating +
 		25 * design.supplyCapacity;
 
 	const resourceId = await ctx.drizzle
@@ -51,15 +53,24 @@ export const createShipDesign: NonNullable<
 			.values({
 				gameId,
 				ownerId: ctx.userId as string,
-				...design,
-				supplyNeed,
+				name: design.name,
+				description: design.description,
+				hullRating: `${design.hullRating}`,
+				shieldRating: `${design.shieldRating}`,
+				armorRating: `${design.armorRating}`,
+				weaponRating: `${design.weaponRating}`,
+				speedRating: `${design.speedRating}`,
+				zoneOfControlRating: `${design.zoneOfControlRating}`,
+				sensorRating: `${design.sensorRating}`,
+				supplyCapacity: `${design.supplyCapacity}`,
+				supplyNeed: `${supplyNeed}`,
 			})
 			.returning();
 
 		await tx.insert(shipDesignResourceCosts).values({
 			shipDesignId: shipDesign.id,
 			resourceId,
-			quantity: resourceCosts,
+			quantity: `${resourceCosts}`,
 		});
 
 		return shipDesign;

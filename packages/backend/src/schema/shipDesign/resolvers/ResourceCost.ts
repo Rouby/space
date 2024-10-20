@@ -13,4 +13,7 @@ export const ResourceCost: ResourceCostResolvers = {
 
 		return resource;
 	},
+	quantity: async (parent, _arg, _ctx) => {
+		return +parent.quantity;
+	},
 };

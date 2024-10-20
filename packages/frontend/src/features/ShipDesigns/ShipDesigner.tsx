@@ -66,6 +66,7 @@ export function ShipDesigner({
 						zoneOfControlRating: +(formData.get(
 							"zoneOfControlRating",
 						) as string),
+						sensorRating: +(formData.get("sensorRating") as string),
 						supplyCapacity: +(formData.get("supplyCapacity") as string),
 					};
 
@@ -138,6 +139,13 @@ export function ShipDesigner({
 									required
 									name="zoneOfControlRating"
 									label="Zone of control"
+									min={0}
+								/>
+								<NumberStepper
+									onChange={refreshValues}
+									required
+									name="sensorRating"
+									label="Sensor"
 									min={0}
 								/>
 								<NumberStepper
@@ -217,6 +225,7 @@ export function ShipDesigner({
 			shieldRating: +(formData.get("shieldRating") as string),
 			weaponRating: +(formData.get("weaponRating") as string),
 			zoneOfControlRating: +(formData.get("zoneOfControlRating") as string),
+			sensorRating: +(formData.get("sensorRating") as string),
 			supplyCapacity: +(formData.get("supplyCapacity") as string),
 		};
 
@@ -226,7 +235,8 @@ export function ShipDesigner({
 			design.armorRating +
 			design.weaponRating +
 			design.speedRating +
-			design.zoneOfControlRating;
+			design.zoneOfControlRating +
+			design.sensorRating;
 
 		const resourceCosts =
 			100 * design.hullRating +
@@ -235,6 +245,7 @@ export function ShipDesigner({
 			10 * design.weaponRating +
 			10 * design.speedRating +
 			50 * design.zoneOfControlRating +
+			20 * design.sensorRating +
 			25 * design.supplyCapacity;
 
 		setPredicted({
