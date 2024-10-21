@@ -2,7 +2,12 @@ import { OutlineFilter } from "pixi-filters";
 
 export function Sensors({
 	sensors,
-}: { sensors: { position: { x: number; y: number }; sensorRange: number }[] }) {
+}: {
+	sensors: {
+		position: { x: number; y: number };
+		sensorRange?: number | null;
+	}[];
+}) {
 	return (
 		<container
 			filters={[
@@ -19,11 +24,13 @@ export function Sensors({
 					graphics.clear();
 					graphics.setFillStyle({ color: "red" });
 					for (const sensor of sensors) {
-						graphics.circle(
-							sensor.position.x,
-							sensor.position.y,
-							sensor.sensorRange,
-						);
+						if (sensor.sensorRange) {
+							graphics.circle(
+								sensor.position.x,
+								sensor.position.y,
+								sensor.sensorRange,
+							);
+						}
 					}
 					graphics.fill();
 				}}
