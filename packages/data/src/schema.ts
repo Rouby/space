@@ -27,6 +27,7 @@ export {
 	sql,
 	type AnyColumn,
 	type GetColumnData,
+	type InferModelFromColumns,
 } from "drizzle-orm";
 
 export * from "./schema/games.ts";

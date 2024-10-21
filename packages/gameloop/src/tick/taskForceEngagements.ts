@@ -1,14 +1,16 @@
 import {
+	type InferModelFromColumns,
 	aliasedTable,
 	and,
 	eq,
-	exists,
 	not,
 	notExists,
 	or,
 	sql,
 	taskForceEngagements,
 	taskForceEngagementsToTaskForces,
+	taskForceShips,
+	taskForceShipsWithStats,
 	taskForces,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
@@ -159,10 +161,42 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 		.where(eq(taskForceEngagements.gameId, gameId));
 
 	for (const engagement of engagements) {
-		console.log(engagement);
+		let supplyCostFactor = 0;
+
+		taskForceEngagements.$inferSelect;
+
+		const taskForcesWithShipsAndStats = await tx
+			.select({
+				id: taskForces.id,
+				ownerId: taskForces.ownerId,
+				position: taskForces.position,
+				shipsWithStats: sql<
+					(InferModelFromColumns<
+						(typeof taskForceShipsWithStats)["_"]["selectedFields"]
+					> | null)[]
+				>`json_agg(${taskForceShipsWithStats}.*)`.as("shipsWithStats"),
+			})
+			.from(taskForceEngagementsToTaskForces)
+			.where(
+				eq(
+					taskForceEngagementsToTaskForces.taskForceEngagementId,
+					engagement.id,
+				),
+			)
+			.innerJoin(
+				taskForces,
+				eq(taskForces.id, taskForceEngagementsToTaskForces.taskForceId),
+			)
+			.leftJoin(
+				taskForceShipsWithStats,
+				eq(taskForceShipsWithStats.taskForceId, taskForces.id),
+			)
+			.groupBy(taskForces.id);
+
 		switch (engagement.phase) {
 			case "locating": {
 				const phaseProgress = engagement.phaseProgress + 0.1;
+				supplyCostFactor = 0.1;
 
 				if (phaseProgress >= 1) {
 					await tx
@@ -197,9 +231,13 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 			}
 
 			case "engagement": {
-				const phaseProgress = engagement.phaseProgress + 0.1;
+				supplyCostFactor = 1;
 
-				if (phaseProgress >= 1) {
+				if (
+					taskForcesWithShipsAndStats.filter(
+						(tf) => tf.shipsWithStats.length > 0,
+					).length <= 1
+				) {
 					await tx
 						.update(taskForceEngagements)
 						.set({
@@ -214,18 +252,59 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 						phase: "resolution",
 					});
 				} else {
-					await tx
-						.update(taskForceEngagements)
-						.set({
-							phaseProgress,
-						})
-						.where(eq(taskForceEngagements.id, engagement.id));
+					// every ship picks a random other ship in another random taskforce and deals damage to its hull
+					// if the hull reaches 0, the ship is destroyed
+					// if all ships in a taskforce are destroyed, the taskforce is destroyed
+					// if all taskforces but one are destroyed, the remaining taskforce wins
 
-					ctx.postMessage({
-						type: "taskForceEngagement:phaseProgress",
-						id: engagement.id,
-						phaseProgress,
-					});
+					for (const { id, shipsWithStats } of taskForcesWithShipsAndStats) {
+						const otherTaskForces = taskForcesWithShipsAndStats.filter(
+							(tf) =>
+								tf.id !== id &&
+								tf.shipsWithStats.filter((d) => d !== null).length > 0,
+						);
+						const targetTaskForce =
+							otherTaskForces[
+								Math.floor(Math.random() * otherTaskForces.length)
+							];
+
+						for (const ship of shipsWithStats.filter((d) => d !== null)) {
+							const targetShip =
+								// biome-ignore lint/style/noNonNullAssertion: <explanation>
+								targetTaskForce.shipsWithStats[
+									Math.floor(
+										Math.random() * targetTaskForce.shipsWithStats.length,
+									)
+								]!;
+
+							const damage = Math.floor(Math.random() * +ship.weapon);
+
+							targetShip.hullState = `${Math.max(0, +targetShip.hullState - damage)}`;
+						}
+					}
+
+					for (const ship of taskForcesWithShipsAndStats.flatMap((tf) =>
+						tf.shipsWithStats.filter((d) => d !== null),
+					)) {
+						if (+ship.hullState <= 0) {
+							await tx
+								.delete(taskForceShips)
+								.where(eq(taskForceShips.id, ship.id));
+
+							// ctx.postMessage({
+							// 	type: "taskForceShip:destroyed",
+							// 	id: ship.id,
+							// 	position: ship.position,
+							// });
+						} else {
+							await tx
+								.update(taskForceShips)
+								.set({
+									hullState: ship.hullState,
+								})
+								.where(eq(taskForceShips.id, ship.id));
+						}
+					}
 				}
 
 				break;
@@ -233,34 +312,16 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 
 			case "resolution": {
 				const phaseProgress = engagement.phaseProgress + 0.1;
+				supplyCostFactor = 0;
 
 				if (phaseProgress >= 1) {
-					const tfs = await tx
-						.select()
-						.from(taskForces)
-						.where(
-							exists(
-								tx
-									.select()
-									.from(taskForceEngagementsToTaskForces)
-									.where(
-										and(
-											eq(
-												taskForceEngagementsToTaskForces.taskForceEngagementId,
-												engagement.id,
-											),
-											eq(
-												taskForceEngagementsToTaskForces.taskForceId,
-												taskForces.id,
-											),
-										),
-									),
-							),
-						);
+					const winnerId = taskForcesWithShipsAndStats.find(
+						(tf) => tf.shipsWithStats.length > 0,
+					)?.ownerId;
 
-					const winnerId = tfs[Math.floor(Math.random() * tfs.length)].ownerId;
+					console.log("winnerId", winnerId);
 
-					for (const tf of tfs) {
+					for (const tf of taskForcesWithShipsAndStats) {
 						if (tf.ownerId !== winnerId) {
 							await tx.delete(taskForces).where(eq(taskForces.id, tf.id));
 
@@ -297,6 +358,19 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 
 				break;
 			}
+		}
+
+		// reduce supply of all ships in TFs
+		for (const ship of taskForcesWithShipsAndStats
+			.flatMap((tf) => tf.shipsWithStats.filter((d) => d !== null))
+			.filter((ship) => +ship.hullState > 0)) {
+			const supplyCosts = supplyCostFactor * +ship.combatSupplyNeed;
+			await tx
+				.update(taskForceShips)
+				.set({
+					supplyCarried: `${Math.max(0, +ship.supplyCarried - supplyCosts)}`,
+				})
+				.where(eq(taskForceShips.id, ship.id));
 		}
 	}
 }
