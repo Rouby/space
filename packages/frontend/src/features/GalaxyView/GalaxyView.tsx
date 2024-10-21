@@ -168,6 +168,29 @@ query Galaxy($id: ID!) {
 			>
 				<container>
 					<ViewportWrapper
+						initialViewbox={[
+							...(data?.game.starSystems
+								.filter((s) => s.owner?.id.endsWith(me?.id ?? ""))
+								.map((s) => s.position) ?? []),
+							...(data?.game.taskForces
+								.filter((s) => s.owner?.id.endsWith(me?.id ?? ""))
+								.map((s) => s.position) ?? []),
+						].reduce(
+							(acc, pos) => {
+								return {
+									minX: Math.min(acc.minX, pos.x - 250),
+									maxX: Math.max(acc.maxX, pos.x + 250),
+									minY: Math.min(acc.minY, pos.y - 250),
+									maxY: Math.max(acc.maxY, pos.y + 250),
+								};
+							},
+							{
+								minX: Number.POSITIVE_INFINITY,
+								maxX: Number.NEGATIVE_INFINITY,
+								minY: Number.POSITIVE_INFINITY,
+								maxY: Number.NEGATIVE_INFINITY,
+							},
+						)}
 						onRightClick={(d) => {
 							if (selectedTaskForce) {
 								moveTaskForce({

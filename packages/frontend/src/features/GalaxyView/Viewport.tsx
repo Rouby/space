@@ -1,14 +1,16 @@
 import { useApplication } from "@pixi/react";
-import { Container, type EventSystem, Point } from "pixi.js";
+import { Container, type EventSystem, Point, Rectangle } from "pixi.js";
 import "pixi.js/math-extras";
 
 export class Viewport extends Container {
 	public rightclick: (data: { point: Point; shift: boolean }) => void;
 
 	constructor({
+		initialViewbox,
 		events,
 		rightclick,
 	}: {
+		initialViewbox?: { minX: number; maxX: number; minY: number; maxY: number };
 		events: EventSystem;
 		rightclick: (data: { point: Point; shift: boolean }) => void;
 	}) {
@@ -17,12 +19,50 @@ export class Viewport extends Container {
 		this.isRenderGroup = true;
 		this.rightclick = rightclick;
 
+		if (initialViewbox) {
+			const viewbox = new Rectangle(
+				-initialViewbox.minX,
+				-initialViewbox.minY,
+				initialViewbox.maxX - initialViewbox.minX,
+				initialViewbox.maxY - initialViewbox.minY,
+			);
+
+			const targetScale = Math.min(
+				events.domElement.clientWidth / viewbox.width,
+				events.domElement.clientHeight / viewbox.height,
+			);
+
+			if (
+				events.domElement.clientWidth / viewbox.width >
+				events.domElement.clientHeight / viewbox.height
+			) {
+				viewbox.width =
+					(viewbox.width * events.domElement.clientHeight) / viewbox.height;
+				viewbox.height = events.domElement.clientHeight;
+			} else {
+				viewbox.height =
+					(viewbox.height * events.domElement.clientWidth) / viewbox.width;
+				viewbox.width = events.domElement.clientWidth;
+			}
+
+			this.scale.set(targetScale);
+			this.position.copyFrom(
+				new Point(
+					viewbox.x * targetScale +
+						(events.domElement.clientWidth - viewbox.width) / 2,
+					viewbox.y * targetScale +
+						(events.domElement.clientHeight - viewbox.height) / 2,
+				),
+			);
+
+			// console.log(scale);
+		}
+
 		let dragging = false;
 		const dragStart = new Point();
 
 		events.domElement.addEventListener("mousedown", (event) => {
 			dragging = true;
-
 			events.mapPositionToPoint(dragStart, event.clientX, event.clientY);
 		});
 		events.domElement.addEventListener("mousemove", (event) => {
@@ -62,9 +102,11 @@ export class Viewport extends Container {
 }
 
 export function ViewportWrapper({
+	initialViewbox,
 	onRightClick,
 	children,
 }: {
+	initialViewbox?: { minX: number; maxX: number; minY: number; maxY: number };
 	onRightClick: (data: { point: Point; shift: boolean }) => void;
 	children: React.ReactNode;
 }) {
@@ -74,6 +116,7 @@ export function ViewportWrapper({
 
 	return (
 		<viewport
+			initialViewbox={initialViewbox}
 			events={isInitialised ? app.renderer.events : undefined}
 			rightclick={onRightClick}
 		>
