@@ -67,7 +67,7 @@ export async function migrateFrom0To1(tx: Transaction, gameId: string) {
 			starSystemId: playerSystem.id,
 			resourceId: titaniumId,
 			discoveredAt: new Date(),
-			remainingDeposits: 1000000,
+			remainingDeposits: "1000000",
 		});
 	}
 }
