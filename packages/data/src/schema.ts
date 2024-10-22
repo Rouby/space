@@ -39,5 +39,6 @@ export * from "./schema/starSystems.ts";
 export * from "./schema/taskForceCommisions.ts";
 export * from "./schema/taskForceEngagements.ts";
 export * from "./schema/taskForces.ts";
+export * from "./schema/taskForceShips.ts";
 export * from "./schema/users.ts";
 export * from "./schema/visibility.ts";
