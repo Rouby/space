@@ -23,6 +23,7 @@ import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
 import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
 import    { Player as game_Player } from './game/resolvers/Player.js';
 import    { Player as shipDesign_Player } from './shipDesign/resolvers/Player.js';
+import    { Population } from './starSystem/resolvers/Population.js';
 import    { PositionableApppearsEvent } from './base/resolvers/PositionableApppearsEvent.js';
 import    { PositionableDisappearsEvent } from './base/resolvers/PositionableDisappearsEvent.js';
 import    { PositionableMovesEvent } from './base/resolvers/PositionableMovesEvent.js';
@@ -44,13 +45,14 @@ import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
 import    { Positionable } from './base/resolvers/Positionable.js';
 import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
-import    { DateTimeResolver } from 'graphql-scalars';
+import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceShipCommision: Query_taskForceShipCommision },
       Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,createTaskForceCommision: Mutation_createTaskForceCommision,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,moveTaskForce: Mutation_moveTaskForce,queueTaskForceMove: Mutation_queueTaskForceMove,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
       Game: { ...game_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
 Player: { ...game_Player,...shipDesign_Player },
+Population: Population,
 PositionableApppearsEvent: PositionableApppearsEvent,
 PositionableDisappearsEvent: PositionableDisappearsEvent,
 PositionableMovesEvent: PositionableMovesEvent,
@@ -71,5 +73,6 @@ User: User,
 Vector: Vector,
 Positionable: Positionable,
 TaskForceOrder: TaskForceOrder,
+BigInt: BigIntResolver,
 DateTime: DateTimeResolver
     }

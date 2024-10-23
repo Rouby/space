@@ -1,10 +1,7 @@
 enum TaskForceShipRole {
 	capital
 	screen
-	carrier
-	scout
 	support
-	transport
 }
 
 type TaskForce implements Positionable {

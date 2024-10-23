@@ -21,3 +21,8 @@ export type ResourceDepotMapper = {
 	quantity: string;
 	starSystemId: string;
 };
+export type PopulationMapper = {
+	starSystemId: string;
+	amount: bigint;
+	allegianceToPlayerId?: string | null;
+};

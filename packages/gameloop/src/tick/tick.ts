@@ -1,6 +1,7 @@
 import {
 	and,
 	eq,
+	lastKnownStates,
 	players,
 	sql,
 	starSystems,
@@ -12,6 +13,7 @@ import type { GameEvent } from "../../../backend/src/events.ts";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
+import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
 import { tickTaskForceCommisions } from "./taskForceCommisions.ts";
 import { tickTaskForceEngagements } from "./taskForceEngagements.ts";
 import { tickTaskForceMovements } from "./taskForceMovements.ts";
@@ -34,6 +36,8 @@ export async function tick() {
 		const visibilityPreTick = sql.raw(`"pre_tick_visibility_${gameId}"`);
 
 		await storePreTickVisibility();
+
+		await tickStarSystemPopulation(tx, ctx);
 
 		await tickStarSystemEconomy(tx, ctx);
 
@@ -172,6 +176,37 @@ export async function tick() {
 									position,
 									userId,
 								});
+
+								await tx
+									.insert(lastKnownStates)
+									.values({
+										userId,
+										gameId,
+										subjectId: id,
+										lastUpdate: new Date(),
+										state: {
+											ownerId: null,
+											position,
+											// TODO: add movement vector
+											movementVector: null,
+										},
+									})
+									.onConflictDoUpdate({
+										set: {
+											lastUpdate: new Date(),
+											state: {
+												ownerId: null,
+												position,
+												// TODO: add movement vector
+												movementVector: null,
+											},
+										},
+										target: [
+											lastKnownStates.userId,
+											lastKnownStates.gameId,
+											lastKnownStates.subjectId,
+										],
+									});
 							}
 						}
 					}

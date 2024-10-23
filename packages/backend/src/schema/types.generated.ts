@@ -1,7 +1,7 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
+import { PopulationMapper, ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceCostMapper, ShipDesignMapper } from './shipDesign/schema.mappers.js';
-import { ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceNeedMapper } from './resource/schema.mappers.js';
 import { TaskForceMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper, TaskForceShipMapper, TaskForceShipCommisionMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
@@ -22,6 +22,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  BigInt: { input: bigint; output: bigint; }
   DateTime: { input: Date | string; output: Date | string; }
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
@@ -113,6 +114,12 @@ export type Player = {
   name: Scalars['String']['output'];
   shipDesigns: Array<ShipDesign>;
   user: User;
+};
+
+export type Population = {
+  __typename?: 'Population';
+  amount: Scalars['BigInt']['output'];
+  id: Scalars['ID']['output'];
 };
 
 export type Positionable = {
@@ -235,6 +242,7 @@ export type StarSystem = Positionable & {
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   owner?: Maybe<Player>;
+  populations?: Maybe<Array<Population>>;
   position: Scalars['Vector']['output'];
   resourceDepots?: Maybe<Array<ResourceDepot>>;
   sensorRange?: Maybe<Scalars['Float']['output']>;
@@ -325,11 +333,8 @@ export type TaskForceShipCommisionProgressEvent = {
 
 export type TaskForceShipRole =
   | 'capital'
-  | 'carrier'
-  | 'scout'
   | 'screen'
-  | 'support'
-  | 'transport';
+  | 'support';
 
 export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent;
 
@@ -429,6 +434,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
@@ -437,6 +443,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Player: ResolverTypeWrapper<PlayerMapper>;
+  Population: ResolverTypeWrapper<PopulationMapper>;
   Positionable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Positionable']>;
   PositionableApppearsEvent: ResolverTypeWrapper<Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   PositionableDisappearsEvent: ResolverTypeWrapper<Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
@@ -461,7 +468,7 @@ export type ResolversTypes = {
   TaskForceShip: ResolverTypeWrapper<TaskForceShipMapper>;
   TaskForceShipCommision: ResolverTypeWrapper<TaskForceShipCommisionMapper>;
   TaskForceShipCommisionProgressEvent: ResolverTypeWrapper<Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: ResolversTypes['TaskForceShipCommision'] }>;
-  TaskForceShipRole: ResolverTypeWrapper<'capital' | 'screen' | 'carrier' | 'scout' | 'support' | 'transport'>;
+  TaskForceShipRole: ResolverTypeWrapper<'capital' | 'screen' | 'support'>;
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
@@ -471,6 +478,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  BigInt: Scalars['BigInt']['output'];
   DateTime: Scalars['DateTime']['output'];
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
@@ -479,6 +487,7 @@ export type ResolversParentTypes = {
   Int: Scalars['Int']['output'];
   Mutation: {};
   Player: PlayerMapper;
+  Population: PopulationMapper;
   Positionable: ResolversInterfaceTypes<ResolversParentTypes>['Positionable'];
   PositionableApppearsEvent: Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   PositionableDisappearsEvent: Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
@@ -509,6 +518,10 @@ export type ResolversParentTypes = {
   User: User;
   Vector: Scalars['Vector']['output'];
 };
+
+export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
+  name: 'BigInt';
+}
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
@@ -550,6 +563,12 @@ export type PlayerResolvers<ContextType = Context, ParentType extends ResolversP
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PopulationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Population'] = ResolversParentTypes['Population']> = {
+  amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -643,6 +662,7 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
+  populations?: Resolver<Maybe<Array<ResolversTypes['Population']>>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   resourceDepots?: Resolver<Maybe<Array<ResolversTypes['ResourceDepot']>>, ParentType, ContextType>;
   sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -710,7 +730,7 @@ export type TaskForceShipCommisionProgressEventResolvers<ContextType = Context, 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskForceShipRoleResolvers = EnumResolverSignature<{ capital?: any, carrier?: any, scout?: any, screen?: any, support?: any, transport?: any }, ResolversTypes['TaskForceShipRole']>;
+export type TaskForceShipRoleResolvers = EnumResolverSignature<{ capital?: any, screen?: any, support?: any }, ResolversTypes['TaskForceShipRole']>;
 
 export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackGalaxyEvent'] = ResolversParentTypes['TrackGalaxyEvent']> = {
   __resolveType?: TypeResolveFn<'PositionableApppearsEvent' | 'PositionableDisappearsEvent' | 'PositionableMovesEvent', ParentType, ContextType>;
@@ -737,11 +757,13 @@ export interface VectorScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type Resolvers<ContextType = Context> = {
+  BigInt?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
   Discovery?: DiscoveryResolvers<ContextType>;
   Game?: GameResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
+  Population?: PopulationResolvers<ContextType>;
   Positionable?: PositionableResolvers<ContextType>;
   PositionableApppearsEvent?: PositionableApppearsEventResolvers<ContextType>;
   PositionableDisappearsEvent?: PositionableDisappearsEventResolvers<ContextType>;

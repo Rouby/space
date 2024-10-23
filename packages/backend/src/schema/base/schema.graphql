@@ -1,4 +1,5 @@
 scalar Vector
+scalar BigInt
 
 interface Positionable {
 	id: ID!

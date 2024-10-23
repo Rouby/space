@@ -3,8 +3,8 @@ import type { TaskForceShipRole } from "../types.generated";
 
 export type TaskForceMapper = {
 	id: string;
-	name: string;
-	position: VectorMapper;
+	name: string | null;
+	position: VectorMapper | null;
 	orders: TaskForceOrderMapper[] | null;
 	movementVector: VectorMapper | null;
 	isVisible: boolean;

@@ -510,6 +510,35 @@
         "interfaces": []
       },
       {
+        "kind": "OBJECT",
+        "name": "Population",
+        "fields": [
+          {
+            "name": "amount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
         "kind": "INTERFACE",
         "name": "Positionable",
         "fields": [
@@ -1156,6 +1185,21 @@
               "kind": "OBJECT",
               "name": "Player",
               "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "populations",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Population",
+                  "ofType": null
+                }
+              }
             },
             "args": []
           },

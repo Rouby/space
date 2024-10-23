@@ -14,6 +14,7 @@ import { Fragment } from "react/jsx-runtime";
 import { useStyles } from "tss-react";
 import { useQuery } from "urql";
 import {
+	formatNumber,
 	formatTicksToRelativeTime,
 	formatUnit,
 	formatUnitPerTick,
@@ -63,6 +64,10 @@ export function StarSystemDetails({ id }: { id: string }) {
 				}	
 				quantity
 			}
+			populations {
+				id
+				amount
+			}
 		}
 	}`,
 		),
@@ -81,6 +86,24 @@ export function StarSystemDetails({ id }: { id: string }) {
 					<Card>
 						<Text variant="gradient">Location</Text>
 						<Text>{data && coordinateToGrid(data.starSystem.position, 2)}</Text>
+					</Card>
+					<Card>
+						<Text variant="gradient">Population</Text>
+						<Text>
+							{!data?.starSystem.populations ? (
+								<>
+									Our scanners could not pick up information about the
+									population.
+								</>
+							) : (
+								formatNumber(
+									data.starSystem.populations.reduce(
+										(acc, pop) => acc + pop.amount,
+										0,
+									),
+								)
+							)}
+						</Text>
 					</Card>
 					<Card>
 						<Text variant="gradient">Discoveries</Text>
@@ -162,13 +185,7 @@ export function StarSystemDetails({ id }: { id: string }) {
 										mah={64}
 										radius="lg"
 									/>
-									<Center>
-										{new Intl.NumberFormat(undefined, {
-											style: "decimal",
-											notation: "compact",
-										}).format(depot.quantity)}{" "}
-										units
-									</Center>
+									<Center>{formatUnit(depot.quantity)}</Center>
 								</Stack>
 							))}
 						</div>

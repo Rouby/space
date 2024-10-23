@@ -2,6 +2,7 @@ import {
 	and,
 	eq,
 	players,
+	starSystemPopulations,
 	starSystemResourceDepots,
 	starSystemResourceDiscoveries,
 } from "@space/data/schema";
@@ -14,6 +15,7 @@ export const StarSystem: Pick<
 	| "lastUpdate"
 	| "name"
 	| "owner"
+	| "populations"
 	| "position"
 	| "resourceDepots"
 	| "sensorRange"
@@ -72,5 +74,11 @@ export const StarSystem: Pick<
 			.where(eq(starSystemResourceDepots.starSystemId, parent.id));
 
 		return resourceDepots;
+	},
+	populations: async (parent, _arg, ctx) => {
+		return ctx.drizzle
+			.select()
+			.from(starSystemPopulations)
+			.where(eq(starSystemPopulations.starSystemId, parent.id));
 	},
 };

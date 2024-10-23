@@ -93,10 +93,7 @@ export function CommisionTaskForce({
 							data={[
 								{ label: "Capital", value: TaskForceShipRole.Capital },
 								{ label: "Screen", value: TaskForceShipRole.Screen },
-								{ label: "Carrier", value: TaskForceShipRole.Carrier },
-								{ label: "Scout", value: TaskForceShipRole.Scout },
 								{ label: "Support", value: TaskForceShipRole.Support },
-								{ label: "Transport", value: TaskForceShipRole.Transport },
 							]}
 						/>
 						<ActionIcon

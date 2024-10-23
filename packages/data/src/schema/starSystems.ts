@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+	bigint,
 	decimal,
 	integer,
 	pgTable,
@@ -28,6 +29,7 @@ export const starSystems = pgTable("starSystems", {
 export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({
 	game: one(games, { fields: [starSystems.gameId], references: [games.id] }),
 	owner: one(users, { fields: [starSystems.ownerId], references: [users.id] }),
+	populations: many(starSystemPopulations),
 }));
 
 export const starSystemResourceDiscoveries = pgTable(
@@ -66,6 +68,25 @@ export const starSystemResourceDepots = pgTable(
 	(table) => ({
 		pk: primaryKey({
 			columns: [table.starSystemId, table.resourceId],
+		}),
+	}),
+);
+
+export const starSystemPopulations = pgTable(
+	"starSystemPopulations",
+	{
+		starSystemId: uuid("starSystemId")
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "cascade" }),
+		amount: bigint("amount", { mode: "bigint" }).notNull(),
+		allegianceToPlayerId: uuid("allegianceToPlayerId").references(
+			() => users.id,
+			{ onDelete: "restrict" },
+		),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.starSystemId, table.allegianceToPlayerId],
 		}),
 	}),
 );

@@ -9,6 +9,7 @@ const config: CodegenConfig = {
 			config: {
 				scalars: {
 					Vector: "{x:number;y:number}",
+					BigInt: "number",
 				},
 			},
 		},

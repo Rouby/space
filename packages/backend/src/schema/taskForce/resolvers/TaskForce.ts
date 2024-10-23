@@ -10,6 +10,9 @@ import {
 import { createGraphQLError } from "graphql-yoga";
 import type { TaskForceResolvers } from "./../../types.generated.js";
 export const TaskForce: TaskForceResolvers = {
+	name: (parent) => {
+		return parent.name ?? "Unknown";
+	},
 	owner: async (parent, _arg, ctx) => {
 		if (!parent.ownerId) {
 			return null;

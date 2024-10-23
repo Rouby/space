@@ -9,7 +9,8 @@ export type GameEvent =
 	| TaskForceEngagementChangePhase
 	| TaskForceEngagementEnded
 	| StarSystemAppeared
-	| StarSystemDisappeared;
+	| StarSystemDisappeared
+	| StarSystemPopulationChanged;
 
 interface TaskForceAppeared {
 	type: "taskForce:appeared";
@@ -79,4 +80,11 @@ interface StarSystemDisappeared {
 	id: string;
 	userId: string;
 	position: { x: number; y: number };
+}
+
+interface StarSystemPopulationChanged {
+	type: "starSystem:populationChanged";
+	starSystemId: string;
+	populationId: string;
+	amount: bigint;
 }

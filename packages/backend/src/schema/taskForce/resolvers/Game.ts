@@ -1,42 +1,53 @@
 import {
-	type AnyColumn,
-	type GetColumnData,
 	and,
 	eq,
+	getLastKnownHelper,
+	isNotNull,
 	lastKnownStates,
+	or,
 	sql,
 	taskForces,
-	visibility,
 } from "@space/data/schema";
 import type { GameResolvers } from "./../../types.generated.js";
 export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 	/* Implement Game resolver logic here */
 	taskForces: async (parent, _arg, ctx) => {
-		return ctx.drizzle
-			.select({
-				id: taskForces.id,
-				name: taskForces.name,
-				gameId: taskForces.gameId,
+		const { TaskForceVisibility, visibilityExists, possiblyHidden } =
+			getLastKnownHelper({
+				tx: ctx.drizzle,
+				gameId: parent.id,
+				userId: ctx.userId ?? "",
 				position: taskForces.position,
-				orders: taskForces.orders,
+			});
+
+		return ctx.drizzle
+			.with(TaskForceVisibility)
+			.select({
+				id: sql<string>`CASE WHEN ${visibilityExists} THEN ${taskForces.id} ELSE ${lastKnownStates.subjectId} END`,
+				gameId: sql<string>`CASE WHEN ${visibilityExists} THEN ${taskForces.gameId} ELSE ${lastKnownStates.gameId} END`,
+
+				name: possiblyHidden(taskForces.name).as("name"),
+				position: possiblyHidden(taskForces.position).as("position"),
+				orders: possiblyHidden(taskForces.orders).as("orders"),
 				movementVector: possiblyHidden(taskForces.movementVector).as(
 					"movementVector",
 				),
 				ownerId: possiblyHidden(taskForces.ownerId).as("ownerId"),
-				isVisible: sql<boolean>`CASE WHEN ${visibility.circle} IS NOT NULL THEN TRUE ELSE FALSE END`,
-				lastUpdate: sql<Date>`CASE WHEN ${visibility.circle} IS NULL THEN ${lastKnownStates.lastUpdate} ELSE NULL END`,
+
+				isVisible: sql<boolean>`CASE WHEN ${visibilityExists} THEN TRUE ELSE FALSE END`,
+				lastUpdate:
+					sql<Date>`CASE WHEN ${visibilityExists} THEN NULL ELSE ${lastKnownStates.lastUpdate} END`.mapWith(
+						lastKnownStates.lastUpdate,
+					),
 			})
 			.from(taskForces)
-			.where(and(eq(taskForces.gameId, parent.id)))
-			.innerJoin(
-				visibility,
+			.where(
 				and(
-					eq(visibility.gameId, taskForces.gameId),
-					eq(visibility.userId, ctx.userId ?? ""),
-					sql`${visibility.circle} @> ${taskForces.position}`,
+					eq(taskForces.gameId, parent.id),
+					or(visibilityExists, isNotNull(lastKnownStates.state)),
 				),
 			)
-			.leftJoin(
+			.fullJoin(
 				lastKnownStates,
 				and(
 					eq(lastKnownStates.gameId, parent.id),
@@ -45,7 +56,3 @@ export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 			);
 	},
 };
-
-function possiblyHidden<T extends AnyColumn>(column: T) {
-	return sql<GetColumnData<T> | null>`CASE WHEN ${visibility.circle} IS NOT NULL THEN to_jsonb(${column}) ELSE CASE WHEN ${lastKnownStates.state} IS NOT NULL THEN ${lastKnownStates.state}->'${sql.raw(column.name)}' ELSE NULL END END`;
-}

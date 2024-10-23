@@ -1,3 +1,5 @@
+scalar BigInt
+
 scalar DateTime
 
 union Discovery = ResourceDiscovery | UnknownDiscovery
@@ -33,6 +35,11 @@ type Player {
   name: String!
   shipDesigns: [ShipDesign!]!
   user: User!
+}
+
+type Population {
+  amount: BigInt!
+  id: ID!
 }
 
 interface Positionable {
@@ -129,6 +136,7 @@ type StarSystem implements Positionable {
   lastUpdate: DateTime
   name: String!
   owner: Player
+  populations: [Population!]
   position: Vector!
   resourceDepots: [ResourceDepot!]
   sensorRange: Float
@@ -203,11 +211,8 @@ type TaskForceShipCommisionProgressEvent {
 
 enum TaskForceShipRole {
   capital
-  carrier
-  scout
   screen
   support
-  transport
 }
 
 union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent

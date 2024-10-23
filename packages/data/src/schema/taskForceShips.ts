@@ -14,10 +14,7 @@ import { taskForces } from "./taskForces.ts";
 export const taskForceShipRole = pgEnum("taskForceShipRole", [
 	"capital",
 	"screen",
-	"carrier",
-	"scout",
 	"support",
-	"transport",
 ]);
 
 export const taskForceShips = pgTable("taskForceShips", {

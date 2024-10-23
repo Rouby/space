@@ -10,7 +10,8 @@ import { games } from "./games.ts";
 import { resources } from "./resources.ts";
 import { shipDesigns } from "./shipDesigns.ts";
 import { starSystems } from "./starSystems.ts";
-import { taskForceShipRole, taskForces } from "./taskForces.ts";
+import { taskForceShipRole } from "./taskForceShips.ts";
+import { taskForces } from "./taskForces.ts";
 
 export const taskForceShipCommisions = pgTable("taskForceShipCommisions", {
 	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
