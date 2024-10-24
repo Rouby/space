@@ -1,25 +1,42 @@
 import { useApplication } from "@pixi/react";
-import { Container, type EventSystem, Point, Rectangle } from "pixi.js";
+import {
+	type Container,
+	type FederatedPointerEvent,
+	type FederatedWheelEvent,
+	Point,
+	Rectangle,
+	Texture,
+} from "pixi.js";
 import "pixi.js/math-extras";
+import { useEffect, useRef } from "react";
 
-export class Viewport extends Container {
-	public rightclick: (data: { point: Point; shift: boolean }) => void;
+export function Viewport({
+	initialViewbox,
+	onClick,
+	onRightClick,
+	children,
+}: {
+	initialViewbox?: { minX: number; maxX: number; minY: number; maxY: number };
+	onClick: (data: {
+		event: Event;
+		point: Point;
+		shift: boolean;
+	}) => void;
+	onRightClick: (data: {
+		event: Event;
+		point: Point;
+		shift: boolean;
+	}) => void;
+	children: React.ReactNode;
+}) {
+	const { app, isInitialised } = useApplication();
+	const dragStart = useRef(new Point());
+	const dragging = useRef(false);
+	const viewportRef = useRef<Container>(null);
 
-	constructor({
-		initialViewbox,
-		events,
-		rightclick,
-	}: {
-		initialViewbox?: { minX: number; maxX: number; minY: number; maxY: number };
-		events: EventSystem;
-		rightclick: (data: { point: Point; shift: boolean }) => void;
-	}) {
-		super();
-
-		this.isRenderGroup = true;
-		this.rightclick = rightclick;
-
-		if (initialViewbox) {
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		if (viewportRef.current && initialViewbox && isInitialised) {
 			const viewbox = new Rectangle(
 				-initialViewbox.minX,
 				-initialViewbox.minY,
@@ -28,99 +45,121 @@ export class Viewport extends Container {
 			);
 
 			const targetScale = Math.min(
-				events.domElement.clientWidth / viewbox.width,
-				events.domElement.clientHeight / viewbox.height,
+				app.renderer.events.domElement.clientWidth / viewbox.width,
+				app.renderer.events.domElement.clientHeight / viewbox.height,
 			);
 
 			if (
-				events.domElement.clientWidth / viewbox.width >
-				events.domElement.clientHeight / viewbox.height
+				app.renderer.events.domElement.clientWidth / viewbox.width >
+				app.renderer.events.domElement.clientHeight / viewbox.height
 			) {
 				viewbox.width =
-					(viewbox.width * events.domElement.clientHeight) / viewbox.height;
-				viewbox.height = events.domElement.clientHeight;
+					(viewbox.width * app.renderer.events.domElement.clientHeight) /
+					viewbox.height;
+				viewbox.height = app.renderer.events.domElement.clientHeight;
 			} else {
 				viewbox.height =
-					(viewbox.height * events.domElement.clientWidth) / viewbox.width;
-				viewbox.width = events.domElement.clientWidth;
+					(viewbox.height * app.renderer.events.domElement.clientWidth) /
+					viewbox.width;
+				viewbox.width = app.renderer.events.domElement.clientWidth;
 			}
 
-			this.scale.set(targetScale);
-			this.position.copyFrom(
+			viewportRef.current.scale.set(targetScale);
+			viewportRef.current.position.copyFrom(
 				new Point(
 					viewbox.x * targetScale +
-						(events.domElement.clientWidth - viewbox.width) / 2,
+						(app.renderer.events.domElement.clientWidth - viewbox.width) / 2,
 					viewbox.y * targetScale +
-						(events.domElement.clientHeight - viewbox.height) / 2,
+						(app.renderer.events.domElement.clientHeight - viewbox.height) / 2,
 				),
 			);
-
-			// console.log(scale);
 		}
-
-		let dragging = false;
-		const dragStart = new Point();
-
-		events.domElement.addEventListener("mousedown", (event) => {
-			dragging = true;
-			events.mapPositionToPoint(dragStart, event.clientX, event.clientY);
-		});
-		events.domElement.addEventListener("mousemove", (event) => {
-			if (dragging) {
-				const point = new Point();
-				events.mapPositionToPoint(point, event.clientX, event.clientY);
-				const delta = point.subtract(dragStart);
-				dragStart.copyFrom(point);
-
-				this.position = this.position.add(delta);
-			}
-		});
-		events.domElement.addEventListener("mouseup", () => {
-			dragging = false;
-		});
-		events.domElement.addEventListener("wheel", (event) => {
-			const point = new Point();
-			events.mapPositionToPoint(point, event.clientX, event.clientY);
-
-			const scale = 1 - event.deltaY * 0.001;
-
-			this.position.set(
-				point.x + (this.x - point.x) * scale,
-				point.y + (this.y - point.y) * scale,
-			);
-			this.scale = this.scale.multiplyScalar(scale);
-		});
-		events.domElement.addEventListener("contextmenu", (event) => {
-			event.preventDefault();
-
-			this.rightclick({
-				point: this.toLocal(events.pointer.global),
-				shift: event.shiftKey,
-			});
-		});
-	}
-}
-
-export function ViewportWrapper({
-	initialViewbox,
-	onRightClick,
-	children,
-}: {
-	initialViewbox?: { minX: number; maxX: number; minY: number; maxY: number };
-	onRightClick: (data: { point: Point; shift: boolean }) => void;
-	children: React.ReactNode;
-}) {
-	const { app, isInitialised } = useApplication();
+	}, [isInitialised]);
 
 	if (!isInitialised) return null;
 
 	return (
-		<viewport
-			initialViewbox={initialViewbox}
-			events={isInitialised ? app.renderer.events : undefined}
-			rightclick={onRightClick}
-		>
-			{children}
-		</viewport>
+		<>
+			<sprite
+				texture={Texture.WHITE}
+				width={app.screen.width}
+				height={app.screen.height}
+				tint={0x000000}
+				interactive
+				onPointerDown={(event: FederatedPointerEvent) => {
+					dragging.current = true;
+					app.renderer.events.mapPositionToPoint(
+						dragStart.current,
+						event.clientX,
+						event.clientY,
+					);
+				}}
+				onPointerMove={(event: FederatedPointerEvent) => {
+					if (dragging.current) {
+						const point = new Point();
+						app.renderer.events.mapPositionToPoint(
+							point,
+							event.clientX,
+							event.clientY,
+						);
+						const delta = point.subtract(dragStart.current);
+						dragStart.current.copyFrom(point);
+
+						if (viewportRef.current) {
+							viewportRef.current.position =
+								viewportRef.current.position.add(delta);
+						}
+					}
+				}}
+				onPointerUp={(event: FederatedPointerEvent) => {
+					dragging.current = false;
+					const point = new Point();
+					app.renderer.events.mapPositionToPoint(
+						point,
+						event.clientX,
+						event.clientY,
+					);
+					const delta = point.subtract(dragStart.current);
+
+					if (
+						viewportRef.current &&
+						Math.abs(delta.x) < 5 &&
+						Math.abs(delta.y) < 5 &&
+						event.button === 0 &&
+						!event.defaultPrevented
+					) {
+						onClick({
+							event,
+							point: viewportRef.current.toLocal(
+								app.renderer.events.pointer.global,
+							),
+							shift: event.shiftKey,
+						});
+					}
+				}}
+				onWheel={(event: FederatedWheelEvent) => {
+					const point = new Point();
+					app.renderer.events.mapPositionToPoint(
+						point,
+						event.clientX,
+						event.clientY,
+					);
+
+					const scale = 1 - event.deltaY * 0.001;
+
+					if (viewportRef.current) {
+						viewportRef.current.position.set(
+							point.x + (viewportRef.current.x - point.x) * scale,
+							point.y + (viewportRef.current.y - point.y) * scale,
+						);
+						viewportRef.current.scale =
+							viewportRef.current.scale.multiplyScalar(scale);
+					}
+				}}
+			/>
+			<container ref={viewportRef} isRenderGroup>
+				{children}
+			</container>
+		</>
 	);
 }

@@ -1,5 +1,10 @@
 import { OutlineFilter } from "pixi-filters";
-import { Color, type Graphics, type PointData } from "pixi.js";
+import {
+	Color,
+	type FederatedPointerEvent,
+	type Graphics,
+	type PointData,
+} from "pixi.js";
 import { useCallback } from "react";
 
 export function TaskForce({
@@ -45,17 +50,23 @@ export function TaskForce({
 		[sensorRange],
 	);
 
-	const onPointerUp = useCallback(() => {
-		onClick(id);
-	}, [onClick, id]);
-
 	return (
 		<container position={position}>
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 			<graphics
 				draw={drawCircle}
 				interactive
 				cursor="pointer"
-				onPointerUp={onPointerUp}
+				onClick={(event: PointerEvent) => {
+					console.log("tf", event);
+					event.preventDefault();
+					onClick(id);
+				}}
+				onRightClick={(event: FederatedPointerEvent) => {
+					event.preventDefault();
+					event.bubbles = false;
+					console.log("tf", { ...event });
+				}}
 				filters={
 					isSelected
 						? [

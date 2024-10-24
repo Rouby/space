@@ -1,6 +1,6 @@
 import { Application, extend } from "@pixi/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import "pixi.js/math-extras";
 import { useCallback, useRef, useState } from "react";
 import { useStyles } from "tss-react";
@@ -10,12 +10,12 @@ import { graphql } from "../../gql";
 import { Sensors } from "./Sensors";
 import { StarSystem } from "./StarSystem";
 import { TaskForce } from "./TaskForce";
-import { Viewport, ViewportWrapper } from "./Viewport";
+import { Viewport } from "./Viewport";
 
 extend({
 	Container,
 	Graphics,
-	Viewport,
+	Sprite,
 });
 
 export function GalaxyView() {
@@ -167,7 +167,7 @@ query Galaxy($id: ID!) {
 				resizeTo={parentRef}
 			>
 				<container>
-					<ViewportWrapper
+					<Viewport
 						initialViewbox={[
 							...(data?.game.starSystems
 								.filter((s) => s.owner?.id.endsWith(me?.id ?? ""))
@@ -191,6 +191,11 @@ query Galaxy($id: ID!) {
 								maxY: Number.NEGATIVE_INFINITY,
 							},
 						)}
+						onClick={() => {
+							if (selectedTaskForce) {
+								setSelectedTaskForce(undefined);
+							}
+						}}
 						onRightClick={(d) => {
 							if (selectedTaskForce) {
 								moveTaskForce({
@@ -240,7 +245,7 @@ query Galaxy($id: ID!) {
 								sensorRange={taskForce.sensorRange}
 							/>
 						))}
-					</ViewportWrapper>
+					</Viewport>
 				</container>
 			</Application>
 		</div>
