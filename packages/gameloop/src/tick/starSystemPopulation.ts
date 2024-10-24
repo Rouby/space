@@ -31,31 +31,16 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 			0n,
 		);
 
-		const maxPopulation = 20_000_000_000n;
+		const growthRatePerHour =
+			0.05 * (1 - Math.log(Number(totalAmount) / 20_000_000_000 + 1));
+		const growthRatePerTick = (growthRatePerHour / 3_600_000) * 100;
 
-		let totalGrowth = 0n;
-		switch (true) {
-			case totalAmount <= 100_000_000n:
-				totalGrowth = (totalAmount * 1_005_000n) / 1_000_000n - totalAmount;
-				break;
-			case totalAmount <= 1_000_000_000n:
-				totalGrowth = (totalAmount * 1_001_000n) / 1_000_000n - totalAmount;
-				break;
-			case totalAmount <= 10_000_000_000n:
-				totalGrowth = (totalAmount * 1_000_010n) / 1_000_000n - totalAmount;
-				break;
-			case totalAmount <= maxPopulation:
-				totalGrowth = (totalAmount * 1_000_001n) / 1_000_000n - totalAmount;
-				break;
-			default:
-				totalGrowth = 20_000n;
-				break;
-		}
+		const totalGrowth = Number(totalAmount) * growthRatePerTick;
 
 		for (const pop of starSystem.populations) {
 			const factor = pop.amount / Number(totalAmount);
 			const amount = BigInt(pop.amount);
-			const growth = BigInt(Math.floor(Number(totalGrowth) * factor));
+			const growth = BigInt(Math.floor(totalGrowth * factor));
 
 			await tx
 				.update(starSystemPopulations)
@@ -67,6 +52,7 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 				starSystemId: starSystem.id,
 				populationId: `${starSystem.id}:${pop.allegianceToPlayerId}`,
 				amount: amount + growth,
+				growth,
 			});
 		}
 	}

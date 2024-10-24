@@ -87,4 +87,5 @@ interface StarSystemPopulationChanged {
 	starSystemId: string;
 	populationId: string;
 	amount: bigint;
+	growth: bigint;
 }
