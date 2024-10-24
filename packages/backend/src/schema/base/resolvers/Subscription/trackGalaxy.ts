@@ -161,6 +161,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 
 		const starSystemEvents = ctx.fromGameEvents(gameId).pipe(
 			filter((event) => event.type === "starSystem:appeared"),
+			filter((event) => event.userId === ctx.userId),
 			map((event) => ({
 				__typename: "PositionableApppearsEvent" as const,
 				subject: {
@@ -191,6 +192,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 					ctx.fromGameEvents(gameId).pipe(
 						filter((event) => event.type === "starSystem:disappeared"),
 						filter((event) => event.id === appeared.subject.id),
+						filter((event) => event.userId === ctx.userId),
 						map(() => ({
 							__typename: "PositionableDisappearsEvent" as const,
 							subject: {
