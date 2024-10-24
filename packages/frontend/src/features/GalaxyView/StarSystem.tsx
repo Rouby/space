@@ -1,4 +1,9 @@
-import { Color, type Graphics, type PointData } from "pixi.js";
+import {
+	Color,
+	type FederatedPointerEvent,
+	type Graphics,
+	type PointData,
+} from "pixi.js";
 import { useCallback } from "react";
 
 export function StarSystem({
@@ -44,17 +49,21 @@ export function StarSystem({
 		[sensorRange],
 	);
 
-	const onPointerUp = useCallback(() => {
-		onClick(id);
-	}, [onClick, id]);
-
 	return (
 		<container position={position}>
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 			<graphics
 				draw={drawCircle}
 				interactive
 				cursor="pointer"
-				onPointerUp={onPointerUp}
+				onClick={(event: PointerEvent) => {
+					event.preventDefault();
+					onClick(id);
+				}}
+				onRightClick={(event: FederatedPointerEvent) => {
+					event.preventDefault();
+					console.log("contextmenu on starsystem");
+				}}
 			/>
 			{(sensorRange ?? 0) > 0 && isSelected && (
 				<graphics draw={drawSensorRange} />

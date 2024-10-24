@@ -37,6 +37,9 @@ export function Viewport({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (viewportRef.current && initialViewbox && isInitialised) {
+			app.renderer.events.domElement.oncontextmenu = (event) =>
+				event.preventDefault();
+
 			const viewbox = new Rectangle(
 				-initialViewbox.minX,
 				-initialViewbox.minY,
@@ -79,40 +82,18 @@ export function Viewport({
 	if (!isInitialised) return null;
 
 	return (
-		<>
-			<sprite
-				texture={Texture.WHITE}
-				width={app.screen.width}
-				height={app.screen.height}
-				tint={0x000000}
-				interactive
-				onPointerDown={(event: FederatedPointerEvent) => {
-					dragging.current = true;
-					app.renderer.events.mapPositionToPoint(
-						dragStart.current,
-						event.clientX,
-						event.clientY,
-					);
-				}}
-				onPointerMove={(event: FederatedPointerEvent) => {
-					if (dragging.current) {
-						const point = new Point();
-						app.renderer.events.mapPositionToPoint(
-							point,
-							event.clientX,
-							event.clientY,
-						);
-						const delta = point.subtract(dragStart.current);
-						dragStart.current.copyFrom(point);
-
-						if (viewportRef.current) {
-							viewportRef.current.position =
-								viewportRef.current.position.add(delta);
-						}
-					}
-				}}
-				onPointerUp={(event: FederatedPointerEvent) => {
-					dragging.current = false;
+		<container
+			interactive
+			onPointerDown={(event: FederatedPointerEvent) => {
+				dragging.current = true;
+				app.renderer.events.mapPositionToPoint(
+					dragStart.current,
+					event.clientX,
+					event.clientY,
+				);
+			}}
+			onPointerMove={(event: FederatedPointerEvent) => {
+				if (dragging.current) {
 					const point = new Point();
 					app.renderer.events.mapPositionToPoint(
 						point,
@@ -120,46 +101,86 @@ export function Viewport({
 						event.clientY,
 					);
 					const delta = point.subtract(dragStart.current);
-
-					if (
-						viewportRef.current &&
-						Math.abs(delta.x) < 5 &&
-						Math.abs(delta.y) < 5 &&
-						event.button === 0 &&
-						!event.defaultPrevented
-					) {
-						onClick({
-							event,
-							point: viewportRef.current.toLocal(
-								app.renderer.events.pointer.global,
-							),
-							shift: event.shiftKey,
-						});
-					}
-				}}
-				onWheel={(event: FederatedWheelEvent) => {
-					const point = new Point();
-					app.renderer.events.mapPositionToPoint(
-						point,
-						event.clientX,
-						event.clientY,
-					);
-
-					const scale = 1 - event.deltaY * 0.001;
+					dragStart.current.copyFrom(point);
 
 					if (viewportRef.current) {
-						viewportRef.current.position.set(
-							point.x + (viewportRef.current.x - point.x) * scale,
-							point.y + (viewportRef.current.y - point.y) * scale,
-						);
-						viewportRef.current.scale =
-							viewportRef.current.scale.multiplyScalar(scale);
+						viewportRef.current.position =
+							viewportRef.current.position.add(delta);
 					}
-				}}
+				}
+			}}
+			onPointerUp={(event: FederatedPointerEvent) => {
+				dragging.current = false;
+				const point = new Point();
+				app.renderer.events.mapPositionToPoint(
+					point,
+					event.clientX,
+					event.clientY,
+				);
+				const delta = point.subtract(dragStart.current);
+
+				if (
+					viewportRef.current &&
+					Math.abs(delta.x) < 5 &&
+					Math.abs(delta.y) < 5 &&
+					event.button === 0 &&
+					!event.defaultPrevented
+				) {
+					onClick({
+						event,
+						point: viewportRef.current.toLocal(
+							app.renderer.events.pointer.global,
+						),
+						shift: event.shiftKey,
+					});
+				}
+			}}
+			onWheel={(event: FederatedWheelEvent) => {
+				const point = new Point();
+				app.renderer.events.mapPositionToPoint(
+					point,
+					event.clientX,
+					event.clientY,
+				);
+
+				const scale = 1 - event.deltaY * 0.001;
+
+				if (viewportRef.current) {
+					viewportRef.current.position.set(
+						point.x + (viewportRef.current.x - point.x) * scale,
+						point.y + (viewportRef.current.y - point.y) * scale,
+					);
+					viewportRef.current.scale =
+						viewportRef.current.scale.multiplyScalar(scale);
+				}
+			}}
+			onRightClick={(event: FederatedPointerEvent) => {
+				if (
+					viewportRef.current &&
+					((event.eventPhase === Event.BUBBLING_PHASE &&
+						!event.defaultPrevented) ||
+						event.eventPhase === Event.AT_TARGET)
+				) {
+					event.preventDefault();
+					onRightClick({
+						event,
+						point: viewportRef.current.toLocal(
+							app.renderer.events.pointer.global,
+						),
+						shift: event.shiftKey,
+					});
+				}
+			}}
+		>
+			<sprite
+				texture={Texture.WHITE}
+				width={app.screen.width}
+				height={app.screen.height}
+				tint={0x000000}
 			/>
 			<container ref={viewportRef} isRenderGroup>
 				{children}
 			</container>
-		</>
+		</container>
 	);
 }

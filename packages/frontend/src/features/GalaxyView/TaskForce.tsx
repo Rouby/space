@@ -58,14 +58,12 @@ export function TaskForce({
 				interactive
 				cursor="pointer"
 				onClick={(event: PointerEvent) => {
-					console.log("tf", event);
 					event.preventDefault();
 					onClick(id);
 				}}
 				onRightClick={(event: FederatedPointerEvent) => {
 					event.preventDefault();
-					event.bubbles = false;
-					console.log("tf", { ...event });
+					console.log("contextmenu on taskforce");
 				}}
 				filters={
 					isSelected
