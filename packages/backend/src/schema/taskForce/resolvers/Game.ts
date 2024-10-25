@@ -12,13 +12,17 @@ import type { GameResolvers } from "./../../types.generated.js";
 export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 	/* Implement Game resolver logic here */
 	taskForces: async (parent, _arg, ctx) => {
-		const { TaskForceVisibility, visibilityExists, possiblyHidden } =
-			getLastKnownHelper({
-				tx: ctx.drizzle,
-				gameId: parent.id,
-				userId: ctx.userId ?? "",
-				position: taskForces.position,
-			});
+		const {
+			TaskForceVisibility,
+			visibilityExists,
+			possiblyHidden,
+			knownOrLastKnown,
+		} = getLastKnownHelper({
+			tx: ctx.drizzle,
+			gameId: parent.id,
+			userId: ctx.userId ?? "",
+			position: taskForces.position,
+		});
 
 		return ctx.drizzle
 			.with(TaskForceVisibility)
@@ -27,7 +31,7 @@ export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 				gameId: sql<string>`CASE WHEN ${visibilityExists} THEN ${taskForces.gameId} ELSE ${lastKnownStates.gameId} END`,
 
 				name: possiblyHidden(taskForces.name).as("name"),
-				position: possiblyHidden(taskForces.position).as("position"),
+				position: knownOrLastKnown(taskForces.position).as("position"),
 				orders: possiblyHidden(taskForces.orders).as("orders"),
 				movementVector: possiblyHidden(taskForces.movementVector).as(
 					"movementVector",

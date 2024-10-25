@@ -18,14 +18,12 @@ export function Viewport({
 }: {
 	initialViewbox?: { minX: number; maxX: number; minY: number; maxY: number };
 	onClick: (data: {
-		event: Event;
+		event: FederatedPointerEvent;
 		point: Point;
-		shift: boolean;
 	}) => void;
 	onRightClick: (data: {
-		event: Event;
+		event: FederatedPointerEvent;
 		point: Point;
-		shift: boolean;
 	}) => void;
 	children: React.ReactNode;
 }) {
@@ -131,7 +129,6 @@ export function Viewport({
 						point: viewportRef.current.toLocal(
 							app.renderer.events.pointer.global,
 						),
-						shift: event.shiftKey,
 					});
 				}
 			}}
@@ -167,7 +164,6 @@ export function Viewport({
 						point: viewportRef.current.toLocal(
 							app.renderer.events.pointer.global,
 						),
-						shift: event.shiftKey,
 					});
 				}
 			}}

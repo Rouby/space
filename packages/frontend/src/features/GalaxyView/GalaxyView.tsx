@@ -1,8 +1,9 @@
+import { Menu } from "@mantine/core";
 import { Application, extend } from "@pixi/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { Container, Graphics, Sprite } from "pixi.js";
+import { Container, Graphics, type Point, Sprite } from "pixi.js";
 import "pixi.js/math-extras";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { useAuth } from "../../Auth";
@@ -65,27 +66,17 @@ query Galaxy($id: ID!) {
 		variables: { id },
 	});
 
-	const [, moveTaskForce] = useMutation(
-		graphql(`mutation MoveTaskForce($id: ID!, $position: Vector!, $queueOrder: Boolean!) {
-		moveTaskForce(id: $id, position: $position) @skip(if: $queueOrder) {
-			id
-			orders {
+	const [, orderTaskForce] = useMutation(
+		graphql(`mutation OrderTaskForce($id: ID!, $orders: [TaskForceOrderInput!]!, $queue: Boolean) {
+			orderTaskForce(id: $id, orders: $orders, queue: $queue) {
 				id
-				...on TaskForceMoveOrder {
-					destination
+				orders {
+					id
+					...on TaskForceMoveOrder {
+						destination
+					}
 				}
 			}
-		}
-		
-		queueTaskForceMove(id: $id, position: $position) @include(if: $queueOrder) {
-			id
-			orders {
-				id
-				...on TaskForceMoveOrder {
-					destination
-				}
-			}
-		}
 	}`),
 	);
 
@@ -144,24 +135,27 @@ query Galaxy($id: ID!) {
 
 	const navigate = useNavigate();
 
-	const onClickStarSystem = useCallback(
-		(id: string) => {
-			navigate({
-				from: "/games/$id",
-				to: "star-system/$starSystemId",
-				params: { starSystemId: id },
-			});
-		},
-		[navigate],
-	);
-
 	const [selectedTaskForce, setSelectedTaskForce] = useState<string>();
-	const onClickTaskForce = useCallback((id: string) => {
-		setSelectedTaskForce(id);
-	}, []);
+
+	const [menuOpened, setMenuOpened] = useState(false);
+	const [menuPosition, setMenuPosition] = useState({ left: 0, top: 0 });
+	const [menuContext, setMenuContext] = useState<{
+		shift?: boolean;
+		point?: Point;
+		starSystemId?: string;
+		taskForceId?: string;
+	}>();
+	const menuContextResolved = {
+		starSystem: menuContext?.starSystemId
+			? data?.game.starSystems.find((ss) => ss.id === menuContext.starSystemId)
+			: null,
+	};
 
 	return (
-		<div ref={parentRef} className={css({ overflow: "hidden" })}>
+		<div
+			ref={parentRef}
+			className={css({ position: "relative", overflow: "hidden" })}
+		>
 			<Application
 				attachToDevTools={!import.meta.env.PROD}
 				resizeTo={parentRef}
@@ -197,13 +191,13 @@ query Galaxy($id: ID!) {
 							}
 						}}
 						onRightClick={(d) => {
-							if (selectedTaskForce) {
-								moveTaskForce({
-									id: selectedTaskForce,
-									position: d.point,
-									queueOrder: d.shift,
-								});
-							}
+							setMenuContext((ctx) => ({
+								...ctx,
+								shift: d.event.shiftKey,
+								point: d.point,
+							}));
+							setMenuPosition({ left: d.event.screenX, top: d.event.screenY });
+							setMenuOpened(true);
 						}}
 					>
 						<Sensors
@@ -229,8 +223,21 @@ query Galaxy($id: ID!) {
 								position={starSystem.position}
 								isVisible={starSystem.isVisible}
 								ownerColor={starSystem.owner?.color}
-								onClick={onClickStarSystem}
 								sensorRange={starSystem.sensorRange}
+								onClick={(event) => {
+									event.preventDefault();
+									navigate({
+										from: "/games/$id",
+										to: "star-system/$starSystemId",
+										params: { starSystemId: starSystem.id },
+									});
+								}}
+								onRightClick={() => {
+									setMenuContext((ctx) => ({
+										...ctx,
+										starSystemId: starSystem.id,
+									}));
+								}}
 							/>
 						))}
 						{data?.game.taskForces.map((taskForce) => (
@@ -241,13 +248,70 @@ query Galaxy($id: ID!) {
 								isVisible={taskForce.isVisible}
 								isSelected={taskForce.id === selectedTaskForce}
 								ownerColor={taskForce.owner?.color}
-								onClick={onClickTaskForce}
 								sensorRange={taskForce.sensorRange}
+								onClick={(event) => {
+									event.preventDefault();
+									setSelectedTaskForce(taskForce.id);
+								}}
+								onRightClick={() => {
+									setMenuContext((ctx) => ({
+										...ctx,
+										taskForceId: taskForce.id,
+									}));
+								}}
 							/>
 						))}
 					</Viewport>
 				</container>
 			</Application>
+			<Menu opened={menuOpened} onChange={setMenuOpened} position="right-start">
+				<Menu.Target>
+					<div className={css({ position: "absolute", ...menuPosition })} />
+				</Menu.Target>
+
+				<Menu.Dropdown>
+					<Menu.Label>Menu</Menu.Label>
+					{selectedTaskForce && (
+						<>
+							<Menu.Item
+								onClick={() => {
+									if (menuContext?.point) {
+										orderTaskForce({
+											id: selectedTaskForce,
+											orders: [{ move: { destination: menuContext.point } }],
+											queue: menuContext.shift,
+										});
+									}
+								}}
+							>
+								{menuContext?.shift ? "Queue " : ""}Move here
+							</Menu.Item>
+
+							{menuContextResolved.starSystem && (
+								<Menu.Item
+									onClick={() => {
+										orderTaskForce({
+											id: selectedTaskForce,
+											orders: [
+												{
+													move: {
+														destination:
+															// biome-ignore lint/style/noNonNullAssertion: <explanation>
+															menuContextResolved.starSystem!.position,
+													},
+												},
+											],
+											queue: menuContext?.shift,
+										});
+									}}
+								>
+									{menuContext?.shift ? "Queue " : ""}Colonize system
+								</Menu.Item>
+							)}
+						</>
+					)}
+				</Menu.Dropdown>
+			</Menu>
 		</div>
 	);
 }

@@ -85,5 +85,18 @@ export function getLastKnownHelper({
 		);
 	}
 
-	return { TaskForceVisibility, visibilityExists, possiblyHidden };
+	function knownOrLastKnown<T extends AnyColumn>(column: T) {
+		return sql<
+			GetColumnData<T>
+		>`CASE WHEN ${visibilityExists} THEN to_jsonb(${column}) ELSE ${lastKnownStates.state}->'${sql.raw(column.name)}' END`.mapWith(
+			column,
+		);
+	}
+
+	return {
+		TaskForceVisibility,
+		visibilityExists,
+		possiblyHidden,
+		knownOrLastKnown,
+	};
 }

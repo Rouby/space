@@ -50,8 +50,7 @@ export type Mutation = {
   joinGame: Game;
   loginWithPassword: User;
   loginWithRefreshToken: User;
-  moveTaskForce: TaskForce;
-  queueTaskForceMove: TaskForce;
+  orderTaskForce: TaskForce;
   registerWithPassword: User;
   startGame: Game;
 };
@@ -84,15 +83,10 @@ export type MutationloginWithPasswordArgs = {
 };
 
 
-export type MutationmoveTaskForceArgs = {
+export type MutationorderTaskForceArgs = {
   id: Scalars['ID']['input'];
-  position: Scalars['Vector']['input'];
-};
-
-
-export type MutationqueueTaskForceMoveArgs = {
-  id: Scalars['ID']['input'];
-  position: Scalars['Vector']['input'];
+  orders: Array<TaskForceOrderInput>;
+  queue?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -300,8 +294,16 @@ export type TaskForceMoveOrder = TaskForceOrder & {
   id: Scalars['ID']['output'];
 };
 
+export type TaskForceMoveOrderInput = {
+  destination: Scalars['Vector']['input'];
+};
+
 export type TaskForceOrder = {
   id: Scalars['ID']['output'];
+};
+
+export type TaskForceOrderInput = {
+  move?: InputMaybe<TaskForceMoveOrderInput>;
 };
 
 export type TaskForceShip = {
@@ -442,6 +444,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Player: ResolverTypeWrapper<PlayerMapper>;
   Population: ResolverTypeWrapper<PopulationMapper>;
   Positionable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Positionable']>;
@@ -456,7 +459,6 @@ export type ResolversTypes = {
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
   ResourceNeed: ResolverTypeWrapper<ResourceNeedMapper>;
   ShipDesign: ResolverTypeWrapper<ShipDesignMapper>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ShipDesignInput: ShipDesignInput;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -464,7 +466,9 @@ export type ResolversTypes = {
   TaskForceCommisionInput: TaskForceCommisionInput;
   TaskForceCommisionShipInput: TaskForceCommisionShipInput;
   TaskForceMoveOrder: ResolverTypeWrapper<TaskForceMoveOrderMapper>;
+  TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: ResolverTypeWrapper<TaskForceOrderMapper>;
+  TaskForceOrderInput: TaskForceOrderInput;
   TaskForceShip: ResolverTypeWrapper<TaskForceShipMapper>;
   TaskForceShipCommision: ResolverTypeWrapper<TaskForceShipCommisionMapper>;
   TaskForceShipCommisionProgressEvent: ResolverTypeWrapper<Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: ResolversTypes['TaskForceShipCommision'] }>;
@@ -486,6 +490,7 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   Int: Scalars['Int']['output'];
   Mutation: {};
+  Boolean: Scalars['Boolean']['output'];
   Player: PlayerMapper;
   Population: PopulationMapper;
   Positionable: ResolversInterfaceTypes<ResolversParentTypes>['Positionable'];
@@ -500,7 +505,6 @@ export type ResolversParentTypes = {
   ResourceDiscovery: ResourceDiscoveryMapper;
   ResourceNeed: ResourceNeedMapper;
   ShipDesign: ShipDesignMapper;
-  Boolean: Scalars['Boolean']['output'];
   ShipDesignInput: ShipDesignInput;
   StarSystem: StarSystemMapper;
   Subscription: {};
@@ -508,7 +512,9 @@ export type ResolversParentTypes = {
   TaskForceCommisionInput: TaskForceCommisionInput;
   TaskForceCommisionShipInput: TaskForceCommisionShipInput;
   TaskForceMoveOrder: TaskForceMoveOrderMapper;
+  TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: TaskForceOrderMapper;
+  TaskForceOrderInput: TaskForceOrderInput;
   TaskForceShip: TaskForceShipMapper;
   TaskForceShipCommision: TaskForceShipCommisionMapper;
   TaskForceShipCommisionProgressEvent: Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: ResolversParentTypes['TaskForceShipCommision'] };
@@ -551,8 +557,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationjoinGameArgs, 'id'>>;
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  moveTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationmoveTaskForceArgs, 'id' | 'position'>>;
-  queueTaskForceMove?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationqueueTaskForceMoveArgs, 'id' | 'position'>>;
+  orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
 };

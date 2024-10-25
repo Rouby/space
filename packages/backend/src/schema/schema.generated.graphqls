@@ -23,8 +23,7 @@ type Mutation {
   joinGame(id: ID!): Game!
   loginWithPassword(email: String!, password: String!): User!
   loginWithRefreshToken: User!
-  moveTaskForce(id: ID!, position: Vector!): TaskForce!
-  queueTaskForceMove(id: ID!, position: Vector!): TaskForce!
+  orderTaskForce(id: ID!, orders: [TaskForceOrderInput!]!, queue: Boolean): TaskForce!
   registerWithPassword(email: String!, name: String!, password: String!): User!
   startGame(id: ID!): Game!
 }
@@ -181,8 +180,16 @@ type TaskForceMoveOrder implements TaskForceOrder {
   id: ID!
 }
 
+input TaskForceMoveOrderInput {
+  destination: Vector!
+}
+
 interface TaskForceOrder {
   id: ID!
+}
+
+input TaskForceOrderInput {
+  move: TaskForceMoveOrderInput
 }
 
 type TaskForceShip {

@@ -75,9 +75,20 @@ input TaskForceCommisionShipInput {
 	shipDesignId: ID!
 }
 
+input TaskForceOrderInput {
+	move: TaskForceMoveOrderInput
+}
+
+input TaskForceMoveOrderInput {
+	destination: Vector!
+}
+
 type Mutation {
 	createTaskForceCommision(commision: TaskForceCommisionInput!): TaskForce!
 
-	moveTaskForce(id: ID!, position: Vector!): TaskForce!
-	queueTaskForceMove(id: ID!, position: Vector!): TaskForce!
+	orderTaskForce(
+		id: ID!
+		orders: [TaskForceOrderInput!]!
+		queue: Boolean
+	): TaskForce!
 }

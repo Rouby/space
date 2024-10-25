@@ -13,6 +13,7 @@ export function StarSystem({
 	isSelected,
 	ownerColor,
 	onClick,
+	onRightClick,
 	sensorRange,
 }: {
 	id: string;
@@ -20,7 +21,8 @@ export function StarSystem({
 	isVisible: boolean;
 	isSelected?: boolean;
 	ownerColor?: string | null;
-	onClick: (id: string) => void;
+	onClick: (event: FederatedPointerEvent) => void;
+	onRightClick: (event: FederatedPointerEvent) => void;
 	sensorRange?: number | null;
 }) {
 	const color = isVisible
@@ -56,14 +58,8 @@ export function StarSystem({
 				draw={drawCircle}
 				interactive
 				cursor="pointer"
-				onClick={(event: PointerEvent) => {
-					event.preventDefault();
-					onClick(id);
-				}}
-				onRightClick={(event: FederatedPointerEvent) => {
-					event.preventDefault();
-					console.log("contextmenu on starsystem");
-				}}
+				onClick={onClick}
+				onRightClick={onRightClick}
 			/>
 			{(sensorRange ?? 0) > 0 && isSelected && (
 				<graphics draw={drawSensorRange} />
