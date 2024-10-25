@@ -10,6 +10,7 @@ import type { StarSystemResolvers } from "./../../types.generated.js";
 export const StarSystem: Pick<
 	StarSystemResolvers,
 	| "discoveries"
+	| "discoveryProgress"
 	| "id"
 	| "isVisible"
 	| "lastUpdate"
@@ -80,5 +81,10 @@ export const StarSystem: Pick<
 			.select()
 			.from(starSystemPopulations)
 			.where(eq(starSystemPopulations.starSystemId, parent.id));
+	},
+	discoveryProgress: async (_parent, _arg, _ctx) => {
+		return _parent.discoveryProgress === null
+			? null
+			: +_parent.discoveryProgress;
 	},
 };

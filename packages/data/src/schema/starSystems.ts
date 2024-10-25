@@ -24,6 +24,9 @@ export const starSystems = pgTable("starSystems", {
 	position: point("position", { mode: "xy" }).notNull(),
 	ownerId: uuid("ownerId").references(() => users.id, { onDelete: "restrict" }),
 	discoverySlots: integer("discoverySlots").notNull().default(0),
+	discoveryProgress: decimal("discoveryProgress", { precision: 10, scale: 9 })
+		.notNull()
+		.default("0"),
 });
 
 export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({

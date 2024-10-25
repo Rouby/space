@@ -3,6 +3,7 @@ import {
 	Card,
 	Center,
 	Image,
+	Progress,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -12,7 +13,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { Fragment } from "react/jsx-runtime";
 import { useStyles } from "tss-react";
-import { useQuery } from "urql";
+import { useQuery, useSubscription } from "urql";
 import {
 	formatNumber,
 	formatTicksToRelativeTime,
@@ -56,6 +57,7 @@ export function StarSystemDetails({ id }: { id: string }) {
 					id
 				}
 			}
+			discoveryProgress
 			resourceDepots {
 				id
 				resource {
@@ -71,6 +73,47 @@ export function StarSystemDetails({ id }: { id: string }) {
 		}
 	}`,
 		),
+		variables: { id },
+	});
+
+	useSubscription({
+		query: graphql(`subscription TrackStarSystem($id: ID!) {
+		trackStarSystem(starSystemId: $id) {
+			... on StarSystemUpdateEvent {
+				subject {
+					id
+					discoveries {
+						__typename
+						... on ResourceDiscovery {
+							id
+							resource {
+								id
+								name
+							}
+							remainingDeposits
+							miningRate
+						}
+						... on UnknownDiscovery {
+							id
+						}
+					}
+					discoveryProgress
+					resourceDepots {
+						id
+						resource {
+							id
+							name
+						}	
+						quantity
+					}
+					populations {
+						id
+						amount
+					}
+				}
+			}
+		}
+	}`),
 		variables: { id },
 	});
 
@@ -166,6 +209,22 @@ export function StarSystemDetails({ id }: { id: string }) {
 									</Fragment>
 								))}
 							</div>
+						)}
+						{(data?.starSystem.discoveryProgress ?? null) !== null && (
+							<Progress.Root size={36} mt="xs">
+								<Progress.Section
+									value={(data?.starSystem.discoveryProgress ?? 0) * 100}
+									color="cyan"
+								>
+									<Progress.Label>
+										Discovery progress (
+										{Math.floor(
+											(data?.starSystem.discoveryProgress ?? 0) * 100,
+										)}
+										%)
+									</Progress.Label>
+								</Progress.Section>
+							</Progress.Root>
 						)}
 					</Card>
 					<Card>

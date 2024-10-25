@@ -16,7 +16,12 @@ export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
 				name: starSystems.name,
 				gameId: starSystems.gameId,
 				position: starSystems.position,
-				discoverySlots: starSystems.discoverySlots,
+				discoverySlots: possiblyHidden(starSystems.discoverySlots).as(
+					"discoverySlots",
+				),
+				discoveryProgress: possiblyHidden(starSystems.discoveryProgress).as(
+					"discoveryProgress",
+				),
 				ownerId: possiblyHidden(starSystems.ownerId).as("ownerId"),
 				isVisible: sql<boolean>`CASE WHEN ${visibility.circle} IS NOT NULL THEN TRUE ELSE FALSE END`,
 				lastUpdate: sql<Date>`CASE WHEN ${visibility.circle} IS NULL THEN ${lastKnownStates.lastUpdate} ELSE NULL END`,

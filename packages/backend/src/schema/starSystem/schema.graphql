@@ -5,6 +5,7 @@ type StarSystem implements Positionable {
 	owner: Player
 	sensorRange: Float
 	discoveries: [Discovery!]
+	discoveryProgress: Float
 	resourceDepots: [ResourceDepot!]
 	populations: [Population!]
 	isVisible: Boolean!

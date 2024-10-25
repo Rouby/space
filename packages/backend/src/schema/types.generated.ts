@@ -231,6 +231,7 @@ export type ShipDesignInput = {
 export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
   discoveries?: Maybe<Array<Discovery>>;
+  discoveryProgress?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
   isVisible: Scalars['Boolean']['output'];
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
@@ -339,11 +340,6 @@ export type TaskForceShipCommision = {
   shipDesign: ShipDesign;
 };
 
-export type TaskForceShipCommisionProgressEvent = {
-  __typename?: 'TaskForceShipCommisionProgressEvent';
-  subject: TaskForceShipCommision;
-};
-
 export type TaskForceShipRole =
   | 'capital'
   | 'screen'
@@ -351,7 +347,7 @@ export type TaskForceShipRole =
 
 export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent;
 
-export type TrackStarSystemEvent = TaskForceShipCommisionProgressEvent;
+export type TrackStarSystemEvent = StarSystemUpdateEvent;
 
 export type UnknownDiscovery = {
   __typename?: 'UnknownDiscovery';
@@ -436,7 +432,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
   TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
-  TrackStarSystemEvent: ( Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: _RefType['TaskForceShipCommision'] } & { __typename: 'TaskForceShipCommisionProgressEvent' } );
+  TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
 };
 
 /** Mapping of interface types */
@@ -484,7 +480,6 @@ export type ResolversTypes = {
   TaskForceOrderInput: TaskForceOrderInput;
   TaskForceShip: ResolverTypeWrapper<TaskForceShipMapper>;
   TaskForceShipCommision: ResolverTypeWrapper<TaskForceShipCommisionMapper>;
-  TaskForceShipCommisionProgressEvent: ResolverTypeWrapper<Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: ResolversTypes['TaskForceShipCommision'] }>;
   TaskForceShipRole: ResolverTypeWrapper<'capital' | 'screen' | 'support'>;
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
@@ -532,7 +527,6 @@ export type ResolversParentTypes = {
   TaskForceOrderInput: TaskForceOrderInput;
   TaskForceShip: TaskForceShipMapper;
   TaskForceShipCommision: TaskForceShipCommisionMapper;
-  TaskForceShipCommisionProgressEvent: Omit<TaskForceShipCommisionProgressEvent, 'subject'> & { subject: ResolversParentTypes['TaskForceShipCommision'] };
   TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   UnknownDiscovery: UnknownDiscovery;
@@ -677,6 +671,7 @@ export type ShipDesignResolvers<ContextType = Context, ParentType extends Resolv
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
+  discoveryProgress?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -755,11 +750,6 @@ export type TaskForceShipCommisionResolvers<ContextType = Context, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskForceShipCommisionProgressEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShipCommisionProgressEvent'] = ResolversParentTypes['TaskForceShipCommisionProgressEvent']> = {
-  subject?: Resolver<ResolversTypes['TaskForceShipCommision'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type TaskForceShipRoleResolvers = EnumResolverSignature<{ capital?: any, screen?: any, support?: any }, ResolversTypes['TaskForceShipRole']>;
 
 export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackGalaxyEvent'] = ResolversParentTypes['TrackGalaxyEvent']> = {
@@ -767,7 +757,7 @@ export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends 
 };
 
 export type TrackStarSystemEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackStarSystemEvent'] = ResolversParentTypes['TrackStarSystemEvent']> = {
-  __resolveType?: TypeResolveFn<'TaskForceShipCommisionProgressEvent', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'StarSystemUpdateEvent', ParentType, ContextType>;
 };
 
 export type UnknownDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UnknownDiscovery'] = ResolversParentTypes['UnknownDiscovery']> = {
@@ -814,7 +804,6 @@ export type Resolvers<ContextType = Context> = {
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
   TaskForceShip?: TaskForceShipResolvers<ContextType>;
   TaskForceShipCommision?: TaskForceShipCommisionResolvers<ContextType>;
-  TaskForceShipCommisionProgressEvent?: TaskForceShipCommisionProgressEventResolvers<ContextType>;
   TaskForceShipRole?: TaskForceShipRoleResolvers;
   TrackGalaxyEvent?: TrackGalaxyEventResolvers<ContextType>;
   TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;

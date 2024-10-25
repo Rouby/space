@@ -130,6 +130,7 @@ input ShipDesignInput {
 
 type StarSystem implements Positionable {
   discoveries: [Discovery!]
+  discoveryProgress: Float
   id: ID!
   isVisible: Boolean!
   lastUpdate: DateTime
@@ -221,10 +222,6 @@ type TaskForceShipCommision {
   shipDesign: ShipDesign!
 }
 
-type TaskForceShipCommisionProgressEvent {
-  subject: TaskForceShipCommision!
-}
-
 enum TaskForceShipRole {
   capital
   screen
@@ -233,7 +230,7 @@ enum TaskForceShipRole {
 
 union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent
 
-union TrackStarSystemEvent = TaskForceShipCommisionProgressEvent
+union TrackStarSystemEvent = StarSystemUpdateEvent
 
 type UnknownDiscovery {
   id: ID!

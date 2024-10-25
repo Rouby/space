@@ -12,6 +12,7 @@ import { parentPort } from "node:worker_threads";
 import type { GameEvent } from "../../../backend/src/events.ts";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
+import { tickDiscoveries } from "./discoveries.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
 import { tickTaskForceCommisions } from "./taskForceCommisions.ts";
@@ -36,6 +37,8 @@ export async function tick() {
 		const visibilityPreTick = sql.raw(`"pre_tick_visibility_${gameId}"`);
 
 		await storePreTickVisibility();
+
+		await tickDiscoveries(tx, ctx);
 
 		await tickStarSystemPopulation(tx, ctx);
 

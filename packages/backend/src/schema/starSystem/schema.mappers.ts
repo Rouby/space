@@ -9,6 +9,7 @@ export type StarSystemMapper = {
 	ownerId: string | null;
 	gameId: string;
 	discoverySlots: number | null;
+	discoveryProgress: string | null;
 };
 export type ResourceDiscoveryMapper = {
 	starSystemId: string;

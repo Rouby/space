@@ -40,7 +40,6 @@ import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColoni
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TaskForceShip } from './taskForce/resolvers/TaskForceShip.js';
 import    { TaskForceShipCommision } from './taskForce/resolvers/TaskForceShipCommision.js';
-import    { TaskForceShipCommisionProgressEvent } from './base/resolvers/TaskForceShipCommisionProgressEvent.js';
 import    { UnknownDiscovery } from './starSystem/resolvers/UnknownDiscovery.js';
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
@@ -70,7 +69,6 @@ TaskForceColonizeOrder: TaskForceColonizeOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TaskForceShip: TaskForceShip,
 TaskForceShipCommision: TaskForceShipCommision,
-TaskForceShipCommisionProgressEvent: TaskForceShipCommisionProgressEvent,
 UnknownDiscovery: UnknownDiscovery,
 User: User,
 Vector: Vector,

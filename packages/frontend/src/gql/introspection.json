@@ -1119,6 +1119,14 @@
             "args": []
           },
           {
+            "name": "discoveryProgress",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -1748,25 +1756,6 @@
         "interfaces": []
       },
       {
-        "kind": "OBJECT",
-        "name": "TaskForceShipCommisionProgressEvent",
-        "fields": [
-          {
-            "name": "subject",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "TaskForceShipCommision",
-                "ofType": null
-              }
-            },
-            "args": []
-          }
-        ],
-        "interfaces": []
-      },
-      {
         "kind": "UNION",
         "name": "TrackGalaxyEvent",
         "possibleTypes": [
@@ -1794,7 +1783,7 @@
         "possibleTypes": [
           {
             "kind": "OBJECT",
-            "name": "TaskForceShipCommisionProgressEvent"
+            "name": "StarSystemUpdateEvent"
           }
         ]
       },
