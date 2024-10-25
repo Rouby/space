@@ -175,6 +175,8 @@ query Galaxy($id: ID!) {
 			<Application
 				attachToDevTools={!import.meta.env.PROD}
 				resizeTo={parentRef}
+				antialias
+				autoDensity
 			>
 				<container>
 					<Viewport
