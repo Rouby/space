@@ -14,8 +14,12 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 		.select({
 			id: starSystems.id,
 			populations: sql<
-				{ amount: number; allegianceToPlayerId: string }[]
-			>`json_agg(json_build_object('amount', ${starSystemPopulations.amount}, 'allegianceToPlayerId', ${starSystemPopulations.allegianceToPlayerId}))`,
+				{
+					amount: number;
+					allegianceToPlayerId: string;
+					growthLeftover: number;
+				}[]
+			>`json_agg(json_build_object('amount', ${starSystemPopulations.amount}, 'allegianceToPlayerId', ${starSystemPopulations.allegianceToPlayerId}, 'growthLeftover', ${starSystemPopulations.growthLeftover}))`,
 		})
 		.from(starSystems)
 		.where(and(eq(starSystems.gameId, gameId), isNotNull(starSystems.ownerId)))
@@ -40,20 +44,26 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 		for (const pop of starSystem.populations) {
 			const factor = pop.amount / Number(totalAmount);
 			const amount = BigInt(pop.amount);
-			const growth = BigInt(Math.floor(totalGrowth * factor));
+			const growth = totalGrowth * factor + pop.growthLeftover;
+			const growthInt = BigInt(Math.floor(growth));
 
 			await tx
 				.update(starSystemPopulations)
-				.set({ amount: amount + growth })
+				.set({
+					amount: amount + growthInt,
+					growthLeftover: `${growth - Number(growthInt)}`,
+				})
 				.where(eq(starSystemPopulations.starSystemId, starSystem.id));
 
-			ctx.postMessage({
-				type: "starSystem:populationChanged",
-				starSystemId: starSystem.id,
-				populationId: `${starSystem.id}:${pop.allegianceToPlayerId}`,
-				amount: amount + growth,
-				growth,
-			});
+			if (growthInt > 0n) {
+				ctx.postMessage({
+					type: "starSystem:populationChanged",
+					id: starSystem.id,
+					populationId: `${starSystem.id}:${pop.allegianceToPlayerId}`,
+					amount: amount + growthInt,
+					growth: growthInt,
+				});
+			}
 		}
 	}
 }

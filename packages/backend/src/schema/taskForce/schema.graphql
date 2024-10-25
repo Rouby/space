@@ -50,6 +50,10 @@ type TaskForceMoveOrder implements TaskForceOrder {
 	destination: Vector!
 }
 
+type TaskForceColonizeOrder implements TaskForceOrder {
+	id: ID!
+}
+
 extend type Game {
 	taskForces: [TaskForce!]!
 }
@@ -77,6 +81,7 @@ input TaskForceCommisionShipInput {
 
 input TaskForceOrderInput {
 	move: TaskForceMoveOrderInput
+	colonize: Boolean
 }
 
 input TaskForceMoveOrderInput {

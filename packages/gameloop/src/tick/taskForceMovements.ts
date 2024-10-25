@@ -3,6 +3,8 @@ import {
 	eq,
 	notExists,
 	sql,
+	starSystemPopulations,
+	starSystems,
 	taskForceEngagementsToTaskForces,
 	taskForceShips,
 	taskForceShipsWithStats,
@@ -15,6 +17,7 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 	const tfs = await tx
 		.select({
 			id: taskForces.id,
+			ownerId: taskForces.ownerId,
 			position: taskForces.position,
 			orders: taskForces.orders,
 			maxSpeed: sql<string>`min(${taskForceShipsWithStats.speed})`,
@@ -46,8 +49,9 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 		let movement = movementPerTick;
 		let movementVector = null as { x: number; y: number } | null;
 
-		while (orders?.at(0)?.type === "move" && movement > 0) {
+		while (orders?.at(0) && movement > 0) {
 			const [order] = orders;
+			if (order.type !== "move") break;
 
 			movementVector = {
 				x: order.destination.x - position.x,
@@ -112,6 +116,43 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 				position,
 				movementVector,
 			});
+		}
+
+		if (orders.at(0)?.type === "colonize") {
+			const [starSystemAtPosition] = await tx
+				.select()
+				.from(starSystems)
+				.where(
+					sql`${starSystems.position} <-> point(${position.x},${position.y}) < 0.1`,
+				);
+
+			orders = orders.slice(1);
+
+			if (!starSystemAtPosition) {
+				// ignore, order will be cancel'd
+				console.log("Invalid colonize order");
+			} else {
+				await tx
+					.update(starSystems)
+					.set({ ownerId: taskForce.ownerId })
+					.where(eq(starSystems.id, starSystemAtPosition.id));
+				await tx.insert(starSystemPopulations).values({
+					starSystemId: starSystemAtPosition.id,
+					allegianceToPlayerId: taskForce.ownerId,
+					amount: 10_000n,
+				});
+
+				ctx.postMessage({
+					type: "starSystem:ownerChanged",
+					id: starSystemAtPosition.id,
+					ownerId: taskForce.ownerId,
+				});
+			}
+
+			await tx
+				.update(taskForces)
+				.set({ orders })
+				.where(eq(taskForces.id, taskForce.id));
 		}
 	}
 }

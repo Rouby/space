@@ -1,0 +1,1 @@
+ALTER TABLE "starSystemPopulations" ADD COLUMN "growthLeftover" numeric(10, 9) DEFAULT '0' NOT NULL;

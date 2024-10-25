@@ -143,6 +143,10 @@ type StarSystem implements Positionable {
   taskForces: [TaskForce!]!
 }
 
+type StarSystemUpdateEvent {
+  subject: StarSystem!
+}
+
 type Subscription {
   trackGalaxy(gameId: ID!): TrackGalaxyEvent!
   trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
@@ -161,6 +165,10 @@ type TaskForce implements Positionable {
   position: Vector!
   sensorRange: Float
   ships: [TaskForceShip!]!
+}
+
+type TaskForceColonizeOrder implements TaskForceOrder {
+  id: ID!
 }
 
 input TaskForceCommisionInput {
@@ -189,6 +197,7 @@ interface TaskForceOrder {
 }
 
 input TaskForceOrderInput {
+  colonize: Boolean
   move: TaskForceMoveOrderInput
 }
 
@@ -222,7 +231,7 @@ enum TaskForceShipRole {
   support
 }
 
-union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent
+union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent
 
 union TrackStarSystemEvent = TaskForceShipCommisionProgressEvent
 

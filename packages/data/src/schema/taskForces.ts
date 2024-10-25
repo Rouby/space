@@ -17,7 +17,10 @@ export const taskForces = pgTable("taskForces", {
 	orders: json("orders")
 		.notNull()
 		.$type<
-			{ id: string; type: "move"; destination: { x: number; y: number } }[]
+			(
+				| { id: string; type: "move"; destination: { x: number; y: number } }
+				| { id: string; type: "colonize" }
+			)[]
 		>()
 		.default([]),
 	movementVector: point("movementVector", { mode: "xy" }),

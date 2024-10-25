@@ -34,7 +34,9 @@ import    { ResourceNeed } from './resource/resolvers/ResourceNeed.js';
 import    { ShipDesign } from './shipDesign/resolvers/ShipDesign.js';
 import    { StarSystem as starSystem_StarSystem } from './starSystem/resolvers/StarSystem.js';
 import    { StarSystem as taskForce_StarSystem } from './taskForce/resolvers/StarSystem.js';
+import    { StarSystemUpdateEvent } from './base/resolvers/StarSystemUpdateEvent.js';
 import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
+import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColonizeOrder.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TaskForceShip } from './taskForce/resolvers/TaskForceShip.js';
 import    { TaskForceShipCommision } from './taskForce/resolvers/TaskForceShipCommision.js';
@@ -62,7 +64,9 @@ ResourceDiscovery: ResourceDiscovery,
 ResourceNeed: ResourceNeed,
 ShipDesign: ShipDesign,
 StarSystem: { ...starSystem_StarSystem,...taskForce_StarSystem },
+StarSystemUpdateEvent: StarSystemUpdateEvent,
 TaskForce: TaskForce,
+TaskForceColonizeOrder: TaskForceColonizeOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TaskForceShip: TaskForceShip,
 TaskForceShipCommision: TaskForceShipCommision,

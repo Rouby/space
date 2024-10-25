@@ -47,6 +47,12 @@ export const orderTaskForce: NonNullable<
 					destination: order.move.destination,
 				};
 			}
+			if (order.colonize) {
+				return {
+					id: randomUUID(),
+					type: "colonize" as const,
+				};
+			}
 			return false;
 		})
 		.filter((d) => !!d);

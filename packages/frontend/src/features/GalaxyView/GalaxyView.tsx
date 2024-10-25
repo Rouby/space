@@ -94,6 +94,11 @@ query Galaxy($id: ID!) {
 						movementVector
 					}
 					... on StarSystem {
+						owner {
+							id
+							name
+							color
+						}
 						isVisible
 						lastUpdate
 					}
@@ -122,6 +127,17 @@ query Galaxy($id: ID!) {
 						isVisible
 						lastUpdate
 					}
+				}
+			}
+			... on StarSystemUpdateEvent {
+				subject {
+					id
+					owner {
+						id
+						name
+						color
+					}
+					sensorRange
 				}
 			}
 		}
@@ -299,6 +315,9 @@ query Galaxy($id: ID!) {
 															// biome-ignore lint/style/noNonNullAssertion: <explanation>
 															menuContextResolved.starSystem!.position,
 													},
+												},
+												{
+													colonize: true,
 												},
 											],
 											queue: menuContext?.shift,

@@ -79,6 +79,9 @@ export const starSystemPopulations = pgTable(
 			.notNull()
 			.references(() => starSystems.id, { onDelete: "cascade" }),
 		amount: bigint("amount", { mode: "bigint" }).notNull(),
+		growthLeftover: decimal("growthLeftover", { precision: 10, scale: 9 })
+			.notNull()
+			.default("0"),
 		allegianceToPlayerId: uuid("allegianceToPlayerId").references(
 			() => users.id,
 			{ onDelete: "restrict" },

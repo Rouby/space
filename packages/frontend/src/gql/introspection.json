@@ -1263,6 +1263,25 @@
       },
       {
         "kind": "OBJECT",
+        "name": "StarSystemUpdateEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "Subscription",
         "fields": [
           {
@@ -1468,6 +1487,29 @@
       },
       {
         "kind": "OBJECT",
+        "name": "TaskForceColonizeOrder",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "TaskForceOrder"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
         "name": "TaskForceMoveOrder",
         "fields": [
           {
@@ -1518,6 +1560,10 @@
         ],
         "interfaces": [],
         "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceColonizeOrder"
+          },
           {
             "kind": "OBJECT",
             "name": "TaskForceMoveOrder"
@@ -1735,6 +1781,10 @@
           {
             "kind": "OBJECT",
             "name": "PositionableMovesEvent"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "StarSystemUpdateEvent"
           }
         ]
       },

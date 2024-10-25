@@ -189,11 +189,32 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 				// for each appear event, emit appear and wait until disappear
 				concat(
 					from([appeared]),
-					ctx.fromGameEvents(gameId).pipe(
-						filter((event) => event.type === "starSystem:disappeared"),
-						filter((event) => event.id === appeared.subject.id),
-						filter((event) => event.userId === ctx.userId),
-						map(() => ({
+					// add owner-change-events
+					ctx
+						.fromGameEvents(gameId)
+						.pipe(
+							filter((event) => event.type === "starSystem:ownerChanged"),
+							filter((event) => event.id === appeared.subject.id),
+							map((event) => ({
+								__typename: "StarSystemUpdateEvent" as const,
+								subject: {
+									__typename: "StarSystem" as const,
+									id: appeared.subject.id,
+									ownerId: event.ownerId,
+									gameId,
+								},
+							})),
+							// until the star system disappears
+							takeUntil(
+								ctx.fromGameEvents(gameId).pipe(
+									filter((event) => event.type === "starSystem:disappeared"),
+									filter((event) => event.id === appeared.subject.id),
+									filter((event) => event.userId === ctx.userId),
+								),
+							),
+						),
+					from([
+						{
 							__typename: "PositionableDisappearsEvent" as const,
 							subject: {
 								__typename: "StarSystem" as const,
@@ -202,8 +223,8 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 								isVisible: false,
 								lastUpdate: new Date().toISOString(),
 							},
-						})),
-					),
+						},
+					]),
 				),
 			),
 		);

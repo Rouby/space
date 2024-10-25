@@ -12,11 +12,16 @@ export type TaskForceMapper = {
 	ownerId: string | null;
 	gameId: string;
 };
-export type TaskForceOrderMapper = {
-	id: string;
-	type: "move";
-	destination: { x: number; y: number };
-};
+export type TaskForceOrderMapper =
+	| {
+			id: string;
+			type: "move";
+			destination: { x: number; y: number };
+	  }
+	| {
+			id: string;
+			type: "colonize";
+	  };
 export type TaskForceShipCommisionMapper = {
 	id: string;
 	gameId: string;
@@ -41,4 +46,8 @@ export type TaskForceShipMapper = {
 export type TaskForceMoveOrderMapper = Extract<
 	TaskForceOrderMapper,
 	{ type: "move" }
+>;
+export type TaskForceColonizeOrderMapper = Extract<
+	TaskForceOrderMapper,
+	{ type: "colonize" }
 >;
