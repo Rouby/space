@@ -1,8 +1,8 @@
 import { sql } from "drizzle-orm";
 import {
+	integer,
 	pgEnum,
 	pgTable,
-	real,
 	text,
 	uuid,
 	varchar,
@@ -25,5 +25,5 @@ export const resources = pgTable("resources", {
 	name: varchar("name", { length: 256 }).notNull(),
 	kind: resourceKind("kind").notNull(),
 	description: text("description").notNull(),
-	discoveryWeight: real("discoveryWeight").notNull(),
+	discoveryWeight: integer("discoveryWeight").notNull(),
 });

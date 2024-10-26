@@ -52,10 +52,15 @@ export async function tickDiscoveries(tx: Transaction, ctx: Context) {
 		discoveryProgress,
 	} of starSystemsWithDiscoveries) {
 		const discoveryProgressChange = 0.00002777778;
+
 		if (+discoveryProgress >= 1) {
 			const [resource] = await tx
-				.select()
-				.from(resources)
+				.select({
+					id: sql<string>`${resources.id}`,
+				})
+				.from(
+					sql`${resources}, generate_series(1, ${resources.discoveryWeight})`,
+				)
 				.where(
 					and(
 						eq(resources.gameId, gameId),
