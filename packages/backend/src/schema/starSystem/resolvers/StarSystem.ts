@@ -72,7 +72,8 @@ export const StarSystem: Pick<
 		const resourceDepots = await ctx.drizzle
 			.select()
 			.from(starSystemResourceDepots)
-			.where(eq(starSystemResourceDepots.starSystemId, parent.id));
+			.where(eq(starSystemResourceDepots.starSystemId, parent.id))
+			.orderBy(starSystemResourceDepots.resourceId);
 
 		return resourceDepots;
 	},
