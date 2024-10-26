@@ -178,8 +178,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 					__typename: "PositionableApppearsEvent" as const,
 					subject: {
 						__typename: "StarSystem" as const,
-						id: ss.id,
-						position: ss.position,
+						...ss,
 						isVisible: true,
 						lastUpdate: null,
 					},
@@ -198,7 +197,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 							map((event) => ({
 								__typename: "StarSystemUpdateEvent" as const,
 								subject: {
-									__typename: "StarSystem" as const,
+									...appeared.subject,
 									id: appeared.subject.id,
 									ownerId: event.ownerId,
 									gameId,
@@ -217,9 +216,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 						{
 							__typename: "PositionableDisappearsEvent" as const,
 							subject: {
-								__typename: "StarSystem" as const,
-								id: appeared.subject.id,
-								position: appeared.subject.position,
+								...appeared.subject,
 								isVisible: false,
 								lastUpdate: new Date().toISOString(),
 							},

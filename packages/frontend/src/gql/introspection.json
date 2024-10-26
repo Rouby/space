@@ -1518,6 +1518,41 @@
       },
       {
         "kind": "OBJECT",
+        "name": "TaskForceFollowOrder",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "taskForce",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForce",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "TaskForceOrder"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
         "name": "TaskForceMoveOrder",
         "fields": [
           {
@@ -1571,6 +1606,10 @@
           {
             "kind": "OBJECT",
             "name": "TaskForceColonizeOrder"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceFollowOrder"
           },
           {
             "kind": "OBJECT",

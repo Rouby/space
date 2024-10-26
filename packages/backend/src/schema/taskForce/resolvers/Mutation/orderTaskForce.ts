@@ -47,6 +47,13 @@ export const orderTaskForce: NonNullable<
 					destination: order.move.destination,
 				};
 			}
+			if (order.follow) {
+				return {
+					id: randomUUID(),
+					type: "follow" as const,
+					taskForceId: order.follow.taskForceId,
+				};
+			}
 			if (order.colonize) {
 				return {
 					id: randomUUID(),

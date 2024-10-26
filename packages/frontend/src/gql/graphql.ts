@@ -291,6 +291,16 @@ export type TaskForceCommisionShipInput = {
   shipDesignId: Scalars['ID']['input'];
 };
 
+export type TaskForceFollowOrder = TaskForceOrder & {
+  __typename?: 'TaskForceFollowOrder';
+  id: Scalars['ID']['output'];
+  taskForce: TaskForce;
+};
+
+export type TaskForceFollowOrderInput = {
+  taskForceId: Scalars['ID']['input'];
+};
+
 export type TaskForceMoveOrder = TaskForceOrder & {
   __typename?: 'TaskForceMoveOrder';
   destination: Scalars['Vector']['output'];
@@ -307,6 +317,7 @@ export type TaskForceOrder = {
 
 export type TaskForceOrderInput = {
   colonize?: InputMaybe<Scalars['Boolean']['input']>;
+  follow?: InputMaybe<TaskForceFollowOrderInput>;
   move?: InputMaybe<TaskForceMoveOrderInput>;
 };
 
@@ -364,7 +375,7 @@ export type GalaxyQueryVariables = Exact<{
 }>;
 
 
-export type GalaxyQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, starSystems: Array<{ __typename?: 'StarSystem', id: string, position: {x:number;y:number}, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null }>, taskForces: Array<{ __typename?: 'TaskForce', id: string, name: string, position: {x:number;y:number}, movementVector?: {x:number;y:number} | null, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null, orders?: Array<{ __typename?: 'TaskForceColonizeOrder', id: string } | { __typename?: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }> | null }> } };
+export type GalaxyQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, starSystems: Array<{ __typename?: 'StarSystem', id: string, position: {x:number;y:number}, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null }>, taskForces: Array<{ __typename?: 'TaskForce', id: string, name: string, position: {x:number;y:number}, movementVector?: {x:number;y:number} | null, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null, orders?: Array<{ __typename?: 'TaskForceColonizeOrder', id: string } | { __typename?: 'TaskForceFollowOrder', id: string } | { __typename?: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }> | null }> } };
 
 export type OrderTaskForceMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -373,7 +384,7 @@ export type OrderTaskForceMutationVariables = Exact<{
 }>;
 
 
-export type OrderTaskForceMutation = { __typename?: 'Mutation', orderTaskForce: { __typename?: 'TaskForce', id: string, orders?: Array<{ __typename?: 'TaskForceColonizeOrder', id: string } | { __typename?: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }> | null } };
+export type OrderTaskForceMutation = { __typename?: 'Mutation', orderTaskForce: { __typename?: 'TaskForce', id: string, orders?: Array<{ __typename?: 'TaskForceColonizeOrder', id: string } | { __typename?: 'TaskForceFollowOrder', id: string } | { __typename?: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }> | null } };
 
 export type TrackMapSubscriptionVariables = Exact<{
   gameId: Scalars['ID']['input'];

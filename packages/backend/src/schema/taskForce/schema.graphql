@@ -50,6 +50,11 @@ type TaskForceMoveOrder implements TaskForceOrder {
 	destination: Vector!
 }
 
+type TaskForceFollowOrder implements TaskForceOrder {
+	id: ID!
+	taskForce: TaskForce!
+}
+
 type TaskForceColonizeOrder implements TaskForceOrder {
 	id: ID!
 }
@@ -81,11 +86,16 @@ input TaskForceCommisionShipInput {
 
 input TaskForceOrderInput {
 	move: TaskForceMoveOrderInput
+	follow: TaskForceFollowOrderInput
 	colonize: Boolean
 }
 
 input TaskForceMoveOrderInput {
 	destination: Vector!
+}
+
+input TaskForceFollowOrderInput {
+	taskForceId: ID!
 }
 
 type Mutation {

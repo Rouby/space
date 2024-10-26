@@ -19,6 +19,7 @@ export const taskForces = pgTable("taskForces", {
 		.$type<
 			(
 				| { id: string; type: "move"; destination: { x: number; y: number } }
+				| { id: string; type: "follow"; taskForceId: string }
 				| { id: string; type: "colonize" }
 			)[]
 		>()

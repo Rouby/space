@@ -51,11 +51,40 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 
 		while (orders?.at(0) && movement > 0) {
 			const [order] = orders;
-			if (order.type !== "move") break;
+
+			let destination: { x: number; y: number } | null = null;
+			let fullfillable = true;
+			switch (order.type) {
+				case "move": {
+					destination = order.destination;
+					break;
+				}
+				case "follow": {
+					fullfillable = false;
+
+					const [followedTaskForce] = await tx
+						.select()
+						.from(taskForces)
+						.where(eq(taskForces.id, order.taskForceId));
+
+					if (!followedTaskForce) {
+						orders = orders.slice(1);
+						continue;
+					}
+
+					// TODO: predict position?
+					destination = followedTaskForce.position;
+					break;
+				}
+			}
+
+			if (!destination) {
+				break;
+			}
 
 			movementVector = {
-				x: order.destination.x - position.x,
-				y: order.destination.y - position.y,
+				x: destination.x - position.x,
+				y: destination.y - position.y,
 			};
 			const distance = Math.sqrt(
 				movementVector.x * movementVector.x +
@@ -67,11 +96,19 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 			};
 
 			if (distance <= movement) {
-				position = { ...order.destination };
+				position = { ...destination };
 
-				orders = orders.slice(1);
 				movement -= distance;
-				movementVector = null;
+				if (fullfillable) {
+					orders = orders.slice(1);
+					movementVector = null;
+				} else {
+					movement = 0;
+					movementVector = {
+						x: movementVector.x * distance,
+						y: movementVector.y * distance,
+					};
+				}
 			} else {
 				position = {
 					x: position.x + movementVector.x * movement,

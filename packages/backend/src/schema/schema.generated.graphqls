@@ -184,6 +184,15 @@ input TaskForceCommisionShipInput {
   shipDesignId: ID!
 }
 
+type TaskForceFollowOrder implements TaskForceOrder {
+  id: ID!
+  taskForce: TaskForce!
+}
+
+input TaskForceFollowOrderInput {
+  taskForceId: ID!
+}
+
 type TaskForceMoveOrder implements TaskForceOrder {
   destination: Vector!
   id: ID!
@@ -199,6 +208,7 @@ interface TaskForceOrder {
 
 input TaskForceOrderInput {
   colonize: Boolean
+  follow: TaskForceFollowOrderInput
   move: TaskForceMoveOrderInput
 }
 

@@ -1,7 +1,7 @@
 import { Menu } from "@mantine/core";
 import { Application, extend } from "@pixi/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { Container, Graphics, type Point, Sprite } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import "pixi.js/math-extras";
 import { useRef, useState } from "react";
 import { useStyles } from "tss-react";
@@ -157,13 +157,18 @@ query Galaxy($id: ID!) {
 	const [menuPosition, setMenuPosition] = useState({ left: 0, top: 0 });
 	const [menuContext, setMenuContext] = useState<{
 		shift?: boolean;
-		point?: Point;
+		point?: { x: number; y: number };
 		starSystemId?: string;
 		taskForceId?: string;
 	}>();
 	const menuContextResolved = {
 		starSystem: menuContext?.starSystemId
 			? data?.game.starSystems.find((ss) => ss.id === menuContext.starSystemId)
+			: null,
+		taskForce: menuContext?.taskForceId
+			? data?.game.taskForces.find(
+					(tf) => tf.id === menuContext.taskForceId && tf.isVisible,
+				)
 			: null,
 	};
 
@@ -209,11 +214,10 @@ query Galaxy($id: ID!) {
 							}
 						}}
 						onRightClick={(d) => {
-							setMenuContext((ctx) => ({
-								...ctx,
+							setMenuContext({
 								shift: d.event.shiftKey,
 								point: d.point,
-							}));
+							});
 							setMenuPosition({ left: d.event.screenX, top: d.event.screenY });
 							setMenuOpened(true);
 						}}
@@ -250,11 +254,18 @@ query Galaxy($id: ID!) {
 										params: { starSystemId: starSystem.id },
 									});
 								}}
-								onRightClick={() => {
-									setMenuContext((ctx) => ({
-										...ctx,
+								onRightClick={(event) => {
+									event.preventDefault();
+									setMenuContext({
+										shift: event.shiftKey,
+										point: starSystem.position,
 										starSystemId: starSystem.id,
-									}));
+									});
+									setMenuPosition({
+										left: event.screenX,
+										top: event.screenY,
+									});
+									setMenuOpened(true);
 								}}
 							/>
 						))}
@@ -271,11 +282,18 @@ query Galaxy($id: ID!) {
 									event.preventDefault();
 									setSelectedTaskForce(taskForce.id);
 								}}
-								onRightClick={() => {
-									setMenuContext((ctx) => ({
-										...ctx,
+								onRightClick={(event) => {
+									event.preventDefault();
+									setMenuContext({
+										shift: event.shiftKey,
+										point: taskForce.position,
 										taskForceId: taskForce.id,
-									}));
+									});
+									setMenuPosition({
+										left: event.screenX,
+										top: event.screenY,
+									});
+									setMenuOpened(true);
 								}}
 							/>
 						))}
@@ -305,28 +323,51 @@ query Galaxy($id: ID!) {
 								{menuContext?.shift ? "Queue " : ""}Move here
 							</Menu.Item>
 
-							{menuContextResolved.starSystem && (
+							{menuContextResolved.starSystem &&
+								!menuContextResolved.starSystem.owner && (
+									<Menu.Item
+										onClick={() => {
+											orderTaskForce({
+												id: selectedTaskForce,
+												orders: [
+													{
+														move: {
+															destination:
+																// biome-ignore lint/style/noNonNullAssertion: <explanation>
+																menuContextResolved.starSystem!.position,
+														},
+													},
+													{
+														colonize: true,
+													},
+												],
+												queue: menuContext?.shift,
+											});
+										}}
+									>
+										{menuContext?.shift ? "Queue " : ""}Colonize system
+									</Menu.Item>
+								)}
+
+							{menuContextResolved.taskForce && (
 								<Menu.Item
 									onClick={() => {
 										orderTaskForce({
 											id: selectedTaskForce,
 											orders: [
 												{
-													move: {
-														destination:
+													follow: {
+														taskForceId:
 															// biome-ignore lint/style/noNonNullAssertion: <explanation>
-															menuContextResolved.starSystem!.position,
+															menuContextResolved.taskForce!.id,
 													},
-												},
-												{
-													colonize: true,
 												},
 											],
 											queue: menuContext?.shift,
 										});
 									}}
 								>
-									{menuContext?.shift ? "Queue " : ""}Colonize system
+									{menuContext?.shift ? "Queue " : ""}Follow task force
 								</Menu.Item>
 							)}
 						</>

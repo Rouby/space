@@ -3,7 +3,7 @@ import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceCostMapper, ShipDesignMapper } from './shipDesign/schema.mappers.js';
 import { ResourceNeedMapper } from './resource/schema.mappers.js';
-import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper, TaskForceShipMapper, TaskForceShipCommisionMapper } from './taskForce/schema.mappers.js';
+import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper, TaskForceShipMapper, TaskForceShipCommisionMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
@@ -299,6 +299,16 @@ export type TaskForceCommisionShipInput = {
   shipDesignId: Scalars['ID']['input'];
 };
 
+export type TaskForceFollowOrder = TaskForceOrder & {
+  __typename?: 'TaskForceFollowOrder';
+  id: Scalars['ID']['output'];
+  taskForce: TaskForce;
+};
+
+export type TaskForceFollowOrderInput = {
+  taskForceId: Scalars['ID']['input'];
+};
+
 export type TaskForceMoveOrder = TaskForceOrder & {
   __typename?: 'TaskForceMoveOrder';
   destination: Scalars['Vector']['output'];
@@ -315,6 +325,7 @@ export type TaskForceOrder = {
 
 export type TaskForceOrderInput = {
   colonize?: InputMaybe<Scalars['Boolean']['input']>;
+  follow?: InputMaybe<TaskForceFollowOrderInput>;
   move?: InputMaybe<TaskForceMoveOrderInput>;
 };
 
@@ -438,7 +449,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
   Positionable: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } );
-  TaskForceOrder: ( TaskForceColonizeOrderMapper & { __typename: 'TaskForceColonizeOrder' } ) | ( TaskForceMoveOrderMapper & { __typename: 'TaskForceMoveOrder' } );
+  TaskForceOrder: ( TaskForceColonizeOrderMapper & { __typename: 'TaskForceColonizeOrder' } ) | ( TaskForceFollowOrderMapper & { __typename: 'TaskForceFollowOrder' } ) | ( TaskForceMoveOrderMapper & { __typename: 'TaskForceMoveOrder' } );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -474,6 +485,8 @@ export type ResolversTypes = {
   TaskForceColonizeOrder: ResolverTypeWrapper<TaskForceColonizeOrderMapper>;
   TaskForceCommisionInput: TaskForceCommisionInput;
   TaskForceCommisionShipInput: TaskForceCommisionShipInput;
+  TaskForceFollowOrder: ResolverTypeWrapper<TaskForceFollowOrderMapper>;
+  TaskForceFollowOrderInput: TaskForceFollowOrderInput;
   TaskForceMoveOrder: ResolverTypeWrapper<TaskForceMoveOrderMapper>;
   TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: ResolverTypeWrapper<TaskForceOrderMapper>;
@@ -521,6 +534,8 @@ export type ResolversParentTypes = {
   TaskForceColonizeOrder: TaskForceColonizeOrderMapper;
   TaskForceCommisionInput: TaskForceCommisionInput;
   TaskForceCommisionShipInput: TaskForceCommisionShipInput;
+  TaskForceFollowOrder: TaskForceFollowOrderMapper;
+  TaskForceFollowOrderInput: TaskForceFollowOrderInput;
   TaskForceMoveOrder: TaskForceMoveOrderMapper;
   TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: TaskForceOrderMapper;
@@ -717,6 +732,12 @@ export type TaskForceColonizeOrderResolvers<ContextType = Context, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TaskForceFollowOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceFollowOrder'] = ResolversParentTypes['TaskForceFollowOrder']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  taskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type TaskForceMoveOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceMoveOrder'] = ResolversParentTypes['TaskForceMoveOrder']> = {
   destination?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -724,7 +745,7 @@ export type TaskForceMoveOrderResolvers<ContextType = Context, ParentType extend
 };
 
 export type TaskForceOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceOrder'] = ResolversParentTypes['TaskForceOrder']> = {
-  __resolveType?: TypeResolveFn<'TaskForceColonizeOrder' | 'TaskForceMoveOrder', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'TaskForceColonizeOrder' | 'TaskForceFollowOrder' | 'TaskForceMoveOrder', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
@@ -800,6 +821,7 @@ export type Resolvers<ContextType = Context> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;
   TaskForceColonizeOrder?: TaskForceColonizeOrderResolvers<ContextType>;
+  TaskForceFollowOrder?: TaskForceFollowOrderResolvers<ContextType>;
   TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
   TaskForceShip?: TaskForceShipResolvers<ContextType>;

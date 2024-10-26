@@ -20,6 +20,11 @@ export type TaskForceOrderMapper =
 	  }
 	| {
 			id: string;
+			type: "follow";
+			taskForceId: string;
+	  }
+	| {
+			id: string;
 			type: "colonize";
 	  };
 export type TaskForceShipCommisionMapper = {
@@ -46,6 +51,10 @@ export type TaskForceShipMapper = {
 export type TaskForceMoveOrderMapper = Extract<
 	TaskForceOrderMapper,
 	{ type: "move" }
+>;
+export type TaskForceFollowOrderMapper = Extract<
+	TaskForceOrderMapper,
+	{ type: "follow" }
 >;
 export type TaskForceColonizeOrderMapper = Extract<
 	TaskForceOrderMapper,
