@@ -65,7 +65,7 @@ export function getLastKnownHelper({
 	userId: string;
 	position: AnyColumn;
 }) {
-	const TaskForceVisibility = tx.$with("TaskForceVisibility").as((qb) =>
+	const VisibilityQuery = tx.$with("VisibilityQuery").as((qb) =>
 		qb
 			.select()
 			.from(visibility)
@@ -74,9 +74,9 @@ export function getLastKnownHelper({
 
 	const visibilityExists = exists(
 		tx
-			.select({ circle: TaskForceVisibility.circle })
-			.from(TaskForceVisibility)
-			.where(sql`${TaskForceVisibility.circle} @> ${position}`),
+			.select({ circle: VisibilityQuery.circle })
+			.from(VisibilityQuery)
+			.where(sql`${VisibilityQuery.circle} @> ${position}`),
 	);
 
 	function possiblyHidden<T extends AnyColumn>(column: T) {
@@ -94,7 +94,7 @@ export function getLastKnownHelper({
 	}
 
 	return {
-		TaskForceVisibility,
+		VisibilityQuery,
 		visibilityExists,
 		possiblyHidden,
 		knownOrLastKnown,

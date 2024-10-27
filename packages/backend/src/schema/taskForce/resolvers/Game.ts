@@ -13,7 +13,7 @@ export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 	/* Implement Game resolver logic here */
 	taskForces: async (parent, _arg, ctx) => {
 		const {
-			TaskForceVisibility,
+			VisibilityQuery,
 			visibilityExists,
 			possiblyHidden,
 			knownOrLastKnown,
@@ -25,7 +25,7 @@ export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 		});
 
 		return ctx.drizzle
-			.with(TaskForceVisibility)
+			.with(VisibilityQuery)
 			.select({
 				id: sql<string>`CASE WHEN ${visibilityExists} THEN ${taskForces.id} ELSE ${lastKnownStates.subjectId} END`,
 				gameId: sql<string>`CASE WHEN ${visibilityExists} THEN ${taskForces.gameId} ELSE ${lastKnownStates.gameId} END`,
