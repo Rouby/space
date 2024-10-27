@@ -3,14 +3,12 @@ import {
 	eq,
 	players,
 	resources,
+	shipComponentResourceCosts,
+	shipComponents,
 	shipDesignComponents,
 	shipDesignResourceCosts,
 	shipDesigns,
 } from "../schema.ts";
-import {
-	shipComponentResourceCosts,
-	shipComponents,
-} from "../schema/shipComponents.ts";
 import type { Transaction } from "./index.ts";
 
 export async function migrateFrom2To3(tx: Transaction, gameId: string) {
