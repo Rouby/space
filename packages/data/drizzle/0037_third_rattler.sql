@@ -1,8 +1,3 @@
-DROP VIEW "public"."visibility";
---> statement-breakpoint
-DROP VIEW "public"."taskForceShipsWithStats";
---> statement-breakpoint
-DROP VIEW "public"."shipDesignsWithStats";
 --> statement-breakpoint
 CREATE VIEW "public"."shipDesignsWithStats" AS (
     select

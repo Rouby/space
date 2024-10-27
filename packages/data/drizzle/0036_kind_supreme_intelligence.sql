@@ -79,6 +79,11 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+DROP VIEW "public"."visibility";
+--> statement-breakpoint
+DROP VIEW "public"."taskForceShipsWithStats";
+--> statement-breakpoint
+DROP VIEW "public"."shipDesignsWithStats";
 --> statement-breakpoint
 ALTER TABLE "shipDesigns" DROP COLUMN IF EXISTS "hullRating";--> statement-breakpoint
 ALTER TABLE "shipDesigns" DROP COLUMN IF EXISTS "speedRating";--> statement-breakpoint
