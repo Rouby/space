@@ -27,6 +27,8 @@ export type Game = {
   me?: Maybe<Player>;
   name: Scalars['String']['output'];
   players: Array<Player>;
+  resources: Array<Resource>;
+  shipComponents: Array<ShipComponent>;
   shipDesigns: Array<ShipDesign>;
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -98,6 +100,8 @@ export type Player = {
   color: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  resources: Array<Resource>;
+  shipComponents: Array<ShipComponent>;
   shipDesigns: Array<ShipDesign>;
   user: User;
 };
@@ -186,38 +190,62 @@ export type ResourceNeed = {
   resource: Resource;
 };
 
+export type ShipComponent = {
+  __typename?: 'ShipComponent';
+  armorEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
+  armorThickness?: Maybe<Scalars['Float']['output']>;
+  constructionCost: Scalars['Float']['output'];
+  costs: Array<ResourceCost>;
+  crewCapacity?: Maybe<Scalars['Float']['output']>;
+  crewNeed: Scalars['Float']['output'];
+  description: Scalars['String']['output'];
+  ftlSpeed?: Maybe<Scalars['Float']['output']>;
+  hullBoost?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  powerGeneration?: Maybe<Scalars['Float']['output']>;
+  powerNeed: Scalars['Float']['output'];
+  sensorPrecision?: Maybe<Scalars['Float']['output']>;
+  sensorRange?: Maybe<Scalars['Float']['output']>;
+  shieldEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
+  shieldStrength?: Maybe<Scalars['Float']['output']>;
+  supplyCapacity?: Maybe<Scalars['Float']['output']>;
+  supplyNeed: Scalars['Float']['output'];
+  thruster?: Maybe<Scalars['Float']['output']>;
+  weaponAccuracy?: Maybe<Scalars['Float']['output']>;
+  weaponArmorPenetration?: Maybe<Scalars['Float']['output']>;
+  weaponCooldown?: Maybe<Scalars['Float']['output']>;
+  weaponDamage?: Maybe<Scalars['Float']['output']>;
+  weaponDeliveryType?: Maybe<WeaponDeliveryType>;
+  weaponRange?: Maybe<Scalars['Float']['output']>;
+  weaponShieldPenetration?: Maybe<Scalars['Float']['output']>;
+  zoneOfControl?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ShipComponentEffectivenessAgainst = {
+  __typename?: 'ShipComponentEffectivenessAgainst';
+  deliveryType: WeaponDeliveryType;
+  effectiveness: Scalars['Float']['output'];
+};
+
 export type ShipDesign = {
   __typename?: 'ShipDesign';
-  armorRating: Scalars['Float']['output'];
+  components: Array<ShipComponent>;
   costs: Array<ResourceCost>;
   decommissioned: Scalars['Boolean']['output'];
   description: Scalars['String']['output'];
-  hullRating: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner: Player;
   previousDesign?: Maybe<ShipDesign>;
-  sensorRating: Scalars['Float']['output'];
-  shieldRating: Scalars['Float']['output'];
-  speedRating: Scalars['Float']['output'];
-  supplyCapacity: Scalars['Float']['output'];
-  supplyNeed: Scalars['Float']['output'];
-  weaponRating: Scalars['Float']['output'];
-  zoneOfControlRating: Scalars['Float']['output'];
 };
 
 export type ShipDesignInput = {
-  armorRating: Scalars['Float']['input'];
+  componentIds: Array<Scalars['ID']['input']>;
   description: Scalars['String']['input'];
-  hullRating: Scalars['Float']['input'];
   name: Scalars['String']['input'];
   previousDesignId?: InputMaybe<Scalars['ID']['input']>;
-  sensorRating: Scalars['Float']['input'];
-  shieldRating: Scalars['Float']['input'];
-  speedRating: Scalars['Float']['input'];
-  supplyCapacity: Scalars['Float']['input'];
-  weaponRating: Scalars['Float']['input'];
-  zoneOfControlRating: Scalars['Float']['input'];
+  resourceId: Scalars['ID']['input'];
 };
 
 export type StarSystem = Positionable & {
@@ -365,6 +393,13 @@ export type User = {
   name: Scalars['String']['output'];
 };
 
+export enum WeaponDeliveryType {
+  Beam = 'beam',
+  Instant = 'instant',
+  Missile = 'missile',
+  Projectile = 'projectile'
+}
+
 export type RefreshLoginMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -419,13 +454,20 @@ export type JoinGameMutationVariables = Exact<{
 
 export type JoinGameMutation = { __typename?: 'Mutation', joinGame: { __typename?: 'Game', id: string, name: string, players: Array<{ __typename?: 'Player', id: string, user: { __typename?: 'User', id: string, name: string } }> } };
 
+export type ShipComponentsQueryVariables = Exact<{
+  gameId: Scalars['ID']['input'];
+}>;
+
+
+export type ShipComponentsQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, me?: { __typename?: 'Player', id: string, shipComponents: Array<{ __typename?: 'ShipComponent', id: string, name: string, description: string, supplyNeed: number, powerNeed: number, crewNeed: number, constructionCost: number, supplyCapacity?: number | null, powerGeneration?: number | null, crewCapacity?: number | null, ftlSpeed?: number | null, zoneOfControl?: number | null, sensorRange?: number | null, hullBoost?: number | null, thruster?: number | null, sensorPrecision?: number | null, armorThickness?: number | null, shieldStrength?: number | null, weaponDamage?: number | null, weaponCooldown?: number | null, weaponRange?: number | null, weaponArmorPenetration?: number | null, weaponShieldPenetration?: number | null, weaponAccuracy?: number | null, weaponDeliveryType?: WeaponDeliveryType | null, costs: Array<{ __typename?: 'ResourceCost', quantity: number, resource: { __typename?: 'Resource', id: string, name: string } }>, armorEffectivenessAgainst?: Array<{ __typename?: 'ShipComponentEffectivenessAgainst', deliveryType: WeaponDeliveryType, effectiveness: number }> | null, shieldEffectivenessAgainst?: Array<{ __typename?: 'ShipComponentEffectivenessAgainst', deliveryType: WeaponDeliveryType, effectiveness: number }> | null }>, resources: Array<{ __typename?: 'Resource', id: string, name: string }> } | null } };
+
 export type CreateShipDesignMutationVariables = Exact<{
   gameId: Scalars['ID']['input'];
   design: ShipDesignInput;
 }>;
 
 
-export type CreateShipDesignMutation = { __typename?: 'Mutation', createShipDesign: { __typename?: 'ShipDesign', id: string, name: string } };
+export type CreateShipDesignMutation = { __typename?: 'Mutation', createShipDesign: { __typename?: 'ShipDesign', id: string, name: string, costs: Array<{ __typename?: 'ResourceCost', quantity: number, resource: { __typename?: 'Resource', id: string, name: string } }> } };
 
 export type ShipDesignsQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -500,7 +542,8 @@ export const GameLobbyDocument = {"kind":"Document","definitions":[{"kind":"Oper
 export const StartGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"StartGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}}]}}]}}]} as unknown as DocumentNode<StartGameMutation, StartGameMutationVariables>;
 export const GamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Games"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"games"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"players"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GamesQuery, GamesQueryVariables>;
 export const JoinGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"JoinGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"joinGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"players"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<JoinGameMutation, JoinGameMutationVariables>;
-export const CreateShipDesignDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateShipDesign"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"design"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ShipDesignInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createShipDesign"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"design"},"value":{"kind":"Variable","name":{"kind":"Name","value":"design"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CreateShipDesignMutation, CreateShipDesignMutationVariables>;
+export const ShipComponentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ShipComponents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"shipComponents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"costs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supplyNeed"}},{"kind":"Field","name":{"kind":"Name","value":"powerNeed"}},{"kind":"Field","name":{"kind":"Name","value":"crewNeed"}},{"kind":"Field","name":{"kind":"Name","value":"constructionCost"}},{"kind":"Field","name":{"kind":"Name","value":"supplyCapacity"}},{"kind":"Field","name":{"kind":"Name","value":"powerGeneration"}},{"kind":"Field","name":{"kind":"Name","value":"crewCapacity"}},{"kind":"Field","name":{"kind":"Name","value":"ftlSpeed"}},{"kind":"Field","name":{"kind":"Name","value":"zoneOfControl"}},{"kind":"Field","name":{"kind":"Name","value":"sensorRange"}},{"kind":"Field","name":{"kind":"Name","value":"hullBoost"}},{"kind":"Field","name":{"kind":"Name","value":"thruster"}},{"kind":"Field","name":{"kind":"Name","value":"sensorPrecision"}},{"kind":"Field","name":{"kind":"Name","value":"armorThickness"}},{"kind":"Field","name":{"kind":"Name","value":"armorEffectivenessAgainst"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deliveryType"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveness"}}]}},{"kind":"Field","name":{"kind":"Name","value":"shieldStrength"}},{"kind":"Field","name":{"kind":"Name","value":"shieldEffectivenessAgainst"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deliveryType"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveness"}}]}},{"kind":"Field","name":{"kind":"Name","value":"weaponDamage"}},{"kind":"Field","name":{"kind":"Name","value":"weaponCooldown"}},{"kind":"Field","name":{"kind":"Name","value":"weaponRange"}},{"kind":"Field","name":{"kind":"Name","value":"weaponArmorPenetration"}},{"kind":"Field","name":{"kind":"Name","value":"weaponShieldPenetration"}},{"kind":"Field","name":{"kind":"Name","value":"weaponAccuracy"}},{"kind":"Field","name":{"kind":"Name","value":"weaponDeliveryType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"resources"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ShipComponentsQuery, ShipComponentsQueryVariables>;
+export const CreateShipDesignDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateShipDesign"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"design"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ShipDesignInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createShipDesign"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"design"},"value":{"kind":"Variable","name":{"kind":"Name","value":"design"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"costs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<CreateShipDesignMutation, CreateShipDesignMutationVariables>;
 export const ShipDesignsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ShipDesigns"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"shipDesigns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"costs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ShipDesignsQuery, ShipDesignsQueryVariables>;
 export const SignInDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SignIn"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginWithPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<SignInMutation, SignInMutationVariables>;
 export const CommisionTaskForceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CommisionTaskForce"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"commision"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TaskForceCommisionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTaskForceCommision"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"commision"},"value":{"kind":"Variable","name":{"kind":"Name","value":"commision"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CommisionTaskForceMutation, CommisionTaskForceMutationVariables>;

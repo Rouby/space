@@ -8,3 +8,11 @@ type ResourceNeed {
 	alotted: Float!
 	needed: Float!
 }
+
+extend type Game {
+	resources: [Resource!]!
+}
+
+extend type Player {
+	resources: [Resource!]!
+}

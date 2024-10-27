@@ -42,10 +42,6 @@ export type TaskForceShipMapper = {
 	shipDesignId: string;
 	name: string;
 	role: TaskForceShipRole;
-	hullState: string;
-	shieldState: string;
-	armorState: string;
-	weaponState: string;
 	supplyCarried: string;
 };
 export type TaskForceMoveOrderMapper = Extract<

@@ -1,0 +1,54 @@
+type ShipComponent {
+	id: ID!
+	name: String!
+	description: String!
+	costs: [ResourceCost!]!
+
+	supplyNeed: Float!
+	powerNeed: Float!
+	crewNeed: Float!
+	constructionCost: Float!
+
+	supplyCapacity: Float
+	powerGeneration: Float
+	crewCapacity: Float
+
+	ftlSpeed: Float
+	zoneOfControl: Float
+	sensorRange: Float
+
+	hullBoost: Float
+	thruster: Float
+	sensorPrecision: Float
+	armorThickness: Float
+	armorEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+	shieldStrength: Float
+	shieldEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+	weaponDamage: Float
+	weaponCooldown: Float
+	weaponRange: Float
+	weaponArmorPenetration: Float
+	weaponShieldPenetration: Float
+	weaponAccuracy: Float
+	weaponDeliveryType: WeaponDeliveryType
+}
+
+enum WeaponDeliveryType {
+	projectile
+	beam
+	missile
+	instant
+}
+
+type ShipComponentEffectivenessAgainst {
+	deliveryType: WeaponDeliveryType!
+	effectiveness: Float!
+}
+
+extend type Game {
+	shipComponents: [ShipComponent!]!
+}
+
+extend type Player {
+	shipComponents: [ShipComponent!]!
+}

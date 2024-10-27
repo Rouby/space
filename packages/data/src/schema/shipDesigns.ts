@@ -1,9 +1,11 @@
-import { relations, sql } from "drizzle-orm";
+import { eq, relations, sql } from "drizzle-orm";
 import {
 	type AnyPgColumn,
 	boolean,
 	decimal,
+	integer,
 	pgTable,
+	pgView,
 	primaryKey,
 	text,
 	uuid,
@@ -11,6 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
 import { resources } from "./resources.ts";
+import { shipComponents } from "./shipComponents.ts";
 import { users } from "./users.ts";
 
 export const shipDesigns = pgTable("shipDesigns", {
@@ -27,15 +30,6 @@ export const shipDesigns = pgTable("shipDesigns", {
 	previousDesignId: uuid().references((): AnyPgColumn => shipDesigns.id, {
 		onDelete: "restrict",
 	}),
-	hullRating: decimal({ precision: 30, scale: 6 }).notNull(),
-	speedRating: decimal({ precision: 30, scale: 6 }).notNull(),
-	armorRating: decimal({ precision: 30, scale: 6 }).notNull(),
-	shieldRating: decimal({ precision: 30, scale: 6 }).notNull(),
-	weaponRating: decimal({ precision: 30, scale: 6 }).notNull(),
-	zoneOfControlRating: decimal({ precision: 30, scale: 6 }).notNull(),
-	sensorRating: decimal({ precision: 30, scale: 6 }).notNull().default("1"),
-	supplyNeed: decimal({ precision: 30, scale: 6 }).notNull(),
-	supplyCapacity: decimal({ precision: 30, scale: 6 }).notNull(),
 });
 
 export const shipDesignsRelations = relations(shipDesigns, ({ one, many }) => ({
@@ -46,6 +40,7 @@ export const shipDesignsRelations = relations(shipDesigns, ({ one, many }) => ({
 		references: [shipDesigns.id],
 	}),
 	resourceCosts: many(shipDesignResourceCosts),
+	components: many(shipDesignComponents),
 }));
 
 export const shipDesignResourceCosts = pgTable(
@@ -66,6 +61,24 @@ export const shipDesignResourceCosts = pgTable(
 	}),
 );
 
+export const shipDesignComponents = pgTable(
+	"shipDesignComponents",
+	{
+		shipDesignId: uuid()
+			.notNull()
+			.references(() => shipDesigns.id, { onDelete: "cascade" }),
+		shipComponentId: uuid()
+			.notNull()
+			.references(() => shipComponents.id, { onDelete: "restrict" }),
+		position: integer().notNull().default(0),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.shipDesignId, table.shipComponentId, table.position],
+		}),
+	}),
+);
+
 export const shipDesignResourceCostsRelations = relations(
 	shipDesignResourceCosts,
 	({ one }) => ({
@@ -78,4 +91,86 @@ export const shipDesignResourceCostsRelations = relations(
 			references: [shipDesigns.id],
 		}),
 	}),
+);
+
+export const shipDesignComponentsRelations = relations(
+	shipDesignComponents,
+	({ one }) => ({
+		resource: one(shipComponents, {
+			fields: [shipDesignComponents.shipComponentId],
+			references: [shipComponents.id],
+		}),
+		shipDesign: one(shipDesigns, {
+			fields: [shipDesignComponents.shipDesignId],
+			references: [shipDesigns.id],
+		}),
+	}),
+);
+
+export const shipDesignsWithStats = pgView("shipDesignsWithStats").as((qb) =>
+	qb
+		.select({
+			id: shipDesigns.id,
+			name: shipDesigns.name,
+			description: shipDesigns.description,
+			decommissioned: shipDesigns.decommissioned,
+			previousDesignId: shipDesigns.previousDesignId,
+			resourceCosts: sql<
+				{ resourceId: string; quantity: string }[]
+			>`jsonb_agg(jsonb_build_object('resourceId', ${shipDesignResourceCosts.resourceId}, 'quantity', ${shipDesignResourceCosts.quantity}))`.as(
+				"resourceCosts",
+			),
+			components: sql<
+				(typeof shipComponents.$inferSelect)[]
+			>`jsonb_agg(${shipComponents})`.as("components"),
+
+			// general stats
+			supplyNeed: sql`sum(${shipComponents.supplyNeed})`
+				.mapWith(shipComponents.supplyNeed)
+				.as("supplyNeed"),
+			powerNeed: sql`sum(${shipComponents.powerNeed})`
+				.mapWith(shipComponents.powerNeed)
+				.as("powerNeed"),
+			crewNeed: sql`sum(${shipComponents.crewNeed})`
+				.mapWith(shipComponents.crewNeed)
+				.as("crewNeed"),
+			constructionCost: sql`sum(${shipComponents.constructionCost})`.as(
+				"constructionCost",
+			),
+
+			supplyCapacity: sql`sum(${shipComponents.supplyCapacity})`
+				.mapWith(shipComponents.supplyCapacity)
+				.as("supplyCapacity"),
+			powerGeneration: sql`sum(${shipComponents.powerGeneration})`
+				.mapWith(shipComponents.powerGeneration)
+				.as("powerGeneration"),
+			crewCapacity: sql`sum(${shipComponents.crewCapacity})`
+				.mapWith(shipComponents.crewCapacity)
+				.as("crewCapacity"),
+
+			// strategic stats
+			ftlSpeed: sql`min(${shipComponents.ftlSpeed})`
+				.mapWith(shipComponents.ftlSpeed)
+				.as("ftlSpeed"),
+			zoneOfControl: sql`max(${shipComponents.zoneOfControl})`
+				.mapWith(shipComponents.zoneOfControl)
+				.as("zoneOfControl"),
+			sensorRange: sql`max(${shipComponents.sensorRange})`
+				.mapWith(shipComponents.sensorRange)
+				.as("sensorRange"),
+		})
+		.from(shipDesigns)
+		.innerJoin(
+			shipDesignResourceCosts,
+			eq(shipDesigns.id, shipDesignResourceCosts.shipDesignId),
+		)
+		.innerJoin(
+			shipDesignComponents,
+			eq(shipDesigns.id, shipDesignComponents.shipDesignId),
+		)
+		.innerJoin(
+			shipComponents,
+			eq(shipComponents.id, shipDesignComponents.shipComponentId),
+		)
+		.groupBy(shipDesigns.id),
 );

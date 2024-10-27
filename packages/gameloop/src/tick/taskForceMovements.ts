@@ -20,7 +20,7 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 			ownerId: taskForces.ownerId,
 			position: taskForces.position,
 			orders: taskForces.orders,
-			maxSpeed: sql<string>`min(${taskForceShipsWithStats.speed})`,
+			maxSpeed: sql<string>`min(${taskForceShipsWithStats.ftlSpeed})`,
 		})
 		.from(taskForces)
 		.innerJoin(
@@ -129,15 +129,15 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 			const shipsWithStats = await tx
 				.select({
 					id: taskForceShipsWithStats.id,
-					speed: taskForceShipsWithStats.speed,
-					movementSupplyNeed: taskForceShipsWithStats.movementSupplyNeed,
+					ftlSpeed: taskForceShipsWithStats.ftlSpeed,
+					movementSupplyNeed: taskForceShipsWithStats.supplyNeed,
 					supplyCarried: taskForceShipsWithStats.supplyCarried,
 				})
 				.from(taskForceShipsWithStats)
 				.where(eq(taskForceShipsWithStats.taskForceId, taskForce.id));
 
 			for (const ship of shipsWithStats) {
-				const movementPercent = movementDone / +ship.speed;
+				const movementPercent = movementDone / +ship.ftlSpeed;
 				const supplyCosts = movementPercent * +ship.movementSupplyNeed;
 				await tx
 					.update(taskForceShips)

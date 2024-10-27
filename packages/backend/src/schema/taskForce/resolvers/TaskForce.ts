@@ -46,13 +46,13 @@ export const TaskForce: TaskForceResolvers = {
 	sensorRange: async (parent, _arg, ctx) => {
 		const ships = await ctx.drizzle
 			.select({
-				sensor: taskForceShipsWithStats.sensor,
+				sensorRange: taskForceShipsWithStats.sensorRange,
 			})
 			.from(taskForceShipsWithStats)
 			.where(eq(taskForceShipsWithStats.taskForceId, parent.id));
 
 		return ships.reduce((acc, ship) => {
-			return Math.max(acc, +ship.sensor);
+			return Math.max(acc, +ship.sensorRange);
 		}, 0);
 	},
 	ships: async (parent, _arg, ctx) => {

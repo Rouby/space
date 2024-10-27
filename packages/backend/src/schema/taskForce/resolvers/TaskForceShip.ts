@@ -16,4 +16,7 @@ export const TaskForceShip: TaskForceShipResolvers = {
 	hullState: async (_parent, _arg, _ctx) => {
 		return +_parent.hullState;
 	},
+	shipDesign: async (_parent, _arg, _ctx) => {
+		/* TaskForceShip.shipDesign resolver is required because TaskForceShip.shipDesign exists but TaskForceShipMapper.shipDesign does not */
+	},
 };

@@ -225,6 +225,41 @@
       "when": 1730022295783,
       "tag": "0035_tearful_namorita",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1730026789921,
+      "tag": "0036_kind_supreme_intelligence",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1730030507150,
+      "tag": "0037_third_rattler",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1730034864689,
+      "tag": "0038_youthful_nomad",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1730060288087,
+      "tag": "0039_tidy_greymalkin",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1730060307654,
+      "tag": "0040_quick_vin_gonzales",
+      "breakpoints": true
     }
   ]
 }

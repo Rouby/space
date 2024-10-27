@@ -3,18 +3,10 @@ type ShipDesign {
 	name: String!
 	description: String!
 	owner: Player!
-	hullRating: Float!
-	speedRating: Float!
-	armorRating: Float!
-	shieldRating: Float!
-	weaponRating: Float!
-	zoneOfControlRating: Float!
-	sensorRating: Float!
-	supplyNeed: Float!
-	supplyCapacity: Float!
 	decommissioned: Boolean!
 	previousDesign: ShipDesign
 	costs: [ResourceCost!]!
+	components: [ShipComponent!]!
 }
 
 type ResourceCost {
@@ -33,14 +25,8 @@ extend type Player {
 input ShipDesignInput {
 	name: String!
 	description: String!
-	hullRating: Float!
-	speedRating: Float!
-	armorRating: Float!
-	shieldRating: Float!
-	weaponRating: Float!
-	zoneOfControlRating: Float!
-	sensorRating: Float!
-	supplyCapacity: Float!
+	resourceId: ID!
+	componentIds: [ID!]!
 	previousDesignId: ID
 }
 

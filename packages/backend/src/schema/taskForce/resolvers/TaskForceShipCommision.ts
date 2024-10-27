@@ -13,4 +13,7 @@ export const TaskForceShipCommision: TaskForceShipCommisionResolvers = {
 				),
 			);
 	},
+	shipDesign: async (_parent, _arg, _ctx) => {
+		/* TaskForceShipCommision.shipDesign resolver is required because TaskForceShipCommision.shipDesign exists but TaskForceShipCommisionMapper.shipDesign does not */
+	},
 };

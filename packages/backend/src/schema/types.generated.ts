@@ -3,6 +3,7 @@ import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceCostMapper, ShipDesignMapper } from './shipDesign/schema.mappers.js';
 import { ResourceNeedMapper } from './resource/schema.mappers.js';
+import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
 import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper, TaskForceShipMapper, TaskForceShipCommisionMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
@@ -35,6 +36,8 @@ export type Game = {
   me?: Maybe<Player>;
   name: Scalars['String']['output'];
   players: Array<Player>;
+  resources: Array<Resource>;
+  shipComponents: Array<ShipComponent>;
   shipDesigns: Array<ShipDesign>;
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -106,6 +109,8 @@ export type Player = {
   color: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  resources: Array<Resource>;
+  shipComponents: Array<ShipComponent>;
   shipDesigns: Array<ShipDesign>;
   user: User;
 };
@@ -194,38 +199,62 @@ export type ResourceNeed = {
   resource: Resource;
 };
 
+export type ShipComponent = {
+  __typename?: 'ShipComponent';
+  armorEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
+  armorThickness?: Maybe<Scalars['Float']['output']>;
+  constructionCost: Scalars['Float']['output'];
+  costs: Array<ResourceCost>;
+  crewCapacity?: Maybe<Scalars['Float']['output']>;
+  crewNeed: Scalars['Float']['output'];
+  description: Scalars['String']['output'];
+  ftlSpeed?: Maybe<Scalars['Float']['output']>;
+  hullBoost?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  powerGeneration?: Maybe<Scalars['Float']['output']>;
+  powerNeed: Scalars['Float']['output'];
+  sensorPrecision?: Maybe<Scalars['Float']['output']>;
+  sensorRange?: Maybe<Scalars['Float']['output']>;
+  shieldEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
+  shieldStrength?: Maybe<Scalars['Float']['output']>;
+  supplyCapacity?: Maybe<Scalars['Float']['output']>;
+  supplyNeed: Scalars['Float']['output'];
+  thruster?: Maybe<Scalars['Float']['output']>;
+  weaponAccuracy?: Maybe<Scalars['Float']['output']>;
+  weaponArmorPenetration?: Maybe<Scalars['Float']['output']>;
+  weaponCooldown?: Maybe<Scalars['Float']['output']>;
+  weaponDamage?: Maybe<Scalars['Float']['output']>;
+  weaponDeliveryType?: Maybe<WeaponDeliveryType>;
+  weaponRange?: Maybe<Scalars['Float']['output']>;
+  weaponShieldPenetration?: Maybe<Scalars['Float']['output']>;
+  zoneOfControl?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ShipComponentEffectivenessAgainst = {
+  __typename?: 'ShipComponentEffectivenessAgainst';
+  deliveryType: WeaponDeliveryType;
+  effectiveness: Scalars['Float']['output'];
+};
+
 export type ShipDesign = {
   __typename?: 'ShipDesign';
-  armorRating: Scalars['Float']['output'];
+  components: Array<ShipComponent>;
   costs: Array<ResourceCost>;
   decommissioned: Scalars['Boolean']['output'];
   description: Scalars['String']['output'];
-  hullRating: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner: Player;
   previousDesign?: Maybe<ShipDesign>;
-  sensorRating: Scalars['Float']['output'];
-  shieldRating: Scalars['Float']['output'];
-  speedRating: Scalars['Float']['output'];
-  supplyCapacity: Scalars['Float']['output'];
-  supplyNeed: Scalars['Float']['output'];
-  weaponRating: Scalars['Float']['output'];
-  zoneOfControlRating: Scalars['Float']['output'];
 };
 
 export type ShipDesignInput = {
-  armorRating: Scalars['Float']['input'];
+  componentIds: Array<Scalars['ID']['input']>;
   description: Scalars['String']['input'];
-  hullRating: Scalars['Float']['input'];
   name: Scalars['String']['input'];
   previousDesignId?: InputMaybe<Scalars['ID']['input']>;
-  sensorRating: Scalars['Float']['input'];
-  shieldRating: Scalars['Float']['input'];
-  speedRating: Scalars['Float']['input'];
-  supplyCapacity: Scalars['Float']['input'];
-  weaponRating: Scalars['Float']['input'];
-  zoneOfControlRating: Scalars['Float']['input'];
+  resourceId: Scalars['ID']['input'];
 };
 
 export type StarSystem = Positionable & {
@@ -372,6 +401,12 @@ export type User = {
   name: Scalars['String']['output'];
 };
 
+export type WeaponDeliveryType =
+  | 'beam'
+  | 'instant'
+  | 'missile'
+  | 'projectile';
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -476,6 +511,8 @@ export type ResolversTypes = {
   ResourceDepot: ResolverTypeWrapper<ResourceDepotMapper>;
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
   ResourceNeed: ResolverTypeWrapper<ResourceNeedMapper>;
+  ShipComponent: ResolverTypeWrapper<ShipComponentMapper>;
+  ShipComponentEffectivenessAgainst: ResolverTypeWrapper<Omit<ShipComponentEffectivenessAgainst, 'deliveryType'> & { deliveryType: ResolversTypes['WeaponDeliveryType'] }>;
   ShipDesign: ResolverTypeWrapper<ShipDesignMapper>;
   ShipDesignInput: ShipDesignInput;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
@@ -499,6 +536,7 @@ export type ResolversTypes = {
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
+  WeaponDeliveryType: ResolverTypeWrapper<'projectile' | 'beam' | 'missile' | 'instant'>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -525,6 +563,8 @@ export type ResolversParentTypes = {
   ResourceDepot: ResourceDepotMapper;
   ResourceDiscovery: ResourceDiscoveryMapper;
   ResourceNeed: ResourceNeedMapper;
+  ShipComponent: ShipComponentMapper;
+  ShipComponentEffectivenessAgainst: ShipComponentEffectivenessAgainst;
   ShipDesign: ShipDesignMapper;
   ShipDesignInput: ShipDesignInput;
   StarSystem: StarSystemMapper;
@@ -566,6 +606,8 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   me?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   players?: Resolver<Array<ResolversTypes['Player']>, ParentType, ContextType>;
+  resources?: Resolver<Array<ResolversTypes['Resource']>, ParentType, ContextType>;
+  shipComponents?: Resolver<Array<ResolversTypes['ShipComponent']>, ParentType, ContextType>;
   shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -590,6 +632,8 @@ export type PlayerResolvers<ContextType = Context, ParentType extends ResolversP
   color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  resources?: Resolver<Array<ResolversTypes['Resource']>, ParentType, ContextType>;
+  shipComponents?: Resolver<Array<ResolversTypes['ShipComponent']>, ParentType, ContextType>;
   shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -664,23 +708,53 @@ export type ResourceNeedResolvers<ContextType = Context, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ShipComponentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipComponent'] = ResolversParentTypes['ShipComponent']> = {
+  armorEffectivenessAgainst?: Resolver<Maybe<Array<ResolversTypes['ShipComponentEffectivenessAgainst']>>, ParentType, ContextType>;
+  armorThickness?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  constructionCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  costs?: Resolver<Array<ResolversTypes['ResourceCost']>, ParentType, ContextType>;
+  crewCapacity?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  crewNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ftlSpeed?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  hullBoost?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  powerGeneration?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  powerNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  sensorPrecision?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  shieldEffectivenessAgainst?: Resolver<Maybe<Array<ResolversTypes['ShipComponentEffectivenessAgainst']>>, ParentType, ContextType>;
+  shieldStrength?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  supplyCapacity?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  supplyNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  thruster?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  weaponAccuracy?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  weaponArmorPenetration?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  weaponCooldown?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  weaponDamage?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  weaponDeliveryType?: Resolver<Maybe<ResolversTypes['WeaponDeliveryType']>, ParentType, ContextType>;
+  weaponRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  weaponShieldPenetration?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  zoneOfControl?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ShipComponentEffectivenessAgainstResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipComponentEffectivenessAgainst'] = ResolversParentTypes['ShipComponentEffectivenessAgainst']> = {
+  deliveryType?: Resolver<ResolversTypes['WeaponDeliveryType'], ParentType, ContextType>;
+  effectiveness?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ShipDesignResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesign'] = ResolversParentTypes['ShipDesign']> = {
-  armorRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  components?: Resolver<Array<ResolversTypes['ShipComponent']>, ParentType, ContextType>;
   costs?: Resolver<Array<ResolversTypes['ResourceCost']>, ParentType, ContextType>;
   decommissioned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  hullRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
   previousDesign?: Resolver<Maybe<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
-  sensorRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  shieldRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  speedRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  supplyCapacity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  supplyNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  weaponRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  zoneOfControlRating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -797,6 +871,8 @@ export interface VectorScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'Vector';
 }
 
+export type WeaponDeliveryTypeResolvers = EnumResolverSignature<{ beam?: any, instant?: any, missile?: any, projectile?: any }, ResolversTypes['WeaponDeliveryType']>;
+
 export type Resolvers<ContextType = Context> = {
   BigInt?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -815,6 +891,8 @@ export type Resolvers<ContextType = Context> = {
   ResourceDepot?: ResourceDepotResolvers<ContextType>;
   ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;
   ResourceNeed?: ResourceNeedResolvers<ContextType>;
+  ShipComponent?: ShipComponentResolvers<ContextType>;
+  ShipComponentEffectivenessAgainst?: ShipComponentEffectivenessAgainstResolvers<ContextType>;
   ShipDesign?: ShipDesignResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
   StarSystemUpdateEvent?: StarSystemUpdateEventResolvers<ContextType>;
@@ -832,5 +910,6 @@ export type Resolvers<ContextType = Context> = {
   UnknownDiscovery?: UnknownDiscoveryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;
+  WeaponDeliveryType?: WeaponDeliveryTypeResolvers;
 };
 

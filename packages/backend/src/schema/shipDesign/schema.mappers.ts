@@ -1,4 +1,8 @@
-import type { shipDesigns } from "@space/data/schema";
-
-export type ShipDesignMapper = typeof shipDesigns.$inferSelect;
+export type ShipDesignMapper = {
+	id: string;
+	name: string;
+	description: string;
+	decommissioned: boolean;
+	previousDesignId: string | null;
+};
 export type ResourceCostMapper = { resourceId: string; quantity: string };

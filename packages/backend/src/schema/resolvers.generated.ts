@@ -17,10 +17,14 @@ import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/st
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
+import    { Game as resource_Game } from './resource/resolvers/Game.js';
+import    { Game as shipComponent_Game } from './shipComponent/resolvers/Game.js';
 import    { Game as shipDesign_Game } from './shipDesign/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
 import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
 import    { Player as game_Player } from './game/resolvers/Player.js';
+import    { Player as resource_Player } from './resource/resolvers/Player.js';
+import    { Player as shipComponent_Player } from './shipComponent/resolvers/Player.js';
 import    { Player as shipDesign_Player } from './shipDesign/resolvers/Player.js';
 import    { Population } from './starSystem/resolvers/Population.js';
 import    { PositionableApppearsEvent } from './base/resolvers/PositionableApppearsEvent.js';
@@ -31,6 +35,8 @@ import    { ResourceCost } from './shipDesign/resolvers/ResourceCost.js';
 import    { ResourceDepot } from './starSystem/resolvers/ResourceDepot.js';
 import    { ResourceDiscovery } from './starSystem/resolvers/ResourceDiscovery.js';
 import    { ResourceNeed } from './resource/resolvers/ResourceNeed.js';
+import    { ShipComponent } from './shipComponent/resolvers/ShipComponent.js';
+import    { ShipComponentEffectivenessAgainst } from './shipComponent/resolvers/ShipComponentEffectivenessAgainst.js';
 import    { ShipDesign } from './shipDesign/resolvers/ShipDesign.js';
 import    { StarSystem as starSystem_StarSystem } from './starSystem/resolvers/StarSystem.js';
 import    { StarSystem as taskForce_StarSystem } from './taskForce/resolvers/StarSystem.js';
@@ -51,8 +57,8 @@ import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
       Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceShipCommision: Query_taskForceShipCommision },
       Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,createTaskForceCommision: Mutation_createTaskForceCommision,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
-      Game: { ...game_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
-Player: { ...game_Player,...shipDesign_Player },
+      Game: { ...game_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
+Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
 Population: Population,
 PositionableApppearsEvent: PositionableApppearsEvent,
 PositionableDisappearsEvent: PositionableDisappearsEvent,
@@ -62,6 +68,8 @@ ResourceCost: ResourceCost,
 ResourceDepot: ResourceDepot,
 ResourceDiscovery: ResourceDiscovery,
 ResourceNeed: ResourceNeed,
+ShipComponent: ShipComponent,
+ShipComponentEffectivenessAgainst: ShipComponentEffectivenessAgainst,
 ShipDesign: ShipDesign,
 StarSystem: { ...starSystem_StarSystem,...taskForce_StarSystem },
 StarSystemUpdateEvent: StarSystemUpdateEvent,

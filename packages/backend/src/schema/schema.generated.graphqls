@@ -9,6 +9,8 @@ type Game {
   me: Player
   name: String!
   players: [Player!]!
+  resources: [Resource!]!
+  shipComponents: [ShipComponent!]!
   shipDesigns: [ShipDesign!]!
   starSystems: [StarSystem!]!
   startedAt: DateTime
@@ -32,6 +34,8 @@ type Player {
   color: String!
   id: ID!
   name: String!
+  resources: [Resource!]!
+  shipComponents: [ShipComponent!]!
   shipDesigns: [ShipDesign!]!
   user: User!
 }
@@ -95,37 +99,59 @@ type ResourceNeed {
   resource: Resource!
 }
 
+type ShipComponent {
+  armorEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+  armorThickness: Float
+  constructionCost: Float!
+  costs: [ResourceCost!]!
+  crewCapacity: Float
+  crewNeed: Float!
+  description: String!
+  ftlSpeed: Float
+  hullBoost: Float
+  id: ID!
+  name: String!
+  powerGeneration: Float
+  powerNeed: Float!
+  sensorPrecision: Float
+  sensorRange: Float
+  shieldEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+  shieldStrength: Float
+  supplyCapacity: Float
+  supplyNeed: Float!
+  thruster: Float
+  weaponAccuracy: Float
+  weaponArmorPenetration: Float
+  weaponCooldown: Float
+  weaponDamage: Float
+  weaponDeliveryType: WeaponDeliveryType
+  weaponRange: Float
+  weaponShieldPenetration: Float
+  zoneOfControl: Float
+}
+
+type ShipComponentEffectivenessAgainst {
+  deliveryType: WeaponDeliveryType!
+  effectiveness: Float!
+}
+
 type ShipDesign {
-  armorRating: Float!
+  components: [ShipComponent!]!
   costs: [ResourceCost!]!
   decommissioned: Boolean!
   description: String!
-  hullRating: Float!
   id: ID!
   name: String!
   owner: Player!
   previousDesign: ShipDesign
-  sensorRating: Float!
-  shieldRating: Float!
-  speedRating: Float!
-  supplyCapacity: Float!
-  supplyNeed: Float!
-  weaponRating: Float!
-  zoneOfControlRating: Float!
 }
 
 input ShipDesignInput {
-  armorRating: Float!
+  componentIds: [ID!]!
   description: String!
-  hullRating: Float!
   name: String!
   previousDesignId: ID
-  sensorRating: Float!
-  shieldRating: Float!
-  speedRating: Float!
-  supplyCapacity: Float!
-  weaponRating: Float!
-  zoneOfControlRating: Float!
+  resourceId: ID!
 }
 
 type StarSystem implements Positionable {
@@ -253,3 +279,10 @@ type User {
 }
 
 scalar Vector
+
+enum WeaponDeliveryType {
+  beam
+  instant
+  missile
+  projectile
+}
