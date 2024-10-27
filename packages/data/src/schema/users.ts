@@ -5,9 +5,9 @@ import { passwords } from "./passwords.ts";
 export const users = pgTable(
 	"users",
 	{
-		id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-		email: varchar("email", { length: 256 }).notNull(),
-		name: varchar("name", { length: 256 }).notNull(),
+		id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+		email: varchar({ length: 256 }).notNull(),
+		name: varchar({ length: 256 }).notNull(),
 	},
 	(users) => {
 		return {

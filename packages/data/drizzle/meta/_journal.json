@@ -211,6 +211,20 @@
       "when": 1729944835915,
       "tag": "0033_workable_purifiers",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1730021492901,
+      "tag": "0034_natural_puff_adder",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1730022295783,
+      "tag": "0035_tearful_namorita",
+      "breakpoints": true
     }
   ]
 }

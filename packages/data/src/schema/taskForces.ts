@@ -6,15 +6,15 @@ import { users } from "./users.ts";
 
 export const taskForces = pgTable("taskForces", {
 	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	gameId: uuid("gameId")
+	gameId: uuid()
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	ownerId: uuid("ownerId")
+	ownerId: uuid()
 		.notNull()
 		.references(() => users.id, { onDelete: "restrict" }),
-	name: varchar("name", { length: 256 }).notNull(),
-	position: point("position", { mode: "xy" }).notNull(),
-	orders: json("orders")
+	name: varchar({ length: 256 }).notNull(),
+	position: point({ mode: "xy" }).notNull(),
+	orders: json()
 		.notNull()
 		.$type<
 			(
@@ -24,7 +24,7 @@ export const taskForces = pgTable("taskForces", {
 			)[]
 		>()
 		.default([]),
-	movementVector: point("movementVector", { mode: "xy" }),
+	movementVector: point({ mode: "xy" }),
 });
 
 export const taskForcesRelations = relations(taskForces, ({ one, many }) => ({

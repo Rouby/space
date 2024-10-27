@@ -11,24 +11,24 @@ import {
 import { users } from "./users.ts";
 
 export const games = pgTable("games", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	name: varchar("name", { length: 256 }).notNull(),
-	startedAt: timestamp("startedAt"),
-	setupCompleted: boolean("setupCompleted").notNull().default(false),
-	version: integer("version").notNull().default(0),
-	tickRate: integer("tickRate").notNull().default(100),
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+	name: varchar({ length: 256 }).notNull(),
+	startedAt: timestamp(),
+	setupCompleted: boolean().notNull().default(false),
+	version: integer().notNull().default(0),
+	tickRate: integer().notNull().default(100),
 });
 
 export const players = pgTable(
 	"players",
 	{
-		userId: uuid("userId")
+		userId: uuid()
 			.notNull()
 			.references(() => users.id, { onDelete: "restrict" }),
-		gameId: uuid("gameId")
+		gameId: uuid()
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
-		color: varchar("color", { length: 7 }).notNull().default("#000000"),
+		color: varchar({ length: 7 }).notNull().default("#000000"),
 	},
 	(table) => ({ pk: primaryKey({ columns: [table.userId, table.gameId] }) }),
 );

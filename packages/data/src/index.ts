@@ -15,5 +15,5 @@ export async function getConnection() {
 }
 
 export function getDrizzle(client: pg.Client) {
-	return drizzle(client, { schema });
+	return drizzle(client, { schema, casing: "camelCase" });
 }

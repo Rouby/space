@@ -18,12 +18,12 @@ export const resourceKind = pgEnum("resourceKind", [
 ]);
 
 export const resources = pgTable("resources", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	gameId: uuid("gameId")
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+	gameId: uuid()
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	name: varchar("name", { length: 256 }).notNull(),
-	kind: resourceKind("kind").notNull(),
-	description: text("description").notNull(),
-	discoveryWeight: integer("discoveryWeight").notNull(),
+	name: varchar({ length: 256 }).notNull(),
+	kind: resourceKind().notNull(),
+	description: text().notNull(),
+	discoveryWeight: integer().notNull(),
 });

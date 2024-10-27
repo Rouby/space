@@ -14,22 +14,22 @@ import { taskForceShipRole } from "./taskForceShips.ts";
 import { taskForces } from "./taskForces.ts";
 
 export const taskForceShipCommisions = pgTable("taskForceShipCommisions", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	gameId: uuid("gameId")
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+	gameId: uuid()
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	starSystemId: uuid("starSystemId")
+	starSystemId: uuid()
 		.notNull()
 		.references(() => starSystems.id, { onDelete: "cascade" }),
-	shipDesignId: uuid("shipDesignId")
+	shipDesignId: uuid()
 		.notNull()
 		.references(() => shipDesigns.id, { onDelete: "cascade" }),
-	taskForceId: uuid("taskForceId")
+	taskForceId: uuid()
 		.notNull()
 		.references(() => taskForces.id, { onDelete: "cascade" }),
-	name: varchar("name", { length: 256 }).notNull(),
-	role: taskForceShipRole("role").notNull(),
-	progress: decimal("progress", { precision: 30, scale: 6 }).notNull(),
+	name: varchar({ length: 256 }).notNull(),
+	role: taskForceShipRole().notNull(),
+	progress: decimal({ precision: 30, scale: 6 }).notNull(),
 });
 
 export const taskForceCommisionsRelations = relations(
@@ -50,14 +50,14 @@ export const taskForceCommisionsRelations = relations(
 export const taskForceShipCommisionResourceNeeds = pgTable(
 	"taskForceShipCommisionResourceNeeds",
 	{
-		taskForceShipCommisionId: uuid("taskForceShipCommisionId")
+		taskForceShipCommisionId: uuid()
 			.notNull()
 			.references(() => taskForceShipCommisions.id, { onDelete: "cascade" }),
-		resourceId: uuid("resourceId")
+		resourceId: uuid()
 			.notNull()
 			.references(() => resources.id, { onDelete: "restrict" }),
-		alotted: decimal("alotted", { precision: 30, scale: 6 }).notNull(),
-		needed: decimal("needed", { precision: 30, scale: 6 }).notNull(),
+		alotted: decimal({ precision: 30, scale: 6 }).notNull(),
+		needed: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({

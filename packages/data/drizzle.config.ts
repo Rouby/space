@@ -7,4 +7,5 @@ export default defineConfig({
 	dbCredentials: {
 		url: "postgres://postgres:password@localhost:5432/postgres",
 	},
+	casing: "camelCase",
 });

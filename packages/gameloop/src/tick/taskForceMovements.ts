@@ -127,7 +127,12 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 			const movementDone = movementPerTick - movement;
 
 			const shipsWithStats = await tx
-				.select()
+				.select({
+					id: taskForceShipsWithStats.id,
+					speed: taskForceShipsWithStats.speed,
+					movementSupplyNeed: taskForceShipsWithStats.movementSupplyNeed,
+					supplyCarried: taskForceShipsWithStats.supplyCarried,
+				})
 				.from(taskForceShipsWithStats)
 				.where(eq(taskForceShipsWithStats.taskForceId, taskForce.id));
 

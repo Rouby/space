@@ -1,6 +1,5 @@
-import { relations, sql } from "drizzle-orm";
+import { eq, relations, sql } from "drizzle-orm";
 import {
-	decimal,
 	numeric,
 	pgEnum,
 	pgTable,
@@ -18,52 +17,23 @@ export const taskForceShipRole = pgEnum("taskForceShipRole", [
 ]);
 
 export const taskForceShips = pgTable("taskForceShips", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	taskForceId: uuid("taskForceId")
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+	taskForceId: uuid()
 		.notNull()
 		.references(() => taskForces.id, { onDelete: "cascade" }),
-	shipDesignId: uuid("shipDesignId")
+	shipDesignId: uuid()
 		.notNull()
 		.references(() => shipDesigns.id, { onDelete: "restrict" }),
-	name: varchar("name", { length: 256 }).notNull(),
-	role: taskForceShipRole("role").notNull(),
+	name: varchar({ length: 256 }).notNull(),
+	role: taskForceShipRole().notNull(),
 
-	hullState: numeric("hullState", {
-		precision: 30,
-		scale: 6,
-	})
-		.notNull()
-		.default("1"),
-	shieldState: numeric("shieldState", {
-		precision: 30,
-		scale: 6,
-	})
-		.notNull()
-		.default("1"),
-	armorState: numeric("armorState", {
-		precision: 30,
-		scale: 6,
-	})
-		.notNull()
-		.default("1"),
-	weaponState: numeric("weaponState", {
-		precision: 30,
-		scale: 6,
-	})
-		.notNull()
-		.default("1"),
-	sensorState: numeric("sensorState", {
-		precision: 30,
-		scale: 6,
-	})
-		.notNull()
-		.default("1"),
-	supplyCarried: numeric("supplyCarried", {
-		precision: 30,
-		scale: 6,
-	})
-		.notNull()
-		.default("0"),
+	hullState: numeric({ precision: 30, scale: 6 }).notNull().default("1"),
+	speedState: numeric({ precision: 30, scale: 6 }).notNull().default("1"),
+	shieldState: numeric({ precision: 30, scale: 6 }).notNull().default("1"),
+	armorState: numeric({ precision: 30, scale: 6 }).notNull().default("1"),
+	weaponState: numeric({ precision: 30, scale: 6 }).notNull().default("1"),
+	sensorState: numeric({ precision: 30, scale: 6 }).notNull().default("1"),
+	supplyCarried: numeric({ precision: 30, scale: 6 }).notNull().default("0"),
 });
 
 export const taskForceShipRelations = relations(taskForceShips, ({ one }) => ({
@@ -77,138 +47,55 @@ export const taskForceShipRelations = relations(taskForceShips, ({ one }) => ({
 	}),
 }));
 
-export const taskForceShipsWithStats = pgView("taskForceShipsWithStats", {
-	id: uuid("id").notNull(),
-	taskForceId: uuid("taskForceId").notNull(),
-	name: varchar("name", { length: 256 }).notNull(),
-	role: taskForceShipRole("role").notNull(),
-	hullState: decimal("hullState", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	hullRating: decimal("hullRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	hull: decimal("hull", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	speedState: decimal("speedState", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	speedRating: decimal("speedRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	speed: decimal("speed", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	shieldState: decimal("shieldState", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	shieldRating: decimal("shieldRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	shield: decimal("shield", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	armorState: decimal("armorState", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	armorRating: decimal("armorRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	armor: decimal("armor", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	weaponState: decimal("weaponState", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	weaponRating: decimal("weaponRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	weapon: decimal("weapon", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	supplyCarried: decimal("supplyCarried", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	supplyCapacity: decimal("supplyCapacity", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	movementSupplyNeed: decimal("movementSupplyNeed", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	combatSupplyNeed: decimal("combatSupplyNeed", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	zoneOfControlRating: decimal("zoneOfControlRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	sensorState: decimal("sensorState", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	sensorRating: decimal("sensorRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	sensor: decimal("sensor", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-}).as(sql`
-CREATE VIEW "taskForceShipsWithStats" AS (
-    SELECT
-        tfs."taskForceId" as "taskForceId",
-        tfs."name" as "name",
-        tfs."role" as "role",
-        tfs."hullState" as "hullState",
-        sd."hullRating" as "hullRating",
-        (
-            sd."hullRating" * tfs."hullState"
-        ) as "hull",
-        tfs."shieldState" as "shieldState",
-        sd."shieldRating" as "shieldRating",
-        (
-            sd."shieldRating" * tfs."shieldState"
-        ) as "shield",
-        tfs."armorState" as "armorState",
-        sd."armorRating" as "armorRating",
-        (
-            sd."armorRating" * tfs."armorState"
-        ) as "armor",
-        tfs."weaponState" as "weaponState",
-        sd."weaponRating" as "weaponRating",
-        (
-            sd."weaponRating" * tfs."weaponState"
-        ) as "weapon",
-        tfs."supplyCarried" as "supplyCarried",
-        sd."supplyCapacity" as "supplyCapacity",
-        sd."zoneOfControlRating" as "zoneOfControlRating",
-        tfs."sensorState" as "sensorState",
-        sd."sensorRating" as "sensorRating",
-        (
-            sd."sensorRating" * tfs."sensorState" * 100
-        ) as "sensor"
-    FROM
-        "taskForceShips" tfs
-        JOIN "shipDesigns" sd ON tfs."shipDesignId" = sd."id"
-);`);
+export const taskForceShipsWithStats = pgView("taskForceShipsWithStats").as(
+	(qb) =>
+		qb
+			.select({
+				taskForceId: taskForceShips.taskForceId,
+				name: taskForceShips.name,
+				role: taskForceShips.role,
+				hullState: taskForceShips.hullState,
+				hullRating: shipDesigns.hullRating,
+				hull: sql`${shipDesigns.hullRating} * ${taskForceShips.hullState}`
+					.mapWith(shipDesigns.hullRating)
+					.as("hull"),
+				shieldState: taskForceShips.shieldState,
+				shieldRating: shipDesigns.shieldRating,
+				shield: sql`${shipDesigns.shieldRating} * ${taskForceShips.shieldState}`
+					.mapWith(shipDesigns.shieldRating)
+					.as("shield"),
+				armorState: taskForceShips.armorState,
+				armorRating: shipDesigns.armorRating,
+				armor: sql`${shipDesigns.armorRating} * ${taskForceShips.armorState}`
+					.mapWith(shipDesigns.armorRating)
+					.as("armor"),
+				weaponState: taskForceShips.weaponState,
+				weaponRating: shipDesigns.weaponRating,
+				weapon: sql`${shipDesigns.weaponRating} * ${taskForceShips.weaponState}`
+					.mapWith(shipDesigns.weaponRating)
+					.as("weapon"),
+				supplyCarried: taskForceShips.supplyCarried,
+				supplyCapacity: shipDesigns.supplyCapacity,
+				zoneOfControlRating: shipDesigns.zoneOfControlRating,
+				sensorState: taskForceShips.sensorState,
+				sensorRating: shipDesigns.sensorRating,
+				sensor:
+					sql`${shipDesigns.sensorRating} * ${taskForceShips.sensorState} * 100`
+						.mapWith(shipDesigns.sensorRating)
+						.as("sensor"),
+				id: taskForceShips.id,
+				speedState: taskForceShips.speedState,
+				speedRating: shipDesigns.speedRating,
+				speed: sql`${shipDesigns.speedRating} * ${taskForceShips.speedState}`
+					.mapWith(shipDesigns.speedRating)
+					.as("speed"),
+				movementSupplyNeed: sql`${shipDesigns.supplyNeed} * 0.01`
+					.mapWith(shipDesigns.supplyNeed)
+					.as("movementSupplyNeed"),
+				combatSupplyNeed: sql`${shipDesigns.supplyNeed} * 0.05`
+					.mapWith(shipDesigns.supplyNeed)
+					.as("combatSupplyNeed"),
+			})
+			.from(taskForceShips)
+			.innerJoin(shipDesigns, eq(taskForceShips.shipDesignId, shipDesigns.id)),
+);

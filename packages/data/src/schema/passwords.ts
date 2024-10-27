@@ -3,10 +3,10 @@ import { pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 import { users } from "./users.ts";
 
 export const passwords = pgTable("passwords", {
-	userId: uuid("userId")
+	userId: uuid()
 		.primaryKey()
 		.references(() => users.id, { onDelete: "cascade" }),
-	hash: varchar("hash").notNull(),
+	hash: varchar().notNull(),
 });
 
 export const passwordsRelations = relations(passwords, ({ one }) => ({

@@ -14,58 +14,28 @@ import { resources } from "./resources.ts";
 import { users } from "./users.ts";
 
 export const shipDesigns = pgTable("shipDesigns", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	gameId: uuid("gameId")
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+	gameId: uuid()
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	ownerId: uuid("ownerId")
+	ownerId: uuid()
 		.notNull()
 		.references(() => users.id, { onDelete: "restrict" }),
-	name: varchar("name", { length: 256 }).notNull(),
-	description: text("description").notNull(),
-	decommissioned: boolean("decommissioned").notNull().default(false),
-	previousDesignId: uuid("previousVersionId").references(
-		(): AnyPgColumn => shipDesigns.id,
-		{ onDelete: "restrict" },
-	),
-	hullRating: decimal("hullRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	speedRating: decimal("speedRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	armorRating: decimal("armorRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	shieldRating: decimal("shieldRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	weaponRating: decimal("weaponRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	zoneOfControlRating: decimal("zoneOfControlRating", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	sensorRating: decimal("sensorRating", {
-		precision: 30,
-		scale: 6,
-	})
-		.notNull()
-		.default("1"),
-	supplyNeed: decimal("supplyNeed", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
-	supplyCapacity: decimal("supplyCapacity", {
-		precision: 30,
-		scale: 6,
-	}).notNull(),
+	name: varchar({ length: 256 }).notNull(),
+	description: text().notNull(),
+	decommissioned: boolean().notNull().default(false),
+	previousDesignId: uuid().references((): AnyPgColumn => shipDesigns.id, {
+		onDelete: "restrict",
+	}),
+	hullRating: decimal({ precision: 30, scale: 6 }).notNull(),
+	speedRating: decimal({ precision: 30, scale: 6 }).notNull(),
+	armorRating: decimal({ precision: 30, scale: 6 }).notNull(),
+	shieldRating: decimal({ precision: 30, scale: 6 }).notNull(),
+	weaponRating: decimal({ precision: 30, scale: 6 }).notNull(),
+	zoneOfControlRating: decimal({ precision: 30, scale: 6 }).notNull(),
+	sensorRating: decimal({ precision: 30, scale: 6 }).notNull().default("1"),
+	supplyNeed: decimal({ precision: 30, scale: 6 }).notNull(),
+	supplyCapacity: decimal({ precision: 30, scale: 6 }).notNull(),
 });
 
 export const shipDesignsRelations = relations(shipDesigns, ({ one, many }) => ({
@@ -81,13 +51,13 @@ export const shipDesignsRelations = relations(shipDesigns, ({ one, many }) => ({
 export const shipDesignResourceCosts = pgTable(
 	"shipDesignResourceCosts",
 	{
-		shipDesignId: uuid("shipDesignId")
+		shipDesignId: uuid()
 			.notNull()
 			.references(() => shipDesigns.id, { onDelete: "cascade" }),
-		resourceId: uuid("resourceId")
+		resourceId: uuid()
 			.notNull()
 			.references(() => resources.id, { onDelete: "restrict" }),
-		quantity: decimal("quantity", { precision: 30, scale: 6 }).notNull(),
+		quantity: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({

@@ -45,7 +45,9 @@ export const TaskForce: TaskForceResolvers = {
 	},
 	sensorRange: async (parent, _arg, ctx) => {
 		const ships = await ctx.drizzle
-			.select()
+			.select({
+				sensor: taskForceShipsWithStats.sensor,
+			})
 			.from(taskForceShipsWithStats)
 			.where(eq(taskForceShipsWithStats.taskForceId, parent.id));
 

@@ -18,14 +18,14 @@ export const taskForceEngagementPhase = pgEnum("taskForceEngagementPhase", [
 ]);
 
 export const taskForceEngagements = pgTable("taskForceEngagements", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	gameId: uuid("gameId")
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+	gameId: uuid()
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	position: point("position", { mode: "xy" }).notNull(),
-	startedAt: timestamp("startedAt").notNull(),
-	phase: taskForceEngagementPhase("phase").notNull().default("locating"),
-	phaseProgress: real("phaseProgress").notNull().default(0),
+	position: point({ mode: "xy" }).notNull(),
+	startedAt: timestamp().notNull(),
+	phase: taskForceEngagementPhase().notNull().default("locating"),
+	phaseProgress: real().notNull().default(0),
 });
 
 export const taskForceEngagementsRelations = relations(
@@ -38,10 +38,10 @@ export const taskForceEngagementsRelations = relations(
 export const taskForceEngagementsToTaskForces = pgTable(
 	"taskForceEngagementsToTaskForces",
 	{
-		taskForceEngagementId: uuid("taskForceEngagementId")
+		taskForceEngagementId: uuid()
 			.notNull()
 			.references(() => taskForceEngagements.id, { onDelete: "cascade" }),
-		taskForceId: uuid("taskForceId")
+		taskForceId: uuid()
 			.notNull()
 			.references(() => taskForces.id, { onDelete: "cascade" }),
 	},

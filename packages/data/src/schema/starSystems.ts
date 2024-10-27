@@ -16,15 +16,15 @@ import { resources } from "./resources.ts";
 import { users } from "./users.ts";
 
 export const starSystems = pgTable("starSystems", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-	gameId: uuid("gameId")
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+	gameId: uuid()
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
-	name: varchar("name", { length: 256 }).notNull(),
-	position: point("position", { mode: "xy" }).notNull(),
-	ownerId: uuid("ownerId").references(() => users.id, { onDelete: "restrict" }),
-	discoverySlots: integer("discoverySlots").notNull().default(0),
-	discoveryProgress: decimal("discoveryProgress", { precision: 10, scale: 9 })
+	name: varchar({ length: 256 }).notNull(),
+	position: point({ mode: "xy" }).notNull(),
+	ownerId: uuid().references(() => users.id, { onDelete: "restrict" }),
+	discoverySlots: integer().notNull().default(0),
+	discoveryProgress: decimal({ precision: 10, scale: 9 })
 		.notNull()
 		.default("0"),
 });
@@ -38,17 +38,14 @@ export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({
 export const starSystemResourceDiscoveries = pgTable(
 	"starSystemResourceDiscoveries",
 	{
-		starSystemId: uuid("starSystemId")
+		starSystemId: uuid()
 			.notNull()
 			.references(() => starSystems.id, { onDelete: "cascade" }),
-		resourceId: uuid("resourceId")
+		resourceId: uuid()
 			.notNull()
 			.references(() => resources.id, { onDelete: "restrict" }),
-		discoveredAt: timestamp("discoveredAt").notNull(),
-		remainingDeposits: decimal("remainingDeposits", {
-			precision: 30,
-			scale: 6,
-		}).notNull(),
+		discoveredAt: timestamp().notNull(),
+		remainingDeposits: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({
@@ -60,13 +57,13 @@ export const starSystemResourceDiscoveries = pgTable(
 export const starSystemResourceDepots = pgTable(
 	"starSystemResourceDepots",
 	{
-		starSystemId: uuid("starSystemId")
+		starSystemId: uuid()
 			.notNull()
 			.references(() => starSystems.id, { onDelete: "cascade" }),
-		resourceId: uuid("resourceId")
+		resourceId: uuid()
 			.notNull()
 			.references(() => resources.id, { onDelete: "restrict" }),
-		quantity: decimal("quantity", { precision: 30, scale: 6 }).notNull(),
+		quantity: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({
@@ -78,17 +75,14 @@ export const starSystemResourceDepots = pgTable(
 export const starSystemPopulations = pgTable(
 	"starSystemPopulations",
 	{
-		starSystemId: uuid("starSystemId")
+		starSystemId: uuid()
 			.notNull()
 			.references(() => starSystems.id, { onDelete: "cascade" }),
-		amount: bigint("amount", { mode: "bigint" }).notNull(),
-		growthLeftover: decimal("growthLeftover", { precision: 10, scale: 9 })
-			.notNull()
-			.default("0"),
-		allegianceToPlayerId: uuid("allegianceToPlayerId").references(
-			() => users.id,
-			{ onDelete: "restrict" },
-		),
+		amount: bigint({ mode: "bigint" }).notNull(),
+		growthLeftover: decimal({ precision: 10, scale: 9 }).notNull().default("0"),
+		allegianceToPlayerId: uuid().references(() => users.id, {
+			onDelete: "restrict",
+		}),
 	},
 	(table) => ({
 		pk: primaryKey({

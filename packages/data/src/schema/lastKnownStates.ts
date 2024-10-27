@@ -21,15 +21,15 @@ import { visibility } from "./visibility.ts";
 export const lastKnownStates = pgTable(
 	"lastKnownStates",
 	{
-		userId: uuid("userId")
+		userId: uuid()
 			.notNull()
 			.references(() => users.id, { onDelete: "restrict" }),
-		gameId: uuid("gameId")
+		gameId: uuid()
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
-		subjectId: uuid("subjectId").notNull(),
-		state: jsonb("state").notNull().$type<LastKnownState>(),
-		lastUpdate: timestamp("lastUpdate").notNull(),
+		subjectId: uuid().notNull(),
+		state: jsonb().notNull().$type<LastKnownState>(),
+		lastUpdate: timestamp().notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({
