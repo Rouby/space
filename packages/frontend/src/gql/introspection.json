@@ -1173,7 +1173,29 @@
             "args": []
           },
           {
-            "name": "supplyNeed",
+            "name": "supplyNeedCombat",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "supplyNeedMovement",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "supplyNeedPassive",
             "type": {
               "kind": "NON_NULL",
               "ofType": {

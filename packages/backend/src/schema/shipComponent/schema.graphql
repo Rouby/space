@@ -4,7 +4,9 @@ type ShipComponent {
 	description: String!
 	costs: [ResourceCost!]!
 
-	supplyNeed: Float!
+	supplyNeedPassive: Float!
+	supplyNeedMovement: Float!
+	supplyNeedCombat: Float!
 	powerNeed: Float!
 	crewNeed: Float!
 	constructionCost: Float!

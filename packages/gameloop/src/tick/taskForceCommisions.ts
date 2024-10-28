@@ -2,6 +2,7 @@ import {
 	aliasedTable,
 	and,
 	eq,
+	shipDesignComponents,
 	sql,
 	starSystemResourceDepots,
 	taskForceShipCommisionResourceNeeds,
@@ -175,11 +176,21 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				.where(eq(taskForceShipCommisions.id, commision.id))
 				.returning();
 
+			const designComponents = await tx
+				.select({ position: shipDesignComponents.position })
+				.from(shipDesignComponents)
+				.where(
+					eq(shipDesignComponents.shipDesignId, shipCommision.shipDesignId),
+				);
+
 			await tx.insert(taskForceShips).values({
 				taskForceId: shipCommision.taskForceId,
 				name: shipCommision.name,
 				role: shipCommision.role,
 				shipDesignId: shipCommision.shipDesignId,
+				// TODO real state?
+				componentStates: designComponents.map(() => "1"),
+				structuralIntegrity: `${designComponents.length * 10}`,
 			});
 		}
 	}

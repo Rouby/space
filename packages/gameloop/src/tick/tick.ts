@@ -1,6 +1,7 @@
 import {
 	and,
 	eq,
+	isNotNull,
 	lastKnownStates,
 	players,
 	sql,
@@ -55,15 +56,6 @@ export async function tick() {
 		/// ------------------------------------------------------------
 
 		async function storePreTickVisibility() {
-			await tx.execute(
-				sql`CREATE TEMPORARY TABLE ${visibilityPreTick} (
-					"userId" uuid NOT NULL,
-					"subjectId" uuid NOT NULL,
-					"position" "point" NOT NULL,
-					"visible" "circle"
-				) ON COMMIT DROP`,
-			);
-
 			const query = tx
 				.select({
 					userId: players.userId,
@@ -73,7 +65,12 @@ export async function tick() {
 				})
 				.from(players)
 				.fullJoin(taskForces, eq(players.gameId, taskForces.gameId))
-				.where(eq(players.gameId, sql.raw(`'${gameId}'`)))
+				.where(
+					and(
+						eq(players.gameId, sql.raw(`'${gameId}'`)),
+						isNotNull(taskForces.id),
+					),
+				)
 				.leftJoin(
 					visibility,
 					and(
@@ -92,7 +89,12 @@ export async function tick() {
 						})
 						.from(players)
 						.fullJoin(starSystems, eq(players.gameId, starSystems.gameId))
-						.where(eq(players.gameId, sql.raw(`'${gameId}'`)))
+						.where(
+							and(
+								eq(players.gameId, sql.raw(`'${gameId}'`)),
+								isNotNull(starSystems.id),
+							),
+						)
 						.leftJoin(
 							visibility,
 							and(
@@ -104,6 +106,14 @@ export async function tick() {
 				)
 				.toSQL();
 
+			await tx.execute(
+				sql`CREATE TEMPORARY TABLE ${visibilityPreTick} (
+					"userId" uuid NOT NULL,
+					"subjectId" uuid NOT NULL,
+					"position" "point" NOT NULL,
+					"visible" "circle"
+				) ON COMMIT DROP`,
+			);
 			await tx.execute(
 				sql`INSERT INTO ${visibilityPreTick} ${sql.raw(query.sql)}`,
 			);

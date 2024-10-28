@@ -37,10 +37,6 @@ export const ShipComponent: ShipComponentResolvers = {
 		/* ShipComponent.powerNeed resolver is required because ShipComponent.powerNeed and ShipComponentMapper.powerNeed are not compatible */
 		return +powerNeed;
 	},
-	supplyNeed: ({ supplyNeed }, _arg, _ctx) => {
-		/* ShipComponent.supplyNeed resolver is required because ShipComponent.supplyNeed and ShipComponentMapper.supplyNeed are not compatible */
-		return +supplyNeed;
-	},
 	crewNeed: ({ crewNeed }, _arg, _ctx) => {
 		/* ShipComponent.crewNeed resolver is required because ShipComponent.crewNeed and ShipComponentMapper.crewNeed are not compatible */
 		return +crewNeed;
@@ -92,5 +88,17 @@ export const ShipComponent: ShipComponentResolvers = {
 	weaponShieldPenetration: ({ weaponShieldPenetration }, _arg, _ctx) => {
 		/* ShipComponent.weaponShieldPenetration resolver is required because ShipComponent.weaponShieldPenetration and ShipComponentMapper.weaponShieldPenetration are not compatible */
 		return weaponShieldPenetration ? +weaponShieldPenetration : null;
+	},
+	supplyNeedCombat: ({ supplyNeedCombat }, _arg, _ctx) => {
+		/* ShipComponent.supplyNeedCombat resolver is required because ShipComponent.supplyNeedCombat and ShipComponentMapper.supplyNeedCombat are not compatible */
+		return +supplyNeedCombat;
+	},
+	supplyNeedMovement: ({ supplyNeedMovement }, _arg, _ctx) => {
+		/* ShipComponent.supplyNeedMovement resolver is required because ShipComponent.supplyNeedMovement and ShipComponentMapper.supplyNeedMovement are not compatible */
+		return +supplyNeedMovement;
+	},
+	supplyNeedPassive: ({ supplyNeedPassive }, _arg, _ctx) => {
+		/* ShipComponent.supplyNeedPassive resolver is required because ShipComponent.supplyNeedPassive and ShipComponentMapper.supplyNeedPassive are not compatible */
+		return +supplyNeedPassive;
 	},
 };

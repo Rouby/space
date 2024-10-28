@@ -20,6 +20,9 @@ export const client = createClient({
 		devtoolsExchange,
 		cacheExchange({
 			schema,
+			keys: {
+				ResourceCost: () => null,
+			},
 			updates: {
 				Mutation: {
 					loginWithPassword: (_, __, cache) => {

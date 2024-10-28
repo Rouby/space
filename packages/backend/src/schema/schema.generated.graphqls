@@ -118,7 +118,9 @@ type ShipComponent {
   shieldEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
   shieldStrength: Float
   supplyCapacity: Float
-  supplyNeed: Float!
+  supplyNeedCombat: Float!
+  supplyNeedMovement: Float!
+  supplyNeedPassive: Float!
   thruster: Float
   weaponAccuracy: Float
   weaponArmorPenetration: Float

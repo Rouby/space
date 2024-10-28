@@ -33,7 +33,9 @@ export function ShipDesigner({
 						name
 						description
 						costs { resource { id name } quantity }
-						supplyNeed
+						supplyNeedPassive
+						supplyNeedMovement
+						supplyNeedCombat
 						powerNeed
 						crewNeed
 						constructionCost
@@ -116,7 +118,9 @@ export function ShipDesigner({
 			}
 
 			acc.stats.constructionCost += component.constructionCost;
-			acc.stats.supplyNeed += component.supplyNeed;
+			acc.stats.supplyNeedPassive += component.supplyNeedPassive;
+			acc.stats.supplyNeedMovement += component.supplyNeedMovement;
+			acc.stats.supplyNeedCombat += component.supplyNeedCombat;
 			acc.stats.powerNeed += component.powerNeed;
 			acc.stats.crewNeed += component.crewNeed;
 
@@ -250,18 +254,20 @@ export function ShipDesigner({
 			}[],
 			stats: {
 				constructionCost: 0,
-				supplyNeed: 0,
+				supplyNeedPassive: 0,
+				supplyNeedMovement: 0,
+				supplyNeedCombat: 0,
 				powerNeed: 0,
 				crewNeed: 0,
 				supplyCapacity: 0,
 				powerGeneration: 0,
 				crewCapacity: 0,
-				ftlSpeed: 0,
+				ftlSpeed: Number.POSITIVE_INFINITY,
 				zoneOfControl: 0,
 				sensorRange: 0,
 
 				hullBoost: 0,
-				thruster: 0,
+				thruster: Number.POSITIVE_INFINITY,
 				sensorPrecision: 0,
 				armorThickness: { min: Number.POSITIVE_INFINITY, max: 0 },
 				shieldStrength: { min: Number.POSITIVE_INFINITY, max: 0 },
@@ -372,8 +378,16 @@ export function ShipDesigner({
 							>
 								<Text fw="bold">Base stats</Text>
 								<Group justify="space-between" wrap="nowrap">
-									<span>Supply need</span>
-									<span>{stats.supplyNeed}</span>
+									<span>Supply need (passive)</span>
+									<span>{stats.supplyNeedPassive}</span>
+								</Group>
+								<Group justify="space-between" wrap="nowrap">
+									<span>Supply need (movement)</span>
+									<span>{stats.supplyNeedMovement}</span>
+								</Group>
+								<Group justify="space-between" wrap="nowrap">
+									<span>Supply need (combat)</span>
+									<span>{stats.supplyNeedCombat}</span>
 								</Group>
 								<Group justify="space-between" wrap="nowrap">
 									<span>Power need</span>

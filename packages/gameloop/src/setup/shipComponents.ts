@@ -1,23 +1,15 @@
 import {
 	and,
 	eq,
-	players,
 	resources,
 	shipComponentResourceCosts,
 	shipComponents,
-	shipDesignComponents,
-	shipDesignResourceCosts,
-	shipDesigns,
-} from "../schema.ts";
-import type { Transaction } from "./index.ts";
+} from "@space/data/schema";
+import { gameId } from "../config.ts";
+import type { Context, Transaction } from "./setup.ts";
 
-export async function migrateFrom2To3(tx: Transaction, gameId: string) {
-	const gamePlayers = await tx
-		.select()
-		.from(players)
-		.where(eq(players.gameId, gameId));
-
-	for (const { userId } of gamePlayers) {
+export async function setupShipComponents(tx: Transaction, ctx: Context) {
+	for (const { userId } of ctx.players) {
 		const [
 			{ id: nuclearReactorId },
 			{ id: plasmaThrustersId },
@@ -81,7 +73,7 @@ export async function migrateFrom2To3(tx: Transaction, gameId: string) {
 					crewNeed: "10",
 					powerNeed: "10",
 					supplyNeedPassive: "2",
-					supplyNeedMovement: "2",
+					supplyNeedMovement: "0",
 					supplyNeedCombat: "2",
 
 					sensorRange: "100",
@@ -138,6 +130,7 @@ export async function migrateFrom2To3(tx: Transaction, gameId: string) {
 			])
 			.returning();
 
+		// TODO: replace with random resource?
 		const [{ id: titaniumId }] = await tx
 			.select()
 			.from(resources)
@@ -180,29 +173,5 @@ export async function migrateFrom2To3(tx: Transaction, gameId: string) {
 				quantity: "100",
 			},
 		]);
-
-		const playerShipDesigns = await tx
-			.select()
-			.from(shipDesigns)
-			.where(
-				and(eq(shipDesigns.gameId, gameId), eq(shipDesigns.ownerId, userId)),
-			);
-
-		for (const { id: shipDesignId } of playerShipDesigns) {
-			await tx.insert(shipDesignComponents).values([
-				{ shipDesignId, shipComponentId: nuclearReactorId },
-				{ shipDesignId, shipComponentId: plasmaThrustersId },
-				{ shipDesignId, shipComponentId: warpDriveId },
-				{ shipDesignId, shipComponentId: sensorArrayId },
-				{ shipDesignId, shipComponentId: crewQuartersId },
-				{ shipDesignId, shipComponentId: supplyStorageId },
-				{ shipDesignId, shipComponentId: gatlingGunId },
-			]);
-
-			await tx
-				.update(shipDesignResourceCosts)
-				.set({ quantity: "700" })
-				.where(eq(shipDesignResourceCosts.shipDesignId, shipDesignId));
-		}
 	}
 }

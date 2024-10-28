@@ -125,9 +125,15 @@ export const shipDesignsWithStats = pgView("shipDesignsWithStats").as((qb) =>
 			>`jsonb_agg(${shipComponents})`.as("components"),
 
 			// general stats
-			supplyNeed: sql`sum(${shipComponents.supplyNeed})`
-				.mapWith(shipComponents.supplyNeed)
-				.as("supplyNeed"),
+			supplyNeedPassive: sql`sum(${shipComponents.supplyNeedPassive})`
+				.mapWith(shipComponents.supplyNeedPassive)
+				.as("supplyNeedPassive"),
+			supplyNeedMovement: sql`sum(${shipComponents.supplyNeedMovement})`
+				.mapWith(shipComponents.supplyNeedMovement)
+				.as("supplyNeedMovement"),
+			supplyNeedCombat: sql`sum(${shipComponents.supplyNeedCombat})`
+				.mapWith(shipComponents.supplyNeedCombat)
+				.as("supplyNeedCombat"),
 			powerNeed: sql`sum(${shipComponents.powerNeed})`
 				.mapWith(shipComponents.powerNeed)
 				.as("powerNeed"),

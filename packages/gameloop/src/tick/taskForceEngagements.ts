@@ -1,16 +1,17 @@
 import {
-	type InferModelFromColumns,
 	aliasedTable,
 	and,
 	eq,
+	inArray,
 	not,
 	notExists,
 	or,
+	shipComponents,
+	shipDesignComponents,
 	sql,
 	taskForceEngagements,
 	taskForceEngagementsToTaskForces,
 	taskForceShips,
-	taskForceShipsWithStats,
 	taskForces,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
@@ -161,44 +162,13 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 		.where(eq(taskForceEngagements.gameId, gameId));
 
 	for (const engagement of engagements) {
-		let supplyCostFactor = 0;
-
-		taskForceEngagements.$inferSelect;
-
-		const taskForcesWithShipsAndStats = await tx
-			.select({
-				id: taskForces.id,
-				ownerId: taskForces.ownerId,
-				position: taskForces.position,
-				shipsWithStats: sql<
-					(InferModelFromColumns<
-						(typeof taskForceShipsWithStats)["_"]["selectedFields"]
-					> | null)[]
-				>`json_agg(${taskForceShipsWithStats}.*)`.as("shipsWithStats"),
-			})
-			.from(taskForceEngagementsToTaskForces)
-			.where(
-				eq(
-					taskForceEngagementsToTaskForces.taskForceEngagementId,
-					engagement.id,
-				),
-			)
-			.innerJoin(
-				taskForces,
-				eq(taskForces.id, taskForceEngagementsToTaskForces.taskForceId),
-			)
-			.leftJoin(
-				taskForceShipsWithStats,
-				eq(taskForceShipsWithStats.taskForceId, taskForces.id),
-			)
-			.groupBy(taskForces.id);
-
 		switch (engagement.phase) {
 			case "locating": {
 				const phaseProgress = engagement.phaseProgress + 0.1;
-				supplyCostFactor = 0.1;
 
 				if (phaseProgress >= 1) {
+					console.log("located");
+
 					await tx
 						.update(taskForceEngagements)
 						.set({
@@ -231,13 +201,73 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 			}
 
 			case "engagement": {
-				supplyCostFactor = 1;
+				const shipsWithComponents = await tx
+					.select({
+						id: taskForceShips.id,
+						name: taskForceShips.name,
+						taskForceId: taskForceShips.taskForceId,
+						structuralIntegrity: taskForceShips.structuralIntegrity,
+						components: sql<
+							(typeof shipComponents.$inferSelect)[]
+						>`json_agg(${shipComponents}.*)`.as("components"),
+						componentPositions: sql<
+							number[]
+						>`json_agg(${shipDesignComponents.position})`.as(
+							"componentPositions",
+						),
+						componentStates: taskForceShips.componentStates,
+					})
+					.from(taskForceShips)
+					.innerJoin(
+						shipDesignComponents,
+						eq(shipDesignComponents.shipDesignId, taskForceShips.shipDesignId),
+					)
+					.innerJoin(
+						shipComponents,
+						eq(shipComponents.id, shipDesignComponents.shipComponentId),
+					)
+					.innerJoin(
+						taskForceEngagementsToTaskForces,
+						eq(
+							taskForceShips.taskForceId,
+							taskForceEngagementsToTaskForces.taskForceId,
+						),
+					)
+					.where(
+						eq(
+							taskForceEngagementsToTaskForces.taskForceEngagementId,
+							engagement.id,
+						),
+					)
+					.groupBy(taskForceShips.id);
+
+				const taskForcesWithShipsAndComponents = Object.entries(
+					Object.groupBy(shipsWithComponents, (d) => d.taskForceId),
+				).map(([id, ships]) => ({
+					id,
+					ships:
+						ships?.map(
+							({ components, componentPositions, componentStates, ...s }) => ({
+								...s,
+								components: components
+									.map((c, idx) => ({
+										...c,
+										position: componentPositions[idx],
+										state: componentStates[componentPositions[idx]],
+									}))
+									.filter((c) => +c.state > 0),
+							}),
+						) ?? [],
+				}));
+
+				console.log("------------------------------");
 
 				if (
-					taskForcesWithShipsAndStats.filter(
-						(tf) => tf.shipsWithStats.length > 0,
+					taskForcesWithShipsAndComponents.filter(
+						(tf) => tf.ships.filter(isIntactShip).length > 0,
 					).length <= 1
 				) {
+					// no more than one task force with ships left
 					await tx
 						.update(taskForceEngagements)
 						.set({
@@ -245,7 +275,6 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 							phase: "resolution",
 						})
 						.where(eq(taskForceEngagements.id, engagement.id));
-
 					ctx.postMessage({
 						type: "taskForceEngagement:changePhase",
 						id: engagement.id,
@@ -257,53 +286,155 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 					// if all ships in a taskforce are destroyed, the taskforce is destroyed
 					// if all taskforces but one are destroyed, the remaining taskforce wins
 
-					for (const { id, shipsWithStats } of taskForcesWithShipsAndStats) {
-						const otherTaskForces = taskForcesWithShipsAndStats.filter(
-							(tf) =>
-								tf.id !== id &&
-								tf.shipsWithStats.filter((d) => d !== null).length > 0,
+					for (const { id, ships } of taskForcesWithShipsAndComponents) {
+						const otherTaskForces = taskForcesWithShipsAndComponents.filter(
+							(tf) => tf.id !== id && tf.ships.filter(isIntactShip).length > 0,
 						);
 						const targetTaskForce =
 							otherTaskForces[
 								Math.floor(Math.random() * otherTaskForces.length)
 							];
 
-						for (const ship of shipsWithStats.filter((d) => d !== null)) {
+						for (const ship of ships) {
 							const targetShip =
-								// biome-ignore lint/style/noNonNullAssertion: <explanation>
-								targetTaskForce.shipsWithStats[
-									Math.floor(
-										Math.random() * targetTaskForce.shipsWithStats.length,
-									)
-								]!;
+								targetTaskForce.ships[
+									Math.floor(Math.random() * targetTaskForce.ships.length)
+								];
 
-							const damage = Math.floor(Math.random() * +ship.weapon);
+							const weaponComponents = ship.components.filter(
+								(d) => d.weaponDeliveryType !== null && d.weaponDamage !== null,
+							);
 
-							targetShip.hullState = `${Math.max(0, +targetShip.hullState - damage)}`;
+							const defenseComponents = targetShip.components.filter(
+								(c) => c.armorThickness !== null || c.shieldStrength !== null,
+							);
+
+							for (const weapon of weaponComponents) {
+								console.log(
+									`${ship.name} attacks ${targetShip.name} with ${weapon.name}`,
+								);
+								// weapon.weaponCooldown
+								// weapon.weaponRange
+								// weapon.weaponAccuracy
+								const damageDealt = +(weapon.weaponDamage ?? "0");
+								const damageAfterMitigation = defenseComponents.reduce(
+									(damageLeft, defense) => {
+										if (damageLeft === 0) {
+											return 0;
+										}
+
+										let damageLeftAfterMitigation = damageLeft;
+
+										if (defense.shieldStrength !== null) {
+											const shieldEffectiveness =
+												defense.shieldEffectivenessAgainst?.find(
+													(e) => e.deliveryType === weapon.weaponDeliveryType,
+												)?.effectiveness ?? 0;
+
+											const effectiveShieldStrength =
+												+defense.shieldStrength * shieldEffectiveness;
+
+											const damageMitigation = Math.max(
+												0,
+												effectiveShieldStrength -
+													+(weapon.weaponShieldPenetration ?? "0"),
+											);
+
+											const damageToState =
+												Math.max(
+													0,
+													damageLeft,
+													+defense.shieldStrength -
+														+(weapon.weaponShieldPenetration ?? "0"),
+												) / 10;
+
+											damageLeftAfterMitigation = Math.max(
+												0,
+												damageLeft - damageMitigation,
+											);
+
+											console.log(
+												`${targetShip.name} mitigates attack with ${defense.name} by ${damageMitigation}`,
+											);
+
+											defense.state = `${Math.max(
+												0,
+												+defense.state - damageToState,
+											)}`;
+
+											console.log(
+												`${defense.name} has ${defense.state} state left`,
+											);
+										}
+
+										if (defense.armorThickness !== null) {
+											const armorEffectiveness =
+												defense.armorEffectivenessAgainst?.find(
+													(e) => e.deliveryType === weapon.weaponDeliveryType,
+												)?.effectiveness ?? 0;
+
+											const effectiveArmorThickness =
+												+defense.armorThickness * armorEffectiveness;
+
+											const damageMitigation = Math.max(
+												0,
+												effectiveArmorThickness -
+													+(weapon.weaponArmorPenetration ?? "0"),
+											);
+
+											const damageToState =
+												Math.max(
+													0,
+													damageLeft,
+													+defense.armorThickness -
+														+(weapon.weaponShieldPenetration ?? "0"),
+												) / 10;
+
+											damageLeftAfterMitigation = Math.max(
+												0,
+												damageLeft - damageMitigation,
+											);
+
+											console.log(
+												`${targetShip.name} mitigates attack with ${defense.name} by ${damageMitigation}`,
+											);
+
+											defense.state = `${Math.max(
+												0,
+												+defense.state - damageToState,
+											)}`;
+
+											console.log(
+												`${defense.name} has ${defense.state} state left`,
+											);
+										}
+
+										return damageLeftAfterMitigation;
+									},
+									damageDealt,
+								);
+
+								targetShip.structuralIntegrity = `${Math.max(0, +targetShip.structuralIntegrity - damageAfterMitigation / 10)}`;
+
+								console.log(
+									`${targetShip.name} took ${damageAfterMitigation} excess damage, at ${targetShip.structuralIntegrity} structural integrity`,
+								);
+							}
 						}
 					}
 
-					for (const ship of taskForcesWithShipsAndStats.flatMap((tf) =>
-						tf.shipsWithStats.filter((d) => d !== null),
+					for (const ship of taskForcesWithShipsAndComponents.flatMap(
+						(tf) => tf.ships,
 					)) {
-						if (+ship.hullState <= 0) {
-							await tx
-								.delete(taskForceShips)
-								.where(eq(taskForceShips.id, ship.id));
-
-							// ctx.postMessage({
-							// 	type: "taskForceShip:destroyed",
-							// 	id: ship.id,
-							// 	position: ship.position,
-							// });
-						} else {
-							await tx
-								.update(taskForceShips)
-								.set({
-									hullState: ship.hullState,
-								})
-								.where(eq(taskForceShips.id, ship.id));
-						}
+						await tx
+							.update(taskForceShips)
+							.set({
+								structuralIntegrity: ship.structuralIntegrity,
+								componentStates: ship.components
+									.sort((a, b) => a.position - b.position)
+									.map((c) => c.state),
+							})
+							.where(eq(taskForceShips.id, ship.id));
 					}
 				}
 
@@ -312,25 +443,64 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 
 			case "resolution": {
 				const phaseProgress = engagement.phaseProgress + 0.1;
-				supplyCostFactor = 0;
 
 				if (phaseProgress >= 1) {
-					const winnerId = taskForcesWithShipsAndStats.find(
-						(tf) => tf.shipsWithStats.length > 0,
-					)?.ownerId;
+					const ships = await tx
+						.select({
+							id: taskForceShips.id,
+							name: taskForceShips.name,
+							taskForceId: taskForceShips.taskForceId,
+							structuralIntegrity: taskForceShips.structuralIntegrity,
+						})
+						.from(taskForceShips)
+						.innerJoin(
+							taskForceEngagementsToTaskForces,
+							eq(
+								taskForceShips.taskForceId,
+								taskForceEngagementsToTaskForces.taskForceId,
+							),
+						)
+						.where(
+							eq(
+								taskForceEngagementsToTaskForces.taskForceEngagementId,
+								engagement.id,
+							),
+						)
+						.groupBy(taskForceShips.id);
 
-					console.log("winnerId", winnerId);
+					const taskForcesWithShips = Object.entries(
+						Object.groupBy(ships, (d) => d.taskForceId),
+					).map(([id, ships]) => ({
+						id,
+						ships: ships ?? [],
+					}));
 
-					for (const tf of taskForcesWithShipsAndStats) {
-						if (tf.ownerId !== winnerId) {
-							await tx.delete(taskForces).where(eq(taskForces.id, tf.id));
+					const winningTaskForce = taskForcesWithShips.find(
+						(tf) => tf.ships.filter(isIntactShip).length > 0,
+					);
 
-							ctx.postMessage({
-								type: "taskForce:destroyed",
-								id: tf.id,
-								position: tf.position,
-							});
-						}
+					if (!winningTaskForce) {
+						console.log("Noone won");
+					} else {
+						console.log(`Task force ${winningTaskForce.id} won!`);
+					}
+
+					await tx.delete(taskForces).where(
+						inArray(
+							taskForces.id,
+							taskForcesWithShips
+								.filter((tf) => tf.id !== winningTaskForce?.id)
+								.map((tf) => tf.id),
+						),
+					);
+
+					for (const tf of taskForcesWithShips.filter(
+						(tf) => tf.id !== winningTaskForce?.id,
+					)) {
+						ctx.postMessage({
+							type: "taskForce:destroyed",
+							id: tf.id,
+						});
 					}
 
 					await tx
@@ -361,16 +531,21 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 		}
 
 		// reduce supply of all ships in TFs
-		for (const ship of taskForcesWithShipsAndStats
-			.flatMap((tf) => tf.shipsWithStats.filter((d) => d !== null))
-			.filter((ship) => +ship.hullState > 0)) {
-			const supplyCosts = supplyCostFactor * +ship.combatSupplyNeed;
-			await tx
-				.update(taskForceShips)
-				.set({
-					supplyCarried: `${Math.max(0, +ship.supplyCarried - supplyCosts)}`,
-				})
-				.where(eq(taskForceShips.id, ship.id));
-		}
+		// for (const ship of taskForcesWithShipsAndStats
+		// 	.flatMap((tf) => tf.ships.filter((d) => d !== null))
+		// 	.filter((ship) => +ship.hullState > 0)) {
+		// 	const supplyCosts = supplyCostFactor * +ship.supplyNeedCombat;
+
+		// 	await tx
+		// 		.update(taskForceShips)
+		// 		.set({
+		// 			supplyCarried: `${Math.max(0, +ship.supplyCarried - supplyCosts)}`,
+		// 		})
+		// 		.where(eq(taskForceShips.id, ship.id));
+		// }
 	}
+}
+
+function isIntactShip(ship: { structuralIntegrity: string }) {
+	return +ship.structuralIntegrity > 0;
 }

@@ -25,10 +25,6 @@ type TaskForceShip {
 	role: TaskForceShipRole!
 	shipDesign: ShipDesign!
 
-	hullState: Float!
-	shieldState: Float!
-	armorState: Float!
-	weaponState: Float!
 	supplyCarried: Float!
 }
 

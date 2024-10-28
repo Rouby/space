@@ -27,6 +27,13 @@ export const taskForceShips = pgTable("taskForceShips", {
 	name: varchar({ length: 256 }).notNull(),
 	role: taskForceShipRole().notNull(),
 	supplyCarried: decimal({ precision: 30, scale: 6 }).notNull().default("0"),
+	structuralIntegrity: decimal({ precision: 30, scale: 6 })
+		.notNull()
+		.default("0"),
+	componentStates: decimal({ precision: 30, scale: 6 })
+		.array()
+		.notNull()
+		.default(sql`ARRAY[]::numeric[]`),
 });
 
 export const taskForceShipRelations = relations(taskForceShips, ({ one }) => ({
@@ -49,9 +56,13 @@ export const taskForceShipsWithStats = pgView("taskForceShipsWithStats").as(
 				name: taskForceShips.name,
 				role: taskForceShips.role,
 				supplyCarried: taskForceShips.supplyCarried,
+				structuralIntegrity: taskForceShips.structuralIntegrity,
+				componentStates: taskForceShips.componentStates,
 
 				// general stats
-				supplyNeed: shipDesignsWithStats.supplyNeed,
+				supplyNeedPassive: shipDesignsWithStats.supplyNeedPassive,
+				supplyNeedMovement: shipDesignsWithStats.supplyNeedMovement,
+				supplyNeedCombat: shipDesignsWithStats.supplyNeedCombat,
 				powerNeed: shipDesignsWithStats.powerNeed,
 				crewNeed: shipDesignsWithStats.crewNeed,
 

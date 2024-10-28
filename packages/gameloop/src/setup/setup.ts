@@ -3,6 +3,7 @@ import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
 import { setupGalaxy } from "./galaxy.ts";
 import { setupResources } from "./resources.ts";
+import { setupShipComponents } from "./shipComponents.ts";
 
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
 export type Transaction = FirstArgument<
@@ -21,6 +22,8 @@ export async function setup() {
 		await setupResources(tx, ctx);
 
 		await setupGalaxy(tx, ctx);
+
+		await setupShipComponents(tx, ctx);
 
 		await tx
 			.update(games)

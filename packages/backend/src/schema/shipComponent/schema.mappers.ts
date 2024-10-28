@@ -4,7 +4,9 @@ export type ShipComponentMapper = {
 	description: string;
 
 	// general stats
-	supplyNeed: string;
+	supplyNeedPassive: string;
+	supplyNeedMovement: string;
+	supplyNeedCombat: string;
 	powerNeed: string;
 	crewNeed: string;
 	constructionCost: string;

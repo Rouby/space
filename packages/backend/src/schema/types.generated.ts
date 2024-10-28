@@ -1,8 +1,8 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
+import { ResourceMapper, ResourceNeedMapper } from './resource/schema.mappers.js';
 import { ResourceCostMapper, ShipDesignMapper } from './shipDesign/schema.mappers.js';
-import { ResourceNeedMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
 import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper, TaskForceShipMapper, TaskForceShipCommisionMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
@@ -219,7 +219,9 @@ export type ShipComponent = {
   shieldEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
   shieldStrength?: Maybe<Scalars['Float']['output']>;
   supplyCapacity?: Maybe<Scalars['Float']['output']>;
-  supplyNeed: Scalars['Float']['output'];
+  supplyNeedCombat: Scalars['Float']['output'];
+  supplyNeedMovement: Scalars['Float']['output'];
+  supplyNeedPassive: Scalars['Float']['output'];
   thruster?: Maybe<Scalars['Float']['output']>;
   weaponAccuracy?: Maybe<Scalars['Float']['output']>;
   weaponArmorPenetration?: Maybe<Scalars['Float']['output']>;
@@ -505,7 +507,7 @@ export type ResolversTypes = {
   PositionableDisappearsEvent: ResolverTypeWrapper<Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   PositionableMovesEvent: ResolverTypeWrapper<Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   Query: ResolverTypeWrapper<{}>;
-  Resource: ResolverTypeWrapper<Resource>;
+  Resource: ResolverTypeWrapper<ResourceMapper>;
   ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ResourceDepot: ResolverTypeWrapper<ResourceDepotMapper>;
@@ -557,7 +559,7 @@ export type ResolversParentTypes = {
   PositionableDisappearsEvent: Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   Query: {};
-  Resource: Resource;
+  Resource: ResourceMapper;
   ResourceCost: ResourceCostMapper;
   Float: Scalars['Float']['output'];
   ResourceDepot: ResourceDepotMapper;
@@ -727,7 +729,9 @@ export type ShipComponentResolvers<ContextType = Context, ParentType extends Res
   shieldEffectivenessAgainst?: Resolver<Maybe<Array<ResolversTypes['ShipComponentEffectivenessAgainst']>>, ParentType, ContextType>;
   shieldStrength?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   supplyCapacity?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  supplyNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  supplyNeedCombat?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  supplyNeedMovement?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  supplyNeedPassive?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   thruster?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   weaponAccuracy?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   weaponArmorPenetration?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;

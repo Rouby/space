@@ -21,6 +21,15 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 			position: taskForces.position,
 			orders: taskForces.orders,
 			maxSpeed: sql<string>`min(${taskForceShipsWithStats.ftlSpeed})`,
+			ships: sql<
+				{
+					id: string;
+					supplyCarried: string;
+					supplyNeedMovement: string;
+					supplyNeedPassive: string;
+					ftlSpeed: string;
+				}[]
+			>`json_agg(json_build_object('id', ${taskForceShipsWithStats.id}, 'supplyCarried', ${taskForceShipsWithStats.supplyCarried}, 'supplyNeedMovement', ${taskForceShipsWithStats.supplyNeedMovement}, 'supplyNeedPassive', ${taskForceShipsWithStats.supplyNeedPassive}, 'ftlSpeed', ${taskForceShipsWithStats.ftlSpeed}))`,
 		})
 		.from(taskForces)
 		.innerJoin(
@@ -124,29 +133,6 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 		}
 
 		if (position !== taskForce.position) {
-			const movementDone = movementPerTick - movement;
-
-			const shipsWithStats = await tx
-				.select({
-					id: taskForceShipsWithStats.id,
-					ftlSpeed: taskForceShipsWithStats.ftlSpeed,
-					movementSupplyNeed: taskForceShipsWithStats.supplyNeed,
-					supplyCarried: taskForceShipsWithStats.supplyCarried,
-				})
-				.from(taskForceShipsWithStats)
-				.where(eq(taskForceShipsWithStats.taskForceId, taskForce.id));
-
-			for (const ship of shipsWithStats) {
-				const movementPercent = movementDone / +ship.ftlSpeed;
-				const supplyCosts = movementPercent * +ship.movementSupplyNeed;
-				await tx
-					.update(taskForceShips)
-					.set({
-						supplyCarried: `${Math.max(0, +ship.supplyCarried - supplyCosts)}`,
-					})
-					.where(eq(taskForceShips.id, ship.id));
-			}
-
 			await tx
 				.update(taskForces)
 				.set({ position, orders, movementVector })
@@ -158,6 +144,22 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 				position,
 				movementVector,
 			});
+		}
+
+		const movementDone = movementPerTick - movement;
+
+		// supply costs
+		for (const ship of taskForce.ships) {
+			const movementPercent = movementDone / +ship.ftlSpeed;
+			const supplyCosts =
+				+ship.supplyNeedPassive + movementPercent * +ship.supplyNeedMovement;
+
+			await tx
+				.update(taskForceShips)
+				.set({
+					supplyCarried: `${Math.max(0, +ship.supplyCarried - supplyCosts)}`,
+				})
+				.where(eq(taskForceShips.id, ship.id));
 		}
 
 		if (orders.at(0)?.type === "colonize") {

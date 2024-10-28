@@ -32,7 +32,9 @@ export const shipComponents = pgTable("shipComponents", {
 	description: text().notNull(),
 
 	// general stats
-	supplyNeed: decimal({ precision: 30, scale: 6 }).notNull(),
+	supplyNeedPassive: decimal({ precision: 30, scale: 6 }).notNull(),
+	supplyNeedMovement: decimal({ precision: 30, scale: 6 }).notNull(),
+	supplyNeedCombat: decimal({ precision: 30, scale: 6 }).notNull(),
 	powerNeed: decimal({ precision: 30, scale: 6 }).notNull(),
 	crewNeed: decimal({ precision: 30, scale: 6 }).notNull(),
 	constructionCost: decimal({ precision: 30, scale: 6 }).notNull(),

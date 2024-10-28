@@ -37,7 +37,6 @@ interface TaskForceDisappeared {
 interface TaskForceDestroyed {
 	type: "taskForce:destroyed";
 	id: string;
-	position: { x: number; y: number };
 }
 
 interface TaskForceEngagementStarted {
