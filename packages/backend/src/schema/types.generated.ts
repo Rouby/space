@@ -133,6 +133,7 @@ export type PositionableApppearsEvent = {
 
 export type PositionableDisappearsEvent = {
   __typename?: 'PositionableDisappearsEvent';
+  removed?: Maybe<Scalars['Boolean']['output']>;
   subject: Positionable;
 };
 
@@ -330,6 +331,12 @@ export type TaskForceCommisionShipInput = {
   shipDesignId: Scalars['ID']['input'];
 };
 
+export type TaskForceCommisionUpdateEvent = {
+  __typename?: 'TaskForceCommisionUpdateEvent';
+  constructionPerTick: Scalars['Float']['output'];
+  subject: TaskForceShipCommision;
+};
+
 export type TaskForceFollowOrder = TaskForceOrder & {
   __typename?: 'TaskForceFollowOrder';
   id: Scalars['ID']['output'];
@@ -362,19 +369,18 @@ export type TaskForceOrderInput = {
 
 export type TaskForceShip = {
   __typename?: 'TaskForceShip';
-  armorState: Scalars['Float']['output'];
-  hullState: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   role: TaskForceShipRole;
-  shieldState: Scalars['Float']['output'];
   shipDesign: ShipDesign;
   supplyCarried: Scalars['Float']['output'];
-  weaponState: Scalars['Float']['output'];
 };
 
 export type TaskForceShipCommision = {
   __typename?: 'TaskForceShipCommision';
+  constructionDone: Scalars['Float']['output'];
+  constructionPerTick?: Maybe<Scalars['Float']['output']>;
+  constructionTotal: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   resourceNeeds: Array<ResourceNeed>;
@@ -389,7 +395,7 @@ export type TaskForceShipRole =
 
 export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent;
 
-export type TrackStarSystemEvent = StarSystemUpdateEvent;
+export type TrackStarSystemEvent = StarSystemUpdateEvent | TaskForceCommisionUpdateEvent;
 
 export type UnknownDiscovery = {
   __typename?: 'UnknownDiscovery';
@@ -480,7 +486,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
   TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
-  TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
+  TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } ) | ( Omit<TaskForceCommisionUpdateEvent, 'subject'> & { subject: _RefType['TaskForceShipCommision'] } & { __typename: 'TaskForceCommisionUpdateEvent' } );
 };
 
 /** Mapping of interface types */
@@ -524,6 +530,7 @@ export type ResolversTypes = {
   TaskForceColonizeOrder: ResolverTypeWrapper<TaskForceColonizeOrderMapper>;
   TaskForceCommisionInput: TaskForceCommisionInput;
   TaskForceCommisionShipInput: TaskForceCommisionShipInput;
+  TaskForceCommisionUpdateEvent: ResolverTypeWrapper<Omit<TaskForceCommisionUpdateEvent, 'subject'> & { subject: ResolversTypes['TaskForceShipCommision'] }>;
   TaskForceFollowOrder: ResolverTypeWrapper<TaskForceFollowOrderMapper>;
   TaskForceFollowOrderInput: TaskForceFollowOrderInput;
   TaskForceMoveOrder: ResolverTypeWrapper<TaskForceMoveOrderMapper>;
@@ -576,6 +583,7 @@ export type ResolversParentTypes = {
   TaskForceColonizeOrder: TaskForceColonizeOrderMapper;
   TaskForceCommisionInput: TaskForceCommisionInput;
   TaskForceCommisionShipInput: TaskForceCommisionShipInput;
+  TaskForceCommisionUpdateEvent: Omit<TaskForceCommisionUpdateEvent, 'subject'> & { subject: ResolversParentTypes['TaskForceShipCommision'] };
   TaskForceFollowOrder: TaskForceFollowOrderMapper;
   TaskForceFollowOrderInput: TaskForceFollowOrderInput;
   TaskForceMoveOrder: TaskForceMoveOrderMapper;
@@ -659,6 +667,7 @@ export type PositionableApppearsEventResolvers<ContextType = Context, ParentType
 };
 
 export type PositionableDisappearsEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PositionableDisappearsEvent'] = ResolversParentTypes['PositionableDisappearsEvent']> = {
+  removed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['Positionable'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -810,6 +819,12 @@ export type TaskForceColonizeOrderResolvers<ContextType = Context, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TaskForceCommisionUpdateEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceCommisionUpdateEvent'] = ResolversParentTypes['TaskForceCommisionUpdateEvent']> = {
+  constructionPerTick?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  subject?: Resolver<ResolversTypes['TaskForceShipCommision'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type TaskForceFollowOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceFollowOrder'] = ResolversParentTypes['TaskForceFollowOrder']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   taskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
@@ -828,19 +843,18 @@ export type TaskForceOrderResolvers<ContextType = Context, ParentType extends Re
 };
 
 export type TaskForceShipResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShip'] = ResolversParentTypes['TaskForceShip']> = {
-  armorState?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  hullState?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['TaskForceShipRole'], ParentType, ContextType>;
-  shieldState?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   shipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType>;
   supplyCarried?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  weaponState?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TaskForceShipCommisionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShipCommision'] = ResolversParentTypes['TaskForceShipCommision']> = {
+  constructionDone?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  constructionPerTick?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  constructionTotal?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   resourceNeeds?: Resolver<Array<ResolversTypes['ResourceNeed']>, ParentType, ContextType>;
@@ -856,7 +870,7 @@ export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends 
 };
 
 export type TrackStarSystemEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackStarSystemEvent'] = ResolversParentTypes['TrackStarSystemEvent']> = {
-  __resolveType?: TypeResolveFn<'StarSystemUpdateEvent', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'StarSystemUpdateEvent' | 'TaskForceCommisionUpdateEvent', ParentType, ContextType>;
 };
 
 export type UnknownDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UnknownDiscovery'] = ResolversParentTypes['UnknownDiscovery']> = {
@@ -903,6 +917,7 @@ export type Resolvers<ContextType = Context> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;
   TaskForceColonizeOrder?: TaskForceColonizeOrderResolvers<ContextType>;
+  TaskForceCommisionUpdateEvent?: TaskForceCommisionUpdateEventResolvers<ContextType>;
   TaskForceFollowOrder?: TaskForceFollowOrderResolvers<ContextType>;
   TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;

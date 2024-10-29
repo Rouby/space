@@ -9,17 +9,13 @@ import {
 import type { GameResolvers } from "./../../types.generated.js";
 export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
 	starSystems: async (parent, _args, ctx) => {
-		const {
-			VisibilityQuery,
-			visibilityExists,
-			possiblyHidden,
-			knownOrLastKnown,
-		} = getLastKnownHelper({
-			tx: ctx.drizzle,
-			gameId: parent.id,
-			userId: ctx.userId ?? "",
-			position: starSystems.position,
-		});
+		const { VisibilityQuery, visibilityExists, possiblyHidden } =
+			getLastKnownHelper({
+				tx: ctx.drizzle,
+				gameId: parent.id,
+				userId: ctx.userId ?? "",
+				position: starSystems.position,
+			});
 
 		return ctx.drizzle
 			.with(VisibilityQuery)
@@ -37,11 +33,14 @@ export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
 				),
 				ownerId: possiblyHidden(starSystems.ownerId).as("ownerId"),
 
-				isVisible: sql<boolean>`CASE WHEN ${visibilityExists} THEN TRUE ELSE FALSE END`,
-				lastUpdate:
-					sql<Date>`CASE WHEN ${visibilityExists} THEN NULL ELSE ${lastKnownStates.lastUpdate} END`.mapWith(
-						lastKnownStates.lastUpdate,
+				isVisible:
+					sql<boolean>`CASE WHEN ${visibilityExists} THEN TRUE ELSE FALSE END`.as(
+						"isVisible",
 					),
+				lastUpdate:
+					sql<Date>`CASE WHEN ${visibilityExists} THEN NULL ELSE ${lastKnownStates.lastUpdate} END`
+						.mapWith(lastKnownStates.lastUpdate)
+						.as("lastUpdate"),
 			})
 			.from(starSystems)
 			.where(and(eq(starSystems.gameId, parent.id)))

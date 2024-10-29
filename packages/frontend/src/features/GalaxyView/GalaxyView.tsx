@@ -128,6 +128,7 @@ query Galaxy($id: ID!) {
 						lastUpdate
 					}
 				}
+				removed
 			}
 			... on StarSystemUpdateEvent {
 				subject {

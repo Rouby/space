@@ -12,7 +12,8 @@ export type GameEvent =
 	| StarSystemDisappeared
 	| StarSystemPopulationChanged
 	| StarSystemDiscoveryProgress
-	| StarSystemOwnerChanged;
+	| StarSystemOwnerChanged
+	| TaskForceCommisionProgress;
 
 interface TaskForceAppeared {
 	type: "taskForce:appeared";
@@ -87,7 +88,7 @@ interface StarSystemPopulationChanged {
 	id: string;
 	populationId: string;
 	amount: bigint;
-	growth: bigint;
+	growthPerTick: bigint;
 }
 interface StarSystemDiscoveryProgress {
 	type: "starSystem:discoveryProgress";
@@ -99,4 +100,13 @@ interface StarSystemOwnerChanged {
 	type: "starSystem:ownerChanged";
 	id: string;
 	ownerId: string;
+}
+
+interface TaskForceCommisionProgress {
+	type: "taskForceCommision:progress";
+	id: string;
+	starSystemId: string;
+	constructionDone: number;
+	constructionTotal: number;
+	constructionPerTick: number;
 }

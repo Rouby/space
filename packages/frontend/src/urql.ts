@@ -22,6 +22,7 @@ export const client = createClient({
 			schema,
 			keys: {
 				ResourceCost: () => null,
+				ResourceNeed: () => null,
 			},
 			updates: {
 				Mutation: {
@@ -42,15 +43,15 @@ export const client = createClient({
 						args: CommisionTaskForceMutationVariables,
 						cache,
 					) => {
-						const commisions = cache.resolve(
+						const taskForces = cache.resolve(
 							{ __typename: "StarSystem", id: args.commision.starSystemId },
-							"taskForceCommisions",
+							"taskForces",
 						);
-						if (Array.isArray(commisions)) {
+						if (Array.isArray(taskForces)) {
 							cache.link(
 								{ __typename: "StarSystem", id: args.commision.starSystemId },
-								"taskForceCommisions",
-								[...commisions, result.createTaskForceCommision],
+								"taskForces",
+								[...taskForces, result.createTaskForceCommision],
 							);
 						}
 					},
@@ -92,7 +93,7 @@ export const client = createClient({
 							) {
 								const remove =
 									result.trackGalaxy.__typename ===
-									"PositionableDisappearsEvent";
+										"PositionableDisappearsEvent" && result.trackGalaxy.removed;
 
 								const taskForces = cache.resolve(
 									{ __typename: "Game", id: vars.gameId },
@@ -102,19 +103,10 @@ export const client = createClient({
 
 								if (cacheKey) {
 									if (remove && taskForces.includes(cacheKey)) {
-										// cache.writeFragment(
-										// 	gql`fragment _ on TaskForce { id isVisible lastUpdate }`,
-										// 	{
-										// 		id: result.trackGalaxy.subject.id,
-										// 		isVisible: false,
-										// 		lastUpdate: new Date().toISOString(),
-										// 	},
-										// );
-										// cache.link(
-										// 	{ __typename: "Game", id: vars.gameId },
-										// 	"taskForces",
-										// 	taskForces.filter((id) => id !== cacheKey),
-										// );
+										cache.invalidate({
+											__typename: "TaskForce",
+											id: result.trackGalaxy.subject.id,
+										});
 									} else if (!remove && !taskForces.includes(cacheKey)) {
 										cache.link(
 											{ __typename: "Game", id: vars.gameId },

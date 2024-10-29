@@ -70,9 +70,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 			initialStarSystems: initialSSs,
 		});
 
-		return toAsyncIterable(
-			merge(taskForceEvents, starSystemEvents),
-		);
+		return toAsyncIterable(merge(taskForceEvents, starSystemEvents));
 	},
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	resolve: (input: any) => input,

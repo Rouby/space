@@ -65,6 +65,6 @@ export const TaskForce: TaskForceResolvers = {
 		return ctx.drizzle
 			.select()
 			.from(taskForceShipCommisions)
-			.where(and(eq(taskForceShips.taskForceId, parent.id)));
+			.where(and(eq(taskForceShipCommisions.taskForceId, parent.id)));
 	},
 };

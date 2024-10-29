@@ -34,6 +34,9 @@ type TaskForceShipCommision {
 	role: TaskForceShipRole!
 	shipDesign: ShipDesign!
 
+	constructionDone: Float!
+	constructionTotal: Float!
+	constructionPerTick: Float
 	resourceNeeds: [ResourceNeed!]!
 }
 

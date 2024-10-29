@@ -140,9 +140,9 @@ export const shipDesignsWithStats = pgView("shipDesignsWithStats").as((qb) =>
 			crewNeed: sql`sum(${shipComponents.crewNeed})`
 				.mapWith(shipComponents.crewNeed)
 				.as("crewNeed"),
-			constructionCost: sql`sum(${shipComponents.constructionCost})`.as(
-				"constructionCost",
-			),
+			constructionCost: sql`sum(${shipComponents.constructionCost})`
+				.mapWith(shipComponents.constructionCost)
+				.as("constructionCost"),
 
 			supplyCapacity: sql`sum(${shipComponents.supplyCapacity})`
 				.mapWith(shipComponents.supplyCapacity)

@@ -51,7 +51,7 @@ export const trackStarSystem: NonNullable<
 		const thresholdPopulationChangeEvents = populationChangeEvents.pipe(
 			bufferWhen(() =>
 				populationChangeEvents.pipe(
-					scan((acc, event) => acc + event.growth, 0n),
+					scan((acc, event) => acc + event.growthPerTick, 0n),
 					filter((count) => count >= 10n ** magnitude),
 				),
 			),
@@ -64,8 +64,27 @@ export const trackStarSystem: NonNullable<
 			})),
 		);
 
+		const commisionUpdates = ctx.fromGameEvents(ss.gameId).pipe(
+			filter((event) => event.type === "taskForceCommision:progress"),
+			filter((event) => event.starSystemId === starSystemId),
+			map((event) => ({
+				__typename: "TaskForceCommisionUpdateEvent" as const,
+				subject: {
+					__typename: "TaskForceShipCommision" as const,
+					id: event.id,
+					constructionDone: event.constructionDone,
+					constructionTotal: event.constructionTotal,
+					constructionPerTick: event.constructionPerTick,
+				},
+			})),
+		);
+
 		return toAsyncIterable(
-			merge(thresholdDiscoveryEvents, thresholdPopulationChangeEvents),
+			merge(
+				thresholdDiscoveryEvents,
+				thresholdPopulationChangeEvents,
+				commisionUpdates,
+			),
 		);
 	},
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>

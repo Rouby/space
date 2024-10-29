@@ -29,7 +29,10 @@ export const taskForceShipCommisions = pgTable("taskForceShipCommisions", {
 		.references(() => taskForces.id, { onDelete: "cascade" }),
 	name: varchar({ length: 256 }).notNull(),
 	role: taskForceShipRole().notNull(),
-	progress: decimal({ precision: 30, scale: 6 }).notNull(),
+	constructionDone: decimal({ precision: 30, scale: 6 }).notNull().default("0"),
+	constructionTotal: decimal({ precision: 30, scale: 6 })
+		.notNull()
+		.default("0"),
 });
 
 export const taskForceCommisionsRelations = relations(

@@ -61,7 +61,7 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 					id: starSystem.id,
 					populationId: `${starSystem.id}:${pop.allegianceToPlayerId}`,
 					amount: amount + growthInt,
-					growth: growthInt,
+					growthPerTick: growthInt,
 				});
 			}
 		}

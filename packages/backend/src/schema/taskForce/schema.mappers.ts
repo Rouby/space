@@ -35,6 +35,9 @@ export type TaskForceShipCommisionMapper = {
 	taskForceId: string;
 	name: string;
 	role: TaskForceShipRole;
+	constructionDone: string;
+	constructionTotal: string;
+	constructionPerTick?: number | null;
 };
 export type TaskForceShipMapper = {
 	id: string;

@@ -55,6 +55,7 @@ type PositionableApppearsEvent {
 }
 
 type PositionableDisappearsEvent {
+  removed: Boolean
   subject: Positionable!
 }
 
@@ -212,6 +213,11 @@ input TaskForceCommisionShipInput {
   shipDesignId: ID!
 }
 
+type TaskForceCommisionUpdateEvent {
+  constructionPerTick: Float!
+  subject: TaskForceShipCommision!
+}
+
 type TaskForceFollowOrder implements TaskForceOrder {
   id: ID!
   taskForce: TaskForce!
@@ -241,18 +247,17 @@ input TaskForceOrderInput {
 }
 
 type TaskForceShip {
-  armorState: Float!
-  hullState: Float!
   id: ID!
   name: String!
   role: TaskForceShipRole!
-  shieldState: Float!
   shipDesign: ShipDesign!
   supplyCarried: Float!
-  weaponState: Float!
 }
 
 type TaskForceShipCommision {
+  constructionDone: Float!
+  constructionPerTick: Float
+  constructionTotal: Float!
   id: ID!
   name: String!
   resourceNeeds: [ResourceNeed!]!
@@ -268,7 +273,7 @@ enum TaskForceShipRole {
 
 union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent
 
-union TrackStarSystemEvent = StarSystemUpdateEvent
+union TrackStarSystemEvent = StarSystemUpdateEvent | TaskForceCommisionUpdateEvent
 
 type UnknownDiscovery {
   id: ID!

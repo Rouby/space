@@ -21,6 +21,29 @@ export function CommisionTaskForce({
 		graphql(`mutation CommisionTaskForce($commision: TaskForceCommisionInput!) {
     createTaskForceCommision(commision: $commision) {
       id
+			name
+			owner {
+				id
+				name
+				color
+			}
+			sensorRange
+			commisions {
+				id
+				name
+				shipDesign{
+					id
+					name
+				}
+				resourceNeeds {
+					resource {
+						id
+						name
+					}
+					alotted
+					needed
+				}
+			}
     }
   }`),
 	);

@@ -1844,6 +1844,36 @@
       },
       {
         "kind": "OBJECT",
+        "name": "TaskForceCommisionUpdateEvent",
+        "fields": [
+          {
+            "name": "constructionPerTick",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceShipCommision",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "TaskForceFollowOrder",
         "fields": [
           {
@@ -2011,6 +2041,36 @@
         "name": "TaskForceShipCommision",
         "fields": [
           {
+            "name": "constructionDone",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "constructionPerTick",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "constructionTotal",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -2105,6 +2165,10 @@
           {
             "kind": "OBJECT",
             "name": "StarSystemUpdateEvent"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceCommisionUpdateEvent"
           }
         ]
       },

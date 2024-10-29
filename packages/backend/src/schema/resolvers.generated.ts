@@ -43,6 +43,7 @@ import    { StarSystem as taskForce_StarSystem } from './taskForce/resolvers/Sta
 import    { StarSystemUpdateEvent } from './base/resolvers/StarSystemUpdateEvent.js';
 import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
 import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColonizeOrder.js';
+import    { TaskForceCommisionUpdateEvent } from './base/resolvers/TaskForceCommisionUpdateEvent.js';
 import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOrder.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TaskForceShip } from './taskForce/resolvers/TaskForceShip.js';
@@ -75,6 +76,7 @@ StarSystem: { ...starSystem_StarSystem,...taskForce_StarSystem },
 StarSystemUpdateEvent: StarSystemUpdateEvent,
 TaskForce: TaskForce,
 TaskForceColonizeOrder: TaskForceColonizeOrder,
+TaskForceCommisionUpdateEvent: TaskForceCommisionUpdateEvent,
 TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TaskForceShip: TaskForceShip,

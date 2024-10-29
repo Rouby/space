@@ -41,6 +41,24 @@ export function StarSystemDetails({ id }: { id: string }) {
 					id
 					name
 				}
+				commisions {
+					id
+					name
+					shipDesign {
+						id
+						name
+					}
+					constructionDone
+					constructionTotal
+					resourceNeeds {
+						resource {
+							id
+							name
+						}
+						alotted
+						needed
+					}
+				}
 			}
 			discoveries {
 				__typename
@@ -112,6 +130,23 @@ export function StarSystemDetails({ id }: { id: string }) {
 					}
 				}
 			}
+			... on TaskForceCommisionUpdateEvent {
+				subject {
+					id
+					constructionDone
+					constructionTotal
+					constructionPerTick
+					resourceNeeds {
+						resource {
+							id
+							name
+						}
+						alotted
+						needed
+					}
+				}
+				
+			}
 		}
 	}`),
 		variables: { id },
@@ -124,7 +159,7 @@ export function StarSystemDetails({ id }: { id: string }) {
 			<Title order={2} mb="md">
 				{data?.starSystem.name}
 			</Title>
-			<SimpleGrid type="container" cols={{ base: 1, "500px": 2 }}>
+			<SimpleGrid type="container" cols={{ base: 1, "500px": 2 }} mb="md">
 				<Stack>
 					<Card>
 						<Text variant="gradient">Location</Text>
@@ -252,13 +287,59 @@ export function StarSystemDetails({ id }: { id: string }) {
 				</Stack>
 				<Image src={placeholderStarsystemArt} alt="star system" />
 			</SimpleGrid>
-			<Button
-				component={Link}
-				from="/games/$id/star-system/$starSystemId"
-				to="commision-task-force"
-			>
-				Commision a task force
-			</Button>
+			<Card>
+				<Text variant="gradient">Task forces in this system</Text>
+				<div
+					className={css({
+						display: "grid",
+						gridTemplateColumns: "repeat(auto-fit, 200px)",
+					})}
+				>
+					{data?.starSystem.taskForces?.map((tf) => (
+						<Stack key={tf.id} gap={0} align="center">
+							<Center>{tf.name}</Center>
+							{tf.commisions.length > 0 ? (
+								<Center>Commision in progress</Center>
+							) : null}
+							{tf.commisions.map((commision) => (
+								<Stack key={commision.id} gap={0}>
+									<div>{commision.name}</div>
+									<Progress.Root size={20}>
+										{commision.resourceNeeds.map((need) => (
+											<Progress.Section
+												key={need.resource.id}
+												value={(need.alotted / need.needed) * 100}
+												color="cyan"
+											>
+												<Progress.Label>
+													{need.resource.name} ({formatUnit(need.alotted)}/
+													{formatUnit(need.needed)})
+												</Progress.Label>
+											</Progress.Section>
+										))}
+									</Progress.Root>
+									<Progress
+										size={20}
+										value={
+											(commision.constructionDone /
+												commision.constructionTotal) *
+											100
+										}
+									/>
+								</Stack>
+							))}
+						</Stack>
+					))}
+				</div>
+
+				<Button
+					component={Link}
+					from="/games/$id/star-system/$starSystemId"
+					to="commision-task-force"
+				>
+					Commision a task force
+				</Button>
+			</Card>
 		</>
 	);
 }

@@ -138,7 +138,22 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				break;
 			}
 
+			// TODO: reduce resources evenly across all needs based on work capacity / total work needed
+
 			const workable = Math.min(+workableResourceNeed.alotted, 1);
+
+			const [{ constructionDone, constructionTotal }] = await tx
+				.update(taskForceShipCommisions)
+				.set({
+					constructionDone: sql`${taskForceShipCommisions.constructionDone} + ${workable}::numeric`,
+				})
+				.where(
+					eq(
+						taskForceShipCommisions.id,
+						workableResourceNeed.taskForceShipCommisionId,
+					),
+				)
+				.returning();
 
 			const [{ needed, alotted }] = await tx
 				.update(taskForceShipCommisionResourceNeeds)
@@ -159,6 +174,15 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 					),
 				)
 				.returning();
+
+			ctx.postMessage({
+				type: "taskForceCommision:progress",
+				id: workableResourceNeed.taskForceShipCommisionId,
+				starSystemId,
+				constructionDone: +constructionDone,
+				constructionTotal: +constructionTotal,
+				constructionPerTick: workable,
+			});
 
 			workCapacityLeft -= workable;
 			workableResourceNeed.needed = needed;

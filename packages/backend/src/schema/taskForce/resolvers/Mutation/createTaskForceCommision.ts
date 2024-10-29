@@ -1,6 +1,10 @@
 import {
 	eq,
-	shipDesigns,
+	shipComponentResourceCosts,
+	shipDesignComponents,
+	shipDesignResourceCosts,
+	shipDesignsWithStats,
+	sql,
 	starSystems,
 	taskForceShipCommisionResourceNeeds,
 	taskForceShipCommisions,
@@ -33,14 +37,57 @@ export const createTaskForceCommision: NonNullable<
 			.returning();
 
 		for (const ship of ships) {
-			const design = await tx.query.shipDesigns.findFirst({
-				where: eq(shipDesigns.id, ship.shipDesignId),
-				with: { resourceCosts: true },
-			});
+			const [design] = await tx
+				.select({
+					id: shipDesignsWithStats.id,
+					name: shipDesignsWithStats.name,
+					constructionCost: shipDesignsWithStats.constructionCost,
+				})
+				.from(shipDesignsWithStats)
+				.where(eq(shipDesignsWithStats.id, ship.shipDesignId));
+
+			const AllCosts = ctx.drizzle.$with("AllCosts").as((qb) =>
+				qb
+					.select({
+						resourceId: shipDesignResourceCosts.resourceId,
+						quantity: shipDesignResourceCosts.quantity,
+					})
+					.from(shipDesignResourceCosts)
+					.where(eq(shipDesignResourceCosts.shipDesignId, design.id))
+					.unionAll(
+						ctx.drizzle
+							.select({
+								resourceId: shipComponentResourceCosts.resourceId,
+								quantity: shipComponentResourceCosts.quantity,
+							})
+							.from(shipDesignComponents)
+							.where(eq(shipDesignComponents.shipDesignId, design.id))
+							.innerJoin(
+								shipComponentResourceCosts,
+								eq(
+									shipComponentResourceCosts.shipComponentId,
+									shipDesignComponents.shipComponentId,
+								),
+							),
+					),
+			);
+
+			const resourceCosts = await ctx.drizzle
+				.with(AllCosts)
+				.select({
+					resourceId: AllCosts.resourceId,
+					quantity: sql`sum(${AllCosts.quantity})`
+						.mapWith(AllCosts.quantity)
+						.as("quantity"),
+				})
+				.from(AllCosts)
+				.groupBy(AllCosts.resourceId);
 
 			if (!design) {
 				throw createGraphQLError("Ship design not found");
 			}
+
+			const constructionTotal = +design.constructionCost;
 
 			const [commision] = await tx
 				.insert(taskForceShipCommisions)
@@ -51,12 +98,13 @@ export const createTaskForceCommision: NonNullable<
 					shipDesignId: ship.shipDesignId,
 					name: ship.name,
 					role: ship.role,
-					progress: "0",
+					constructionDone: "0",
+					constructionTotal: `${constructionTotal}`,
 				})
 				.returning();
 
 			await tx.insert(taskForceShipCommisionResourceNeeds).values(
-				design?.resourceCosts.map((resource) => ({
+				resourceCosts.map((resource) => ({
 					taskForceShipCommisionId: commision.id,
 					resourceId: resource.resourceId,
 					alotted: "0",

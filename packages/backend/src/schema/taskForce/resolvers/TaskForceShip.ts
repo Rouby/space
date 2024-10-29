@@ -1,22 +1,15 @@
+import { eq, shipDesigns } from "@space/data/schema";
 import type { TaskForceShipResolvers } from "./../../types.generated.js";
 export const TaskForceShip: TaskForceShipResolvers = {
 	/* Implement TaskForceShip resolver logic here */
-	shieldState: async (_parent, _arg, _ctx) => {
-		return +_parent.shieldState;
-	},
 	supplyCarried: async (_parent, _arg, _ctx) => {
 		return +_parent.supplyCarried;
 	},
-	weaponState: async (_parent, _arg, _ctx) => {
-		return +_parent.weaponState;
-	},
-	armorState: async (_parent, _arg, _ctx) => {
-		return +_parent.armorState;
-	},
-	hullState: async (_parent, _arg, _ctx) => {
-		return +_parent.hullState;
-	},
-	shipDesign: async (_parent, _arg, _ctx) => {
-		/* TaskForceShip.shipDesign resolver is required because TaskForceShip.shipDesign exists but TaskForceShipMapper.shipDesign does not */
+	shipDesign: async (parent, _arg, ctx) => {
+		return ctx.drizzle
+			.select()
+			.from(shipDesigns)
+			.where(eq(shipDesigns.id, parent.shipDesignId))
+			.then((results) => results[0]);
 	},
 };
