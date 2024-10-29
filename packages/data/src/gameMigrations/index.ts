@@ -11,6 +11,8 @@ export type Transaction = FirstArgument<
 
 const migrations = [migrateFrom0To1, migrateFrom1To2, migrateFrom2To3];
 
+export const latestVersion = migrations.length;
+
 export async function applyMigrations(tx: Transaction, gameId: string) {
 	const [game] = await tx
 		.select({ version: games.version })

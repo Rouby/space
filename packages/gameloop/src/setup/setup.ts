@@ -1,3 +1,4 @@
+import { latestVersion } from "@space/data/game-migrations";
 import { eq, games, players } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
@@ -27,7 +28,7 @@ export async function setup() {
 
 		await tx
 			.update(games)
-			.set({ setupCompleted: true })
+			.set({ setupCompleted: true, version: latestVersion })
 			.where(eq(games.id, gameId));
 
 		console.log("Game setup completed");
