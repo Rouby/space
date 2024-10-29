@@ -7,22 +7,11 @@ import {
 	taskForces,
 	visibility,
 } from "@space/data/schema";
-import {
-	concat,
-	filter,
-	from,
-	map,
-	merge,
-	mergeMap,
-	startWith,
-	takeUntil,
-} from "rxjs";
+import { merge } from "rxjs";
+import { starSystems$ } from "../../../../observables/starSystems.ts";
 import { taskForces$ } from "../../../../observables/taskForces.ts";
 import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
-import type {
-	ResolversTypes,
-	SubscriptionResolvers,
-} from "./../../../types.generated.js";
+import type { SubscriptionResolvers } from "./../../../types.generated.js";
 export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 	subscribe: async (_parent, { gameId }, ctx) => {
 		ctx.throwWithoutClaim("urn:space:claim");
@@ -48,12 +37,6 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 				),
 			);
 
-		const taskForceEvents = taskForces$({
-			gameId,
-			userId: ctx.userId ?? "",
-			initialTaskForces: initialTfs,
-		});
-
 		const initialSSs = await ctx.drizzle
 			.select()
 			.from(starSystems)
@@ -75,75 +58,19 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 				),
 			);
 
-		const starSystemEvents = ctx.fromGameEvents(gameId).pipe(
-			filter((event) => event.type === "starSystem:appeared"),
-			filter((event) => event.userId === ctx.userId),
-			map((event) => ({
-				__typename: "PositionableApppearsEvent" as const,
-				subject: {
-					__typename: "StarSystem" as const,
-					id: event.id,
-					position: event.position,
-					isVisible: true,
-					lastUpdate: null,
-				},
-			})),
-			// and initially feed all visible sss as "appearing"
-			startWith(
-				...initialSSs.map((ss) => ({
-					__typename: "PositionableApppearsEvent" as const,
-					subject: {
-						__typename: "StarSystem" as const,
-						...ss,
-						isVisible: true,
-						lastUpdate: null,
-					},
-				})),
-			),
-			mergeMap((appeared) =>
-				// for each appear event, emit appear and wait until disappear
-				concat(
-					from([appeared]),
-					// add owner-change-events
-					ctx
-						.fromGameEvents(gameId)
-						.pipe(
-							filter((event) => event.type === "starSystem:ownerChanged"),
-							filter((event) => event.id === appeared.subject.id),
-							map((event) => ({
-								__typename: "StarSystemUpdateEvent" as const,
-								subject: {
-									...appeared.subject,
-									id: appeared.subject.id,
-									ownerId: event.ownerId,
-									gameId,
-								},
-							})),
-							// until the star system disappears
-							takeUntil(
-								ctx.fromGameEvents(gameId).pipe(
-									filter((event) => event.type === "starSystem:disappeared"),
-									filter((event) => event.id === appeared.subject.id),
-									filter((event) => event.userId === ctx.userId),
-								),
-							),
-						),
-					from([
-						{
-							__typename: "PositionableDisappearsEvent" as const,
-							subject: {
-								...appeared.subject,
-								isVisible: false,
-								lastUpdate: new Date().toISOString(),
-							},
-						},
-					]),
-				),
-			),
-		);
+		const taskForceEvents = taskForces$({
+			gameId,
+			userId: ctx.userId ?? "",
+			initialTaskForces: initialTfs,
+		});
 
-		return toAsyncIterable<ResolversTypes["TrackGalaxyEvent"]>(
-			// @ts-expect-error: TODO: fix this
+		const starSystemEvents = starSystems$({
+			gameId,
+			userId: ctx.userId ?? "",
+			initialStarSystems: initialSSs,
+		});
+
+		return toAsyncIterable(
 			merge(taskForceEvents, starSystemEvents),
 		);
 	},

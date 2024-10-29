@@ -2,10 +2,7 @@ import { eq, starSystems } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import { bufferWhen, filter, map, merge, scan, tap } from "rxjs";
 import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
-import type {
-	ResolversTypes,
-	SubscriptionResolvers,
-} from "./../../../types.generated.ts";
+import type { SubscriptionResolvers } from "./../../../types.generated.ts";
 export const trackStarSystem: NonNullable<
 	SubscriptionResolvers["trackStarSystem"]
 > = {
@@ -67,8 +64,7 @@ export const trackStarSystem: NonNullable<
 			})),
 		);
 
-		return toAsyncIterable<ResolversTypes["TrackStarSystemEvent"]>(
-			// @ts-expect-error: TODO: fix this
+		return toAsyncIterable(
 			merge(thresholdDiscoveryEvents, thresholdPopulationChangeEvents),
 		);
 	},
