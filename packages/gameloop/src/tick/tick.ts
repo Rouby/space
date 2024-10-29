@@ -186,7 +186,6 @@ export async function tick() {
 								ctx.postMessage({
 									type: "taskForce:disappeared",
 									id,
-									position,
 									userId,
 								});
 

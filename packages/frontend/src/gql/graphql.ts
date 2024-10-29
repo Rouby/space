@@ -124,6 +124,7 @@ export type PositionableApppearsEvent = {
 
 export type PositionableDisappearsEvent = {
   __typename?: 'PositionableDisappearsEvent';
+  removed?: Maybe<Scalars['Boolean']['output']>;
   subject: Positionable;
 };
 
@@ -353,15 +354,11 @@ export type TaskForceOrderInput = {
 
 export type TaskForceShip = {
   __typename?: 'TaskForceShip';
-  armorState: Scalars['Float']['output'];
-  hullState: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   role: TaskForceShipRole;
-  shieldState: Scalars['Float']['output'];
   shipDesign: ShipDesign;
   supplyCarried: Scalars['Float']['output'];
-  weaponState: Scalars['Float']['output'];
 };
 
 export type TaskForceShipCommision = {

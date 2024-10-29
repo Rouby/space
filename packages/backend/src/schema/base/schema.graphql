@@ -22,6 +22,7 @@ type PositionableMovesEvent {
 }
 type PositionableDisappearsEvent {
 	subject: Positionable!
+	removed: Boolean
 }
 
 type StarSystemUpdateEvent {

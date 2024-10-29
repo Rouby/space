@@ -31,7 +31,6 @@ interface TaskForceDisappeared {
 	type: "taskForce:disappeared";
 	id: string;
 	userId: string;
-	position: { x: number; y: number };
 }
 
 interface TaskForceDestroyed {

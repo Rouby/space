@@ -653,6 +653,14 @@
         "name": "PositionableDisappearsEvent",
         "fields": [
           {
+            "name": "removed",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
             "name": "subject",
             "type": {
               "kind": "NON_NULL",
@@ -1940,28 +1948,6 @@
         "name": "TaskForceShip",
         "fields": [
           {
-            "name": "armorState",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "hullState",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -1995,17 +1981,6 @@
             "args": []
           },
           {
-            "name": "shieldState",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
             "name": "shipDesign",
             "type": {
               "kind": "NON_NULL",
@@ -2019,17 +1994,6 @@
           },
           {
             "name": "supplyCarried",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "weaponState",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
