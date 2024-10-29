@@ -1,0 +1,1813 @@
+{
+  "id": "7fcca943-6d6e-499d-9038-d7a7b0e4cbcc",
+  "prevId": "668013cf-9029-4ed8-bd82-4675b4d6a7c8",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.games": {
+      "name": "games",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "startedAt": {
+          "name": "startedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "setupCompleted": {
+          "name": "setupCompleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "tickRate": {
+          "name": "tickRate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 100
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.players": {
+      "name": "players",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'#000000'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "players_userId_users_id_fk": {
+          "name": "players_userId_users_id_fk",
+          "tableFrom": "players",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "players_gameId_games_id_fk": {
+          "name": "players_gameId_games_id_fk",
+          "tableFrom": "players",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "players_userId_gameId_pk": {
+          "name": "players_userId_gameId_pk",
+          "columns": [
+            "userId",
+            "gameId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.lastKnownStates": {
+      "name": "lastKnownStates",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectId": {
+          "name": "subjectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastUpdate": {
+          "name": "lastUpdate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lastKnownStates_userId_users_id_fk": {
+          "name": "lastKnownStates_userId_users_id_fk",
+          "tableFrom": "lastKnownStates",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "lastKnownStates_gameId_games_id_fk": {
+          "name": "lastKnownStates_gameId_games_id_fk",
+          "tableFrom": "lastKnownStates",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "lastKnownStates_userId_gameId_subjectId_pk": {
+          "name": "lastKnownStates_userId_gameId_subjectId_pk",
+          "columns": [
+            "userId",
+            "gameId",
+            "subjectId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.passwords": {
+      "name": "passwords",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "hash": {
+          "name": "hash",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "passwords_userId_users_id_fk": {
+          "name": "passwords_userId_users_id_fk",
+          "tableFrom": "passwords",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.resources": {
+      "name": "resources",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "resourceKind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "discoveryWeight": {
+          "name": "discoveryWeight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "resources_gameId_games_id_fk": {
+          "name": "resources_gameId_games_id_fk",
+          "tableFrom": "resources",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.shipComponentResourceCosts": {
+      "name": "shipComponentResourceCosts",
+      "schema": "",
+      "columns": {
+        "shipComponentId": {
+          "name": "shipComponentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resourceId": {
+          "name": "resourceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shipComponentResourceCosts_shipComponentId_shipComponents_id_fk": {
+          "name": "shipComponentResourceCosts_shipComponentId_shipComponents_id_fk",
+          "tableFrom": "shipComponentResourceCosts",
+          "tableTo": "shipComponents",
+          "columnsFrom": [
+            "shipComponentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "shipComponentResourceCosts_resourceId_resources_id_fk": {
+          "name": "shipComponentResourceCosts_resourceId_resources_id_fk",
+          "tableFrom": "shipComponentResourceCosts",
+          "tableTo": "resources",
+          "columnsFrom": [
+            "resourceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "shipComponentResourceCosts_shipComponentId_resourceId_pk": {
+          "name": "shipComponentResourceCosts_shipComponentId_resourceId_pk",
+          "columns": [
+            "shipComponentId",
+            "resourceId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.shipComponents": {
+      "name": "shipComponents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplyNeedPassive": {
+          "name": "supplyNeedPassive",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplyNeedMovement": {
+          "name": "supplyNeedMovement",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplyNeedCombat": {
+          "name": "supplyNeedCombat",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "powerNeed": {
+          "name": "powerNeed",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crewNeed": {
+          "name": "crewNeed",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "constructionCost": {
+          "name": "constructionCost",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplyCapacity": {
+          "name": "supplyCapacity",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "powerGeneration": {
+          "name": "powerGeneration",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "crewCapacity": {
+          "name": "crewCapacity",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ftlSpeed": {
+          "name": "ftlSpeed",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "zoneOfControl": {
+          "name": "zoneOfControl",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sensorRange": {
+          "name": "sensorRange",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hullBoost": {
+          "name": "hullBoost",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thruster": {
+          "name": "thruster",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sensorPrecision": {
+          "name": "sensorPrecision",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "armorThickness": {
+          "name": "armorThickness",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "armorEffectivenessAgainst": {
+          "name": "armorEffectivenessAgainst",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shieldStrength": {
+          "name": "shieldStrength",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shieldEffectivenessAgainst": {
+          "name": "shieldEffectivenessAgainst",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weaponDamage": {
+          "name": "weaponDamage",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weaponCooldown": {
+          "name": "weaponCooldown",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weaponRange": {
+          "name": "weaponRange",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weaponArmorPenetration": {
+          "name": "weaponArmorPenetration",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weaponShieldPenetration": {
+          "name": "weaponShieldPenetration",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weaponAccuracy": {
+          "name": "weaponAccuracy",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weaponDeliveryType": {
+          "name": "weaponDeliveryType",
+          "type": "weaponDeliveryType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shipComponents_gameId_games_id_fk": {
+          "name": "shipComponents_gameId_games_id_fk",
+          "tableFrom": "shipComponents",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "shipComponents_ownerId_users_id_fk": {
+          "name": "shipComponents_ownerId_users_id_fk",
+          "tableFrom": "shipComponents",
+          "tableTo": "users",
+          "columnsFrom": [
+            "ownerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.shipDesignComponents": {
+      "name": "shipDesignComponents",
+      "schema": "",
+      "columns": {
+        "shipDesignId": {
+          "name": "shipDesignId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shipComponentId": {
+          "name": "shipComponentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shipDesignComponents_shipDesignId_shipDesigns_id_fk": {
+          "name": "shipDesignComponents_shipDesignId_shipDesigns_id_fk",
+          "tableFrom": "shipDesignComponents",
+          "tableTo": "shipDesigns",
+          "columnsFrom": [
+            "shipDesignId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "shipDesignComponents_shipComponentId_shipComponents_id_fk": {
+          "name": "shipDesignComponents_shipComponentId_shipComponents_id_fk",
+          "tableFrom": "shipDesignComponents",
+          "tableTo": "shipComponents",
+          "columnsFrom": [
+            "shipComponentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "shipDesignComponents_shipDesignId_shipComponentId_position_pk": {
+          "name": "shipDesignComponents_shipDesignId_shipComponentId_position_pk",
+          "columns": [
+            "shipDesignId",
+            "shipComponentId",
+            "position"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.shipDesignResourceCosts": {
+      "name": "shipDesignResourceCosts",
+      "schema": "",
+      "columns": {
+        "shipDesignId": {
+          "name": "shipDesignId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resourceId": {
+          "name": "resourceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shipDesignResourceCosts_shipDesignId_shipDesigns_id_fk": {
+          "name": "shipDesignResourceCosts_shipDesignId_shipDesigns_id_fk",
+          "tableFrom": "shipDesignResourceCosts",
+          "tableTo": "shipDesigns",
+          "columnsFrom": [
+            "shipDesignId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "shipDesignResourceCosts_resourceId_resources_id_fk": {
+          "name": "shipDesignResourceCosts_resourceId_resources_id_fk",
+          "tableFrom": "shipDesignResourceCosts",
+          "tableTo": "resources",
+          "columnsFrom": [
+            "resourceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "shipDesignResourceCosts_shipDesignId_resourceId_pk": {
+          "name": "shipDesignResourceCosts_shipDesignId_resourceId_pk",
+          "columns": [
+            "shipDesignId",
+            "resourceId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.shipDesigns": {
+      "name": "shipDesigns",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "decommissioned": {
+          "name": "decommissioned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "previousDesignId": {
+          "name": "previousDesignId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shipDesigns_gameId_games_id_fk": {
+          "name": "shipDesigns_gameId_games_id_fk",
+          "tableFrom": "shipDesigns",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "shipDesigns_ownerId_users_id_fk": {
+          "name": "shipDesigns_ownerId_users_id_fk",
+          "tableFrom": "shipDesigns",
+          "tableTo": "users",
+          "columnsFrom": [
+            "ownerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "shipDesigns_previousDesignId_shipDesigns_id_fk": {
+          "name": "shipDesigns_previousDesignId_shipDesigns_id_fk",
+          "tableFrom": "shipDesigns",
+          "tableTo": "shipDesigns",
+          "columnsFrom": [
+            "previousDesignId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.starSystemPopulations": {
+      "name": "starSystemPopulations",
+      "schema": "",
+      "columns": {
+        "starSystemId": {
+          "name": "starSystemId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "growthLeftover": {
+          "name": "growthLeftover",
+          "type": "numeric(10, 9)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "allegianceToPlayerId": {
+          "name": "allegianceToPlayerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "starSystemPopulations_starSystemId_starSystems_id_fk": {
+          "name": "starSystemPopulations_starSystemId_starSystems_id_fk",
+          "tableFrom": "starSystemPopulations",
+          "tableTo": "starSystems",
+          "columnsFrom": [
+            "starSystemId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "starSystemPopulations_allegianceToPlayerId_users_id_fk": {
+          "name": "starSystemPopulations_allegianceToPlayerId_users_id_fk",
+          "tableFrom": "starSystemPopulations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "allegianceToPlayerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "starSystemPopulations_starSystemId_allegianceToPlayerId_pk": {
+          "name": "starSystemPopulations_starSystemId_allegianceToPlayerId_pk",
+          "columns": [
+            "starSystemId",
+            "allegianceToPlayerId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.starSystemResourceDepots": {
+      "name": "starSystemResourceDepots",
+      "schema": "",
+      "columns": {
+        "starSystemId": {
+          "name": "starSystemId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resourceId": {
+          "name": "resourceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "starSystemResourceDepots_starSystemId_starSystems_id_fk": {
+          "name": "starSystemResourceDepots_starSystemId_starSystems_id_fk",
+          "tableFrom": "starSystemResourceDepots",
+          "tableTo": "starSystems",
+          "columnsFrom": [
+            "starSystemId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "starSystemResourceDepots_resourceId_resources_id_fk": {
+          "name": "starSystemResourceDepots_resourceId_resources_id_fk",
+          "tableFrom": "starSystemResourceDepots",
+          "tableTo": "resources",
+          "columnsFrom": [
+            "resourceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "starSystemResourceDepots_starSystemId_resourceId_pk": {
+          "name": "starSystemResourceDepots_starSystemId_resourceId_pk",
+          "columns": [
+            "starSystemId",
+            "resourceId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.starSystemResourceDiscoveries": {
+      "name": "starSystemResourceDiscoveries",
+      "schema": "",
+      "columns": {
+        "starSystemId": {
+          "name": "starSystemId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resourceId": {
+          "name": "resourceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "discoveredAt": {
+          "name": "discoveredAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "remainingDeposits": {
+          "name": "remainingDeposits",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "starSystemResourceDiscoveries_starSystemId_starSystems_id_fk": {
+          "name": "starSystemResourceDiscoveries_starSystemId_starSystems_id_fk",
+          "tableFrom": "starSystemResourceDiscoveries",
+          "tableTo": "starSystems",
+          "columnsFrom": [
+            "starSystemId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "starSystemResourceDiscoveries_resourceId_resources_id_fk": {
+          "name": "starSystemResourceDiscoveries_resourceId_resources_id_fk",
+          "tableFrom": "starSystemResourceDiscoveries",
+          "tableTo": "resources",
+          "columnsFrom": [
+            "resourceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "starSystemResourceDiscoveries_starSystemId_resourceId_pk": {
+          "name": "starSystemResourceDiscoveries_starSystemId_resourceId_pk",
+          "columns": [
+            "starSystemId",
+            "resourceId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.starSystems": {
+      "name": "starSystems",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "point",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discoverySlots": {
+          "name": "discoverySlots",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "discoveryProgress": {
+          "name": "discoveryProgress",
+          "type": "numeric(10, 9)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "starSystems_gameId_games_id_fk": {
+          "name": "starSystems_gameId_games_id_fk",
+          "tableFrom": "starSystems",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "starSystems_ownerId_users_id_fk": {
+          "name": "starSystems_ownerId_users_id_fk",
+          "tableFrom": "starSystems",
+          "tableTo": "users",
+          "columnsFrom": [
+            "ownerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.taskForceShipCommisionResourceNeeds": {
+      "name": "taskForceShipCommisionResourceNeeds",
+      "schema": "",
+      "columns": {
+        "taskForceShipCommisionId": {
+          "name": "taskForceShipCommisionId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resourceId": {
+          "name": "resourceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alotted": {
+          "name": "alotted",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "needed": {
+          "name": "needed",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "taskForceShipCommisionResourceNeeds_taskForceShipCommisionId_taskForceShipCommisions_id_fk": {
+          "name": "taskForceShipCommisionResourceNeeds_taskForceShipCommisionId_taskForceShipCommisions_id_fk",
+          "tableFrom": "taskForceShipCommisionResourceNeeds",
+          "tableTo": "taskForceShipCommisions",
+          "columnsFrom": [
+            "taskForceShipCommisionId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "taskForceShipCommisionResourceNeeds_resourceId_resources_id_fk": {
+          "name": "taskForceShipCommisionResourceNeeds_resourceId_resources_id_fk",
+          "tableFrom": "taskForceShipCommisionResourceNeeds",
+          "tableTo": "resources",
+          "columnsFrom": [
+            "resourceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "taskForceShipCommisionResourceNeeds_taskForceShipCommisionId_resourceId_pk": {
+          "name": "taskForceShipCommisionResourceNeeds_taskForceShipCommisionId_resourceId_pk",
+          "columns": [
+            "taskForceShipCommisionId",
+            "resourceId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.taskForceShipCommisions": {
+      "name": "taskForceShipCommisions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "starSystemId": {
+          "name": "starSystemId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shipDesignId": {
+          "name": "shipDesignId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "taskForceId": {
+          "name": "taskForceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "taskForceShipRole",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "progress": {
+          "name": "progress",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "taskForceShipCommisions_gameId_games_id_fk": {
+          "name": "taskForceShipCommisions_gameId_games_id_fk",
+          "tableFrom": "taskForceShipCommisions",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "taskForceShipCommisions_starSystemId_starSystems_id_fk": {
+          "name": "taskForceShipCommisions_starSystemId_starSystems_id_fk",
+          "tableFrom": "taskForceShipCommisions",
+          "tableTo": "starSystems",
+          "columnsFrom": [
+            "starSystemId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "taskForceShipCommisions_shipDesignId_shipDesigns_id_fk": {
+          "name": "taskForceShipCommisions_shipDesignId_shipDesigns_id_fk",
+          "tableFrom": "taskForceShipCommisions",
+          "tableTo": "shipDesigns",
+          "columnsFrom": [
+            "shipDesignId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "taskForceShipCommisions_taskForceId_taskForces_id_fk": {
+          "name": "taskForceShipCommisions_taskForceId_taskForces_id_fk",
+          "tableFrom": "taskForceShipCommisions",
+          "tableTo": "taskForces",
+          "columnsFrom": [
+            "taskForceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.taskForceEngagements": {
+      "name": "taskForceEngagements",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "point",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "startedAt": {
+          "name": "startedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phase": {
+          "name": "phase",
+          "type": "taskForceEngagementPhase",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'locating'"
+        },
+        "phaseProgress": {
+          "name": "phaseProgress",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "taskForceEngagements_gameId_games_id_fk": {
+          "name": "taskForceEngagements_gameId_games_id_fk",
+          "tableFrom": "taskForceEngagements",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.taskForceEngagementsToTaskForces": {
+      "name": "taskForceEngagementsToTaskForces",
+      "schema": "",
+      "columns": {
+        "taskForceEngagementId": {
+          "name": "taskForceEngagementId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "taskForceId": {
+          "name": "taskForceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "taskForceEngagementsToTaskForces_taskForceEngagementId_taskForceEngagements_id_fk": {
+          "name": "taskForceEngagementsToTaskForces_taskForceEngagementId_taskForceEngagements_id_fk",
+          "tableFrom": "taskForceEngagementsToTaskForces",
+          "tableTo": "taskForceEngagements",
+          "columnsFrom": [
+            "taskForceEngagementId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "taskForceEngagementsToTaskForces_taskForceId_taskForces_id_fk": {
+          "name": "taskForceEngagementsToTaskForces_taskForceId_taskForces_id_fk",
+          "tableFrom": "taskForceEngagementsToTaskForces",
+          "tableTo": "taskForces",
+          "columnsFrom": [
+            "taskForceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "taskForceEngagementsToTaskForces_taskForceEngagementId_taskForceId_pk": {
+          "name": "taskForceEngagementsToTaskForces_taskForceEngagementId_taskForceId_pk",
+          "columns": [
+            "taskForceEngagementId",
+            "taskForceId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.taskForces": {
+      "name": "taskForces",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "point",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "orders": {
+          "name": "orders",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::json"
+        },
+        "movementVector": {
+          "name": "movementVector",
+          "type": "point",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "taskForces_gameId_games_id_fk": {
+          "name": "taskForces_gameId_games_id_fk",
+          "tableFrom": "taskForces",
+          "tableTo": "games",
+          "columnsFrom": [
+            "gameId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "taskForces_ownerId_users_id_fk": {
+          "name": "taskForces_ownerId_users_id_fk",
+          "tableFrom": "taskForces",
+          "tableTo": "users",
+          "columnsFrom": [
+            "ownerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.taskForceShips": {
+      "name": "taskForceShips",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "taskForceId": {
+          "name": "taskForceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shipDesignId": {
+          "name": "shipDesignId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "taskForceShipRole",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplyCarried": {
+          "name": "supplyCarried",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "structuralIntegrity": {
+          "name": "structuralIntegrity",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "componentStates": {
+          "name": "componentStates",
+          "type": "numeric(30, 6)[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "ARRAY[]::numeric[]"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "taskForceShips_taskForceId_taskForces_id_fk": {
+          "name": "taskForceShips_taskForceId_taskForces_id_fk",
+          "tableFrom": "taskForceShips",
+          "tableTo": "taskForces",
+          "columnsFrom": [
+            "taskForceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "taskForceShips_shipDesignId_shipDesigns_id_fk": {
+          "name": "taskForceShips_shipDesignId_shipDesigns_id_fk",
+          "tableFrom": "taskForceShips",
+          "tableTo": "shipDesigns",
+          "columnsFrom": [
+            "shipDesignId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "email_idx": {
+          "name": "email_idx",
+          "columns": [
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "enums": {
+    "public.resourceKind": {
+      "name": "resourceKind",
+      "schema": "public",
+      "values": [
+        "metal",
+        "crystal",
+        "gas",
+        "liquid",
+        "biological"
+      ]
+    },
+    "public.weaponDeliveryType": {
+      "name": "weaponDeliveryType",
+      "schema": "public",
+      "values": [
+        "missile",
+        "projectile",
+        "beam",
+        "instant"
+      ]
+    },
+    "public.taskForceEngagementPhase": {
+      "name": "taskForceEngagementPhase",
+      "schema": "public",
+      "values": [
+        "locating",
+        "engagement",
+        "resolution"
+      ]
+    },
+    "public.taskForceShipRole": {
+      "name": "taskForceShipRole",
+      "schema": "public",
+      "values": [
+        "capital",
+        "screen",
+        "support"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "views": {
+    "public.shipDesignsWithStats": {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "decommissioned": {
+          "name": "decommissioned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "previousDesignId": {
+          "name": "previousDesignId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "definition": "select \"shipDesigns\".\"id\", \"shipDesigns\".\"name\", \"shipDesigns\".\"description\", \"shipDesigns\".\"decommissioned\", \"shipDesigns\".\"previousDesignId\", jsonb_agg(jsonb_build_object('resourceId', \"shipDesignResourceCosts\".\"resourceId\", 'quantity', \"shipDesignResourceCosts\".\"quantity\")) as \"resourceCosts\", jsonb_agg(\"shipComponents\") as \"components\", sum(\"shipComponents\".\"supplyNeedPassive\") as \"supplyNeedPassive\", sum(\"shipComponents\".\"supplyNeedMovement\") as \"supplyNeedMovement\", sum(\"shipComponents\".\"supplyNeedCombat\") as \"supplyNeedCombat\", sum(\"shipComponents\".\"powerNeed\") as \"powerNeed\", sum(\"shipComponents\".\"crewNeed\") as \"crewNeed\", sum(\"shipComponents\".\"constructionCost\") as \"constructionCost\", sum(\"shipComponents\".\"supplyCapacity\") as \"supplyCapacity\", sum(\"shipComponents\".\"powerGeneration\") as \"powerGeneration\", sum(\"shipComponents\".\"crewCapacity\") as \"crewCapacity\", min(\"shipComponents\".\"ftlSpeed\") as \"ftlSpeed\", max(\"shipComponents\".\"zoneOfControl\") as \"zoneOfControl\", max(\"shipComponents\".\"sensorRange\") as \"sensorRange\" from \"shipDesigns\" inner join \"shipDesignResourceCosts\" on \"shipDesigns\".\"id\" = \"shipDesignResourceCosts\".\"shipDesignId\" inner join \"shipDesignComponents\" on \"shipDesigns\".\"id\" = \"shipDesignComponents\".\"shipDesignId\" inner join \"shipComponents\" on \"shipComponents\".\"id\" = \"shipDesignComponents\".\"shipComponentId\" group by \"shipDesigns\".\"id\"",
+      "name": "shipDesignsWithStats",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    },
+    "public.taskForceShipsWithStats": {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "taskForceId": {
+          "name": "taskForceId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "taskForceShipRole",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supplyCarried": {
+          "name": "supplyCarried",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "structuralIntegrity": {
+          "name": "structuralIntegrity",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "componentStates": {
+          "name": "componentStates",
+          "type": "numeric(30, 6)[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "ARRAY[]::numeric[]"
+        }
+      },
+      "definition": "select \"taskForceShips\".\"id\", \"taskForceShips\".\"taskForceId\", \"taskForceShips\".\"name\", \"taskForceShips\".\"role\", \"taskForceShips\".\"supplyCarried\", \"taskForceShips\".\"structuralIntegrity\", \"taskForceShips\".\"componentStates\", \"supplyNeedPassive\", \"supplyNeedMovement\", \"supplyNeedCombat\", \"powerNeed\", \"crewNeed\", \"supplyCapacity\", \"powerGeneration\", \"crewCapacity\", \"ftlSpeed\", \"zoneOfControl\", \"sensorRange\" from \"taskForceShips\" inner join \"shipDesignsWithStats\" on \"taskForceShips\".\"shipDesignId\" = \"shipDesignsWithStats\".\"id\"",
+      "name": "taskForceShipsWithStats",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    },
+    "public.visibility": {
+      "columns": {
+        "ownerId": {
+          "name": "ownerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gameId": {
+          "name": "gameId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "definition": "(select \"taskForces\".\"ownerId\", \"taskForces\".\"gameId\", circle(\"taskForces\".\"position\", max(\"sensorRange\")) as \"circle\" from \"taskForces\" inner join \"taskForceShipsWithStats\" on \"taskForces\".\"id\" = \"taskForceShipsWithStats\".\"taskForceId\" group by \"taskForces\".\"id\", \"taskForces\".\"ownerId\", \"taskForces\".\"gameId\") union all (select \"ownerId\" as \"userId\", \"gameId\", circle(\"position\", 1000) as \"circle\" from \"starSystems\" where \"starSystems\".\"ownerId\" is not null)",
+      "name": "visibility",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    }
+  },
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

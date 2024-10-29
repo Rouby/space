@@ -43,7 +43,7 @@ export const starSystemResourceDiscoveries = pgTable(
 			.references(() => starSystems.id, { onDelete: "cascade" }),
 		resourceId: uuid()
 			.notNull()
-			.references(() => resources.id, { onDelete: "restrict" }),
+			.references(() => resources.id, { onDelete: "cascade" }),
 		discoveredAt: timestamp().notNull(),
 		remainingDeposits: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
@@ -62,7 +62,7 @@ export const starSystemResourceDepots = pgTable(
 			.references(() => starSystems.id, { onDelete: "cascade" }),
 		resourceId: uuid()
 			.notNull()
-			.references(() => resources.id, { onDelete: "restrict" }),
+			.references(() => resources.id, { onDelete: "cascade" }),
 		quantity: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
 	(table) => ({

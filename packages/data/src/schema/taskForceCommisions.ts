@@ -55,7 +55,7 @@ export const taskForceShipCommisionResourceNeeds = pgTable(
 			.references(() => taskForceShipCommisions.id, { onDelete: "cascade" }),
 		resourceId: uuid()
 			.notNull()
-			.references(() => resources.id, { onDelete: "restrict" }),
+			.references(() => resources.id, { onDelete: "cascade" }),
 		alotted: decimal({ precision: 30, scale: 6 }).notNull(),
 		needed: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
