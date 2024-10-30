@@ -7,6 +7,7 @@ export {
 	between,
 	eq,
 	exists,
+	getTableColumns,
 	gt,
 	gte,
 	ilike,

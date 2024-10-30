@@ -16,11 +16,13 @@ import    { registerWithPassword as Mutation_registerWithPassword } from './user
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
+import    { trackTaskForceEngagement as Subscription_trackTaskForceEngagement } from './taskForceEngagement/resolvers/Subscription/trackTaskForceEngagement.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
 import    { Game as resource_Game } from './resource/resolvers/Game.js';
 import    { Game as shipComponent_Game } from './shipComponent/resolvers/Game.js';
 import    { Game as shipDesign_Game } from './shipDesign/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
+import    { Game as taskForceEngagement_Game } from './taskForceEngagement/resolvers/Game.js';
 import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
 import    { Player as game_Player } from './game/resolvers/Player.js';
 import    { Player as resource_Player } from './resource/resolvers/Player.js';
@@ -44,10 +46,16 @@ import    { StarSystemUpdateEvent } from './base/resolvers/StarSystemUpdateEvent
 import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
 import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColonizeOrder.js';
 import    { TaskForceCommisionUpdateEvent } from './base/resolvers/TaskForceCommisionUpdateEvent.js';
+import    { TaskForceEngagement } from './taskForceEngagement/resolvers/TaskForceEngagement.js';
+import    { TaskForceEngagementProgressEvent } from './taskForceEngagement/resolvers/TaskForceEngagementProgressEvent.js';
+import    { TaskForceEngagementWeaponFiredEvent } from './taskForceEngagement/resolvers/TaskForceEngagementWeaponFiredEvent.js';
 import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOrder.js';
+import    { TaskForceJoinsEngagementEvent } from './base/resolvers/TaskForceJoinsEngagementEvent.js';
+import    { TaskForceLeavesEngagementEvent } from './base/resolvers/TaskForceLeavesEngagementEvent.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TaskForceShip } from './taskForce/resolvers/TaskForceShip.js';
 import    { TaskForceShipCommision } from './taskForce/resolvers/TaskForceShipCommision.js';
+import    { TaskForceShipComponent } from './taskForce/resolvers/TaskForceShipComponent.js';
 import    { UnknownDiscovery } from './starSystem/resolvers/UnknownDiscovery.js';
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
@@ -57,8 +65,8 @@ import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceShipCommision: Query_taskForceShipCommision },
       Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,createTaskForceCommision: Mutation_createTaskForceCommision,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame },
-      Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
-      Game: { ...game_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
+      Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
+      Game: { ...game_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForceEngagement_Game,...taskForce_Game },
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
 Population: Population,
 PositionableApppearsEvent: PositionableApppearsEvent,
@@ -77,10 +85,16 @@ StarSystemUpdateEvent: StarSystemUpdateEvent,
 TaskForce: TaskForce,
 TaskForceColonizeOrder: TaskForceColonizeOrder,
 TaskForceCommisionUpdateEvent: TaskForceCommisionUpdateEvent,
+TaskForceEngagement: TaskForceEngagement,
+TaskForceEngagementProgressEvent: TaskForceEngagementProgressEvent,
+TaskForceEngagementWeaponFiredEvent: TaskForceEngagementWeaponFiredEvent,
 TaskForceFollowOrder: TaskForceFollowOrder,
+TaskForceJoinsEngagementEvent: TaskForceJoinsEngagementEvent,
+TaskForceLeavesEngagementEvent: TaskForceLeavesEngagementEvent,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TaskForceShip: TaskForceShip,
 TaskForceShipCommision: TaskForceShipCommision,
+TaskForceShipComponent: TaskForceShipComponent,
 UnknownDiscovery: UnknownDiscovery,
 User: User,
 Vector: Vector,

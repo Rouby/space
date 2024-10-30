@@ -14,6 +14,7 @@ type Game {
   shipDesigns: [ShipDesign!]!
   starSystems: [StarSystem!]!
   startedAt: DateTime
+  taskForceEngagements: [TaskForceEngagement!]!
   taskForces: [TaskForce!]!
   tickRate: Int!
 }
@@ -180,6 +181,7 @@ type StarSystemUpdateEvent {
 type Subscription {
   trackGalaxy(gameId: ID!): TrackGalaxyEvent!
   trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
+  trackTaskForceEngagement(taskForceEngagementId: ID!): TaskForceEngagementEvent!
 }
 
 type TaskForce implements Positionable {
@@ -218,6 +220,34 @@ type TaskForceCommisionUpdateEvent {
   subject: TaskForceShipCommision!
 }
 
+type TaskForceEngagement {
+  id: ID!
+  phase: TaskForceEngagementPhase!
+  phaseProgress: Float!
+  position: Vector!
+  taskForces: [TaskForce!]!
+}
+
+union TaskForceEngagementEvent = TaskForceEngagementProgressEvent | TaskForceEngagementWeaponFiredEvent
+
+enum TaskForceEngagementPhase {
+  engagement
+  locating
+  resolution
+}
+
+type TaskForceEngagementProgressEvent {
+  engagement: TaskForceEngagement!
+}
+
+type TaskForceEngagementWeaponFiredEvent {
+  attacker: TaskForceShip!
+  damage: Float!
+  engagement: TaskForceEngagement!
+  target: TaskForceShip!
+  weapon: TaskForceShipComponent!
+}
+
 type TaskForceFollowOrder implements TaskForceOrder {
   id: ID!
   taskForce: TaskForce!
@@ -225,6 +255,14 @@ type TaskForceFollowOrder implements TaskForceOrder {
 
 input TaskForceFollowOrderInput {
   taskForceId: ID!
+}
+
+type TaskForceJoinsEngagementEvent {
+  subject: TaskForceEngagement!
+}
+
+type TaskForceLeavesEngagementEvent {
+  subject: TaskForceEngagement!
 }
 
 type TaskForceMoveOrder implements TaskForceOrder {
@@ -247,10 +285,12 @@ input TaskForceOrderInput {
 }
 
 type TaskForceShip {
+  components: [TaskForceShipComponent!]!
   id: ID!
   name: String!
   role: TaskForceShipRole!
   shipDesign: ShipDesign!
+  structuralIntegrity: Float!
   supplyCarried: Float!
 }
 
@@ -265,13 +305,19 @@ type TaskForceShipCommision {
   shipDesign: ShipDesign!
 }
 
+type TaskForceShipComponent {
+  component: ShipComponent!
+  id: ID!
+  state: Float!
+}
+
 enum TaskForceShipRole {
   capital
   screen
   support
 }
 
-union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent
+union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent | TaskForceJoinsEngagementEvent | TaskForceLeavesEngagementEvent
 
 union TrackStarSystemEvent = StarSystemUpdateEvent | TaskForceCommisionUpdateEvent
 

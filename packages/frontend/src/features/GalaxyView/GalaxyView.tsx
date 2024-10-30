@@ -11,6 +11,7 @@ import { graphql } from "../../gql";
 import { Sensors } from "./Sensors";
 import { StarSystem } from "./StarSystem";
 import { TaskForce } from "./TaskForce";
+import { TaskForceEngagement } from "./TaskForceEngagement";
 import { Viewport } from "./Viewport";
 
 extend({
@@ -60,6 +61,22 @@ query Galaxy($id: ID!) {
 			isVisible
 			lastUpdate
 			sensorRange
+		}
+		taskForceEngagements {
+			id
+			position
+			phase
+			phaseProgress
+			taskForces {
+				id
+				name
+				position
+				owner {
+					id
+					name
+					color
+				}
+			}
 		}
   }
 }`),
@@ -139,6 +156,36 @@ query Galaxy($id: ID!) {
 						color
 					}
 					sensorRange
+				}
+			}
+			... on TaskForceJoinsEngagementEvent {
+				subject {
+					id
+					position
+					taskForces {
+						id
+						name
+						owner {
+							id
+							name
+							color
+						}
+					}
+				}
+			}
+			... on TaskForceLeavesEngagementEvent {
+				subject {
+					id
+					position
+					taskForces {
+						id
+						name
+						owner {
+							id
+							name
+							color
+						}
+					}
 				}
 			}
 		}
@@ -296,6 +343,34 @@ query Galaxy($id: ID!) {
 									});
 									setMenuOpened(true);
 								}}
+							/>
+						))}
+						{data?.game.taskForceEngagements.map((taskForceEngagement) => (
+							<TaskForceEngagement
+								key={taskForceEngagement.id}
+								id={taskForceEngagement.id}
+								position={taskForceEngagement.position}
+								onClick={(event) => {
+									event.preventDefault();
+									navigate({
+										from: "/games/$id",
+										to: "task-force-engagement/$engagementId",
+										params: { engagementId: taskForceEngagement.id },
+									});
+								}}
+								// onRightClick={(event) => {
+								// 	event.preventDefault();
+								// 	setMenuContext({
+								// 		shift: event.shiftKey,
+								// 		point: taskForce.position,
+								// 		taskForceId: taskForce.id,
+								// 	});
+								// 	setMenuPosition({
+								// 		left: event.screenX,
+								// 		top: event.screenY,
+								// 	});
+								// 	setMenuOpened(true);
+								// }}
 							/>
 						))}
 					</Viewport>

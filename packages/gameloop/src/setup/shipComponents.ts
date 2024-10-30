@@ -18,6 +18,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 			{ id: crewQuartersId },
 			{ id: supplyStorageId },
 			{ id: gatlingGunId },
+			{ id: titaniumArmorId },
 		] = await tx
 			.insert(shipComponents)
 			.values([
@@ -127,6 +128,25 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					weaponArmorPenetration: "1",
 					weaponShieldPenetration: "1",
 				},
+				{
+					gameId,
+					ownerId: userId,
+					name: "Titanium Armor",
+					description: "Armor made of titanium.",
+					constructionCost: "100",
+					crewNeed: "0",
+					powerNeed: "0",
+					supplyNeedPassive: "1",
+					supplyNeedMovement: "0",
+					supplyNeedCombat: "0",
+
+					armorThickness: "1",
+					armorEffectivenessAgainst: [
+						{ deliveryType: "projectile", effectiveness: 1 },
+						{ deliveryType: "missile", effectiveness: 1 },
+						{ deliveryType: "beam", effectiveness: 0.1 },
+					],
+				},
 			])
 			.returning();
 
@@ -169,6 +189,11 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 			},
 			{
 				shipComponentId: gatlingGunId,
+				resourceId: titaniumId,
+				quantity: "100",
+			},
+			{
+				shipComponentId: titaniumArmorId,
 				resourceId: titaniumId,
 				quantity: "100",
 			},

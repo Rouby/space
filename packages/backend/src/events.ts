@@ -5,6 +5,7 @@ export type GameEvent =
 	| TaskForceDestroyed
 	| TaskForceEngagementStarted
 	| TaskForceEngagementTaskForceJoined
+	| TaskForceEngagementTaskForceLeft
 	| TaskForceEngagementPhaseProgress
 	| TaskForceEngagementChangePhase
 	| TaskForceEngagementEnded
@@ -49,6 +50,11 @@ interface TaskForceEngagementStarted {
 
 interface TaskForceEngagementTaskForceJoined {
 	type: "taskForceEngagement:taskForceJoined";
+	id: string;
+	taskForceId: string;
+}
+interface TaskForceEngagementTaskForceLeft {
+	type: "taskForceEngagement:taskForceLeft";
 	id: string;
 	taskForceId: string;
 }

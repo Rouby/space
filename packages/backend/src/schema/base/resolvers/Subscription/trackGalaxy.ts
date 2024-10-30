@@ -9,6 +9,7 @@ import {
 } from "@space/data/schema";
 import { merge } from "rxjs";
 import { starSystems$ } from "../../../../observables/starSystems.ts";
+import { taskForceEngagements$ } from "../../../../observables/taskForceEngagements.ts";
 import { taskForces$ } from "../../../../observables/taskForces.ts";
 import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
 import type { SubscriptionResolvers } from "./../../../types.generated.js";
@@ -70,7 +71,15 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 			initialStarSystems: initialSSs,
 		});
 
-		return toAsyncIterable(merge(taskForceEvents, starSystemEvents));
+		const taskForceEngagementEvents = taskForceEngagements$({
+			gameId,
+			userId: ctx.userId ?? "",
+			initialTaskForces: initialTfs,
+		});
+
+		return toAsyncIterable(
+			merge(taskForceEvents, starSystemEvents, taskForceEngagementEvents),
+		);
 	},
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	resolve: (input: any) => input,

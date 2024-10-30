@@ -24,8 +24,15 @@ type TaskForceShip {
 	name: String!
 	role: TaskForceShipRole!
 	shipDesign: ShipDesign!
-
+	components: [TaskForceShipComponent!]!
+	structuralIntegrity: Float!
 	supplyCarried: Float!
+}
+
+type TaskForceShipComponent {
+	id: ID!
+	component: ShipComponent!
+	state: Float!
 }
 
 type TaskForceShipCommision {

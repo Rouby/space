@@ -127,20 +127,42 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 			}
 		}
 
+		const commisionsWithPossibleConstruction = commisionsWithNeeds.map(
+			({ commision, resourceNeeds }) => {
+				const maxConstructionPercentBasedOnResources = resourceNeeds.reduce(
+					(max, resourceNeed) =>
+						Math.min(max, +resourceNeed.alotted / +resourceNeed.needed),
+					1,
+				);
+				const maxConstructionDoneBasedOnResources =
+					+commision.constructionTotal * maxConstructionPercentBasedOnResources;
+
+				const workable =
+					maxConstructionDoneBasedOnResources - +commision.constructionDone;
+
+				return {
+					commision,
+					workable,
+				};
+			},
+		);
+
 		// spend resources
 		let workCapacityLeft = 1;
 		while (workCapacityLeft > 0) {
-			const workableResourceNeed = resourceNeeds.find(
-				(resourceNeed) => +resourceNeed.alotted > 0,
-			);
+			const commisionWithEveryResourceAlotted =
+				commisionsWithPossibleConstruction.find(
+					(commision) => commision.workable > 0,
+				);
 
-			if (!workableResourceNeed) {
+			if (!commisionWithEveryResourceAlotted) {
 				break;
 			}
 
-			// TODO: reduce resources evenly across all needs based on work capacity / total work needed
-
-			const workable = Math.min(+workableResourceNeed.alotted, 1);
+			const workable = Math.min(
+				commisionWithEveryResourceAlotted.workable,
+				workCapacityLeft,
+			);
 
 			const [{ constructionDone, constructionTotal }] = await tx
 				.update(taskForceShipCommisions)
@@ -150,34 +172,39 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				.where(
 					eq(
 						taskForceShipCommisions.id,
-						workableResourceNeed.taskForceShipCommisionId,
+						commisionWithEveryResourceAlotted.commision.id,
 					),
 				)
 				.returning();
 
-			const [{ needed, alotted }] = await tx
-				.update(taskForceShipCommisionResourceNeeds)
-				.set({
-					needed: sql`${taskForceShipCommisionResourceNeeds.needed} - ${workable}::numeric`,
-					alotted: sql`${taskForceShipCommisionResourceNeeds.alotted} - ${workable}::numeric`,
-				})
-				.where(
-					and(
-						eq(
-							taskForceShipCommisionResourceNeeds.taskForceShipCommisionId,
-							workableResourceNeed.taskForceShipCommisionId,
-						),
-						eq(
-							taskForceShipCommisionResourceNeeds.resourceId,
-							workableResourceNeed.resourceId,
-						),
-					),
-				)
-				.returning();
+			commisionWithEveryResourceAlotted.commision.constructionDone =
+				constructionDone;
+			commisionWithEveryResourceAlotted.commision.constructionTotal =
+				constructionTotal;
+
+			// const [{ needed, alotted }] = await tx
+			// 	.update(taskForceShipCommisionResourceNeeds)
+			// 	.set({
+			// 		needed: sql`${taskForceShipCommisionResourceNeeds.needed} - ${workable}::numeric`,
+			// 		alotted: sql`${taskForceShipCommisionResourceNeeds.alotted} - ${workable}::numeric`,
+			// 	})
+			// 	.where(
+			// 		and(
+			// 			eq(
+			// 				taskForceShipCommisionResourceNeeds.taskForceShipCommisionId,
+			// 				workableResourceNeed.taskForceShipCommisionId,
+			// 			),
+			// 			eq(
+			// 				taskForceShipCommisionResourceNeeds.resourceId,
+			// 				workableResourceNeed.resourceId,
+			// 			),
+			// 		),
+			// 	)
+			// 	.returning();
 
 			ctx.postMessage({
 				type: "taskForceCommision:progress",
-				id: workableResourceNeed.taskForceShipCommisionId,
+				id: commisionWithEveryResourceAlotted.commision.id,
 				starSystemId,
 				constructionDone: +constructionDone,
 				constructionTotal: +constructionTotal,
@@ -185,16 +212,14 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 			});
 
 			workCapacityLeft -= workable;
-			workableResourceNeed.needed = needed;
-			workableResourceNeed.alotted = alotted;
 		}
 
 		// finish ships
-		for (const { commision, resourceNeeds } of commisionsWithNeeds) {
-			if (resourceNeeds.some((resourceNeed) => +resourceNeed.needed > 0)) {
-				continue;
-			}
-
+		for (const { commision } of commisionsWithNeeds.filter(
+			(commision) =>
+				commision.commision.constructionDone ===
+				commision.commision.constructionTotal,
+		)) {
 			const [shipCommision] = await tx
 				.delete(taskForceShipCommisions)
 				.where(eq(taskForceShipCommisions.id, commision.id))

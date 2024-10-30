@@ -46,6 +46,8 @@ export type TaskForceShipMapper = {
 	name: string;
 	role: TaskForceShipRole;
 	supplyCarried: string;
+	componentStates: string[];
+	structuralIntegrity: string;
 };
 export type TaskForceMoveOrderMapper = Extract<
 	TaskForceOrderMapper,

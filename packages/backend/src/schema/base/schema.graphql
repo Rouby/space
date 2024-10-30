@@ -11,6 +11,8 @@ union TrackGalaxyEvent =
 	| PositionableMovesEvent
 	| PositionableDisappearsEvent
 	| StarSystemUpdateEvent
+	| TaskForceJoinsEngagementEvent
+	| TaskForceLeavesEngagementEvent
 
 union TrackStarSystemEvent =
 	| StarSystemUpdateEvent
@@ -34,6 +36,13 @@ type StarSystemUpdateEvent {
 type TaskForceCommisionUpdateEvent {
 	subject: TaskForceShipCommision!
 	constructionPerTick: Float!
+}
+
+type TaskForceJoinsEngagementEvent {
+	subject: TaskForceEngagement!
+}
+type TaskForceLeavesEngagementEvent {
+	subject: TaskForceEngagement!
 }
 
 type Subscription {

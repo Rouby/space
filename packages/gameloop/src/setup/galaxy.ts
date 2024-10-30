@@ -1,4 +1,4 @@
-import { starSystems } from "@space/data/schema";
+import { starSystemPopulations, starSystems } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./setup.ts";
 
@@ -31,7 +31,18 @@ export async function setupGalaxy(tx: Transaction, ctx: Context) {
 		}
 	}
 
-	await tx.insert(starSystems).values(starSystemValues);
+	const insertedSystems = await tx
+		.insert(starSystems)
+		.values(starSystemValues)
+		.returning();
+
+	for (const { id, ownerId } of insertedSystems.filter((s) => s.ownerId)) {
+		await tx.insert(starSystemPopulations).values({
+			starSystemId: id,
+			amount: 10_000_000_000n,
+			allegianceToPlayerId: ownerId,
+		});
+	}
 }
 
 function generateSpiralPositions() {

@@ -494,6 +494,14 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 						),
 					);
 
+					for (const tf of taskForcesWithShips) {
+						ctx.postMessage({
+							type: "taskForceEngagement:taskForceLeft",
+							id: engagement.id,
+							taskForceId: tf.id,
+						});
+					}
+
 					for (const tf of taskForcesWithShips.filter(
 						(tf) => tf.id !== winningTaskForce?.id,
 					)) {

@@ -158,6 +158,24 @@
             "args": []
           },
           {
+            "name": "taskForceEngagements",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "TaskForceEngagement",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
             "name": "taskForces",
             "type": {
               "kind": "NON_NULL",
@@ -1663,6 +1681,29 @@
                 }
               }
             ]
+          },
+          {
+            "name": "trackTaskForceEngagement",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "UNION",
+                "name": "TaskForceEngagementEvent",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "taskForceEngagementId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
           }
         ],
         "interfaces": []
@@ -1874,6 +1915,174 @@
       },
       {
         "kind": "OBJECT",
+        "name": "TaskForceEngagement",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "phase",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "phaseProgress",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "position",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "taskForces",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "TaskForce",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "UNION",
+        "name": "TaskForceEngagementEvent",
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceEngagementProgressEvent"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceEngagementWeaponFiredEvent"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceEngagementProgressEvent",
+        "fields": [
+          {
+            "name": "engagement",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceEngagement",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceEngagementWeaponFiredEvent",
+        "fields": [
+          {
+            "name": "attacker",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceShip",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "damage",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "engagement",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceEngagement",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "target",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceShip",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "weapon",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceShipComponent",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "TaskForceFollowOrder",
         "fields": [
           {
@@ -1906,6 +2115,44 @@
             "name": "TaskForceOrder"
           }
         ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceJoinsEngagementEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceEngagement",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceLeavesEngagementEvent",
+        "fields": [
+          {
+            "name": "subject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForceEngagement",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "OBJECT",
@@ -1978,6 +2225,24 @@
         "name": "TaskForceShip",
         "fields": [
           {
+            "name": "components",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "TaskForceShipComponent",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -2018,6 +2283,17 @@
                 "kind": "OBJECT",
                 "name": "ShipDesign",
                 "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "structuralIntegrity",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
               }
             },
             "args": []
@@ -2137,6 +2413,47 @@
         "interfaces": []
       },
       {
+        "kind": "OBJECT",
+        "name": "TaskForceShipComponent",
+        "fields": [
+          {
+            "name": "component",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ShipComponent",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "state",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
         "kind": "UNION",
         "name": "TrackGalaxyEvent",
         "possibleTypes": [
@@ -2155,6 +2472,14 @@
           {
             "kind": "OBJECT",
             "name": "StarSystemUpdateEvent"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceJoinsEngagementEvent"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "TaskForceLeavesEngagementEvent"
           }
         ]
       },

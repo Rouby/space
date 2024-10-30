@@ -1,0 +1,40 @@
+type TaskForceEngagement {
+	id: ID!
+	position: Vector!
+	taskForces: [TaskForce!]!
+	phase: TaskForceEngagementPhase!
+	phaseProgress: Float!
+}
+
+enum TaskForceEngagementPhase {
+	locating
+	engagement
+	resolution
+}
+
+union TaskForceEngagementEvent =
+	| TaskForceEngagementProgressEvent
+	| TaskForceEngagementWeaponFiredEvent
+
+type TaskForceEngagementProgressEvent {
+	engagement: TaskForceEngagement!
+}
+
+type TaskForceEngagementWeaponFiredEvent {
+	engagement: TaskForceEngagement!
+
+	attacker: TaskForceShip!
+	target: TaskForceShip!
+	weapon: TaskForceShipComponent!
+	damage: Float!
+}
+
+extend type Game {
+	taskForceEngagements: [TaskForceEngagement!]!
+}
+
+type Subscription {
+	trackTaskForceEngagement(
+		taskForceEngagementId: ID!
+	): TaskForceEngagementEvent!
+}
