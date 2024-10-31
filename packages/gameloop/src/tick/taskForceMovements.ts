@@ -6,6 +6,7 @@ import {
 	starSystemPopulations,
 	starSystems,
 	taskForceEngagementsToTaskForces,
+	taskForceShipCommisions,
 	taskForceShips,
 	taskForceShipsWithStats,
 	taskForces,
@@ -47,6 +48,13 @@ export async function tickTaskForceMovements(tx: Transaction, ctx: Context) {
 						.where(
 							eq(taskForceEngagementsToTaskForces.taskForceId, taskForces.id),
 						),
+				),
+				// and not currently commissioning
+				notExists(
+					tx
+						.select()
+						.from(taskForceShipCommisions)
+						.where(eq(taskForceShipCommisions.taskForceId, taskForces.id)),
 				),
 			),
 		)

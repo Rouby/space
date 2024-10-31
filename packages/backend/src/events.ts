@@ -52,11 +52,13 @@ interface TaskForceEngagementStarted {
 interface TaskForceEngagementTaskForceJoined {
 	type: "taskForceEngagement:taskForceJoined";
 	id: string;
+	position: { x: number; y: number };
 	taskForceId: string;
 }
 interface TaskForceEngagementTaskForceLeft {
 	type: "taskForceEngagement:taskForceLeft";
 	id: string;
+	position: { x: number; y: number };
 	taskForceId: string;
 }
 

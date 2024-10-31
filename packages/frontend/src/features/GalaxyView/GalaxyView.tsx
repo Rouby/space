@@ -160,9 +160,11 @@ query Galaxy($id: ID!) {
 			}
 			... on TaskForceJoinsEngagementEvent {
 				subject {
+					__typename
 					id
 					position
 					taskForces {
+						__typename
 						id
 						name
 						owner {
@@ -175,9 +177,11 @@ query Galaxy($id: ID!) {
 			}
 			... on TaskForceLeavesEngagementEvent {
 				subject {
+					__typename
 					id
 					position
 					taskForces {
+						__typename
 						id
 						name
 						owner {

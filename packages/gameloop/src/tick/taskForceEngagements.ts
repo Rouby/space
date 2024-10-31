@@ -11,6 +11,7 @@ import {
 	sql,
 	taskForceEngagements,
 	taskForceEngagementsToTaskForces,
+	taskForceShipCommisions,
 	taskForceShips,
 	taskForces,
 } from "@space/data/schema";
@@ -25,6 +26,7 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 	const engagementsWithTaskForcesInRange = await tx
 		.select({
 			id: taskForceEngagements.id,
+			position: taskForceEngagements.position,
 			taskForces: sql<string[]>`json_agg(${taskForces.id})`,
 		})
 		.from(taskForces)
@@ -39,6 +41,13 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 							eq(taskForceEngagementsToTaskForces.taskForceId, taskForces.id),
 						),
 				),
+				// and not currently commissioning
+				notExists(
+					tx
+						.select()
+						.from(taskForceShipCommisions)
+						.where(eq(taskForceShipCommisions.taskForceId, taskForces.id)),
+				),
 			),
 		)
 		.innerJoin(
@@ -50,7 +59,11 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 		)
 		.groupBy(taskForceEngagements.id);
 
-	for (const { id, taskForces } of engagementsWithTaskForcesInRange.filter(
+	for (const {
+		id,
+		position,
+		taskForces,
+	} of engagementsWithTaskForcesInRange.filter(
 		(eng) => eng.taskForces.length > 0,
 	)) {
 		await tx.insert(taskForceEngagementsToTaskForces).values(
@@ -64,6 +77,7 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 			ctx.postMessage({
 				type: "taskForceEngagement:taskForceJoined",
 				id,
+				position,
 				taskForceId,
 			});
 		}
@@ -510,6 +524,7 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 						ctx.postMessage({
 							type: "taskForceEngagement:taskForceLeft",
 							id: engagement.id,
+							position: engagement.position,
 							taskForceId: tf.id,
 						});
 					}

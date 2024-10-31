@@ -40,6 +40,7 @@ export function taskForceEngagements$({
 						subject: {
 							__typename: "TaskForceEngagement" as const,
 							id: event.id,
+							position: event.position,
 						},
 					})),
 				),
@@ -53,6 +54,7 @@ export function taskForceEngagements$({
 						subject: {
 							__typename: "TaskForceEngagement" as const,
 							id: event.id,
+							position: event.position,
 						},
 					})),
 				),
@@ -64,6 +66,7 @@ export function taskForceEngagements$({
 						subject: {
 							__typename: "TaskForceEngagement" as const,
 							id: event.id,
+							position: event.position,
 						},
 					})),
 				),
