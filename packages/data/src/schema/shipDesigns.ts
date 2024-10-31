@@ -164,6 +164,13 @@ export const shipDesignsWithStats = pgView("shipDesignsWithStats").as((qb) =>
 			sensorRange: sql`max(${shipComponents.sensorRange})`
 				.mapWith(shipComponents.sensorRange)
 				.as("sensorRange"),
+
+			componentCount: sql<number>`count(${shipComponents.id})`.as(
+				"componentCount",
+			),
+			maxStructuralIntegrity: sql`sum(${shipComponents.structuralIntegrity})`
+				.mapWith(shipComponents.structuralIntegrity)
+				.as("structuralIntegrity"),
 		})
 		.from(shipDesigns)
 		.innerJoin(

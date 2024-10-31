@@ -3,6 +3,7 @@ import {
 	and,
 	eq,
 	shipDesignComponents,
+	shipDesignsWithStats,
 	sql,
 	starSystemResourceDepots,
 	taskForceShipCommisionResourceNeeds,
@@ -182,26 +183,6 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 			commisionWithEveryResourceAlotted.commision.constructionTotal =
 				constructionTotal;
 
-			// const [{ needed, alotted }] = await tx
-			// 	.update(taskForceShipCommisionResourceNeeds)
-			// 	.set({
-			// 		needed: sql`${taskForceShipCommisionResourceNeeds.needed} - ${workable}::numeric`,
-			// 		alotted: sql`${taskForceShipCommisionResourceNeeds.alotted} - ${workable}::numeric`,
-			// 	})
-			// 	.where(
-			// 		and(
-			// 			eq(
-			// 				taskForceShipCommisionResourceNeeds.taskForceShipCommisionId,
-			// 				workableResourceNeed.taskForceShipCommisionId,
-			// 			),
-			// 			eq(
-			// 				taskForceShipCommisionResourceNeeds.resourceId,
-			// 				workableResourceNeed.resourceId,
-			// 			),
-			// 		),
-			// 	)
-			// 	.returning();
-
 			ctx.postMessage({
 				type: "taskForceCommision:progress",
 				id: commisionWithEveryResourceAlotted.commision.id,
@@ -225,6 +206,14 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				.where(eq(taskForceShipCommisions.id, commision.id))
 				.returning();
 
+			const [design] = await tx
+				.select({
+					componentCount: shipDesignsWithStats.componentCount,
+					maxStructuralIntegrity: shipDesignsWithStats.maxStructuralIntegrity,
+				})
+				.from(shipDesignsWithStats)
+				.where(eq(shipDesignsWithStats.id, shipCommision.shipDesignId));
+
 			const designComponents = await tx
 				.select({ position: shipDesignComponents.position })
 				.from(shipDesignComponents)
@@ -237,9 +226,10 @@ export async function tickTaskForceCommisions(tx: Transaction, ctx: Context) {
 				name: shipCommision.name,
 				role: shipCommision.role,
 				shipDesignId: shipCommision.shipDesignId,
-				// TODO real state?
-				componentStates: designComponents.map(() => "1"),
-				structuralIntegrity: `${designComponents.length * 10}`,
+				componentStates: Array.from({ length: design.componentCount }).map(
+					() => "1",
+				),
+				structuralIntegrity: design.maxStructuralIntegrity,
 			});
 		}
 	}

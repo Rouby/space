@@ -34,6 +34,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					supplyNeedMovement: "2",
 					supplyNeedCombat: "6",
 
+					structuralIntegrity: "10",
 					powerGeneration: "100",
 				},
 				{
@@ -48,6 +49,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					supplyNeedMovement: "0",
 					supplyNeedCombat: "10",
 
+					structuralIntegrity: "10",
 					thruster: "10",
 				},
 				{
@@ -63,6 +65,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					supplyNeedMovement: "10",
 					supplyNeedCombat: "0",
 
+					structuralIntegrity: "10",
 					ftlSpeed: "10",
 				},
 				{
@@ -77,6 +80,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					supplyNeedMovement: "0",
 					supplyNeedCombat: "2",
 
+					structuralIntegrity: "10",
 					sensorRange: "100",
 					sensorPrecision: "10",
 				},
@@ -92,6 +96,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					supplyNeedMovement: "0",
 					supplyNeedCombat: "0",
 
+					structuralIntegrity: "10",
 					crewCapacity: "100",
 				},
 				{
@@ -106,6 +111,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					supplyNeedMovement: "0",
 					supplyNeedCombat: "0",
 
+					structuralIntegrity: "10",
 					supplyCapacity: "100",
 				},
 				{

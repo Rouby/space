@@ -49,7 +49,7 @@ export const shipComponents = pgTable("shipComponents", {
 	sensorRange: decimal({ precision: 30, scale: 6 }),
 
 	// tactical stats
-	hullBoost: decimal({ precision: 30, scale: 6 }),
+	structuralIntegrity: decimal({ precision: 30, scale: 6 }),
 	thruster: decimal({ precision: 30, scale: 6 }),
 	sensorPrecision: decimal({ precision: 30, scale: 6 }),
 	armorThickness: decimal({ precision: 30, scale: 6 }),

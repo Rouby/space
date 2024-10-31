@@ -309,6 +309,13 @@
       "when": 1730333417883,
       "tag": "0047_lowly_overlord",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1730372692002,
+      "tag": "0048_lowly_mandrill",
+      "breakpoints": true
     }
   ]
 }

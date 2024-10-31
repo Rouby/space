@@ -1,7 +1,7 @@
 import { eq, taskForceEngagements } from "@space/data/schema";
-import { taskForceEngagement$ } from "../../../../observables/taskForceEngagement.js";
-import { toAsyncIterable } from "../../../../toAsyncIterable.js";
-import type { SubscriptionResolvers } from "./../../../types.generated.js";
+import { taskForceEngagement$ } from "../../../../observables/taskForceEngagement.ts";
+import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
+import type { SubscriptionResolvers } from "./../../../types.generated.ts";
 export const trackTaskForceEngagement: NonNullable<
 	SubscriptionResolvers["trackTaskForceEngagement"]
 > = {
