@@ -8,6 +8,7 @@ import {
 	shipDesignComponents,
 	shipDesignResourceCosts,
 	shipDesigns,
+	sql,
 } from "../schema.ts";
 import type { Transaction } from "./index.ts";
 
@@ -64,9 +65,18 @@ export async function migrateFrom3To4(tx: Transaction, gameId: string) {
 			);
 
 		for (const { id: shipDesignId } of playerShipDesigns) {
+			const [{ count }] = await tx
+				.select({
+					count: sql<number>`count(*)`,
+				})
+				.from(shipDesignComponents)
+				.where(eq(shipDesignComponents.shipDesignId, shipDesignId));
+
 			await tx
 				.insert(shipDesignComponents)
-				.values([{ shipDesignId, shipComponentId: titaniumArmor }]);
+				.values([
+					{ shipDesignId, shipComponentId: titaniumArmor, position: count },
+				]);
 
 			await tx
 				.update(shipDesignResourceCosts)
