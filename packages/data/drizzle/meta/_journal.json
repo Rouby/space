@@ -302,6 +302,13 @@
       "when": 1730223253825,
       "tag": "0046_lazy_felicia_hardy",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1730333417883,
+      "tag": "0047_lowly_overlord",
+      "breakpoints": true
     }
   ]
 }

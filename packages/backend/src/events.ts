@@ -8,6 +8,7 @@ export type GameEvent =
 	| TaskForceEngagementTaskForceLeft
 	| TaskForceEngagementPhaseProgress
 	| TaskForceEngagementChangePhase
+	| TaskForceEngagementWeaponFired
 	| TaskForceEngagementEnded
 	| StarSystemAppeared
 	| StarSystemDisappeared
@@ -69,6 +70,16 @@ interface TaskForceEngagementChangePhase {
 	type: "taskForceEngagement:changePhase";
 	id: string;
 	phase: "locating" | "engagement" | "resolution";
+}
+
+interface TaskForceEngagementWeaponFired {
+	type: "taskForceEngagement:weaponFired";
+	id: string;
+	attackerShipId: string;
+	targetShipId: string;
+	weaponComponentId: string;
+	weaponComponentPosition: number;
+	damage: number;
 }
 
 interface TaskForceEngagementEnded {

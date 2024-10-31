@@ -29,6 +29,21 @@ export function taskForceEngagements$({
 			// for each visible tf, listen for join / leave events
 			merge(
 				fromGameEvents(gameId).pipe(
+					filter((event) => event.type === "taskForceEngagement:started"),
+					filter(
+						(event) =>
+							event.taskForceIdA === visibleTaskForce.id ||
+							event.taskForceIdB === visibleTaskForce.id,
+					),
+					map((event) => ({
+						__typename: "TaskForceJoinsEngagementEvent" as const,
+						subject: {
+							__typename: "TaskForceEngagement" as const,
+							id: event.id,
+						},
+					})),
+				),
+				fromGameEvents(gameId).pipe(
 					filter(
 						(event) => event.type === "taskForceEngagement:taskForceJoined",
 					),

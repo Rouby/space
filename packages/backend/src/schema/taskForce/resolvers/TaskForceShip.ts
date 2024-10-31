@@ -30,13 +30,14 @@ export const TaskForceShip: TaskForceShipResolvers = {
 				eq(shipDesignComponents.shipComponentId, shipComponents.id),
 			)
 			.where(eq(shipDesignComponents.shipDesignId, parent.shipDesignId))
-			.then((components) =>
-				components.map((component) => ({
+			.then((components) => {
+				console.log(components, parent.componentStates);
+				return components.map((component) => ({
 					id: `${component.id}-${component.position}`,
 					component,
 					state: +parent.componentStates[component.position],
-				})),
-			);
+				}));
+			});
 	},
 	structuralIntegrity: ({ structuralIntegrity }, _arg, _ctx) => {
 		/* TaskForceShip.structuralIntegrity resolver is required because TaskForceShip.structuralIntegrity and TaskForceShipMapper.structuralIntegrity are not compatible */

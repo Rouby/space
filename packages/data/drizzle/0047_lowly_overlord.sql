@@ -1,0 +1,2 @@
+ALTER TABLE "shipDesignComponents" DROP CONSTRAINT "shipDesignComponents_shipDesignId_shipComponentId_position_pk";--> statement-breakpoint
+ALTER TABLE "shipDesignComponents" ADD CONSTRAINT "shipDesignComponents_shipDesignId_position_pk" PRIMARY KEY("shipDesignId","position");

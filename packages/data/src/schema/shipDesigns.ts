@@ -74,7 +74,7 @@ export const shipDesignComponents = pgTable(
 	},
 	(table) => ({
 		pk: primaryKey({
-			columns: [table.shipDesignId, table.shipComponentId, table.position],
+			columns: [table.shipDesignId, table.position],
 		}),
 	}),
 );

@@ -249,13 +249,11 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 						ships?.map(
 							({ components, componentPositions, componentStates, ...s }) => ({
 								...s,
-								components: components
-									.map((c, idx) => ({
-										...c,
-										position: componentPositions[idx],
-										state: componentStates[componentPositions[idx]],
-									}))
-									.filter((c) => +c.state > 0),
+								components: components.map((c, idx) => ({
+									...c,
+									position: componentPositions[idx],
+									state: componentStates[componentPositions[idx]],
+								})),
 							}),
 						) ?? [],
 				}));
@@ -295,18 +293,22 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 								Math.floor(Math.random() * otherTaskForces.length)
 							];
 
-						for (const ship of ships) {
+						for (const ship of ships.filter(isIntactShip)) {
+							const intactTargets = targetTaskForce.ships.filter(isIntactShip);
 							const targetShip =
-								targetTaskForce.ships[
-									Math.floor(Math.random() * targetTaskForce.ships.length)
-								];
+								intactTargets[Math.floor(Math.random() * intactTargets.length)];
 
 							const weaponComponents = ship.components.filter(
-								(d) => d.weaponDeliveryType !== null && d.weaponDamage !== null,
+								(d) =>
+									+d.state > 0 &&
+									d.weaponDeliveryType !== null &&
+									d.weaponDamage !== null,
 							);
 
 							const defenseComponents = targetShip.components.filter(
-								(c) => c.armorThickness !== null || c.shieldStrength !== null,
+								(c) =>
+									(+c.state > 0 && c.armorThickness !== null) ||
+									c.shieldStrength !== null,
 							);
 
 							for (const weapon of weaponComponents) {
@@ -419,6 +421,16 @@ export async function tickTaskForceEngagements(tx: Transaction, ctx: Context) {
 								console.log(
 									`${targetShip.name} took ${damageAfterMitigation} excess damage, at ${targetShip.structuralIntegrity} structural integrity`,
 								);
+
+								ctx.postMessage({
+									type: "taskForceEngagement:weaponFired",
+									id: engagement.id,
+									attackerShipId: ship.id,
+									targetShipId: targetShip.id,
+									weaponComponentId: weapon.id,
+									weaponComponentPosition: weapon.position,
+									damage: damageAfterMitigation,
+								});
 							}
 						}
 					}

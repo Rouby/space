@@ -35,6 +35,7 @@ export const Game: Pick<GameResolvers, "taskForceEngagements" | "__isTypeOf"> =
 					taskForces,
 					eq(taskForces.id, taskForceEngagementsToTaskForces.taskForceId),
 				)
-				.where(and(eq(taskForces.gameId, parent.id), or(visibilityExists)));
+				.where(and(eq(taskForces.gameId, parent.id), or(visibilityExists)))
+				.groupBy(taskForceEngagements.id);
 		},
 	};

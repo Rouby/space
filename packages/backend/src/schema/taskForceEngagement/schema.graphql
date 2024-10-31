@@ -33,6 +33,10 @@ extend type Game {
 	taskForceEngagements: [TaskForceEngagement!]!
 }
 
+extend type Query {
+	taskForceEngagement(id: ID!): TaskForceEngagement!
+}
+
 type Subscription {
 	trackTaskForceEngagement(
 		taskForceEngagementId: ID!

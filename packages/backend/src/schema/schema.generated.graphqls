@@ -69,6 +69,7 @@ type Query {
   games: [Game!]!
   me: User
   starSystem(id: ID!): StarSystem!
+  taskForceEngagement(id: ID!): TaskForceEngagement!
   taskForceShipCommision(id: ID!): TaskForceShipCommision!
 }
 

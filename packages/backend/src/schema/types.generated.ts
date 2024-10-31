@@ -150,6 +150,7 @@ export type Query = {
   games: Array<Game>;
   me?: Maybe<User>;
   starSystem: StarSystem;
+  taskForceEngagement: TaskForceEngagement;
   taskForceShipCommision: TaskForceShipCommision;
 };
 
@@ -160,6 +161,11 @@ export type QuerygameArgs = {
 
 
 export type QuerystarSystemArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerytaskForceEngagementArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -756,6 +762,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<QuerystarSystemArgs, 'id'>>;
+  taskForceEngagement?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType, RequireFields<QuerytaskForceEngagementArgs, 'id'>>;
   taskForceShipCommision?: Resolver<ResolversTypes['TaskForceShipCommision'], ParentType, ContextType, RequireFields<QuerytaskForceShipCommisionArgs, 'id'>>;
 };
 

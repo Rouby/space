@@ -4,6 +4,7 @@
 import    { games as Query_games } from './game/resolvers/Query/games.js';
 import    { me as Query_me } from './user/resolvers/Query/me.js';
 import    { starSystem as Query_starSystem } from './starSystem/resolvers/Query/starSystem.js';
+import    { taskForceEngagement as Query_taskForceEngagement } from './taskForceEngagement/resolvers/Query/taskForceEngagement.js';
 import    { taskForceShipCommision as Query_taskForceShipCommision } from './taskForce/resolvers/Query/taskForceShipCommision.js';
 import    { createGame as Mutation_createGame } from './game/resolvers/Mutation/createGame.js';
 import    { createShipDesign as Mutation_createShipDesign } from './shipDesign/resolvers/Mutation/createShipDesign.js';
@@ -63,7 +64,7 @@ import    { Positionable } from './base/resolvers/Positionable.js';
 import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
-      Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceShipCommision: Query_taskForceShipCommision },
+      Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement,taskForceShipCommision: Query_taskForceShipCommision },
       Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,createTaskForceCommision: Mutation_createTaskForceCommision,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
       Game: { ...game_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForceEngagement_Game,...taskForce_Game },

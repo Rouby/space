@@ -18,7 +18,7 @@ function Details() {
 				size="70%"
 				onClose={() =>
 					navigate({
-						from: "/games/$id/star-system/$starSystemId",
+						from: "/games/$id/task-force-engagement/$engagementId",
 						to: "../..",
 					})
 				}
