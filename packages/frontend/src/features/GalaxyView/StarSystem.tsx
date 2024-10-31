@@ -53,12 +53,11 @@ export function StarSystem({
 
 	return (
 		<container position={position}>
-			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 			<graphics
 				draw={drawCircle}
 				interactive
 				cursor="pointer"
-				onClick={onClick}
+				onPointerTap={onClick}
 				onRightClick={onRightClick}
 			/>
 			{(sensorRange ?? 0) > 0 && isSelected && (

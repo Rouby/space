@@ -13,7 +13,6 @@ export function TaskForceEngagement({
 }) {
 	return (
 		<container position={position}>
-			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 			<graphics
 				draw={(graphics) => {
 					graphics.clear();
@@ -23,7 +22,7 @@ export function TaskForceEngagement({
 				}}
 				interactive
 				cursor="pointer"
-				onClick={onClick}
+				onPointerTap={onClick}
 				onRightClick={onRightClick}
 			/>
 		</container>

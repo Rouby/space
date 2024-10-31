@@ -10,7 +10,7 @@ import { forwardRef } from "react";
 import { useStyles } from "tss-react";
 import { GalaxyView } from "../../features/GalaxyView/GalaxyView";
 import { UserButton } from "../../features/UserButton/UserButton";
-import { vars } from "../../theme";
+import { mq, vars } from "../../theme";
 
 export const Route = createLazyFileRoute("/games/_authenticated/$id")({
 	component: () => <IngameLayout />,
@@ -25,6 +25,9 @@ function IngameLayout() {
 				height: "100vh",
 				display: "grid",
 				gridTemplateColumns: `${rem(300)} 1fr`,
+				[mq.md]: {
+					gridTemplateColumns: "1fr",
+				},
 				overflow: "hidden",
 			})}
 		>
@@ -36,6 +39,9 @@ function IngameLayout() {
 					display: "flex",
 					flexDirection: "column",
 					borderRight: `${rem(1)} solid ${vars.colors.dark[4]}`,
+					[mq.md]: {
+						display: "none",
+					},
 				})}
 			>
 				<Section>
