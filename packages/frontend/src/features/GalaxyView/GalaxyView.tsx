@@ -230,6 +230,7 @@ query Galaxy($id: ID!) {
 			className={css({ position: "relative", overflow: "hidden" })}
 		>
 			<Application
+				preference="webgpu"
 				attachToDevTools={!import.meta.env.PROD}
 				resizeTo={parentRef}
 				antialias
