@@ -140,9 +140,12 @@ export function Viewport({
 					event.clientY,
 				);
 
-				const scale = 1 - event.deltaY * 0.001;
+				const scale = Math.max(0.01, 1 - event.deltaY * 0.001);
 
-				if (viewportRef.current) {
+				if (
+					viewportRef.current &&
+					(scale > 1 || viewportRef.current?.scale.x >= 0.01)
+				) {
 					viewportRef.current.position.set(
 						point.x + (viewportRef.current.x - point.x) * scale,
 						point.y + (viewportRef.current.y - point.y) * scale,
