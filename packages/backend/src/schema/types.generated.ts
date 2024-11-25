@@ -1,9 +1,9 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
-import { ResourceMapper, ResourceNeedMapper } from './resource/schema.mappers.js';
-import { ResourceCostMapper, ShipDesignMapper } from './shipDesign/schema.mappers.js';
+import { ResourceMapper, ResourceCostMapper, ResourceNeedMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
+import { ShipDesignMapper } from './shipDesign/schema.mappers.js';
 import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper, TaskForceShipMapper, TaskForceShipCommisionMapper } from './taskForce/schema.mappers.js';
 import { TaskForceEngagementMapper } from './taskForceEngagement/schema.mappers.js';
 import { Context } from '../context';

@@ -8,3 +8,4 @@ export type ResourceNeedMapper = {
 	alotted: string;
 	needed: string;
 };
+export type ResourceCostMapper = { resourceId: string; quantity: string };

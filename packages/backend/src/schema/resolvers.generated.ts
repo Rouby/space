@@ -34,7 +34,7 @@ import    { PositionableApppearsEvent } from './base/resolvers/PositionableApppe
 import    { PositionableDisappearsEvent } from './base/resolvers/PositionableDisappearsEvent.js';
 import    { PositionableMovesEvent } from './base/resolvers/PositionableMovesEvent.js';
 import    { Resource } from './resource/resolvers/Resource.js';
-import    { ResourceCost } from './shipDesign/resolvers/ResourceCost.js';
+import    { ResourceCost } from './resource/resolvers/ResourceCost.js';
 import    { ResourceDepot } from './starSystem/resolvers/ResourceDepot.js';
 import    { ResourceDiscovery } from './starSystem/resolvers/ResourceDiscovery.js';
 import    { ResourceNeed } from './resource/resolvers/ResourceNeed.js';

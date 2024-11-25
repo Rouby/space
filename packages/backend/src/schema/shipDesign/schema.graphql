@@ -9,11 +9,6 @@ type ShipDesign {
 	components: [ShipComponent!]!
 }
 
-type ResourceCost {
-	resource: Resource!
-	quantity: Float!
-}
-
 extend type Game {
 	shipDesigns: [ShipDesign!]!
 }

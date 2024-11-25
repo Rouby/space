@@ -9,6 +9,11 @@ type ResourceNeed {
 	needed: Float!
 }
 
+type ResourceCost {
+	resource: Resource!
+	quantity: Float!
+}
+
 extend type Game {
 	resources: [Resource!]!
 }

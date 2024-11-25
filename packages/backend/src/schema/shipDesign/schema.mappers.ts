@@ -5,4 +5,3 @@ export type ShipDesignMapper = {
 	decommissioned: boolean;
 	previousDesignId: string | null;
 };
-export type ResourceCostMapper = { resourceId: string; quantity: string };
