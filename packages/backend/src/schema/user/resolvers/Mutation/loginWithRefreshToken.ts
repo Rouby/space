@@ -1,5 +1,5 @@
 import { createGraphQLError } from "graphql-yoga";
-import { domain } from "../../../../config.ts";
+import { domain, generateUserClaims } from "../../../../config.ts";
 import type { MutationResolvers } from "./../../../types.generated.js";
 import { signToken, verifyToken } from "./token.ts";
 export const loginWithRefreshToken: NonNullable<
@@ -32,7 +32,7 @@ export const loginWithRefreshToken: NonNullable<
 		const expirationTime = new Date(Date.now() + 1000 * 60 * 10);
 		const accessToken = await signToken(
 			user.id,
-			{ "urn:space:claim": true },
+			await generateUserClaims(user),
 			expirationTime,
 		);
 		ctx.request.cookieStore?.set({

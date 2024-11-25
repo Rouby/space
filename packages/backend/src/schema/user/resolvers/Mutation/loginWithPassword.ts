@@ -1,6 +1,6 @@
 import { compare } from "bcrypt";
 import { createGraphQLError } from "graphql-yoga";
-import { domain } from "../../../../config.ts";
+import { domain, generateUserClaims } from "../../../../config.ts";
 import type { MutationResolvers } from "./../../../types.generated.js";
 import { signToken } from "./token.ts";
 export const loginWithPassword: NonNullable<
@@ -21,14 +21,12 @@ export const loginWithPassword: NonNullable<
 		throw createGraphQLError("User not found");
 	}
 
+	const claims = await generateUserClaims(user);
+
 	{
 		// 10 minutes
 		const expirationTime = new Date(Date.now() + 1000 * 60 * 10);
-		const accessToken = await signToken(
-			user.id,
-			{ "urn:space:claim": true },
-			expirationTime,
-		);
+		const accessToken = await signToken(user.id, claims, expirationTime);
 		ctx.request.cookieStore?.set({
 			domain,
 			expires: expirationTime,
@@ -41,11 +39,7 @@ export const loginWithPassword: NonNullable<
 	{
 		// 1 year
 		const expirationTime = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365);
-		const refreshToken = await signToken(
-			user.id,
-			{ "urn:space:refreshLogin": true },
-			expirationTime,
-		);
+		const refreshToken = await signToken(user.id, {}, expirationTime);
 		ctx.request.cookieStore?.set({
 			domain,
 			expires: expirationTime,

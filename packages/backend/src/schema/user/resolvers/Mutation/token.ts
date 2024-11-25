@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
+import type { generateUserClaims } from "../../../../config.ts";
 
 const secret = new TextEncoder().encode(
 	process.env.JWT_SECRET || "electric-kitten",
@@ -6,7 +7,8 @@ const secret = new TextEncoder().encode(
 
 export async function signToken(
 	subject: string,
-	claims: Record<string, unknown>,
+	// biome-ignore lint/complexity/noBannedTypes: <explanation>
+	claims: Awaited<ReturnType<typeof generateUserClaims>> | {},
 	expirationTime: Date,
 ) {
 	return new SignJWT(claims)

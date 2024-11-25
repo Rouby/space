@@ -52,7 +52,7 @@ export function Viewport({
 		});
 		g.stroke();
 
-		drawGridLines(3000 * scale);
+		drawGridLines(5000 * scale);
 		g.setStrokeStyle({
 			color: 0xffffff,
 			alpha: 0.1,
