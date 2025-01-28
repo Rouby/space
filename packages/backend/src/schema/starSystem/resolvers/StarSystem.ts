@@ -3,7 +3,6 @@ import {
 	eq,
 	players,
 	starSystemPopulations,
-	starSystemResourceDepots,
 	starSystemResourceDiscoveries,
 } from "@space/data/schema";
 import type { StarSystemResolvers } from "./../../types.generated.js";
@@ -18,7 +17,6 @@ export const StarSystem: Pick<
 	| "owner"
 	| "populations"
 	| "position"
-	| "resourceDepots"
 	| "sensorRange"
 	| "__isTypeOf"
 > = {
@@ -67,15 +65,6 @@ export const StarSystem: Pick<
 		]
 			.slice(0, parent.discoverySlots)
 			.sort((d1, d2) => d1.discoveredAt.getTime() - d2.discoveredAt.getTime());
-	},
-	resourceDepots: async (parent, _arg, ctx) => {
-		const resourceDepots = await ctx.drizzle
-			.select()
-			.from(starSystemResourceDepots)
-			.where(eq(starSystemResourceDepots.starSystemId, parent.id))
-			.orderBy(starSystemResourceDepots.resourceId);
-
-		return resourceDepots;
 	},
 	populations: async (parent, _arg, ctx) => {
 		return ctx.drizzle

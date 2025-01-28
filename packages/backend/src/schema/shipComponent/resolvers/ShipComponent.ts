@@ -29,9 +29,9 @@ export const ShipComponent: ShipComponentResolvers = {
 		/* ShipComponent.ftlSpeed resolver is required because ShipComponent.ftlSpeed and ShipComponentMapper.ftlSpeed are not compatible */
 		return ftlSpeed ? +ftlSpeed : null;
 	},
-	hullBoost: ({ hullBoost }, _arg, _ctx) => {
-		/* ShipComponent.hullBoost resolver is required because ShipComponent.hullBoost and ShipComponentMapper.hullBoost are not compatible */
-		return hullBoost ? +hullBoost : null;
+	structuralIntegrity: ({ structuralIntegrity }, _arg, _ctx) => {
+		/* ShipComponent.structuralIntegrity resolver is required because ShipComponent.structuralIntegrity and ShipComponentMapper.structuralIntegrity are not compatible */
+		return structuralIntegrity ? +structuralIntegrity : null;
 	},
 	powerNeed: ({ powerNeed }, _arg, _ctx) => {
 		/* ShipComponent.powerNeed resolver is required because ShipComponent.powerNeed and ShipComponentMapper.powerNeed are not compatible */

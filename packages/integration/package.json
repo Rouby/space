@@ -2,7 +2,7 @@
 	"name": "@space/integration",
 	"type": "module",
 	"devDependencies": {
-		"@playwright/test": "1.47.2",
+		"@playwright/test": "1.49.1",
 		"@space/data": "workspace:*",
 		"@types/node": "22.6.1",
 		"jose": "5.9.3",

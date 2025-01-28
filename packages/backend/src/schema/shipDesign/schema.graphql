@@ -3,10 +3,15 @@ type ShipDesign {
 	name: String!
 	description: String!
 	owner: Player!
+	components: [ShipDesignComponent!]!
 	decommissioned: Boolean!
-	previousDesign: ShipDesign
 	costs: [ResourceCost!]!
-	components: [ShipComponent!]!
+}
+
+type ShipDesignComponent {
+	id: ID!
+	component: ShipComponent!
+	position: Vector!
 }
 
 extend type Game {
@@ -20,9 +25,12 @@ extend type Player {
 input ShipDesignInput {
 	name: String!
 	description: String!
-	resourceId: ID!
-	componentIds: [ID!]!
-	previousDesignId: ID
+	components: [ShipDesignComponentInput!]!
+}
+
+input ShipDesignComponentInput {
+	componentId: ID!
+	gridPosition: Vector!
 }
 
 type Mutation {

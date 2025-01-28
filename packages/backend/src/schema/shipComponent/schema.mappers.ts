@@ -21,7 +21,7 @@ export type ShipComponentMapper = {
 	sensorRange: string | null;
 
 	// tactical stats
-	hullBoost: string | null;
+	structuralIntegrity: string | null;
 	thruster: string | null;
 	sensorPrecision: string | null;
 	armorThickness: string | null;

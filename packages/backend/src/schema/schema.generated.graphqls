@@ -14,7 +14,6 @@ type Game {
   shipDesigns: [ShipDesign!]!
   starSystems: [StarSystem!]!
   startedAt: DateTime
-  taskForceEngagements: [TaskForceEngagement!]!
   taskForces: [TaskForce!]!
   tickRate: Int!
 }
@@ -22,7 +21,6 @@ type Game {
 type Mutation {
   createGame(name: String!): Game!
   createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
-  createTaskForceCommision(commision: TaskForceCommisionInput!): TaskForce!
   joinGame(id: ID!): Game!
   loginWithPassword(email: String!, password: String!): User!
   loginWithRefreshToken: User!
@@ -69,8 +67,6 @@ type Query {
   games: [Game!]!
   me: User
   starSystem(id: ID!): StarSystem!
-  taskForceEngagement(id: ID!): TaskForceEngagement!
-  taskForceShipCommision(id: ID!): TaskForceShipCommision!
 }
 
 type Resource {
@@ -83,22 +79,10 @@ type ResourceCost {
   resource: Resource!
 }
 
-type ResourceDepot {
-  id: ID!
-  quantity: Float!
-  resource: Resource!
-}
-
 type ResourceDiscovery {
   id: ID!
   miningRate: Float!
   remainingDeposits: Float!
-  resource: Resource!
-}
-
-type ResourceNeed {
-  alotted: Float!
-  needed: Float!
   resource: Resource!
 }
 
@@ -111,7 +95,6 @@ type ShipComponent {
   crewNeed: Float!
   description: String!
   ftlSpeed: Float
-  hullBoost: Float
   id: ID!
   name: String!
   powerGeneration: Float
@@ -120,6 +103,7 @@ type ShipComponent {
   sensorRange: Float
   shieldEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
   shieldStrength: Float
+  structuralIntegrity: Float
   supplyCapacity: Float
   supplyNeedCombat: Float!
   supplyNeedMovement: Float!
@@ -141,22 +125,30 @@ type ShipComponentEffectivenessAgainst {
 }
 
 type ShipDesign {
-  components: [ShipComponent!]!
+  components: [ShipDesignComponent!]!
   costs: [ResourceCost!]!
   decommissioned: Boolean!
   description: String!
   id: ID!
   name: String!
   owner: Player!
-  previousDesign: ShipDesign
+}
+
+type ShipDesignComponent {
+  component: ShipComponent!
+  id: ID!
+  position: Vector!
+}
+
+input ShipDesignComponentInput {
+  componentId: ID!
+  gridPosition: Vector!
 }
 
 input ShipDesignInput {
-  componentIds: [ID!]!
+  components: [ShipDesignComponentInput!]!
   description: String!
   name: String!
-  previousDesignId: ID
-  resourceId: ID!
 }
 
 type StarSystem implements Positionable {
@@ -169,9 +161,7 @@ type StarSystem implements Positionable {
   owner: Player
   populations: [Population!]
   position: Vector!
-  resourceDepots: [ResourceDepot!]
   sensorRange: Float
-  taskForceShipCommisions: [TaskForceShipCommision!]!
   taskForces: [TaskForce!]!
 }
 
@@ -182,11 +172,9 @@ type StarSystemUpdateEvent {
 type Subscription {
   trackGalaxy(gameId: ID!): TrackGalaxyEvent!
   trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
-  trackTaskForceEngagement(taskForceEngagementId: ID!): TaskForceEngagementEvent!
 }
 
 type TaskForce implements Positionable {
-  commisions: [TaskForceShipCommision!]!
   game: Game!
   id: ID!
   isVisible: Boolean!
@@ -196,57 +184,10 @@ type TaskForce implements Positionable {
   orders: [TaskForceOrder!]
   owner: Player
   position: Vector!
-  sensorRange: Float
-  ships: [TaskForceShip!]!
 }
 
 type TaskForceColonizeOrder implements TaskForceOrder {
   id: ID!
-}
-
-input TaskForceCommisionInput {
-  name: String!
-  ships: [TaskForceCommisionShipInput!]!
-  starSystemId: ID!
-}
-
-input TaskForceCommisionShipInput {
-  name: String!
-  role: TaskForceShipRole!
-  shipDesignId: ID!
-}
-
-type TaskForceCommisionUpdateEvent {
-  constructionPerTick: Float!
-  subject: TaskForceShipCommision!
-}
-
-type TaskForceEngagement {
-  id: ID!
-  phase: TaskForceEngagementPhase!
-  phaseProgress: Float!
-  position: Vector!
-  taskForces: [TaskForce!]!
-}
-
-union TaskForceEngagementEvent = TaskForceEngagementProgressEvent | TaskForceEngagementWeaponFiredEvent
-
-enum TaskForceEngagementPhase {
-  engagement
-  locating
-  resolution
-}
-
-type TaskForceEngagementProgressEvent {
-  engagement: TaskForceEngagement!
-}
-
-type TaskForceEngagementWeaponFiredEvent {
-  attacker: TaskForceShip!
-  damage: Float!
-  engagement: TaskForceEngagement!
-  target: TaskForceShip!
-  weapon: TaskForceShipComponent!
 }
 
 type TaskForceFollowOrder implements TaskForceOrder {
@@ -256,14 +197,6 @@ type TaskForceFollowOrder implements TaskForceOrder {
 
 input TaskForceFollowOrderInput {
   taskForceId: ID!
-}
-
-type TaskForceJoinsEngagementEvent {
-  subject: TaskForceEngagement!
-}
-
-type TaskForceLeavesEngagementEvent {
-  subject: TaskForceEngagement!
 }
 
 type TaskForceMoveOrder implements TaskForceOrder {
@@ -285,42 +218,15 @@ input TaskForceOrderInput {
   move: TaskForceMoveOrderInput
 }
 
-type TaskForceShip {
-  components: [TaskForceShipComponent!]!
-  id: ID!
-  name: String!
-  role: TaskForceShipRole!
-  shipDesign: ShipDesign!
-  structuralIntegrity: Float!
-  supplyCarried: Float!
-}
-
-type TaskForceShipCommision {
-  constructionDone: Float!
-  constructionPerTick: Float
-  constructionTotal: Float!
-  id: ID!
-  name: String!
-  resourceNeeds: [ResourceNeed!]!
-  role: TaskForceShipRole!
-  shipDesign: ShipDesign!
-}
-
-type TaskForceShipComponent {
-  component: ShipComponent!
-  id: ID!
-  state: Float!
-}
-
 enum TaskForceShipRole {
   capital
   screen
   support
 }
 
-union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent | TaskForceJoinsEngagementEvent | TaskForceLeavesEngagementEvent
+union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent
 
-union TrackStarSystemEvent = StarSystemUpdateEvent | TaskForceCommisionUpdateEvent
+union TrackStarSystemEvent = StarSystemUpdateEvent
 
 type UnknownDiscovery {
   id: ID!

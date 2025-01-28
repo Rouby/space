@@ -1,11 +1,10 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
-import { PopulationMapper, ResourceDepotMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
-import { ResourceMapper, ResourceCostMapper, ResourceNeedMapper } from './resource/schema.mappers.js';
+import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
+import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
 import { ShipDesignMapper } from './shipDesign/schema.mappers.js';
-import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper, TaskForceShipMapper, TaskForceShipCommisionMapper } from './taskForce/schema.mappers.js';
-import { TaskForceEngagementMapper } from './taskForceEngagement/schema.mappers.js';
+import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
@@ -42,7 +41,6 @@ export type Game = {
   shipDesigns: Array<ShipDesign>;
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
-  taskForceEngagements: Array<TaskForceEngagement>;
   taskForces: Array<TaskForce>;
   tickRate: Scalars['Int']['output'];
 };
@@ -51,7 +49,6 @@ export type Mutation = {
   __typename?: 'Mutation';
   createGame: Game;
   createShipDesign: ShipDesign;
-  createTaskForceCommision: TaskForce;
   joinGame: Game;
   loginWithPassword: User;
   loginWithRefreshToken: User;
@@ -69,11 +66,6 @@ export type MutationcreateGameArgs = {
 export type MutationcreateShipDesignArgs = {
   design: ShipDesignInput;
   gameId: Scalars['ID']['input'];
-};
-
-
-export type MutationcreateTaskForceCommisionArgs = {
-  commision: TaskForceCommisionInput;
 };
 
 
@@ -150,8 +142,6 @@ export type Query = {
   games: Array<Game>;
   me?: Maybe<User>;
   starSystem: StarSystem;
-  taskForceEngagement: TaskForceEngagement;
-  taskForceShipCommision: TaskForceShipCommision;
 };
 
 
@@ -161,16 +151,6 @@ export type QuerygameArgs = {
 
 
 export type QuerystarSystemArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QuerytaskForceEngagementArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QuerytaskForceShipCommisionArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -186,25 +166,11 @@ export type ResourceCost = {
   resource: Resource;
 };
 
-export type ResourceDepot = {
-  __typename?: 'ResourceDepot';
-  id: Scalars['ID']['output'];
-  quantity: Scalars['Float']['output'];
-  resource: Resource;
-};
-
 export type ResourceDiscovery = {
   __typename?: 'ResourceDiscovery';
   id: Scalars['ID']['output'];
   miningRate: Scalars['Float']['output'];
   remainingDeposits: Scalars['Float']['output'];
-  resource: Resource;
-};
-
-export type ResourceNeed = {
-  __typename?: 'ResourceNeed';
-  alotted: Scalars['Float']['output'];
-  needed: Scalars['Float']['output'];
   resource: Resource;
 };
 
@@ -218,7 +184,6 @@ export type ShipComponent = {
   crewNeed: Scalars['Float']['output'];
   description: Scalars['String']['output'];
   ftlSpeed?: Maybe<Scalars['Float']['output']>;
-  hullBoost?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   powerGeneration?: Maybe<Scalars['Float']['output']>;
@@ -227,6 +192,7 @@ export type ShipComponent = {
   sensorRange?: Maybe<Scalars['Float']['output']>;
   shieldEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
   shieldStrength?: Maybe<Scalars['Float']['output']>;
+  structuralIntegrity?: Maybe<Scalars['Float']['output']>;
   supplyCapacity?: Maybe<Scalars['Float']['output']>;
   supplyNeedCombat: Scalars['Float']['output'];
   supplyNeedMovement: Scalars['Float']['output'];
@@ -250,22 +216,31 @@ export type ShipComponentEffectivenessAgainst = {
 
 export type ShipDesign = {
   __typename?: 'ShipDesign';
-  components: Array<ShipComponent>;
+  components: Array<ShipDesignComponent>;
   costs: Array<ResourceCost>;
   decommissioned: Scalars['Boolean']['output'];
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner: Player;
-  previousDesign?: Maybe<ShipDesign>;
+};
+
+export type ShipDesignComponent = {
+  __typename?: 'ShipDesignComponent';
+  component: ShipComponent;
+  id: Scalars['ID']['output'];
+  position: Scalars['Vector']['output'];
+};
+
+export type ShipDesignComponentInput = {
+  componentId: Scalars['ID']['input'];
+  gridPosition: Scalars['Vector']['input'];
 };
 
 export type ShipDesignInput = {
-  componentIds: Array<Scalars['ID']['input']>;
+  components: Array<ShipDesignComponentInput>;
   description: Scalars['String']['input'];
   name: Scalars['String']['input'];
-  previousDesignId?: InputMaybe<Scalars['ID']['input']>;
-  resourceId: Scalars['ID']['input'];
 };
 
 export type StarSystem = Positionable & {
@@ -279,9 +254,7 @@ export type StarSystem = Positionable & {
   owner?: Maybe<Player>;
   populations?: Maybe<Array<Population>>;
   position: Scalars['Vector']['output'];
-  resourceDepots?: Maybe<Array<ResourceDepot>>;
   sensorRange?: Maybe<Scalars['Float']['output']>;
-  taskForceShipCommisions: Array<TaskForceShipCommision>;
   taskForces: Array<TaskForce>;
 };
 
@@ -294,7 +267,6 @@ export type Subscription = {
   __typename?: 'Subscription';
   trackGalaxy: TrackGalaxyEvent;
   trackStarSystem: TrackStarSystemEvent;
-  trackTaskForceEngagement: TaskForceEngagementEvent;
 };
 
 
@@ -307,14 +279,8 @@ export type SubscriptiontrackStarSystemArgs = {
   starSystemId: Scalars['ID']['input'];
 };
 
-
-export type SubscriptiontrackTaskForceEngagementArgs = {
-  taskForceEngagementId: Scalars['ID']['input'];
-};
-
 export type TaskForce = Positionable & {
   __typename?: 'TaskForce';
-  commisions: Array<TaskForceShipCommision>;
   game: Game;
   id: Scalars['ID']['output'];
   isVisible: Scalars['Boolean']['output'];
@@ -324,61 +290,11 @@ export type TaskForce = Positionable & {
   orders?: Maybe<Array<TaskForceOrder>>;
   owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
-  sensorRange?: Maybe<Scalars['Float']['output']>;
-  ships: Array<TaskForceShip>;
 };
 
 export type TaskForceColonizeOrder = TaskForceOrder & {
   __typename?: 'TaskForceColonizeOrder';
   id: Scalars['ID']['output'];
-};
-
-export type TaskForceCommisionInput = {
-  name: Scalars['String']['input'];
-  ships: Array<TaskForceCommisionShipInput>;
-  starSystemId: Scalars['ID']['input'];
-};
-
-export type TaskForceCommisionShipInput = {
-  name: Scalars['String']['input'];
-  role: TaskForceShipRole;
-  shipDesignId: Scalars['ID']['input'];
-};
-
-export type TaskForceCommisionUpdateEvent = {
-  __typename?: 'TaskForceCommisionUpdateEvent';
-  constructionPerTick: Scalars['Float']['output'];
-  subject: TaskForceShipCommision;
-};
-
-export type TaskForceEngagement = {
-  __typename?: 'TaskForceEngagement';
-  id: Scalars['ID']['output'];
-  phase: TaskForceEngagementPhase;
-  phaseProgress: Scalars['Float']['output'];
-  position: Scalars['Vector']['output'];
-  taskForces: Array<TaskForce>;
-};
-
-export type TaskForceEngagementEvent = TaskForceEngagementProgressEvent | TaskForceEngagementWeaponFiredEvent;
-
-export type TaskForceEngagementPhase =
-  | 'engagement'
-  | 'locating'
-  | 'resolution';
-
-export type TaskForceEngagementProgressEvent = {
-  __typename?: 'TaskForceEngagementProgressEvent';
-  engagement: TaskForceEngagement;
-};
-
-export type TaskForceEngagementWeaponFiredEvent = {
-  __typename?: 'TaskForceEngagementWeaponFiredEvent';
-  attacker: TaskForceShip;
-  damage: Scalars['Float']['output'];
-  engagement: TaskForceEngagement;
-  target: TaskForceShip;
-  weapon: TaskForceShipComponent;
 };
 
 export type TaskForceFollowOrder = TaskForceOrder & {
@@ -389,16 +305,6 @@ export type TaskForceFollowOrder = TaskForceOrder & {
 
 export type TaskForceFollowOrderInput = {
   taskForceId: Scalars['ID']['input'];
-};
-
-export type TaskForceJoinsEngagementEvent = {
-  __typename?: 'TaskForceJoinsEngagementEvent';
-  subject: TaskForceEngagement;
-};
-
-export type TaskForceLeavesEngagementEvent = {
-  __typename?: 'TaskForceLeavesEngagementEvent';
-  subject: TaskForceEngagement;
 };
 
 export type TaskForceMoveOrder = TaskForceOrder & {
@@ -421,44 +327,14 @@ export type TaskForceOrderInput = {
   move?: InputMaybe<TaskForceMoveOrderInput>;
 };
 
-export type TaskForceShip = {
-  __typename?: 'TaskForceShip';
-  components: Array<TaskForceShipComponent>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  role: TaskForceShipRole;
-  shipDesign: ShipDesign;
-  structuralIntegrity: Scalars['Float']['output'];
-  supplyCarried: Scalars['Float']['output'];
-};
-
-export type TaskForceShipCommision = {
-  __typename?: 'TaskForceShipCommision';
-  constructionDone: Scalars['Float']['output'];
-  constructionPerTick?: Maybe<Scalars['Float']['output']>;
-  constructionTotal: Scalars['Float']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  resourceNeeds: Array<ResourceNeed>;
-  role: TaskForceShipRole;
-  shipDesign: ShipDesign;
-};
-
-export type TaskForceShipComponent = {
-  __typename?: 'TaskForceShipComponent';
-  component: ShipComponent;
-  id: Scalars['ID']['output'];
-  state: Scalars['Float']['output'];
-};
-
 export type TaskForceShipRole =
   | 'capital'
   | 'screen'
   | 'support';
 
-export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent | TaskForceJoinsEngagementEvent | TaskForceLeavesEngagementEvent;
+export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent;
 
-export type TrackStarSystemEvent = StarSystemUpdateEvent | TaskForceCommisionUpdateEvent;
+export type TrackStarSystemEvent = StarSystemUpdateEvent;
 
 export type UnknownDiscovery = {
   __typename?: 'UnknownDiscovery';
@@ -548,9 +424,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
-  TaskForceEngagementEvent: ( Omit<TaskForceEngagementProgressEvent, 'engagement'> & { engagement: _RefType['TaskForceEngagement'] } & { __typename: 'TaskForceEngagementProgressEvent' } ) | ( Omit<TaskForceEngagementWeaponFiredEvent, 'attacker' | 'engagement' | 'target' | 'weapon'> & { attacker: _RefType['TaskForceShip'], engagement: _RefType['TaskForceEngagement'], target: _RefType['TaskForceShip'], weapon: _RefType['TaskForceShipComponent'] } & { __typename: 'TaskForceEngagementWeaponFiredEvent' } );
-  TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } ) | ( Omit<TaskForceJoinsEngagementEvent, 'subject'> & { subject: _RefType['TaskForceEngagement'] } & { __typename: 'TaskForceJoinsEngagementEvent' } ) | ( Omit<TaskForceLeavesEngagementEvent, 'subject'> & { subject: _RefType['TaskForceEngagement'] } & { __typename: 'TaskForceLeavesEngagementEvent' } );
-  TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } ) | ( Omit<TaskForceCommisionUpdateEvent, 'subject'> & { subject: _RefType['TaskForceShipCommision'] } & { __typename: 'TaskForceCommisionUpdateEvent' } );
+  TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
+  TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
 };
 
 /** Mapping of interface types */
@@ -580,37 +455,24 @@ export type ResolversTypes = {
   Resource: ResolverTypeWrapper<ResourceMapper>;
   ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
-  ResourceDepot: ResolverTypeWrapper<ResourceDepotMapper>;
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
-  ResourceNeed: ResolverTypeWrapper<ResourceNeedMapper>;
   ShipComponent: ResolverTypeWrapper<ShipComponentMapper>;
   ShipComponentEffectivenessAgainst: ResolverTypeWrapper<Omit<ShipComponentEffectivenessAgainst, 'deliveryType'> & { deliveryType: ResolversTypes['WeaponDeliveryType'] }>;
   ShipDesign: ResolverTypeWrapper<ShipDesignMapper>;
+  ShipDesignComponent: ResolverTypeWrapper<Omit<ShipDesignComponent, 'component'> & { component: ResolversTypes['ShipComponent'] }>;
+  ShipDesignComponentInput: ShipDesignComponentInput;
   ShipDesignInput: ShipDesignInput;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
   StarSystemUpdateEvent: ResolverTypeWrapper<Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversTypes['StarSystem'] }>;
   Subscription: ResolverTypeWrapper<{}>;
   TaskForce: ResolverTypeWrapper<TaskForceMapper>;
   TaskForceColonizeOrder: ResolverTypeWrapper<TaskForceColonizeOrderMapper>;
-  TaskForceCommisionInput: TaskForceCommisionInput;
-  TaskForceCommisionShipInput: TaskForceCommisionShipInput;
-  TaskForceCommisionUpdateEvent: ResolverTypeWrapper<Omit<TaskForceCommisionUpdateEvent, 'subject'> & { subject: ResolversTypes['TaskForceShipCommision'] }>;
-  TaskForceEngagement: ResolverTypeWrapper<TaskForceEngagementMapper>;
-  TaskForceEngagementEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TaskForceEngagementEvent']>;
-  TaskForceEngagementPhase: ResolverTypeWrapper<'locating' | 'engagement' | 'resolution'>;
-  TaskForceEngagementProgressEvent: ResolverTypeWrapper<Omit<TaskForceEngagementProgressEvent, 'engagement'> & { engagement: ResolversTypes['TaskForceEngagement'] }>;
-  TaskForceEngagementWeaponFiredEvent: ResolverTypeWrapper<Omit<TaskForceEngagementWeaponFiredEvent, 'attacker' | 'engagement' | 'target' | 'weapon'> & { attacker: ResolversTypes['TaskForceShip'], engagement: ResolversTypes['TaskForceEngagement'], target: ResolversTypes['TaskForceShip'], weapon: ResolversTypes['TaskForceShipComponent'] }>;
   TaskForceFollowOrder: ResolverTypeWrapper<TaskForceFollowOrderMapper>;
   TaskForceFollowOrderInput: TaskForceFollowOrderInput;
-  TaskForceJoinsEngagementEvent: ResolverTypeWrapper<Omit<TaskForceJoinsEngagementEvent, 'subject'> & { subject: ResolversTypes['TaskForceEngagement'] }>;
-  TaskForceLeavesEngagementEvent: ResolverTypeWrapper<Omit<TaskForceLeavesEngagementEvent, 'subject'> & { subject: ResolversTypes['TaskForceEngagement'] }>;
   TaskForceMoveOrder: ResolverTypeWrapper<TaskForceMoveOrderMapper>;
   TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: ResolverTypeWrapper<TaskForceOrderMapper>;
   TaskForceOrderInput: TaskForceOrderInput;
-  TaskForceShip: ResolverTypeWrapper<TaskForceShipMapper>;
-  TaskForceShipCommision: ResolverTypeWrapper<TaskForceShipCommisionMapper>;
-  TaskForceShipComponent: ResolverTypeWrapper<Omit<TaskForceShipComponent, 'component'> & { component: ResolversTypes['ShipComponent'] }>;
   TaskForceShipRole: ResolverTypeWrapper<'capital' | 'screen' | 'support'>;
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
@@ -641,36 +503,24 @@ export type ResolversParentTypes = {
   Resource: ResourceMapper;
   ResourceCost: ResourceCostMapper;
   Float: Scalars['Float']['output'];
-  ResourceDepot: ResourceDepotMapper;
   ResourceDiscovery: ResourceDiscoveryMapper;
-  ResourceNeed: ResourceNeedMapper;
   ShipComponent: ShipComponentMapper;
   ShipComponentEffectivenessAgainst: ShipComponentEffectivenessAgainst;
   ShipDesign: ShipDesignMapper;
+  ShipDesignComponent: Omit<ShipDesignComponent, 'component'> & { component: ResolversParentTypes['ShipComponent'] };
+  ShipDesignComponentInput: ShipDesignComponentInput;
   ShipDesignInput: ShipDesignInput;
   StarSystem: StarSystemMapper;
   StarSystemUpdateEvent: Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversParentTypes['StarSystem'] };
   Subscription: {};
   TaskForce: TaskForceMapper;
   TaskForceColonizeOrder: TaskForceColonizeOrderMapper;
-  TaskForceCommisionInput: TaskForceCommisionInput;
-  TaskForceCommisionShipInput: TaskForceCommisionShipInput;
-  TaskForceCommisionUpdateEvent: Omit<TaskForceCommisionUpdateEvent, 'subject'> & { subject: ResolversParentTypes['TaskForceShipCommision'] };
-  TaskForceEngagement: TaskForceEngagementMapper;
-  TaskForceEngagementEvent: ResolversUnionTypes<ResolversParentTypes>['TaskForceEngagementEvent'];
-  TaskForceEngagementProgressEvent: Omit<TaskForceEngagementProgressEvent, 'engagement'> & { engagement: ResolversParentTypes['TaskForceEngagement'] };
-  TaskForceEngagementWeaponFiredEvent: Omit<TaskForceEngagementWeaponFiredEvent, 'attacker' | 'engagement' | 'target' | 'weapon'> & { attacker: ResolversParentTypes['TaskForceShip'], engagement: ResolversParentTypes['TaskForceEngagement'], target: ResolversParentTypes['TaskForceShip'], weapon: ResolversParentTypes['TaskForceShipComponent'] };
   TaskForceFollowOrder: TaskForceFollowOrderMapper;
   TaskForceFollowOrderInput: TaskForceFollowOrderInput;
-  TaskForceJoinsEngagementEvent: Omit<TaskForceJoinsEngagementEvent, 'subject'> & { subject: ResolversParentTypes['TaskForceEngagement'] };
-  TaskForceLeavesEngagementEvent: Omit<TaskForceLeavesEngagementEvent, 'subject'> & { subject: ResolversParentTypes['TaskForceEngagement'] };
   TaskForceMoveOrder: TaskForceMoveOrderMapper;
   TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: TaskForceOrderMapper;
   TaskForceOrderInput: TaskForceOrderInput;
-  TaskForceShip: TaskForceShipMapper;
-  TaskForceShipCommision: TaskForceShipCommisionMapper;
-  TaskForceShipComponent: Omit<TaskForceShipComponent, 'component'> & { component: ResolversParentTypes['ShipComponent'] };
   TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   UnknownDiscovery: UnknownDiscovery;
@@ -700,7 +550,6 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  taskForceEngagements?: Resolver<Array<ResolversTypes['TaskForceEngagement']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
   tickRate?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -709,7 +558,6 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
   createShipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType, RequireFields<MutationcreateShipDesignArgs, 'design' | 'gameId'>>;
-  createTaskForceCommision?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationcreateTaskForceCommisionArgs, 'commision'>>;
   joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationjoinGameArgs, 'id'>>;
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
@@ -762,8 +610,6 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<QuerystarSystemArgs, 'id'>>;
-  taskForceEngagement?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType, RequireFields<QuerytaskForceEngagementArgs, 'id'>>;
-  taskForceShipCommision?: Resolver<ResolversTypes['TaskForceShipCommision'], ParentType, ContextType, RequireFields<QuerytaskForceShipCommisionArgs, 'id'>>;
 };
 
 export type ResourceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
@@ -778,24 +624,10 @@ export type ResourceCostResolvers<ContextType = Context, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ResourceDepotResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceDepot'] = ResolversParentTypes['ResourceDepot']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  quantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type ResourceDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceDiscovery'] = ResolversParentTypes['ResourceDiscovery']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   miningRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   remainingDeposits?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ResourceNeedResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceNeed'] = ResolversParentTypes['ResourceNeed']> = {
-  alotted?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  needed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -809,7 +641,6 @@ export type ShipComponentResolvers<ContextType = Context, ParentType extends Res
   crewNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   ftlSpeed?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  hullBoost?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   powerGeneration?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -818,6 +649,7 @@ export type ShipComponentResolvers<ContextType = Context, ParentType extends Res
   sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   shieldEffectivenessAgainst?: Resolver<Maybe<Array<ResolversTypes['ShipComponentEffectivenessAgainst']>>, ParentType, ContextType>;
   shieldStrength?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  structuralIntegrity?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   supplyCapacity?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   supplyNeedCombat?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   supplyNeedMovement?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -841,14 +673,20 @@ export type ShipComponentEffectivenessAgainstResolvers<ContextType = Context, Pa
 };
 
 export type ShipDesignResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesign'] = ResolversParentTypes['ShipDesign']> = {
-  components?: Resolver<Array<ResolversTypes['ShipComponent']>, ParentType, ContextType>;
+  components?: Resolver<Array<ResolversTypes['ShipDesignComponent']>, ParentType, ContextType>;
   costs?: Resolver<Array<ResolversTypes['ResourceCost']>, ParentType, ContextType>;
   decommissioned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
-  previousDesign?: Resolver<Maybe<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ShipDesignComponentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesignComponent'] = ResolversParentTypes['ShipDesignComponent']> = {
+  component?: Resolver<ResolversTypes['ShipComponent'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -862,9 +700,7 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   populations?: Resolver<Maybe<Array<ResolversTypes['Population']>>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
-  resourceDepots?: Resolver<Maybe<Array<ResolversTypes['ResourceDepot']>>, ParentType, ContextType>;
   sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  taskForceShipCommisions?: Resolver<Array<ResolversTypes['TaskForceShipCommision']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -877,11 +713,9 @@ export type StarSystemUpdateEventResolvers<ContextType = Context, ParentType ext
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   trackGalaxy?: SubscriptionResolver<ResolversTypes['TrackGalaxyEvent'], "trackGalaxy", ParentType, ContextType, RequireFields<SubscriptiontrackGalaxyArgs, 'gameId'>>;
   trackStarSystem?: SubscriptionResolver<ResolversTypes['TrackStarSystemEvent'], "trackStarSystem", ParentType, ContextType, RequireFields<SubscriptiontrackStarSystemArgs, 'starSystemId'>>;
-  trackTaskForceEngagement?: SubscriptionResolver<ResolversTypes['TaskForceEngagementEvent'], "trackTaskForceEngagement", ParentType, ContextType, RequireFields<SubscriptiontrackTaskForceEngagementArgs, 'taskForceEngagementId'>>;
 };
 
 export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
-  commisions?: Resolver<Array<ResolversTypes['TaskForceShipCommision']>, ParentType, ContextType>;
   game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -891,8 +725,6 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
   orders?: Resolver<Maybe<Array<ResolversTypes['TaskForceOrder']>>, ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
-  sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  ships?: Resolver<Array<ResolversTypes['TaskForceShip']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -901,54 +733,9 @@ export type TaskForceColonizeOrderResolvers<ContextType = Context, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskForceCommisionUpdateEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceCommisionUpdateEvent'] = ResolversParentTypes['TaskForceCommisionUpdateEvent']> = {
-  constructionPerTick?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  subject?: Resolver<ResolversTypes['TaskForceShipCommision'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskForceEngagementResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagement'] = ResolversParentTypes['TaskForceEngagement']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  phase?: Resolver<ResolversTypes['TaskForceEngagementPhase'], ParentType, ContextType>;
-  phaseProgress?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
-  taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskForceEngagementEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementEvent'] = ResolversParentTypes['TaskForceEngagementEvent']> = {
-  __resolveType?: TypeResolveFn<'TaskForceEngagementProgressEvent' | 'TaskForceEngagementWeaponFiredEvent', ParentType, ContextType>;
-};
-
-export type TaskForceEngagementPhaseResolvers = EnumResolverSignature<{ engagement?: any, locating?: any, resolution?: any }, ResolversTypes['TaskForceEngagementPhase']>;
-
-export type TaskForceEngagementProgressEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementProgressEvent'] = ResolversParentTypes['TaskForceEngagementProgressEvent']> = {
-  engagement?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskForceEngagementWeaponFiredEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementWeaponFiredEvent'] = ResolversParentTypes['TaskForceEngagementWeaponFiredEvent']> = {
-  attacker?: Resolver<ResolversTypes['TaskForceShip'], ParentType, ContextType>;
-  damage?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  engagement?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType>;
-  target?: Resolver<ResolversTypes['TaskForceShip'], ParentType, ContextType>;
-  weapon?: Resolver<ResolversTypes['TaskForceShipComponent'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type TaskForceFollowOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceFollowOrder'] = ResolversParentTypes['TaskForceFollowOrder']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   taskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskForceJoinsEngagementEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceJoinsEngagementEvent'] = ResolversParentTypes['TaskForceJoinsEngagementEvent']> = {
-  subject?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskForceLeavesEngagementEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceLeavesEngagementEvent'] = ResolversParentTypes['TaskForceLeavesEngagementEvent']> = {
-  subject?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -963,44 +750,14 @@ export type TaskForceOrderResolvers<ContextType = Context, ParentType extends Re
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type TaskForceShipResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShip'] = ResolversParentTypes['TaskForceShip']> = {
-  components?: Resolver<Array<ResolversTypes['TaskForceShipComponent']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  role?: Resolver<ResolversTypes['TaskForceShipRole'], ParentType, ContextType>;
-  shipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType>;
-  structuralIntegrity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  supplyCarried?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskForceShipCommisionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShipCommision'] = ResolversParentTypes['TaskForceShipCommision']> = {
-  constructionDone?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  constructionPerTick?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  constructionTotal?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  resourceNeeds?: Resolver<Array<ResolversTypes['ResourceNeed']>, ParentType, ContextType>;
-  role?: Resolver<ResolversTypes['TaskForceShipRole'], ParentType, ContextType>;
-  shipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskForceShipComponentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShipComponent'] = ResolversParentTypes['TaskForceShipComponent']> = {
-  component?: Resolver<ResolversTypes['ShipComponent'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  state?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type TaskForceShipRoleResolvers = EnumResolverSignature<{ capital?: any, screen?: any, support?: any }, ResolversTypes['TaskForceShipRole']>;
 
 export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackGalaxyEvent'] = ResolversParentTypes['TrackGalaxyEvent']> = {
-  __resolveType?: TypeResolveFn<'PositionableApppearsEvent' | 'PositionableDisappearsEvent' | 'PositionableMovesEvent' | 'StarSystemUpdateEvent' | 'TaskForceJoinsEngagementEvent' | 'TaskForceLeavesEngagementEvent', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'PositionableApppearsEvent' | 'PositionableDisappearsEvent' | 'PositionableMovesEvent' | 'StarSystemUpdateEvent', ParentType, ContextType>;
 };
 
 export type TrackStarSystemEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackStarSystemEvent'] = ResolversParentTypes['TrackStarSystemEvent']> = {
-  __resolveType?: TypeResolveFn<'StarSystemUpdateEvent' | 'TaskForceCommisionUpdateEvent', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'StarSystemUpdateEvent', ParentType, ContextType>;
 };
 
 export type UnknownDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UnknownDiscovery'] = ResolversParentTypes['UnknownDiscovery']> = {
@@ -1036,31 +793,19 @@ export type Resolvers<ContextType = Context> = {
   Query?: QueryResolvers<ContextType>;
   Resource?: ResourceResolvers<ContextType>;
   ResourceCost?: ResourceCostResolvers<ContextType>;
-  ResourceDepot?: ResourceDepotResolvers<ContextType>;
   ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;
-  ResourceNeed?: ResourceNeedResolvers<ContextType>;
   ShipComponent?: ShipComponentResolvers<ContextType>;
   ShipComponentEffectivenessAgainst?: ShipComponentEffectivenessAgainstResolvers<ContextType>;
   ShipDesign?: ShipDesignResolvers<ContextType>;
+  ShipDesignComponent?: ShipDesignComponentResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
   StarSystemUpdateEvent?: StarSystemUpdateEventResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;
   TaskForceColonizeOrder?: TaskForceColonizeOrderResolvers<ContextType>;
-  TaskForceCommisionUpdateEvent?: TaskForceCommisionUpdateEventResolvers<ContextType>;
-  TaskForceEngagement?: TaskForceEngagementResolvers<ContextType>;
-  TaskForceEngagementEvent?: TaskForceEngagementEventResolvers<ContextType>;
-  TaskForceEngagementPhase?: TaskForceEngagementPhaseResolvers;
-  TaskForceEngagementProgressEvent?: TaskForceEngagementProgressEventResolvers<ContextType>;
-  TaskForceEngagementWeaponFiredEvent?: TaskForceEngagementWeaponFiredEventResolvers<ContextType>;
   TaskForceFollowOrder?: TaskForceFollowOrderResolvers<ContextType>;
-  TaskForceJoinsEngagementEvent?: TaskForceJoinsEngagementEventResolvers<ContextType>;
-  TaskForceLeavesEngagementEvent?: TaskForceLeavesEngagementEventResolvers<ContextType>;
   TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
-  TaskForceShip?: TaskForceShipResolvers<ContextType>;
-  TaskForceShipCommision?: TaskForceShipCommisionResolvers<ContextType>;
-  TaskForceShipComponent?: TaskForceShipComponentResolvers<ContextType>;
   TaskForceShipRole?: TaskForceShipRoleResolvers;
   TrackGalaxyEvent?: TrackGalaxyEventResolvers<ContextType>;
   TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;

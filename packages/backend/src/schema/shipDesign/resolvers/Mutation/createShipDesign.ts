@@ -1,8 +1,4 @@
-import {
-	shipDesignComponents,
-	shipDesignResourceCosts,
-	shipDesigns,
-} from "@space/data/schema";
+import { shipDesignComponents, shipDesigns } from "@space/data/schema";
 import type { MutationResolvers } from "./../../../types.generated.js";
 export const createShipDesign: NonNullable<
 	MutationResolvers["createShipDesign"]
@@ -19,12 +15,6 @@ export const createShipDesign: NonNullable<
 				description: design.description,
 			})
 			.returning();
-
-		await tx.insert(shipDesignResourceCosts).values({
-			shipDesignId: shipDesign.id,
-			resourceId: design.resourceId,
-			quantity: `${design.componentIds.length * 100}`,
-		});
 
 		for (const [position, shipComponentId] of design.componentIds.entries()) {
 			await tx.insert(shipDesignComponents).values({

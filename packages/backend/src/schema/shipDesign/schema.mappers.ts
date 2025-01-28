@@ -3,5 +3,4 @@ export type ShipDesignMapper = {
 	name: string;
 	description: string;
 	decommissioned: boolean;
-	previousDesignId: string | null;
 };

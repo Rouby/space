@@ -1,9 +1,9 @@
 {
-	"recommendations": [
-		"arcanis.vscode-zipfs",
-		"biomejs.biome",
-		"GraphQL.vscode-graphql",
-		"GraphQL.vscode-graphql-syntax",
-		"ms-playwright.playwright"
-	]
+  "recommendations": [
+    "arcanis.vscode-zipfs",
+    "biomejs.biome",
+    "GraphQL.vscode-graphql",
+    "GraphQL.vscode-graphql-syntax",
+    "ms-playwright.playwright"
+  ]
 }

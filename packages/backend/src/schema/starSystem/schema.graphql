@@ -6,7 +6,6 @@ type StarSystem implements Positionable {
 	sensorRange: Float
 	discoveries: [Discovery!]
 	discoveryProgress: Float
-	resourceDepots: [ResourceDepot!]
 	populations: [Population!]
 	isVisible: Boolean!
 	lastUpdate: DateTime
@@ -23,12 +22,6 @@ type ResourceDiscovery {
 
 type UnknownDiscovery {
 	id: ID!
-}
-
-type ResourceDepot {
-	id: ID!
-	resource: Resource!
-	quantity: Float!
 }
 
 type Population {

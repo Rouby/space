@@ -1,1 +1,0 @@
-ALTER TABLE "lastKnownStates" ADD CONSTRAINT "lastKnownStates_userId_gameId_subjectId_pk" PRIMARY KEY("userId","gameId","subjectId");

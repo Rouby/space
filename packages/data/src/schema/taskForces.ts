@@ -1,11 +1,10 @@
 import { relations, sql } from "drizzle-orm";
 import { json, pgTable, point, uuid, varchar } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
-import { taskForceEngagementsToTaskForces } from "./taskForceEngagements.ts";
 import { users } from "./users.ts";
 
 export const taskForces = pgTable("taskForces", {
-	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
 	gameId: uuid()
 		.notNull()
 		.references(() => games.id, { onDelete: "cascade" }),
@@ -32,5 +31,4 @@ export const taskForcesRelations = relations(taskForces, ({ one, many }) => ({
 		fields: [taskForces.ownerId],
 		references: [users.id],
 	}),
-	taskForceEngagmentsToTaskForces: many(taskForceEngagementsToTaskForces),
 }));

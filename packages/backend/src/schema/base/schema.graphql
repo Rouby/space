@@ -11,12 +11,8 @@ union TrackGalaxyEvent =
 	| PositionableMovesEvent
 	| PositionableDisappearsEvent
 	| StarSystemUpdateEvent
-	| TaskForceJoinsEngagementEvent
-	| TaskForceLeavesEngagementEvent
 
-union TrackStarSystemEvent =
-	| StarSystemUpdateEvent
-	| TaskForceCommisionUpdateEvent
+union TrackStarSystemEvent = StarSystemUpdateEvent
 
 type PositionableApppearsEvent {
 	subject: Positionable!
@@ -31,18 +27,6 @@ type PositionableDisappearsEvent {
 
 type StarSystemUpdateEvent {
 	subject: StarSystem!
-}
-
-type TaskForceCommisionUpdateEvent {
-	subject: TaskForceShipCommision!
-	constructionPerTick: Float!
-}
-
-type TaskForceJoinsEngagementEvent {
-	subject: TaskForceEngagement!
-}
-type TaskForceLeavesEngagementEvent {
-	subject: TaskForceEngagement!
 }
 
 type Subscription {

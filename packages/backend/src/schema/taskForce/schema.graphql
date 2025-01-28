@@ -12,39 +12,8 @@ type TaskForce implements Positionable {
 	movementVector: Vector
 	owner: Player
 	game: Game!
-	sensorRange: Float
-	ships: [TaskForceShip!]!
-	commisions: [TaskForceShipCommision!]!
 	isVisible: Boolean!
 	lastUpdate: DateTime
-}
-
-type TaskForceShip {
-	id: ID!
-	name: String!
-	role: TaskForceShipRole!
-	shipDesign: ShipDesign!
-	components: [TaskForceShipComponent!]!
-	structuralIntegrity: Float!
-	supplyCarried: Float!
-}
-
-type TaskForceShipComponent {
-	id: ID!
-	component: ShipComponent!
-	state: Float!
-}
-
-type TaskForceShipCommision {
-	id: ID!
-	name: String!
-	role: TaskForceShipRole!
-	shipDesign: ShipDesign!
-
-	constructionDone: Float!
-	constructionTotal: Float!
-	constructionPerTick: Float
-	resourceNeeds: [ResourceNeed!]!
 }
 
 interface TaskForceOrder {
@@ -70,24 +39,7 @@ extend type Game {
 }
 
 extend type StarSystem {
-	taskForceShipCommisions: [TaskForceShipCommision!]!
 	taskForces: [TaskForce!]!
-}
-
-type Query {
-	taskForceShipCommision(id: ID!): TaskForceShipCommision!
-}
-
-input TaskForceCommisionInput {
-	starSystemId: ID!
-	name: String!
-	ships: [TaskForceCommisionShipInput!]!
-}
-
-input TaskForceCommisionShipInput {
-	name: String!
-	role: TaskForceShipRole!
-	shipDesignId: ID!
 }
 
 input TaskForceOrderInput {
@@ -105,8 +57,6 @@ input TaskForceFollowOrderInput {
 }
 
 type Mutation {
-	createTaskForceCommision(commision: TaskForceCommisionInput!): TaskForce!
-
 	orderTaskForce(
 		id: ID!
 		orders: [TaskForceOrderInput!]!

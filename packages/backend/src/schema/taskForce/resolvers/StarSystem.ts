@@ -6,13 +6,12 @@ import {
 	lastKnownStates,
 	or,
 	sql,
-	taskForceShipCommisions,
 	taskForces,
 } from "@space/data/schema";
 import type { StarSystemResolvers } from "./../../types.generated.js";
 export const StarSystem: Pick<
 	StarSystemResolvers,
-	"taskForceShipCommisions" | "taskForces" | "__isTypeOf"
+	"taskForces" | "__isTypeOf"
 > = {
 	taskForces: async (parent, _arg, ctx) => {
 		const {
@@ -68,17 +67,6 @@ export const StarSystem: Pick<
 				and(
 					eq(lastKnownStates.gameId, parent.id),
 					eq(lastKnownStates.subjectId, taskForces.id),
-				),
-			);
-	},
-	taskForceShipCommisions: async (parent, _arg, ctx) => {
-		return ctx.drizzle
-			.select()
-			.from(taskForceShipCommisions)
-			.where(
-				and(
-					eq(taskForceShipCommisions.gameId, parent.gameId),
-					eq(taskForceShipCommisions.starSystemId, parent.id),
 				),
 			);
 	},

@@ -11,7 +11,6 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
-
 import { resources } from "./resources.ts";
 import { users } from "./users.ts";
 

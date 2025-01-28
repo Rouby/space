@@ -6,13 +6,7 @@ import {
 	exists,
 	sql,
 } from "drizzle-orm";
-import {
-	jsonb,
-	pgTable,
-	primaryKey,
-	timestamp,
-	uuid,
-} from "drizzle-orm/pg-core";
+import { index, jsonb, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 import type { getDrizzle } from "../index.ts";
 import { games } from "./games.ts";
 import { users } from "./users.ts";
@@ -31,11 +25,11 @@ export const lastKnownStates = pgTable(
 		state: jsonb().notNull().$type<LastKnownState>(),
 		lastUpdate: timestamp().notNull(),
 	},
-	(table) => ({
-		pk: primaryKey({
-			columns: [table.userId, table.gameId, table.subjectId],
-		}),
-	}),
+	(table) => [
+		{
+			id: index().on(table.userId, table.gameId, table.subjectId),
+		},
+	],
 );
 
 export type LastKnownState = LastKnownStarSystemState | LastKnownTaskForceState;

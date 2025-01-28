@@ -1,12 +1,4 @@
-import {
-	and,
-	eq,
-	games,
-	players,
-	taskForceShipCommisions,
-	taskForceShips,
-	taskForceShipsWithStats,
-} from "@space/data/schema";
+import { and, eq, games, players } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { TaskForceResolvers } from "./../../types.generated.js";
 export const TaskForce: TaskForceResolvers = {
@@ -42,29 +34,5 @@ export const TaskForce: TaskForceResolvers = {
 		}
 
 		return game;
-	},
-	sensorRange: async (parent, _arg, ctx) => {
-		const ships = await ctx.drizzle
-			.select({
-				sensorRange: taskForceShipsWithStats.sensorRange,
-			})
-			.from(taskForceShipsWithStats)
-			.where(eq(taskForceShipsWithStats.taskForceId, parent.id));
-
-		return ships.reduce((acc, ship) => {
-			return Math.max(acc, +ship.sensorRange);
-		}, 0);
-	},
-	ships: async (parent, _arg, ctx) => {
-		return ctx.drizzle
-			.select()
-			.from(taskForceShips)
-			.where(and(eq(taskForceShips.taskForceId, parent.id)));
-	},
-	commisions: async (parent, _arg, ctx) => {
-		return ctx.drizzle
-			.select()
-			.from(taskForceShipCommisions)
-			.where(and(eq(taskForceShipCommisions.taskForceId, parent.id)));
 	},
 };

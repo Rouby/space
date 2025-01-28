@@ -3,12 +3,6 @@ type Resource {
 	name: String!
 }
 
-type ResourceNeed {
-	resource: Resource!
-	alotted: Float!
-	needed: Float!
-}
-
 type ResourceCost {
 	resource: Resource!
 	quantity: Float!

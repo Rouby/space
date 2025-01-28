@@ -16,8 +16,6 @@ import { drizzle } from "../db.ts";
 import { tickDiscoveries } from "./discoveries.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
-import { tickTaskForceCommisions } from "./taskForceCommisions.ts";
-import { tickTaskForceEngagements } from "./taskForceEngagements.ts";
 import { tickTaskForceMovements } from "./taskForceMovements.ts";
 
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
@@ -45,11 +43,7 @@ export async function tick() {
 
 		await tickStarSystemEconomy(tx, ctx);
 
-		await tickTaskForceCommisions(tx, ctx);
-
 		await tickTaskForceMovements(tx, ctx);
-
-		await tickTaskForceEngagements(tx, ctx);
 
 		await notifyAboutVisibilityChanges();
 

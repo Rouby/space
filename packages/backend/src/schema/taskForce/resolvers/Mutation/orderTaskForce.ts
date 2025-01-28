@@ -1,11 +1,4 @@
-import {
-	and,
-	eq,
-	notExists,
-	taskForceEngagementsToTaskForces,
-	taskForceShipCommisions,
-	taskForces,
-} from "@space/data/schema";
+import { eq, taskForces } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import { randomUUID } from "node:crypto";
 import type { MutationResolvers } from "./../../../types.generated.js";
@@ -14,25 +7,7 @@ export const orderTaskForce: NonNullable<
 > = async (_parent, { id, orders, queue }, ctx) => {
 	ctx.throwWithoutClaim("urn:space:claim");
 
-	const taskForce = await ctx.drizzle.query.taskForces.findFirst({
-		where: and(
-			eq(taskForces.id, id),
-			// and not currently engaged in combat
-			notExists(
-				ctx.drizzle
-					.select()
-					.from(taskForceEngagementsToTaskForces)
-					.where(eq(taskForceEngagementsToTaskForces.taskForceId, id)),
-			),
-			// and not currently building ships
-			notExists(
-				ctx.drizzle
-					.select()
-					.from(taskForceShipCommisions)
-					.where(eq(taskForceShipCommisions.taskForceId, id)),
-			),
-		),
-	});
+	const taskForce = await ctx.drizzle.query.taskForces.findFirst();
 
 	if (!taskForce) {
 		throw createGraphQLError("Task force not found");

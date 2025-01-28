@@ -1,26 +1,26 @@
 {
-	"search.exclude": {
-		"**/.yarn": true,
-		"**/.pnp.*": true
-	},
-	"typescript.tsdk": ".yarn/sdks/typescript/lib",
-	"typescript.enablePromptUseWorkspaceTsdk": true,
-	"editor.defaultFormatter": "biomejs.biome",
-	"[html]": {
-		"editor.defaultFormatter": "vscode.html-language-features"
-	},
-	"[yaml]": {
-		"editor.defaultFormatter": "redhat.vscode-yaml"
-	},
-	"explorer.fileNesting.enabled": true,
-	"explorer.fileNesting.patterns": {
-		"schema.generated.graphqls": "resolvers.generated.ts, typeDefs.generated.ts, types.generated.ts",
-		"package.json": "yarn.lock, .pnp.cjs, .pnp.loader.mjs, .yarnrc.yml"
-	},
-	"playwright.env": {
-		"NODE_OPTIONS": "-r ../../.pnp.cjs"
-	},
-	"[sql]": {
-		"editor.defaultFormatter": "cweijan.vscode-postgresql-client2"
-	}
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "schema.generated.graphqls": "resolvers.generated.ts, typeDefs.generated.ts, types.generated.ts",
+    "package.json": "yarn.lock, .pnp.cjs, .pnp.loader.mjs, .yarnrc.yml"
+  },
+  "playwright.env": {
+    "NODE_OPTIONS": "-r ../../.pnp.cjs"
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "cweijan.vscode-postgresql-client2"
+  }
 }

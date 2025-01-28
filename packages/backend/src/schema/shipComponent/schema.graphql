@@ -19,7 +19,7 @@ type ShipComponent {
 	zoneOfControl: Float
 	sensorRange: Float
 
-	hullBoost: Float
+	structuralIntegrity: Float
 	thruster: Float
 	sensorPrecision: Float
 	armorThickness: Float
