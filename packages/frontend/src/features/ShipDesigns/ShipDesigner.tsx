@@ -45,7 +45,7 @@ export function ShipDesigner({
 						ftlSpeed
 						zoneOfControl
 						sensorRange
-						hullBoost
+						structuralIntegrity
 						thruster
 						sensorPrecision
 						armorThickness
@@ -148,8 +148,8 @@ export function ShipDesigner({
 					component.sensorRange,
 				);
 			}
-			if (component.hullBoost) {
-				acc.stats.hullBoost += component.hullBoost;
+			if (component.structuralIntegrity) {
+				acc.stats.structuralIntegrity += component.structuralIntegrity;
 			}
 			if (component.thruster) {
 				acc.stats.thruster = Math.min(acc.stats.thruster, component.thruster);
@@ -266,7 +266,7 @@ export function ShipDesigner({
 				zoneOfControl: 0,
 				sensorRange: 0,
 
-				hullBoost: 0,
+				structuralIntegrity: 0,
 				thruster: Number.POSITIVE_INFINITY,
 				sensorPrecision: 0,
 				armorThickness: { min: Number.POSITIVE_INFINITY, max: 0 },
@@ -294,10 +294,7 @@ export function ShipDesigner({
 					const design = {
 						name: formData.get("name") as string,
 						description: formData.get("description") as string,
-						resourceId:
-							(formData.get("resourceId") as string) ||
-							"35bf4590-a56c-4d51-b9ae-8652587485e0",
-						componentIds,
+						components: [],
 					};
 
 					await createShipDesign({
@@ -431,8 +428,8 @@ export function ShipDesigner({
 							>
 								<Text fw="bold">Combat stats</Text>
 								<Group justify="space-between" wrap="nowrap">
-									<span>Boost to hull</span>
-									<span>{stats.hullBoost}</span>
+									<span>Structural integrity</span>
+									<span>{stats.structuralIntegrity}</span>
 								</Group>
 								<Group justify="space-between" wrap="nowrap">
 									<span>Thruster</span>

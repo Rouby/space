@@ -250,7 +250,6 @@ jobs:
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
           chmod 700 get_helm.sh
           ./get_helm.sh
-
       - name: 🚀 Deploy
         run: |
           export JWT_SECRET=$(echo -n '${{ secrets.JWT_SECRET }}' | iconv -t utf-8 | base64 -w 0)

@@ -25,7 +25,10 @@ export const registerWithPassword: NonNullable<
 			return user[0];
 		})
 		.catch((err) => {
-			if (err instanceof DatabaseError && err.constraint === "email_idx") {
+			if (
+				err instanceof DatabaseError &&
+				err.constraint === "users_email_index"
+			) {
 				throw createGraphQLError("Email already in use");
 			}
 			throw err;

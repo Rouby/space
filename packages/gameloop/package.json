@@ -11,6 +11,6 @@
 		"@space/data": "workspace:*"
 	},
 	"devDependencies": {
-		"vitest": "3.0.4"
+		"vitest": "3.0.7"
 	}
 }

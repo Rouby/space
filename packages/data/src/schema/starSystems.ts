@@ -46,11 +46,11 @@ export const starSystemResourceDiscoveries = pgTable(
 		discoveredAt: timestamp().notNull(),
 		remainingDeposits: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
-	(table) => ({
-		pk: primaryKey({
+	(table) => [
+		primaryKey({
 			columns: [table.starSystemId, table.resourceId],
 		}),
-	}),
+	],
 );
 
 export const starSystemResourceDepots = pgTable(
@@ -64,11 +64,11 @@ export const starSystemResourceDepots = pgTable(
 			.references(() => resources.id, { onDelete: "cascade" }),
 		quantity: decimal({ precision: 30, scale: 6 }).notNull(),
 	},
-	(table) => ({
-		pk: primaryKey({
+	(table) => [
+		primaryKey({
 			columns: [table.starSystemId, table.resourceId],
 		}),
-	}),
+	],
 );
 
 export const starSystemPopulations = pgTable(
@@ -83,9 +83,23 @@ export const starSystemPopulations = pgTable(
 			onDelete: "restrict",
 		}),
 	},
-	(table) => ({
-		pk: primaryKey({
+	(table) => [
+		primaryKey({
 			columns: [table.starSystemId, table.allegianceToPlayerId],
+		}),
+	],
+);
+
+export const starSystemPopulationsRelations = relations(
+	starSystemPopulations,
+	({ one }) => ({
+		starSystem: one(starSystems, {
+			fields: [starSystemPopulations.starSystemId],
+			references: [starSystems.id],
+		}),
+		allegianceToPlayer: one(users, {
+			fields: [starSystemPopulations.allegianceToPlayerId],
+			references: [users.id],
 		}),
 	}),
 );

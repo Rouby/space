@@ -41,24 +41,6 @@ export function StarSystemDetails({ id }: { id: string }) {
 					id
 					name
 				}
-				commisions {
-					id
-					name
-					shipDesign {
-						id
-						name
-					}
-					constructionDone
-					constructionTotal
-					resourceNeeds {
-						resource {
-							id
-							name
-						}
-						alotted
-						needed
-					}
-				}
 			}
 			discoveries {
 				__typename
@@ -76,14 +58,6 @@ export function StarSystemDetails({ id }: { id: string }) {
 				}
 			}
 			discoveryProgress
-			resourceDepots {
-				id
-				resource {
-					id
-					name
-				}	
-				quantity
-			}
 			populations {
 				id
 				amount
@@ -116,36 +90,11 @@ export function StarSystemDetails({ id }: { id: string }) {
 						}
 					}
 					discoveryProgress
-					resourceDepots {
-						id
-						resource {
-							id
-							name
-						}	
-						quantity
-					}
 					populations {
 						id
 						amount
 					}
 				}
-			}
-			... on TaskForceCommisionUpdateEvent {
-				subject {
-					id
-					constructionDone
-					constructionTotal
-					constructionPerTick
-					resourceNeeds {
-						resource {
-							id
-							name
-						}
-						alotted
-						needed
-					}
-				}
-				
 			}
 		}
 	}`),
@@ -262,28 +211,6 @@ export function StarSystemDetails({ id }: { id: string }) {
 							</Progress.Root>
 						)}
 					</Card>
-					<Card>
-						<Text variant="gradient">Resource depots</Text>
-						<div
-							className={css({
-								display: "grid",
-								gridTemplateColumns: "repeat(auto-fit, 100px)",
-							})}
-						>
-							{data?.starSystem.resourceDepots?.map((depot) => (
-								<Stack key={depot.id} gap={0} align="center">
-									<Center>{depot.resource.name}</Center>
-									<Image
-										src={placeholderDiscoveryArt}
-										maw={64}
-										mah={64}
-										radius="lg"
-									/>
-									<Center>{formatUnit(depot.quantity)}</Center>
-								</Stack>
-							))}
-						</div>
-					</Card>
 				</Stack>
 				<Image src={placeholderStarsystemArt} alt="star system" />
 			</SimpleGrid>
@@ -298,36 +225,6 @@ export function StarSystemDetails({ id }: { id: string }) {
 					{data?.starSystem.taskForces?.map((tf) => (
 						<Stack key={tf.id} gap={0} align="center">
 							<Center>{tf.name}</Center>
-							{tf.commisions.length > 0 ? (
-								<Center>Commision in progress</Center>
-							) : null}
-							{tf.commisions.map((commision) => (
-								<Stack key={commision.id} gap={0}>
-									<div>{commision.name}</div>
-									<Progress.Root size={20}>
-										{commision.resourceNeeds.map((need) => (
-											<Progress.Section
-												key={need.resource.id}
-												value={(need.alotted / need.needed) * 100}
-												color="cyan"
-											>
-												<Progress.Label>
-													{need.resource.name} ({formatUnit(need.alotted)}/
-													{formatUnit(need.needed)})
-												</Progress.Label>
-											</Progress.Section>
-										))}
-									</Progress.Root>
-									<Progress
-										size={20}
-										value={
-											(commision.constructionDone /
-												commision.constructionTotal) *
-											100
-										}
-									/>
-								</Stack>
-							))}
 						</Stack>
 					))}
 				</div>

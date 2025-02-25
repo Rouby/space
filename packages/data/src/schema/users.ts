@@ -14,12 +14,7 @@ export const users = pgTable(
 		email: varchar({ length: 256 }).notNull(),
 		name: varchar({ length: 256 }).notNull(),
 	},
-	(table) => [
-		{
-			email: uniqueIndex().on(table.email),
-			name: index().on(table.name),
-		},
-	],
+	(table) => [uniqueIndex().on(table.email), index().on(table.name)],
 );
 
 export const passwords = pgTable("passwords", {

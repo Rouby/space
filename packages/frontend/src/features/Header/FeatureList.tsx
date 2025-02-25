@@ -1,0 +1,44 @@
+import { Group, Text, ThemeIcon, UnstyledButton, rem } from "@mantine/core";
+import { IconClockCog } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
+import { useStyles } from "tss-react";
+import { theme, vars } from "../../theme";
+
+export function FeatureList() {
+	const { css } = useStyles();
+
+	return (
+		<>
+			<UnstyledButton
+				component={Link}
+				className={css({
+					width: "100%",
+					padding: `${vars.spacing.xs} ${vars.spacing.md}`,
+					borderRadius: vars.radius.md,
+
+					"&:hover": {
+						backgroundColor: theme.colors.dark[7],
+					},
+				})}
+				to="/features"
+			>
+				<Group wrap="nowrap" align="flex-start">
+					<ThemeIcon size={34} variant="default" radius="md">
+						<IconClockCog
+							style={{ width: rem(22), height: rem(22) }}
+							color={theme.colors.blue[6]}
+						/>
+					</ThemeIcon>
+					<div>
+						<Text size="sm" fw={500}>
+							Turn based
+						</Text>
+						<Text size="xs" c="dimmed">
+							Play at your own pace
+						</Text>
+					</div>
+				</Group>
+			</UnstyledButton>
+		</>
+	);
+}
