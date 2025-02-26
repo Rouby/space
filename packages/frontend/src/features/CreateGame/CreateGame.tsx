@@ -1,4 +1,4 @@
-import { Button, Modal, TextInput } from "@mantine/core";
+import { Button, Group, Modal, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation } from "urql";
 import { graphql } from "../../gql";
@@ -17,15 +17,9 @@ export function CreateGame() {
 
 	return (
 		<>
-			<div
-				style={{
-					display: "flex",
-					justifyContent: "flex-end",
-					marginBottom: "1rem",
-				}}
-			>
+			<Group justify="flex-end" mb="md">
 				<Button onClick={open}>Create Game</Button>
-			</div>
+			</Group>
 
 			<Modal opened={opened} onClose={close} title="Create New Game">
 				<form
