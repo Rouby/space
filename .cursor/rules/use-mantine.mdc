@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description: AI Guidelines for Mantine Usage
+globs: ["**/*.tsx", "**/*.jsx"]
 ---
 # AI Guidelines for Mantine Usage
 
