@@ -179,7 +179,6 @@ query Galaxy($id: ID!) {
 		>
 			<Application
 				preference="webgpu"
-				attachToDevTools={!import.meta.env.PROD}
 				resizeTo={parentRef}
 				antialias
 				autoDensity

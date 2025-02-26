@@ -2,9 +2,9 @@ import { eq, relations, sql } from "drizzle-orm";
 import {
 	boolean,
 	index,
+	integer,
 	pgTable,
 	pgView,
-	point,
 	text,
 	uuid,
 	varchar,
@@ -41,9 +41,10 @@ export const shipDesignComponents = pgTable(
 		shipComponentId: uuid()
 			.notNull()
 			.references(() => shipComponents.id, { onDelete: "restrict" }),
-		position: point({ mode: "xy" }).notNull(),
+		column: integer().notNull(),
+		row: integer().notNull(),
 	},
-	(table) => [index().on(table.shipDesignId, table.position)],
+	(table) => [index().on(table.shipDesignId, table.column, table.row)],
 );
 
 export const shipDesignComponentsRelations = relations(

@@ -21,6 +21,18 @@
 		"NODE_OPTIONS": "-r ./.pnp.cjs"
 	},
 	"[sql]": {
-		"editor.defaultFormatter": "cweijan.vscode-postgresql-client2"
-	}
+		"editor.defaultFormatter": "mtxr.sqltools"
+	},
+	"sqltools.connections": [
+		{
+			"previewLimit": 50,
+			"server": "localhost",
+			"port": 5432,
+			"driver": "PostgreSQL",
+			"name": "localhost",
+			"username": "postgres",
+			"password": "password",
+			"database": "postgres"
+		}
+	]
 }

@@ -16,7 +16,6 @@ import { drizzle } from "../db.ts";
 import { tickDiscoveries } from "./discoveries.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
-import { tickTaskForceMovements } from "./taskForceMovements.ts";
 
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
 export type Transaction = FirstArgument<
@@ -43,8 +42,6 @@ export async function tick() {
 
 		await tickStarSystemEconomy(tx, ctx);
 
-		await tickTaskForceMovements(tx, ctx);
-
 		await notifyAboutVisibilityChanges();
 
 		/// ------------------------------------------------------------
@@ -69,7 +66,10 @@ export async function tick() {
 					visibility,
 					and(
 						eq(visibility.gameId, players.gameId),
-						eq(visibility.userId, players.userId),
+						eq(
+							sql`${visibility}.${sql.identifier(visibility.userId.fieldAlias)}`,
+							players.userId,
+						),
 						sql`${visibility.circle} @> ${taskForces.position}`,
 					),
 				)
@@ -93,7 +93,10 @@ export async function tick() {
 							visibility,
 							and(
 								eq(visibility.gameId, players.gameId),
-								eq(visibility.userId, players.userId),
+								eq(
+									sql`${visibility}.${sql.identifier(visibility.userId.fieldAlias)}`,
+									players.userId,
+								),
 								sql`${visibility.circle} @> ${starSystems.position}`,
 							),
 						),
@@ -130,7 +133,10 @@ export async function tick() {
 						visibility,
 						and(
 							eq(visibility.gameId, players.gameId),
-							eq(visibility.userId, players.userId),
+							eq(
+								sql`${visibility}.${sql.identifier(visibility.userId.fieldAlias)}`,
+								players.userId,
+							),
 							sql`${visibility.circle} @> ${taskForces.position}`,
 						),
 					)
@@ -235,7 +241,10 @@ export async function tick() {
 						visibility,
 						and(
 							eq(visibility.gameId, players.gameId),
-							eq(visibility.userId, players.userId),
+							eq(
+								sql`${visibility}.${sql.identifier(visibility.userId.fieldAlias)}`,
+								players.userId,
+							),
 							sql`${visibility.circle} @> ${starSystems.position}`,
 						),
 					)

@@ -32,7 +32,7 @@
 		"@mantine/nprogress": "7.17.0",
 		"@mantine/tiptap": "7.17.0",
 		"@mantine/vanilla-extract": "7.17.0",
-		"@pixi/react": "8.0.0-dev.fdeaea4",
+		"@pixi/react": "8.0.0-beta.24",
 		"@tabler/icons-react": "3.30.0",
 		"@tanstack/react-router": "1.111.7",
 		"@tanstack/router-devtools": "1.111.7",
