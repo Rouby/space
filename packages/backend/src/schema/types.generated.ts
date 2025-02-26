@@ -55,6 +55,7 @@ export type Mutation = {
   orderTaskForce: TaskForce;
   registerWithPassword: User;
   startGame: Game;
+  updatePlayer: Player;
 };
 
 
@@ -96,6 +97,12 @@ export type MutationregisterWithPasswordArgs = {
 
 export type MutationstartGameArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationupdatePlayerArgs = {
+  gameId: Scalars['ID']['input'];
+  input: UpdatePlayerInput;
 };
 
 export type Player = {
@@ -341,6 +348,10 @@ export type UnknownDiscovery = {
   id: Scalars['ID']['output'];
 };
 
+export type UpdatePlayerInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
@@ -477,6 +488,7 @@ export type ResolversTypes = {
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
+  UpdatePlayerInput: UpdatePlayerInput;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
   WeaponDeliveryType: ResolverTypeWrapper<'projectile' | 'beam' | 'missile' | 'instant'>;
@@ -524,6 +536,7 @@ export type ResolversParentTypes = {
   TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   UnknownDiscovery: UnknownDiscovery;
+  UpdatePlayerInput: UpdatePlayerInput;
   User: User;
   Vector: Scalars['Vector']['output'];
 };
@@ -564,6 +577,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
+  updatePlayer?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationupdatePlayerArgs, 'gameId' | 'input'>>;
 };
 
 export type PlayerResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {

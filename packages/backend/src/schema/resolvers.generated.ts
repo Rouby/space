@@ -12,6 +12,7 @@ import    { loginWithRefreshToken as Mutation_loginWithRefreshToken } from './us
 import    { orderTaskForce as Mutation_orderTaskForce } from './taskForce/resolvers/Mutation/orderTaskForce.js';
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
+import    { updatePlayer as Mutation_updatePlayer } from './game/resolvers/Mutation/updatePlayer.js';
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
@@ -50,7 +51,7 @@ import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
-      Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame },
+      Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
       Game: { ...game_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },

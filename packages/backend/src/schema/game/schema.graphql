@@ -17,6 +17,10 @@ type Player {
 	user: User!
 }
 
+input UpdatePlayerInput {
+	color: String
+}
+
 type Query {
 	games: [Game!]!
 	game(id: ID!): Game!
@@ -26,4 +30,5 @@ type Mutation {
 	createGame(name: String!): Game!
 	joinGame(id: ID!): Game!
 	startGame(id: ID!): Game!
+	updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
 }

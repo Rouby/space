@@ -1,10 +1,30 @@
 import { Avatar, Group, Text, UnstyledButton, rem } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { useStyles } from "tss-react";
+import { useQuery } from "urql";
+import { useAuth } from "../../Auth";
+import { graphql } from "../../gql";
 import { vars } from "../../theme";
 
 export function UserButton() {
 	const { css } = useStyles();
+	const { me: currentUser } = useAuth();
+
+	const [{ data }] = useQuery({
+		query: graphql(`
+			query CurrentUser {
+				me {
+					name
+					email
+				}
+			}
+		`),
+		pause: !currentUser?.id,
+	});
+
+	if (!data?.me) {
+		return null;
+	}
 
 	return (
 		<UnstyledButton
@@ -25,11 +45,11 @@ export function UserButton() {
 
 				<div style={{ flex: 1 }}>
 					<Text size="sm" fw={500}>
-						Harriette Spoonlicker
+						{data.me.name}
 					</Text>
 
 					<Text c="dimmed" size="xs">
-						hspoonlicker@outlook.com
+						{data.me.email}
 					</Text>
 				</div>
 
