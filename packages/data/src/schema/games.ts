@@ -30,7 +30,7 @@ export const players = pgTable(
 			.references(() => games.id, { onDelete: "cascade" }),
 		color: varchar({ length: 7 }).notNull().default("#000000"),
 	},
-	(table) => ({ pk: primaryKey({ columns: [table.userId, table.gameId] }) }),
+	(table) => [primaryKey({ columns: [table.userId, table.gameId] })],
 );
 
 export const gamesRelations = relations(games, ({ many }) => ({

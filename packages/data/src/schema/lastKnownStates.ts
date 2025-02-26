@@ -25,11 +25,7 @@ export const lastKnownStates = pgTable(
 		state: jsonb().notNull().$type<LastKnownState>(),
 		lastUpdate: timestamp().notNull(),
 	},
-	(table) => [
-		{
-			id: index().on(table.userId, table.gameId, table.subjectId),
-		},
-	],
+	(table) => [index().on(table.userId, table.gameId, table.subjectId)],
 );
 
 export type LastKnownState = LastKnownStarSystemState | LastKnownTaskForceState;

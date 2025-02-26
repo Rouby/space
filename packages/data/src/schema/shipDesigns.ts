@@ -43,11 +43,7 @@ export const shipDesignComponents = pgTable(
 			.references(() => shipComponents.id, { onDelete: "restrict" }),
 		position: point({ mode: "xy" }).notNull(),
 	},
-	(table) => [
-		{
-			id: index().on(table.shipDesignId, table.position),
-		},
-	],
+	(table) => [index().on(table.shipDesignId, table.position)],
 );
 
 export const shipDesignComponentsRelations = relations(
