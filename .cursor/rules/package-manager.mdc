@@ -4,8 +4,6 @@ globs: ["package.json", "yarn.lock"]
 ---
 # Package Manager Configuration
 
-Rules for using yarn as the package manager.
-
 <rule>
 name: use_yarn_package_manager
 description: Specifies yarn as the package manager for all Node.js related operations
@@ -40,6 +38,10 @@ actions:
          - Use `yarn init` for new projects
          - Use `yarn audit` for security checks
          - Use `yarn cache clean` for cache management
+      
+      7. Workspace-specific commands:
+         - Run codegen from root directory using `yarn codegen`
+         - Run other workspace commands using `yarn workspace @space/<workspace-name> <command>`
 
 examples:
   - input: |
@@ -52,9 +54,17 @@ examples:
       yarn
       yarn start
       yarn add lodash
-    output: "Correctly using yarn package manager"
+      
+      # Good: Using workspace commands
+      yarn codegen
+      yarn workspace @space/frontend dev
+    output: "Correctly using yarn package manager with workspaces"
 
 metadata:
   priority: high
   version: 1.0
-</rule> 
+  tags:
+    - package-manager
+    - yarn
+    - workspaces
+</rule>
