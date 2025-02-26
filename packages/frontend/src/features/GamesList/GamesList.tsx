@@ -1,4 +1,4 @@
-import { Badge, Button, Group, Table, Tabs } from "@mantine/core";
+import { Badge, Button, Card, Grid, Group, Stack, Tabs } from "@mantine/core";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "urql";
 import { useAuth } from "../../Auth";
@@ -66,65 +66,28 @@ export function GamesList() {
 			</Tabs.List>
 
 			<Tabs.Panel value="active">
-				<Table>
-					<Table.Thead>
-						<Table.Tr>
-							<Table.Th>Game</Table.Th>
-							<Table.Th>Players</Table.Th>
-							<Table.Th w={0} />
-						</Table.Tr>
-					</Table.Thead>
-					<Table.Tbody>
-						{activeGamesFiltered.map((game) => (
-							<Table.Tr key={game.id}>
-								<Table.Td>{game.name}</Table.Td>
-								<Table.Td>
-									{game.players.map((player) => (
-										<Group key={player.id} gap="xs" wrap="nowrap">
-											<div
-												style={{
-													width: 24,
-													height: 24,
-													borderRadius: "50%",
-													backgroundColor: player.color,
-												}}
-											/>
-											<span>{player.user.name}</span>
-										</Group>
-									))}
-								</Table.Td>
-								<Table.Td>
+				<Stack gap="md" mt="md">
+					{activeGamesFiltered.map((game) => (
+						<Card key={game.id} shadow="sm" padding="lg" radius="md" withBorder>
+							<Card.Section withBorder inheritPadding py="xs">
+								<Group justify="space-between">
+									<span style={{ fontWeight: "bold" }}>{game.name}</span>
 									<Button
 										component={Link}
 										to="/games/$id"
 										params={{ id: game.id } as never}
 										disabled={!game.players.some((p) => p.user.id === me?.id)}
+										size="xs"
 									>
 										Play
 									</Button>
-								</Table.Td>
-							</Table.Tr>
-						))}
-					</Table.Tbody>
-				</Table>
-			</Tabs.Panel>
+								</Group>
+							</Card.Section>
 
-			<Tabs.Panel value="lobby">
-				<Table>
-					<Table.Thead>
-						<Table.Tr>
-							<Table.Th>Game</Table.Th>
-							<Table.Th>Players</Table.Th>
-							<Table.Th w={0} />
-						</Table.Tr>
-					</Table.Thead>
-					<Table.Tbody>
-						{lobbyGamesFiltered.map((game) => (
-							<Table.Tr key={game.id}>
-								<Table.Td>{game.name}</Table.Td>
-								<Table.Td>
-									{game.players.map((player) => (
-										<Group key={player.id} gap="xs" wrap="nowrap">
+							<Grid mt="sm" gutter="sm">
+								{game.players.map((player) => (
+									<Grid.Col key={player.id} span={6}>
+										<Group gap="xs" wrap="nowrap">
 											<div
 												style={{
 													width: 24,
@@ -135,10 +98,22 @@ export function GamesList() {
 											/>
 											<span>{player.user.name}</span>
 										</Group>
-									))}
-								</Table.Td>
-								<Table.Td>
-									<Group wrap="nowrap">
+									</Grid.Col>
+								))}
+							</Grid>
+						</Card>
+					))}
+				</Stack>
+			</Tabs.Panel>
+
+			<Tabs.Panel value="lobby">
+				<Stack gap="md" mt="md">
+					{lobbyGamesFiltered.map((game) => (
+						<Card key={game.id} shadow="sm" padding="lg" radius="md" withBorder>
+							<Card.Section withBorder inheritPadding py="xs">
+								<Group justify="space-between">
+									<span style={{ fontWeight: "bold" }}>{game.name}</span>
+									<Group gap="xs">
 										<Button
 											onClick={() => joinGame({ id: game.id })}
 											disabled={
@@ -146,6 +121,7 @@ export function GamesList() {
 												game.players.some((p) => p.user.id === me?.id)
 											}
 											loading={joining && operation?.variables?.id === game.id}
+											size="xs"
 										>
 											Join
 										</Button>
@@ -154,15 +130,34 @@ export function GamesList() {
 											to="/games/lobby/$id"
 											params={{ id: game.id } as never}
 											disabled={!game.players.some((p) => p.user.id === me?.id)}
+											size="xs"
 										>
 											Goto
 										</Button>
 									</Group>
-								</Table.Td>
-							</Table.Tr>
-						))}
-					</Table.Tbody>
-				</Table>
+								</Group>
+							</Card.Section>
+
+							<Grid mt="sm" gutter="sm">
+								{game.players.map((player) => (
+									<Grid.Col key={player.id} span={6}>
+										<Group gap="xs" wrap="nowrap">
+											<div
+												style={{
+													width: 24,
+													height: 24,
+													borderRadius: "50%",
+													backgroundColor: player.color,
+												}}
+											/>
+											<span>{player.user.name}</span>
+										</Group>
+									</Grid.Col>
+								))}
+							</Grid>
+						</Card>
+					))}
+				</Stack>
 			</Tabs.Panel>
 		</Tabs>
 	);
