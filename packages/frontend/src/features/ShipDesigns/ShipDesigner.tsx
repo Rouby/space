@@ -1,22 +1,43 @@
 import {
 	AspectRatio,
 	Button,
+	Flex,
 	Group,
+	NumberInput,
 	Select,
 	SimpleGrid,
 	Stack,
 	Text,
 	TextInput,
 } from "@mantine/core";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
-import type { CreateShipDesignMutationVariables } from "../../gql/graphql";
+import type {
+	CreateShipDesignMutationVariables,
+	ShipDesignInput,
+} from "../../gql/graphql";
 import { vars } from "../../theme";
+import { DraggableComponent } from "./DraggableComponent";
+import { GridCell } from "./GridCell";
 import placeholderBlueprintBackground from "./example-blueprint-paper.png";
 import placeholderStatsBackground from "./example-stats-background.png";
+
+// Define a type for grid cell data
+type GridCellData = {
+	componentId: string | null;
+	instanceId: string | null;
+};
+
+// Define a type for component position in the grid
+type ComponentPosition = {
+	componentId: string;
+	instanceId: string;
+	row: number;
+	col: number;
+};
 
 export function ShipDesigner({
 	gameId,
@@ -70,7 +91,28 @@ export function ShipDesigner({
 		variables: { gameId },
 	});
 
-	const [componentIds, setComponentIds] = useState<string[]>([]);
+	// Grid size configuration
+	const [gridRows, setGridRows] = useState(5);
+	const [gridCols, setGridCols] = useState(7);
+
+	// Initialize grid with empty cells
+	const [grid, setGrid] = useState<GridCellData[][]>(() => {
+		return Array(gridRows)
+			.fill(null)
+			.map(() =>
+				Array(gridCols)
+					.fill(null)
+					.map(() => ({
+						componentId: null as string | null,
+						instanceId: null as string | null,
+					})),
+			);
+	});
+
+	// Track component positions
+	const [componentPositions, setComponentPositions] = useState<
+		ComponentPosition[]
+	>([]);
 
 	const formRef = useRef<HTMLFormElement>(null);
 
@@ -94,7 +136,90 @@ export function ShipDesigner({
 
 	const { css } = useStyles();
 
-	const { costs, stats } = componentIds.reduce(
+	// Update grid when rows or columns change
+	const updateGridSize = (newRows: number, newCols: number) => {
+		setGridRows(newRows);
+		setGridCols(newCols);
+
+		// Create new grid with the new dimensions
+		const newGrid = Array(newRows)
+			.fill(null)
+			.map(() =>
+				Array(newCols)
+					.fill(null)
+					.map(() => ({
+						componentId: null as string | null,
+						instanceId: null as string | null,
+					})),
+			);
+
+		// Copy over existing components where possible
+		for (const { componentId, instanceId, row, col } of componentPositions) {
+			if (row < newRows && col < newCols) {
+				newGrid[row][col] = { componentId, instanceId };
+			}
+		}
+
+		setGrid(newGrid);
+
+		// Update component positions to remove any that are now out of bounds
+		setComponentPositions((prev) =>
+			prev.filter(({ row, col }) => row < newRows && col < newCols),
+		);
+	};
+
+	// Generate a unique instance ID for a component
+	const generateInstanceId = () => {
+		return `instance-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+	};
+
+	// Handle dropping a component onto the grid
+	const handleDrop = (componentId: string, row: number, col: number) => {
+		// Check if the cell is already occupied
+		if (grid[row][col].componentId !== null) {
+			return false;
+		}
+
+		// Generate a unique instance ID for this component placement
+		const instanceId = generateInstanceId();
+
+		// Update the grid
+		const newGrid = [...grid];
+		newGrid[row][col] = { componentId, instanceId };
+		setGrid(newGrid);
+
+		// Update component positions
+		setComponentPositions((prev) => [
+			...prev,
+			{ componentId, instanceId, row, col },
+		]);
+
+		return true;
+	};
+
+	// Remove a component from the grid
+	const removeComponent = (row: number, col: number) => {
+		const { componentId, instanceId } = grid[row][col];
+		if (!componentId || !instanceId) return;
+
+		// Update the grid
+		const newGrid = [...grid];
+		newGrid[row][col] = { componentId: null, instanceId: null };
+		setGrid(newGrid);
+
+		// Update component positions
+		setComponentPositions((prev) =>
+			prev.filter((pos) => pos.instanceId !== instanceId),
+		);
+	};
+
+	// Get the list of component IDs from the grid
+	const getComponentIds = () => {
+		return componentPositions.map((pos) => pos.componentId);
+	};
+
+	// Calculate costs and stats based on components in the grid
+	const { costs, stats } = getComponentIds().reduce(
 		(acc, id) => {
 			const component = data?.game.me?.shipComponents.find(
 				(component) => component.id === id,
@@ -291,10 +416,13 @@ export function ShipDesigner({
 
 					const formData = new FormData(evt.currentTarget as HTMLFormElement);
 
-					const design = {
+					const design: ShipDesignInput = {
 						name: formData.get("name") as string,
 						description: formData.get("description") as string,
-						components: [],
+						components: componentPositions.map(({ componentId, row, col }) => ({
+							componentId,
+							gridPosition: { x: col, y: row },
+						})),
 					};
 
 					await createShipDesign({
@@ -321,37 +449,69 @@ export function ShipDesigner({
 							})) ?? []
 						}
 					/>
+
+					{/* Grid size configuration */}
+					<Group grow>
+						<NumberInput
+							label="Grid Rows"
+							value={gridRows}
+							onChange={(value) => updateGridSize(Number(value) || 5, gridCols)}
+							min={3}
+							max={10}
+						/>
+						<NumberInput
+							label="Grid Columns"
+							value={gridCols}
+							onChange={(value) => updateGridSize(gridRows, Number(value) || 7)}
+							min={3}
+							max={12}
+						/>
+					</Group>
+
 					<SimpleGrid type="container" cols={1} spacing={0}>
 						<AspectRatio ratio={768 / 512}>
 							<div
+								id="design-grid"
 								className={css({
 									backgroundImage: `url(${placeholderBlueprintBackground})`,
 									backgroundSize: "cover",
 									backgroundRepeat: "no-repeat",
-									padding: vars.spacing.xl,
+									padding: vars.spacing.md,
+									display: "grid",
+									gridTemplateRows: `repeat(${gridRows}, 1fr)`,
+									gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+									gap: vars.spacing.xs,
 								})}
 							>
-								{componentIds.map((id, idx) => {
-									const component = data?.game.me?.shipComponents.find(
-										(component) => component.id === id,
-									);
+								{Array.from({ length: gridRows }).map((_, rowIndex) => (
+									<React.Fragment
+										key={`row-${
+											// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+											rowIndex
+										}`}
+									>
+										{Array.from({ length: gridCols }).map((_, colIndex) => {
+											const cellData = grid[rowIndex][colIndex];
+											const component = data?.game.me?.shipComponents.find(
+												(c) => c.id === cellData.componentId,
+											);
 
-									if (!component) return null;
-
-									return (
-										<Button
-											key={`${idx}-${id}`}
-											variant="subtle"
-											onClick={() =>
-												setComponentIds((ids) =>
-													ids.filter((_, i) => i !== idx),
-												)
-											}
-										>
-											{component.name}
-										</Button>
-									);
-								})}
+											return (
+												<GridCell
+													key={`cell-${rowIndex}-${
+														// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+														colIndex
+													}`}
+													row={rowIndex}
+													col={colIndex}
+													componentId={cellData.componentId}
+													component={component}
+													onRemove={removeComponent}
+												/>
+											);
+										})}
+									</React.Fragment>
+								))}
 							</div>
 						</AspectRatio>
 						<SimpleGrid
@@ -517,15 +677,23 @@ export function ShipDesigner({
 							</Stack>
 						</SimpleGrid>
 					</SimpleGrid>
-					{data?.game.me?.shipComponents.map((component) => (
-						<Button
-							key={component.id}
-							variant="light"
-							onClick={() => setComponentIds((ids) => [...ids, component.id])}
-						>
-							Add {component.name}
-						</Button>
-					))}
+
+					{/* Component palette */}
+					<Text fw="bold" size="lg">
+						Available Components
+					</Text>
+					<Flex wrap="wrap" gap="sm">
+						{data?.game.me?.shipComponents.map((component) => (
+							<DraggableComponent
+								key={component.id}
+								component={component}
+								gridRows={gridRows}
+								gridCols={gridCols}
+								onDrop={handleDrop}
+							/>
+						))}
+					</Flex>
+
 					<Button type="submit" loading={fetching}>
 						Create
 					</Button>

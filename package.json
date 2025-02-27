@@ -9,6 +9,7 @@
 		"dev:frontend": "yarn workspace @space/frontend dev",
 		"db:generate": "yarn workspace @space/data drizzle-kit generate",
 		"db:push": "yarn workspace @space/data drizzle-kit push",
+		"db:studio": "yarn workspace @space/data drizzle-kit studio",
 		"codegen": "yarn workspace @space/backend graphql-codegen && biome format --write packages/backend/src/schema"
 	},
 	"type": "module",
