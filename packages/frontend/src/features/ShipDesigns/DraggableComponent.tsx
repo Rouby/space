@@ -56,10 +56,10 @@ export function DraggableComponent({
 					}
 				}
 			}}
+			dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
 			whileDrag={{ scale: 1.1, zIndex: 10 }}
 			style={{ cursor: isDragging ? "grabbing" : "grab" }}
-			dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
-			dragElastic={0.5} // Add some elasticity for better UX
+			dragElastic={1}
 		>
 			<Paper
 				p="xs"
