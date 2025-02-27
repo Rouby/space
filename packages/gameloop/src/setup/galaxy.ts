@@ -40,7 +40,7 @@ export async function setupGalaxy(tx: Transaction, ctx: Context) {
 		await tx.insert(starSystemPopulations).values({
 			starSystemId: id,
 			amount: 10_000_000_000n,
-			allegianceToPlayerId: ownerId,
+			allegianceToPlayerId: ownerId as string,
 		});
 	}
 }

@@ -1,5 +1,6 @@
 import "@pixi/react";
+import type { UnprefixedPixiElements } from "@pixi/react";
 
 declare module "@pixi/react" {
-	interface PixiElements {}
+	interface PixiElements extends UnprefixedPixiElements {}
 }

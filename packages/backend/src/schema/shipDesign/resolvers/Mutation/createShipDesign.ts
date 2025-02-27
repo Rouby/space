@@ -16,11 +16,12 @@ export const createShipDesign: NonNullable<
 			})
 			.returning();
 
-		for (const [position, shipComponentId] of design.componentIds.entries()) {
+		for (const shipComponent of design.components) {
 			await tx.insert(shipDesignComponents).values({
 				shipDesignId: shipDesign.id,
-				shipComponentId,
-				position,
+				shipComponentId: shipComponent.componentId,
+				column: shipComponent.gridPosition.x,
+				row: shipComponent.gridPosition.y,
 			});
 		}
 

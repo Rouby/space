@@ -32,20 +32,12 @@ const GamesAuthenticatedIdLazyImport = createFileRoute(
 const GamesAuthenticatedIdShipDesignsLazyImport = createFileRoute(
   '/games/_authenticated/$id/ship-designs',
 )()
-const GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyImport =
-  createFileRoute(
-    '/games/_authenticated/$id/task-force-engagement/$engagementId',
-  )()
 const GamesAuthenticatedIdStarSystemStarSystemIdLazyImport = createFileRoute(
   '/games/_authenticated/$id/star-system/$starSystemId',
 )()
 const GamesAuthenticatedIdShipDesignsNewLazyImport = createFileRoute(
   '/games/_authenticated/$id/ship-designs/new',
 )()
-const GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyImport =
-  createFileRoute(
-    '/games/_authenticated/$id/star-system/$starSystemId/commision-task-force',
-  )()
 
 // Create/Update Routes
 
@@ -120,17 +112,6 @@ const GamesAuthenticatedIdShipDesignsLazyRoute =
     ),
   )
 
-const GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute =
-  GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyImport.update({
-    id: '/task-force-engagement/$engagementId',
-    path: '/task-force-engagement/$engagementId',
-    getParentRoute: () => GamesAuthenticatedIdLazyRoute,
-  } as any).lazy(() =>
-    import(
-      './routes/games/_authenticated.$id/task-force-engagement.$engagementId.lazy'
-    ).then((d) => d.Route),
-  )
-
 const GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute =
   GamesAuthenticatedIdStarSystemStarSystemIdLazyImport.update({
     id: '/star-system/$starSystemId',
@@ -159,19 +140,6 @@ const DashboardAuthenticatedGamesLobbyIdRoute =
     path: '/games/lobby/$id',
     getParentRoute: () => DashboardAuthenticatedRoute,
   } as any)
-
-const GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute =
-  GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyImport.update(
-    {
-      id: '/commision-task-force',
-      path: '/commision-task-force',
-      getParentRoute: () => GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute,
-    } as any,
-  ).lazy(() =>
-    import(
-      './routes/games/_authenticated.$id/star-system.$starSystemId/commision-task-force.lazy'
-    ).then((d) => d.Route),
-  )
 
 // Populate the FileRoutesByPath interface
 
@@ -275,20 +243,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyImport
       parentRoute: typeof GamesAuthenticatedIdLazyImport
     }
-    '/games/_authenticated/$id/task-force-engagement/$engagementId': {
-      id: '/games/_authenticated/$id/task-force-engagement/$engagementId'
-      path: '/task-force-engagement/$engagementId'
-      fullPath: '/games/$id/task-force-engagement/$engagementId'
-      preLoaderRoute: typeof GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyImport
-      parentRoute: typeof GamesAuthenticatedIdLazyImport
-    }
-    '/games/_authenticated/$id/star-system/$starSystemId/commision-task-force': {
-      id: '/games/_authenticated/$id/star-system/$starSystemId/commision-task-force'
-      path: '/commision-task-force'
-      fullPath: '/games/$id/star-system/$starSystemId/commision-task-force'
-      preLoaderRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyImport
-      parentRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyImport
-    }
   }
 }
 
@@ -347,25 +301,9 @@ const GamesAuthenticatedIdShipDesignsLazyRouteWithChildren =
     GamesAuthenticatedIdShipDesignsLazyRouteChildren,
   )
 
-interface GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteChildren {
-  GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
-}
-
-const GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteChildren: GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteChildren =
-  {
-    GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute:
-      GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute,
-  }
-
-const GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteWithChildren =
-  GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute._addFileChildren(
-    GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteChildren,
-  )
-
 interface GamesAuthenticatedIdLazyRouteChildren {
   GamesAuthenticatedIdShipDesignsLazyRoute: typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
-  GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteWithChildren
-  GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute: typeof GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute
+  GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
 }
 
 const GamesAuthenticatedIdLazyRouteChildren: GamesAuthenticatedIdLazyRouteChildren =
@@ -373,9 +311,7 @@ const GamesAuthenticatedIdLazyRouteChildren: GamesAuthenticatedIdLazyRouteChildr
     GamesAuthenticatedIdShipDesignsLazyRoute:
       GamesAuthenticatedIdShipDesignsLazyRouteWithChildren,
     GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute:
-      GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteWithChildren,
-    GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute:
-      GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute,
+      GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute,
   }
 
 const GamesAuthenticatedIdLazyRouteWithChildren =
@@ -415,9 +351,7 @@ export interface FileRoutesByFullPath {
   '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
   '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
-  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteWithChildren
-  '/games/$id/task-force-engagement/$engagementId': typeof GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute
-  '/games/$id/star-system/$starSystemId/commision-task-force': typeof GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
+  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -431,9 +365,7 @@ export interface FileRoutesByTo {
   '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
   '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
-  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteWithChildren
-  '/games/$id/task-force-engagement/$engagementId': typeof GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute
-  '/games/$id/star-system/$starSystemId/commision-task-force': typeof GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
+  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
 }
 
 export interface FileRoutesById {
@@ -451,9 +383,7 @@ export interface FileRoutesById {
   '/_dashboard/_authenticated/games/': typeof DashboardAuthenticatedGamesIndexRoute
   '/_dashboard/_authenticated/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
   '/games/_authenticated/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
-  '/games/_authenticated/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteWithChildren
-  '/games/_authenticated/$id/task-force-engagement/$engagementId': typeof GamesAuthenticatedIdTaskForceEngagementEngagementIdLazyRoute
-  '/games/_authenticated/$id/star-system/$starSystemId/commision-task-force': typeof GamesAuthenticatedIdStarSystemStarSystemIdCommisionTaskForceLazyRoute
+  '/games/_authenticated/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -470,8 +400,6 @@ export interface FileRouteTypes {
     | '/games/lobby/$id'
     | '/games/$id/ship-designs/new'
     | '/games/$id/star-system/$starSystemId'
-    | '/games/$id/task-force-engagement/$engagementId'
-    | '/games/$id/star-system/$starSystemId/commision-task-force'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
@@ -485,8 +413,6 @@ export interface FileRouteTypes {
     | '/games/lobby/$id'
     | '/games/$id/ship-designs/new'
     | '/games/$id/star-system/$starSystemId'
-    | '/games/$id/task-force-engagement/$engagementId'
-    | '/games/$id/star-system/$starSystemId/commision-task-force'
   id:
     | '__root__'
     | '/_dashboard'
@@ -503,8 +429,6 @@ export interface FileRouteTypes {
     | '/_dashboard/_authenticated/games/lobby/$id'
     | '/games/_authenticated/$id/ship-designs/new'
     | '/games/_authenticated/$id/star-system/$starSystemId'
-    | '/games/_authenticated/$id/task-force-engagement/$engagementId'
-    | '/games/_authenticated/$id/star-system/$starSystemId/commision-task-force'
   fileRoutesById: FileRoutesById
 }
 
@@ -584,8 +508,7 @@ export const routeTree = rootRoute
       "parent": "/games/_authenticated",
       "children": [
         "/games/_authenticated/$id/ship-designs",
-        "/games/_authenticated/$id/star-system/$starSystemId",
-        "/games/_authenticated/$id/task-force-engagement/$engagementId"
+        "/games/_authenticated/$id/star-system/$starSystemId"
       ]
     },
     "/games/_authenticated/$id/ship-designs": {
@@ -609,18 +532,7 @@ export const routeTree = rootRoute
     },
     "/games/_authenticated/$id/star-system/$starSystemId": {
       "filePath": "games/_authenticated.$id/star-system.$starSystemId.lazy.tsx",
-      "parent": "/games/_authenticated/$id",
-      "children": [
-        "/games/_authenticated/$id/star-system/$starSystemId/commision-task-force"
-      ]
-    },
-    "/games/_authenticated/$id/task-force-engagement/$engagementId": {
-      "filePath": "games/_authenticated.$id/task-force-engagement.$engagementId.lazy.tsx",
       "parent": "/games/_authenticated/$id"
-    },
-    "/games/_authenticated/$id/star-system/$starSystemId/commision-task-force": {
-      "filePath": "games/_authenticated.$id/star-system.$starSystemId/commision-task-force.lazy.tsx",
-      "parent": "/games/_authenticated/$id/star-system/$starSystemId"
     }
   }
 }

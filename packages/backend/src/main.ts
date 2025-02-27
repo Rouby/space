@@ -14,6 +14,7 @@ import {
 	useExtendContext,
 } from "graphql-yoga";
 import { createServer } from "node:http";
+import type { generateUserClaims } from "./config.ts";
 import { extendContext } from "./context.ts";
 import { resolvers } from "./schema/resolvers.generated.ts";
 import { typeDefs } from "./schema/typeDefs.generated.ts";
@@ -53,7 +54,7 @@ const yoga = createYoga({
 					Object.entries(context.jwt?.payload || {}).filter(([key]) =>
 						key.startsWith("urn:space:"),
 					),
-				);
+				) as Awaited<ReturnType<typeof generateUserClaims>>;
 
 				return extendContext({
 					drizzle,

@@ -2,7 +2,8 @@
 	"name": "@space/frontend",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build"
+		"build": "vite build",
+		"typecheck": "tsc --noEmit"
 	},
 	"type": "module",
 	"devDependencies": {

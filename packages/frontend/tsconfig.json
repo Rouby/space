@@ -2,9 +2,7 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"jsx": "react-jsx",
-		"lib": ["DOM", "ESNext"],
-
-		"types": ["react/canary"]
+		"lib": ["DOM", "ESNext"]
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx"]
 }

@@ -1,6 +1,9 @@
 {
 	"name": "@space/gameloop",
 	"type": "module",
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
 	"exports": {
 		".": {
 			"import": "./src/main.ts"
@@ -11,6 +14,7 @@
 		"@space/data": "workspace:*"
 	},
 	"devDependencies": {
+		"typescript": "5.7.3",
 		"vitest": "3.0.7"
 	}
 }

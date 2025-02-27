@@ -1,7 +1,8 @@
 {
 	"name": "@space/backend",
 	"scripts": {
-		"dev": "nodemon -q ./src/main.ts"
+		"dev": "nodemon -q ./src/main.ts",
+		"typecheck": "tsc --noEmit"
 	},
 	"type": "module",
 	"devDependencies": {

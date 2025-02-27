@@ -9797,7 +9797,8 @@ const RAW_RUNTIME_STATE =
           ["@types/pg", "npm:8.11.11"],\
           ["drizzle-kit", "npm:0.30.5"],\
           ["drizzle-orm", "virtual:b247d93090cc7ee445bac8d54c0fafab5bdc03b582f06c48317cf10cd2497e05caaa7ce21671e8eb0995a529a5addeca30eeb49fae926013f333d7ea4e81f3e3#npm:0.40.0"],\
-          ["pg", "virtual:b247d93090cc7ee445bac8d54c0fafab5bdc03b582f06c48317cf10cd2497e05caaa7ce21671e8eb0995a529a5addeca30eeb49fae926013f333d7ea4e81f3e3#npm:8.13.3"]\
+          ["pg", "virtual:b247d93090cc7ee445bac8d54c0fafab5bdc03b582f06c48317cf10cd2497e05caaa7ce21671e8eb0995a529a5addeca30eeb49fae926013f333d7ea4e81f3e3#npm:8.13.3"],\
+          ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -9862,6 +9863,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@space/gameloop", "workspace:packages/gameloop"],\
           ["@space/data", "workspace:packages/data"],\
+          ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
           ["vitest", "virtual:9a323c05a09e7b355c1d12a5bc9133f9f2f79fcd76611abaabb5c8ae35991383bb3297643fdf1220d1ebcee106d2dc021578252519a1835c0eea5d59ecd5e9a8#npm:3.0.7"]\
         ],\
         "linkType": "SOFT"\

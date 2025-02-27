@@ -4,8 +4,6 @@ import { cacheExchange } from "@urql/exchange-graphcache";
 import { createClient, fetchExchange } from "urql";
 import { graphql } from "./gql";
 import type {
-	CommisionTaskForceMutation,
-	CommisionTaskForceMutationVariables,
 	CreateGameMutation,
 	CreateShipDesignMutation,
 	CreateShipDesignMutationVariables,
@@ -36,23 +34,6 @@ export const client = createClient({
 						const games = cache.resolve("Query", "games");
 						if (Array.isArray(games)) {
 							cache.link("Query", "games", [...games, result.createGame]);
-						}
-					},
-					createTaskForceCommision: (
-						result: CommisionTaskForceMutation,
-						args: CommisionTaskForceMutationVariables,
-						cache,
-					) => {
-						const taskForces = cache.resolve(
-							{ __typename: "StarSystem", id: args.commision.starSystemId },
-							"taskForces",
-						);
-						if (Array.isArray(taskForces)) {
-							cache.link(
-								{ __typename: "StarSystem", id: args.commision.starSystemId },
-								"taskForces",
-								[...taskForces, result.createTaskForceCommision],
-							);
 						}
 					},
 					createShipDesign: (
@@ -114,45 +95,6 @@ export const client = createClient({
 											[...taskForces, cacheKey],
 										);
 									}
-								}
-							}
-						}
-						if (
-							result.trackGalaxy.subject.__typename === "TaskForceEngagement"
-						) {
-							if (
-								result.trackGalaxy.__typename ===
-								"TaskForceJoinsEngagementEvent"
-							) {
-								const taskForceEngagements = cache.resolve(
-									{ __typename: "Game", id: vars.gameId },
-									"taskForceEngagements",
-								) as string[];
-								const cacheKey = cache.keyOfEntity(result.trackGalaxy.subject);
-
-								if (cacheKey) {
-									if (!taskForceEngagements.includes(cacheKey)) {
-										cache.link(
-											{ __typename: "Game", id: vars.gameId },
-											"taskForceEngagements",
-											[...taskForceEngagements, cacheKey],
-										);
-									}
-								}
-
-								const taskForces = cache.resolve(
-									{ __typename: "Game", id: vars.gameId },
-									"taskForces",
-								) as string[];
-								const removedTfs = result.trackGalaxy.subject.taskForces.map(
-									(tf) => cache.keyOfEntity(tf),
-								);
-								if (taskForces.some((key) => removedTfs.includes(key))) {
-									cache.link(
-										{ __typename: "Game", id: vars.gameId },
-										"taskForces",
-										taskForces.filter((key) => !removedTfs.includes(key)),
-									);
 								}
 							}
 						}

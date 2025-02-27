@@ -31,7 +31,7 @@ export function Viewport({
 	const { app, isInitialised } = useApplication();
 	const dragStart = useRef(new Point());
 	const dragging = useRef(false);
-	const viewportRef = useRef<Container>(null);
+	const viewportRef = useRef<Container>(null as never);
 	const gridRef = useRef<Graphics>(null);
 
 	useTick(() => {

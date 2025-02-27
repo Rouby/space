@@ -1,6 +1,6 @@
 import { expect, test } from "./fixture";
 
-test("should run an encounter", async ({ page, api }) => {
+test("should be able to login and see the game", async ({ page, api }) => {
 	const { id: erwinId } = await api.seed("user", {
 		email: "erwin@example.com",
 		name: "Erwin Beispiel",
@@ -15,10 +15,12 @@ test("should run an encounter", async ({ page, api }) => {
 	await api.seed("player", {
 		gameId,
 		userId: erwinId,
+		color: "#ff0000",
 	});
 	await api.seed("player", {
 		gameId,
 		userId: aliceId,
+		color: "#00ff00",
 	});
 	await api.seed("starSystem", {
 		gameId,
@@ -37,5 +39,5 @@ test("should run an encounter", async ({ page, api }) => {
 
 	await page.goto(`/games/${gameId}`);
 
-	await expect(page.getByText("Harriette Spoonlicker")).toBeVisible();
+	await expect(page.getByText("Erwin Beispiel")).toBeVisible();
 });

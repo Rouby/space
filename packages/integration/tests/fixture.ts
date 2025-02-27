@@ -48,7 +48,7 @@ export const test = base.extend<{
 				seed: async (model, data) => {
 					return drizzle
 						.insert(Tables[model])
-						.values(data)
+						.values(data as any)
 						.returning()
 						.then((rows) => rows[0]);
 				},

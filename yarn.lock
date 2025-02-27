@@ -4044,6 +4044,7 @@ __metadata:
     drizzle-kit: "npm:0.30.5"
     drizzle-orm: "npm:0.40.0"
     pg: "npm:8.13.3"
+    typescript: "npm:5.7.3"
   languageName: unknown
   linkType: soft
 
@@ -4104,6 +4105,7 @@ __metadata:
   resolution: "@space/gameloop@workspace:packages/gameloop"
   dependencies:
     "@space/data": "workspace:*"
+    typescript: "npm:5.7.3"
     vitest: "npm:3.0.7"
   languageName: unknown
   linkType: soft

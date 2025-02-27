@@ -47,7 +47,10 @@ export const ShipDesign: ShipDesignResolvers = {
 				rows.map((row) => ({
 					id: row.shipDesignComponents.shipComponentId,
 					component: row.shipComponents,
-					position: row.shipDesignComponents.position,
+					position: {
+						x: row.shipDesignComponents.column,
+						y: row.shipDesignComponents.row,
+					},
 				})),
 			);
 	},

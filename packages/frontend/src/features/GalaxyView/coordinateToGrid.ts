@@ -19,6 +19,7 @@ const domainPerLevel = [
 const maxLevel = 2;
 
 export const gridSizes =
+	// @ts-ignore
 	[10000, 1000] ??
 	Array.from({ length: maxLevel }, (_, level) => 100 * 2 ** (maxLevel - level));
 
