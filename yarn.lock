@@ -4081,9 +4081,9 @@ __metadata:
     "@urql/exchange-graphcache": "npm:7.2.2"
     "@vitejs/plugin-react-swc": "npm:3.8.0"
     dayjs: "npm:1.11.13"
-    framer-motion: "npm:12.4.7"
     graphql: "npm:16.10.0"
     jose: "npm:5.10.0"
+    motion: "npm:12.4.7"
     pixi-filters: "npm:6.1.0"
     pixi.js: "npm:8.8.0"
     postcss: "npm:8.5.3"
@@ -7586,7 +7586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:12.4.7":
+"framer-motion@npm:^12.4.7":
   version: 12.4.7
   resolution: "framer-motion@npm:12.4.7"
   dependencies:
@@ -9152,6 +9152,27 @@ __metadata:
   version: 12.0.0
   resolution: "motion-utils@npm:12.0.0"
   checksum: 10c0/ca6cc7542d00afab011130fcd940e5f5a412b21a4eaeb17c0a497dcb86de311dda90741eeca7de1276cc8c1dff7ac1e6a8df1e8cebb1191a2c43bfe8368dc70b
+  languageName: node
+  linkType: hard
+
+"motion@npm:12.4.7":
+  version: 12.4.7
+  resolution: "motion@npm:12.4.7"
+  dependencies:
+    framer-motion: "npm:^12.4.7"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    "@emotion/is-prop-valid": "*"
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10c0/369b41600b507d12cf963ec686ca297ca843a3908b1526e2de9593b95416dc89d4b446d4cd7a1fe31e2ca06fcfc1237e5f0d52bcd324649040e90ba012760541
   languageName: node
   linkType: hard
 

@@ -905,15 +905,9 @@
           {
             "name": "armorEffectivenessAgainst",
             "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "ShipComponentEffectivenessAgainst",
-                  "ofType": null
-                }
-              }
+              "kind": "OBJECT",
+              "name": "ShipComponentEffectivenessAgainst",
+              "ofType": null
             },
             "args": []
           },
@@ -1052,15 +1046,9 @@
           {
             "name": "shieldEffectivenessAgainst",
             "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "ShipComponentEffectivenessAgainst",
-                  "ofType": null
-                }
-              }
+              "kind": "OBJECT",
+              "name": "ShipComponentEffectivenessAgainst",
+              "ofType": null
             },
             "args": []
           },
@@ -1201,24 +1189,34 @@
         "name": "ShipComponentEffectivenessAgainst",
         "fields": [
           {
-            "name": "deliveryType",
+            "name": "beam",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+              "kind": "SCALAR",
+              "name": "Any"
             },
             "args": []
           },
           {
-            "name": "effectiveness",
+            "name": "instant",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "missile",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "projectile",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
             },
             "args": []
           }

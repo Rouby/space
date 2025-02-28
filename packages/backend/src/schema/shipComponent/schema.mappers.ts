@@ -25,19 +25,19 @@ export type ShipComponentMapper = {
 	thruster: string | null;
 	sensorPrecision: string | null;
 	armorThickness: string | null;
-	armorEffectivenessAgainst:
-		| {
-				deliveryType: "projectile" | "beam" | "missile" | "instant";
-				effectiveness: number;
-		  }[]
-		| null;
+	armorEffectivenessAgainst: {
+		projectile: number | null;
+		beam: number | null;
+		missile: number | null;
+		instant: number | null;
+	} | null;
 	shieldStrength: string | null;
-	shieldEffectivenessAgainst:
-		| {
-				deliveryType: "projectile" | "beam" | "missile" | "instant";
-				effectiveness: number;
-		  }[]
-		| null;
+	shieldEffectivenessAgainst: {
+		projectile: number | null;
+		beam: number | null;
+		missile: number | null;
+		instant: number | null;
+	} | null;
 	weaponDamage: string | null;
 	weaponCooldown: string | null;
 	weaponRange: string | null;

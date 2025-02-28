@@ -4,7 +4,7 @@ import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "../../../types.generated.js";
 
 export const updatePlayer: NonNullable<
-	MutationResolvers<Context>["updatePlayer"]
+	MutationResolvers["updatePlayer"]
 > = async (_parent, { gameId, input }, ctx) => {
 	ctx.throwWithoutClaim("urn:space:claim");
 

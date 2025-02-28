@@ -23,9 +23,9 @@ type ShipComponent {
 	thruster: Float
 	sensorPrecision: Float
 	armorThickness: Float
-	armorEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+	armorEffectivenessAgainst: ShipComponentEffectivenessAgainst
 	shieldStrength: Float
-	shieldEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+	shieldEffectivenessAgainst: ShipComponentEffectivenessAgainst
 	weaponDamage: Float
 	weaponCooldown: Float
 	weaponRange: Float
@@ -43,8 +43,10 @@ enum WeaponDeliveryType {
 }
 
 type ShipComponentEffectivenessAgainst {
-	deliveryType: WeaponDeliveryType!
-	effectiveness: Float!
+	projectile: Float
+	beam: Float
+	missile: Float
+	instant: Float
 }
 
 extend type Game {

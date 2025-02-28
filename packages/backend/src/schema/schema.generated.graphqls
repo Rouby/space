@@ -88,7 +88,7 @@ type ResourceDiscovery {
 }
 
 type ShipComponent {
-  armorEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+  armorEffectivenessAgainst: ShipComponentEffectivenessAgainst
   armorThickness: Float
   constructionCost: Float!
   costs: [ResourceCost!]!
@@ -102,7 +102,7 @@ type ShipComponent {
   powerNeed: Float!
   sensorPrecision: Float
   sensorRange: Float
-  shieldEffectivenessAgainst: [ShipComponentEffectivenessAgainst!]
+  shieldEffectivenessAgainst: ShipComponentEffectivenessAgainst
   shieldStrength: Float
   structuralIntegrity: Float
   supplyCapacity: Float
@@ -121,8 +121,10 @@ type ShipComponent {
 }
 
 type ShipComponentEffectivenessAgainst {
-  deliveryType: WeaponDeliveryType!
-  effectiveness: Float!
+  beam: Float
+  instant: Float
+  missile: Float
+  projectile: Float
 }
 
 type ShipDesign {

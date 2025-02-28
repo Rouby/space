@@ -90,7 +90,7 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					name: "Crew Quarters",
 					description: "Quarters for the crew to live in.",
 					constructionCost: "100",
-					crewNeed: "1",
+					crewNeed: "10",
 					powerNeed: "10",
 					supplyNeedPassive: "10",
 					supplyNeedMovement: "0",
@@ -147,11 +147,12 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					supplyNeedCombat: "0",
 
 					armorThickness: "1",
-					armorEffectivenessAgainst: [
-						{ deliveryType: "projectile", effectiveness: 1 },
-						{ deliveryType: "missile", effectiveness: 1 },
-						{ deliveryType: "beam", effectiveness: 0.1 },
-					],
+					armorEffectivenessAgainst: {
+						projectile: 1,
+						missile: 1,
+						beam: 0.1,
+						instant: null,
+					},
 				},
 			])
 			.returning();

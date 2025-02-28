@@ -53,21 +53,19 @@ export const shipComponents = pgTable("shipComponents", {
 	thruster: decimal({ precision: 30, scale: 6 }),
 	sensorPrecision: decimal({ precision: 30, scale: 6 }),
 	armorThickness: decimal({ precision: 30, scale: 6 }),
-	armorEffectivenessAgainst:
-		jsonb().$type<
-			{
-				deliveryType: (typeof weaponDeliveryType.enumValues)[number];
-				effectiveness: number;
-			}[]
-		>(),
+	armorEffectivenessAgainst: jsonb().$type<{
+		projectile: number | null;
+		beam: number | null;
+		missile: number | null;
+		instant: number | null;
+	}>(),
 	shieldStrength: decimal({ precision: 30, scale: 6 }),
-	shieldEffectivenessAgainst:
-		jsonb().$type<
-			{
-				deliveryType: (typeof weaponDeliveryType.enumValues)[number];
-				effectiveness: number;
-			}[]
-		>(),
+	shieldEffectivenessAgainst: jsonb().$type<{
+		projectile: number | null;
+		beam: number | null;
+		missile: number | null;
+		instant: number | null;
+	}>(),
 	weaponDamage: decimal({ precision: 30, scale: 6 }),
 	weaponCooldown: decimal({ precision: 30, scale: 6 }),
 	weaponRange: decimal({ precision: 30, scale: 6 }),

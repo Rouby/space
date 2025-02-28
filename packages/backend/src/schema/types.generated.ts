@@ -183,7 +183,7 @@ export type ResourceDiscovery = {
 
 export type ShipComponent = {
   __typename?: 'ShipComponent';
-  armorEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
+  armorEffectivenessAgainst?: Maybe<ShipComponentEffectivenessAgainst>;
   armorThickness?: Maybe<Scalars['Float']['output']>;
   constructionCost: Scalars['Float']['output'];
   costs: Array<ResourceCost>;
@@ -197,7 +197,7 @@ export type ShipComponent = {
   powerNeed: Scalars['Float']['output'];
   sensorPrecision?: Maybe<Scalars['Float']['output']>;
   sensorRange?: Maybe<Scalars['Float']['output']>;
-  shieldEffectivenessAgainst?: Maybe<Array<ShipComponentEffectivenessAgainst>>;
+  shieldEffectivenessAgainst?: Maybe<ShipComponentEffectivenessAgainst>;
   shieldStrength?: Maybe<Scalars['Float']['output']>;
   structuralIntegrity?: Maybe<Scalars['Float']['output']>;
   supplyCapacity?: Maybe<Scalars['Float']['output']>;
@@ -217,8 +217,10 @@ export type ShipComponent = {
 
 export type ShipComponentEffectivenessAgainst = {
   __typename?: 'ShipComponentEffectivenessAgainst';
-  deliveryType: WeaponDeliveryType;
-  effectiveness: Scalars['Float']['output'];
+  beam?: Maybe<Scalars['Float']['output']>;
+  instant?: Maybe<Scalars['Float']['output']>;
+  missile?: Maybe<Scalars['Float']['output']>;
+  projectile?: Maybe<Scalars['Float']['output']>;
 };
 
 export type ShipDesign = {
@@ -468,7 +470,7 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
   ShipComponent: ResolverTypeWrapper<ShipComponentMapper>;
-  ShipComponentEffectivenessAgainst: ResolverTypeWrapper<Omit<ShipComponentEffectivenessAgainst, 'deliveryType'> & { deliveryType: ResolversTypes['WeaponDeliveryType'] }>;
+  ShipComponentEffectivenessAgainst: ResolverTypeWrapper<ShipComponentEffectivenessAgainst>;
   ShipDesign: ResolverTypeWrapper<ShipDesignMapper>;
   ShipDesignComponent: ResolverTypeWrapper<Omit<ShipDesignComponent, 'component'> & { component: ResolversTypes['ShipComponent'] }>;
   ShipDesignComponentInput: ShipDesignComponentInput;
@@ -647,7 +649,7 @@ export type ResourceDiscoveryResolvers<ContextType = Context, ParentType extends
 };
 
 export type ShipComponentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipComponent'] = ResolversParentTypes['ShipComponent']> = {
-  armorEffectivenessAgainst?: Resolver<Maybe<Array<ResolversTypes['ShipComponentEffectivenessAgainst']>>, ParentType, ContextType>;
+  armorEffectivenessAgainst?: Resolver<Maybe<ResolversTypes['ShipComponentEffectivenessAgainst']>, ParentType, ContextType>;
   armorThickness?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   constructionCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   costs?: Resolver<Array<ResolversTypes['ResourceCost']>, ParentType, ContextType>;
@@ -661,7 +663,7 @@ export type ShipComponentResolvers<ContextType = Context, ParentType extends Res
   powerNeed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   sensorPrecision?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  shieldEffectivenessAgainst?: Resolver<Maybe<Array<ResolversTypes['ShipComponentEffectivenessAgainst']>>, ParentType, ContextType>;
+  shieldEffectivenessAgainst?: Resolver<Maybe<ResolversTypes['ShipComponentEffectivenessAgainst']>, ParentType, ContextType>;
   shieldStrength?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   structuralIntegrity?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   supplyCapacity?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -681,8 +683,10 @@ export type ShipComponentResolvers<ContextType = Context, ParentType extends Res
 };
 
 export type ShipComponentEffectivenessAgainstResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipComponentEffectivenessAgainst'] = ResolversParentTypes['ShipComponentEffectivenessAgainst']> = {
-  deliveryType?: Resolver<ResolversTypes['WeaponDeliveryType'], ParentType, ContextType>;
-  effectiveness?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  beam?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  instant?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  missile?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  projectile?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
