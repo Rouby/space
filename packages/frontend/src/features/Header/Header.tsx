@@ -20,7 +20,7 @@ import { IconChevronDown } from "@tabler/icons-react";
 import { Link as RouterLink } from "@tanstack/react-router";
 import { useStyles } from "tss-react";
 import { useAuth } from "../../Auth";
-import { mq, vars } from "../../theme";
+import { mq, theme } from "../../theme";
 import { UserButton } from "../UserButton/UserButton";
 import { FeatureList } from "./FeatureList";
 import { Link } from "./Link";
@@ -39,9 +39,9 @@ export function Header() {
 			<header
 				className={css({
 					height: rem(80),
-					paddingLeft: vars.spacing.md,
-					paddingRight: vars.spacing.md,
-					borderBottom: `${rem(1)} solid ${vars.colors.dark[4]}`,
+					paddingLeft: theme.spacing.md,
+					paddingRight: theme.spacing.md,
+					borderBottom: `${rem(1)} solid ${theme.colors.dark[4]}`,
 				})}
 			>
 				<Group justify="space-between" h="100%">
@@ -68,7 +68,7 @@ export function Header() {
 										</Box>
 										<IconChevronDown
 											style={{ width: rem(16), height: rem(16) }}
-											color={vars.colors.blue[6]}
+											color={theme.colors.blue[6]}
 										/>
 									</Center>
 								</Link>
@@ -90,11 +90,11 @@ export function Header() {
 
 								<div
 									className={css({
-										backgroundColor: vars.colors.dark[7],
-										margin: `${vars.spacing.sm} calc(${vars.spacing.md} * -1) calc(${vars.spacing.md} * -1) calc(${vars.spacing.md} * -1)`,
-										padding: `${vars.spacing.md} calc(${vars.spacing.md} * 2)`,
-										paddingBottom: vars.spacing.xl,
-										borderTop: `${rem(1)} solid ${vars.colors.dark[5]}`,
+										backgroundColor: theme.colors.dark[7],
+										margin: `${theme.spacing.sm} calc(${theme.spacing.md} * -1) calc(${theme.spacing.md} * -1) calc(${theme.spacing.md} * -1)`,
+										padding: `${theme.spacing.md} calc(${theme.spacing.md} * 2)`,
+										paddingBottom: theme.spacing.xl,
+										borderTop: `${rem(1)} solid ${theme.colors.dark[5]}`,
 									})}
 								>
 									<Group justify="space-between">
@@ -159,11 +159,11 @@ export function Header() {
 							display: "flex",
 							alignItems: "center",
 							height: "100%",
-							paddingInline: vars.spacing.md,
+							paddingInline: theme.spacing.md,
 							textDecoration: "none",
-							color: vars.colors.white,
+							color: theme.colors.white,
 							fontWeight: 500,
-							fontSize: vars.fontSizes.sm,
+							fontSize: theme.fontSizes.sm,
 
 							[mq.sm]: {
 								height: rem(42),
@@ -171,7 +171,7 @@ export function Header() {
 							},
 
 							"&:hover": {
-								backgroundColor: vars.colors.dark[6],
+								backgroundColor: theme.colors.dark[6],
 							},
 						})}
 						onClick={toggleLinks}
@@ -182,7 +182,7 @@ export function Header() {
 							</Box>
 							<IconChevronDown
 								style={{ width: rem(16), height: rem(16) }}
-								color={vars.colors.blue[6]}
+								color={theme.colors.blue[6]}
 							/>
 						</Center>
 					</UnstyledButton>

@@ -4,7 +4,7 @@ import { useStyles } from "tss-react";
 import { useQuery } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
-import { vars } from "../../theme";
+import { theme } from "../../theme";
 
 export function UserButton() {
 	const { css } = useStyles();
@@ -29,11 +29,11 @@ export function UserButton() {
 	return (
 		<UnstyledButton
 			className={css({
-				padding: vars.spacing.md,
-				color: vars.colors.dark[0],
+				padding: theme.spacing.md,
+				color: theme.colors.dark[0],
 
 				"&:hover": {
-					backgroundColor: vars.colors.dark[8],
+					backgroundColor: theme.colors.dark[8],
 				},
 			})}
 		>

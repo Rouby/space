@@ -2,7 +2,7 @@ import { rem } from "@mantine/core";
 import { type LinkProps, Link as RouterLink } from "@tanstack/react-router";
 import { forwardRef } from "react";
 import { useStyles } from "tss-react";
-import { mq, theme, vars } from "../../theme";
+import { mq, theme } from "../../theme";
 
 export const Link = forwardRef<
 	HTMLAnchorElement,
@@ -19,11 +19,11 @@ export const Link = forwardRef<
 					display: "flex",
 					alignItems: "center",
 					height: "100%",
-					paddingInline: vars.spacing.md,
+					paddingInline: theme.spacing.md,
 					textDecoration: "none",
-					color: vars.colors.white,
+					color: theme.white,
 					fontWeight: 500,
-					fontSize: vars.fontSizes.sm,
+					fontSize: theme.fontSizes.sm,
 
 					[mq.sm]: {
 						height: rem(42),

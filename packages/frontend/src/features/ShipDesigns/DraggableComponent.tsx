@@ -2,7 +2,7 @@ import { Group, Stack, Text } from "@mantine/core";
 import { type HTMLMotionProps, motion, useDragControls } from "motion/react";
 import { useState } from "react";
 import { useStyles } from "tss-react";
-import { vars } from "../../theme";
+import { theme } from "../../theme";
 
 // Define the ShipComponentFragment type based on the component props
 type ShipComponentFragment = {
@@ -124,7 +124,7 @@ function ComponentInfo({
 				padding: "4px 6px",
 				borderRadius: "4px",
 				background: "rgba(0, 60, 120, 0.8)",
-				border: `1px solid ${vars.colors.blue[6]}`,
+				border: `1px solid ${theme.colors.blue[6]}`,
 				boxShadow: "0 0 10px rgba(0, 120, 255, 0.4)",
 				position: "relative",
 				overflow: "hidden",
@@ -147,7 +147,7 @@ function ComponentInfo({
 					left: 0,
 					right: 0,
 					height: "2px",
-					background: `linear-gradient(to right, ${vars.colors.cyan[5]}, ${vars.colors.blue[7]})`,
+					background: `linear-gradient(to right, ${theme.colors.cyan[5]}, ${theme.colors.blue[7]})`,
 				},
 				// Add a radial gradient background
 				"&::after": {

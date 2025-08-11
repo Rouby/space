@@ -2,7 +2,7 @@ import { Group, Text, ThemeIcon, UnstyledButton, rem } from "@mantine/core";
 import { IconClockCog } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useStyles } from "tss-react";
-import { theme, vars } from "../../theme";
+import { theme } from "../../theme";
 
 export function FeatureList() {
 	const { css } = useStyles();
@@ -13,8 +13,8 @@ export function FeatureList() {
 				component={Link}
 				className={css({
 					width: "100%",
-					padding: `${vars.spacing.xs} ${vars.spacing.md}`,
-					borderRadius: vars.radius.md,
+					padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+					borderRadius: theme.radius.md,
 
 					"&:hover": {
 						backgroundColor: theme.colors.dark[7],

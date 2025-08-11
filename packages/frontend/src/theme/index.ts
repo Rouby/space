@@ -4,13 +4,10 @@ import {
 	createTheme,
 	mergeMantineTheme,
 } from "@mantine/core";
-import { themeToVars } from "@mantine/vanilla-extract";
 
 export const themeOverride = createTheme({});
 
 export const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
-
-export const vars = themeToVars(theme);
 
 /** Theme media query helper for use in TSS syntax
  * @returns
@@ -28,11 +25,13 @@ export const vars = themeToVars(theme);
  *  [`${mq.sm}`]: {
  *    margin: 12px
  *  }
- * ```
+ * \`\`\`
  */
 export const mq = Object.keys(theme.breakpoints).reduce(
 	(acc, mantineSize) => {
-		acc[mantineSize] = `@media ${vars.smallerThan(mantineSize)}`;
+		acc[mantineSize] = `@media (max-width: ${
+			theme.breakpoints[mantineSize]
+		})`;
 		return acc;
 	},
 	{} as Record<keyof MantineBreakpointsValues, string>,

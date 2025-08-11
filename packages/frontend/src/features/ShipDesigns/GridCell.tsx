@@ -1,6 +1,6 @@
 import { Box, Button, Text } from "@mantine/core";
 import { useStyles } from "tss-react";
-import { vars } from "../../theme";
+import { theme } from "../../theme";
 
 export function GridCell({
 	row,
@@ -19,8 +19,8 @@ export function GridCell({
 		<Box
 			className={css({
 				border: component
-					? `1px solid ${vars.colors.blue[5]}`
-					: `1px dashed ${vars.colors.gray[5]}`,
+					? `1px solid ${theme.colors.blue[5]}`
+					: `1px dashed ${theme.colors.gray[5]}`,
 				backgroundColor: component ? "rgba(0, 120, 255, 0.2)" : "transparent",
 				width: "100%",
 				height: "100%",
@@ -30,7 +30,7 @@ export function GridCell({
 				position: "relative",
 				transition: "all 0.2s ease-in-out",
 				boxSizing: "border-box",
-				padding: vars.spacing.xs,
+				padding: theme.spacing.xs,
 				boxShadow: component ? "inset 0 0 8px rgba(0, 120, 255, 0.4)" : "none",
 				borderRadius: "2px",
 				overflow: "hidden",

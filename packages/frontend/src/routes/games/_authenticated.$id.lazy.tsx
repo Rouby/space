@@ -10,7 +10,7 @@ import { forwardRef } from "react";
 import { useStyles } from "tss-react";
 import { GalaxyView } from "../../features/GalaxyView/GalaxyView";
 import { UserButton } from "../../features/UserButton/UserButton";
-import { mq, vars } from "../../theme";
+import { mq, theme } from "../../theme";
 
 export const Route = createLazyFileRoute("/games/_authenticated/$id")({
 	component: () => <IngameLayout />,
@@ -33,12 +33,12 @@ function IngameLayout() {
 		>
 			<nav
 				className={css({
-					backgroundColor: vars.colors.body,
-					padding: vars.spacing.md,
+					backgroundColor: theme.colors.body,
+					padding: theme.spacing.md,
 					paddingTop: 0,
 					display: "flex",
 					flexDirection: "column",
-					borderRight: `${rem(1)} solid ${vars.colors.dark[4]}`,
+					borderRight: `${rem(1)} solid ${theme.colors.dark[4]}`,
 					[mq.md]: {
 						display: "none",
 					},
@@ -76,11 +76,11 @@ function Section({ children }: { children: React.ReactNode }) {
 	return (
 		<div
 			className={css({
-				marginInline: `calc(${vars.spacing.md} * -1)`,
-				marginBottom: vars.spacing.md,
+				marginInline: `calc(${theme.spacing.md} * -1)`,
+				marginBottom: theme.spacing.md,
 
 				"&:not(:last-of-type)": {
-					borderBottom: `${rem(1)} solid ${vars.colors.dark[4]}`,
+					borderBottom: `${rem(1)} solid ${theme.colors.dark[4]}`,
 				},
 			})}
 		>
@@ -104,16 +104,16 @@ const Link = forwardRef<
 					display: "flex",
 					alignItems: "center",
 					width: "100%",
-					padding: `${vars.spacing.xs} ${vars.spacing.xs}`,
-					borderRadius: vars.radius.sm,
-					fontSize: vars.fontSizes.sm,
+					padding: `${theme.spacing.xs} ${theme.spacing.xs}`,
+					borderRadius: theme.radius.sm,
+					fontSize: theme.fontSizes.sm,
 					fontWeight: 500,
-					color: vars.colors.dark[0],
+					color: theme.colors.dark[0],
 					textDecoration: "none",
 
 					"&:hover": {
-						backgroundColor: vars.colors.dark[6],
-						color: vars.colors.dark[0],
+						backgroundColor: theme.colors.dark[6],
+						color: theme.colors.dark[0],
 					},
 				}),
 				props.className,
@@ -129,8 +129,8 @@ const Link = forwardRef<
 				<IconElement
 					size={20}
 					className={css({
-						marginRight: vars.spacing.sm,
-						color: vars.colors.dark[2],
+						marginRight: theme.spacing.sm,
+						color: theme.colors.dark[2],
 					})}
 					stroke={1.5}
 				/>

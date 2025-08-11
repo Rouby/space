@@ -18,7 +18,7 @@ import type {
 	CreateShipDesignMutationVariables,
 	ShipDesignInput,
 } from "../../gql/graphql";
-import { vars } from "../../theme";
+import { theme } from "../../theme";
 import { DraggableComponent } from "./DraggableComponent";
 import { GridCell } from "./GridCell";
 import placeholderBlueprintBackground from "./example-blueprint-paper.png";
@@ -422,7 +422,7 @@ export function ShipDesigner({
 									backgroundImage: `url(${placeholderBlueprintBackground})`,
 									backgroundSize: "cover",
 									backgroundRepeat: "no-repeat",
-									padding: vars.spacing.md,
+									padding: theme.spacing.md,
 									display: "flex",
 									justifyContent: "center",
 									alignItems: "center",
@@ -436,7 +436,7 @@ export function ShipDesigner({
 										// Make cells square by setting a fixed size based on the smaller dimension
 										gridTemplateRows: `repeat(${gridRows}, minmax(0, 1fr))`,
 										gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
-										gap: vars.spacing.xs,
+										gap: theme.spacing.xs,
 										// Ensure the grid maintains its aspect ratio and is centered
 										aspectRatio: `${gridCols} / ${gridRows}`,
 										// Limit the maximum size to fit within the container while maintaining square cells
@@ -449,8 +449,8 @@ export function ShipDesigner({
 										borderRadius: "4px",
 										boxShadow:
 											"0 0 20px rgba(0, 60, 120, 0.4), inset 0 0 30px rgba(0, 120, 255, 0.2)",
-										border: `2px solid ${vars.colors.blue[7]}`,
-										padding: vars.spacing.xs,
+										border: `2px solid ${theme.colors.blue[7]}`,
+										padding: theme.spacing.xs,
 										backdropFilter: "blur(2px)",
 									})}
 								>
@@ -463,9 +463,9 @@ export function ShipDesigner({
 											right: 0,
 											display: "flex",
 											justifyContent: "space-between",
-											padding: `0 ${vars.spacing.md}`,
-											color: vars.colors.blue[8],
-											fontSize: vars.fontSizes.xs,
+											padding: `0 ${theme.spacing.md}`,
+											color: theme.colors.blue[8],
+											fontSize: theme.fontSizes.xs,
 											fontWeight: 600,
 											pointerEvents: "none",
 											textShadow: "0 0 4px rgba(0, 30, 60, 0.5)",
@@ -485,9 +485,9 @@ export function ShipDesigner({
 											display: "flex",
 											flexDirection: "column",
 											justifyContent: "space-between",
-											padding: `${vars.spacing.md} 0`,
-											color: vars.colors.blue[8],
-											fontSize: vars.fontSizes.xs,
+											padding: `${theme.spacing.md} 0`,
+											color: theme.colors.blue[8],
+											fontSize: theme.fontSizes.xs,
 											fontWeight: 600,
 											pointerEvents: "none",
 											textShadow: "0 0 4px rgba(0, 30, 60, 0.5)",
@@ -545,7 +545,7 @@ export function ShipDesigner({
 														gridCols,
 													)}
 													fill="none"
-													stroke={vars.colors.blue[5]}
+													stroke={theme.colors.blue[5]}
 													strokeWidth="0.08"
 													strokeLinejoin="round"
 													strokeLinecap="round"
@@ -562,7 +562,7 @@ export function ShipDesigner({
 														gridCols,
 													)}
 													fill="none"
-													stroke={vars.colors.cyan[5]}
+													stroke={theme.colors.cyan[5]}
 													strokeWidth="0.05"
 													strokeLinejoin="round"
 													strokeLinecap="round"
@@ -596,7 +596,7 @@ export function ShipDesigner({
 													>
 														<path
 															d="M0,0 L10,0 M0,5 L10,5 M0,0 L0,10 M5,0 L5,10"
-															stroke={vars.colors.cyan[5]}
+															stroke={theme.colors.cyan[5]}
 															strokeWidth="0.2"
 															fill="none"
 														/>
@@ -604,7 +604,7 @@ export function ShipDesigner({
 															cx="5"
 															cy="5"
 															r="0.5"
-															fill={vars.colors.cyan[4]}
+															fill={theme.colors.cyan[4]}
 														/>
 													</pattern>
 												</defs>
@@ -672,7 +672,7 @@ export function ShipDesigner({
 								background: "rgba(10, 25, 40, 0.7)",
 								borderRadius: "4px",
 								boxShadow: "0 0 15px rgba(0, 60, 120, 0.3)",
-								border: `1px solid ${vars.colors.blue[7]}`,
+								border: `1px solid ${theme.colors.blue[7]}`,
 								backdropFilter: "blur(2px)",
 							})}
 						>
@@ -681,8 +681,8 @@ export function ShipDesigner({
 								size="lg"
 								p="md"
 								className={css({
-									borderBottom: `1px solid ${vars.colors.blue[7]}`,
-									color: vars.colors.blue[1],
+									borderBottom: `1px solid ${theme.colors.blue[7]}`,
+									color: theme.colors.blue[1],
 									background: "rgba(0, 30, 60, 0.7)",
 									borderTopLeftRadius: "4px",
 									borderTopRightRadius: "4px",
@@ -693,11 +693,11 @@ export function ShipDesigner({
 							<div
 								className={css({
 									//overflowY: "auto",
-									padding: vars.spacing.sm,
+									padding: theme.spacing.sm,
 									flexGrow: 1,
 									display: "flex",
 									flexDirection: "column",
-									gap: vars.spacing.xs,
+									gap: theme.spacing.xs,
 									maxHeight: "calc(100vh - 300px)",
 									"&::-webkit-scrollbar": {
 										width: "8px",
@@ -707,7 +707,7 @@ export function ShipDesigner({
 										borderRadius: "4px",
 									},
 									"&::-webkit-scrollbar-thumb": {
-										background: vars.colors.blue[7],
+										background: theme.colors.blue[7],
 										borderRadius: "4px",
 									},
 								})}
@@ -753,7 +753,7 @@ export function ShipDesigner({
 								backgroundSize: "cover",
 								backgroundRepeat: "no-repeat",
 								display: "grid",
-								color: vars.colors.black,
+								color: theme.colors.black,
 								borderRadius: "4px",
 								boxShadow: "0 0 15px rgba(0, 60, 120, 0.3)",
 							})}
@@ -764,7 +764,7 @@ export function ShipDesigner({
 								gap={0}
 								className={css({
 									borderRight: "1px solid black",
-									paddingRight: vars.spacing.xs,
+									paddingRight: theme.spacing.xs,
 								})}
 							>
 								<Text fw="bold">Base stats</Text>
@@ -817,7 +817,7 @@ export function ShipDesigner({
 								gap={0}
 								className={css({
 									borderRight: "1px solid black",
-									paddingRight: vars.spacing.xs,
+									paddingRight: theme.spacing.xs,
 								})}
 							>
 								<Text fw="bold">Combat stats</Text>
