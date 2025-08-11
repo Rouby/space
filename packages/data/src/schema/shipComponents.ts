@@ -31,6 +31,9 @@ export const shipComponents = pgTable("shipComponents", {
 	name: varchar({ length: 256 }).notNull(),
 	description: text().notNull(),
 
+	// layout
+	layout: varchar({ length: 100 }).notNull(),
+
 	// general stats
 	supplyNeedPassive: decimal({ precision: 30, scale: 6 }).notNull(),
 	supplyNeedMovement: decimal({ precision: 30, scale: 6 }).notNull(),

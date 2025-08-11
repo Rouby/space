@@ -27,6 +27,10 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					ownerId: userId,
 					name: "Nuclear Reactor",
 					description: "A nuclear reactor that generates power for the ship.",
+					layout: `
+XX
+XX
+`,
 					constructionCost: "100",
 					crewNeed: "10",
 					powerNeed: "0",
@@ -42,6 +46,9 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					ownerId: userId,
 					name: "Plasma Thrusters",
 					description: "Thrusters that use plasma to propel the ship.",
+					layout: `
+XXX
+`,
 					constructionCost: "100",
 					crewNeed: "10",
 					powerNeed: "10",
@@ -58,6 +65,10 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					name: "Warp Drive",
 					description:
 						"A drive that allows the ship to travel faster than light.",
+					layout: `
+XXX
+XXX
+`,
 					constructionCost: "100",
 					crewNeed: "10",
 					powerNeed: "10",
@@ -73,6 +84,9 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					ownerId: userId,
 					name: "Sensor Array",
 					description: "An array of sensors to detect other ships.",
+					layout: `
+X
+`,
 					constructionCost: "100",
 					crewNeed: "10",
 					powerNeed: "10",
@@ -89,6 +103,9 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					ownerId: userId,
 					name: "Crew Quarters",
 					description: "Quarters for the crew to live in.",
+					layout: `
+X
+`,
 					constructionCost: "100",
 					crewNeed: "10",
 					powerNeed: "10",
@@ -104,6 +121,9 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					ownerId: userId,
 					name: "Supply Storage",
 					description: "Storage for supplies.",
+					layout: `
+X
+`,
 					constructionCost: "100",
 					crewNeed: "10",
 					powerNeed: "10",
@@ -119,6 +139,9 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					ownerId: userId,
 					name: "Gatling Gun",
 					description: "A rapid-fire gun.",
+					layout: `
+X
+`,
 					constructionCost: "100",
 					crewNeed: "10",
 					powerNeed: "10",
@@ -139,6 +162,9 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 					ownerId: userId,
 					name: "Titanium Armor",
 					description: "Armor made of titanium.",
+					layout: `
+X
+`,
 					constructionCost: "100",
 					crewNeed: "0",
 					powerNeed: "0",
@@ -153,6 +179,36 @@ export async function setupShipComponents(tx: Transaction, ctx: Context) {
 						beam: 0.1,
 						instant: null,
 					},
+				},
+				{
+					gameId,
+					ownerId: userId,
+					name: "Titanium Hull",
+					description: "A hull made of titanium.",
+					layout: `
+X
+`,
+					constructionCost: "100",
+					crewNeed: "0",
+					powerNeed: "0",
+					supplyNeedPassive: "0",
+					supplyNeedMovement: "0",
+					supplyNeedCombat: "0",
+				},
+				{
+					gameId,
+					ownerId: userId,
+					name: "Gangway",
+					description: "A gangway for the ship.",
+					layout: `
+ 
+`,
+					constructionCost: "100",
+					crewNeed: "0",
+					powerNeed: "0",
+					supplyNeedPassive: "0",
+					supplyNeedMovement: "0",
+					supplyNeedCombat: "0",
 				},
 			])
 			.returning();

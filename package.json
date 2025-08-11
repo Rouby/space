@@ -15,7 +15,7 @@
 	"type": "module",
 	"packageManager": "yarn@4.6.0",
 	"devDependencies": {
-		"@biomejs/biome": "1.9.5-nightly.ff02a0b",
+		"@biomejs/biome": "2.1.4",
 		"typescript": "5.7.3"
 	},
 	"workspaces": {
