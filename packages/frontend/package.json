@@ -36,13 +36,13 @@
 		"@tabler/icons-react": "3.30.0",
 		"@tanstack/react-router": "1.111.7",
 		"@tanstack/router-devtools": "1.111.7",
-		"@tiptap/extension-link": "2.11.5",
-		"@tiptap/react": "2.11.5",
-		"@tiptap/starter-kit": "2.11.5",
-		"@urql/core": "5.1.0",
+		"@tiptap/extension-link": "3.1.0",
+		"@tiptap/react": "3.1.0",
+		"@tiptap/starter-kit": "3.1.0",
+		"@urql/core": "6.0.1",
 		"@urql/devtools": "2.0.3",
-		"@urql/exchange-auth": "2.2.0",
-		"@urql/exchange-graphcache": "7.2.2",
+		"@urql/exchange-auth": "3.0.0",
+		"@urql/exchange-graphcache": "8.1.0",
 		"dayjs": "1.11.13",
 		"graphql": "16.10.0",
 		"jose": "5.10.0",
@@ -53,6 +53,6 @@
 		"react-dom": "19.0.0",
 		"react-spring": "9.7.5",
 		"tss-react": "4.9.15",
-		"urql": "4.2.1"
+		"urql": "5.0.0"
 	}
 }
