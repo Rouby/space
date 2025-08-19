@@ -10,99 +10,83 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as DashboardRouteImport } from './routes/_dashboard'
+import { Route as DashboardIndexRouteImport } from './routes/_dashboard/index'
+import { Route as GamesAuthenticatedRouteImport } from './routes/games/_authenticated'
+import { Route as DashboardSigninRouteImport } from './routes/_dashboard/signin'
+import { Route as DashboardLearnRouteImport } from './routes/_dashboard/learn'
+import { Route as DashboardFeaturesRouteImport } from './routes/_dashboard/features'
+import { Route as DashboardAuthenticatedRouteImport } from './routes/_dashboard/_authenticated'
+import { Route as DashboardAuthenticatedGamesIndexRouteImport } from './routes/_dashboard/_authenticated.games/index'
+import { Route as DashboardAuthenticatedGamesLobbyIdRouteImport } from './routes/_dashboard/_authenticated.games/lobby.$id'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as DashboardImport } from './routes/_dashboard'
-import { Route as DashboardIndexImport } from './routes/_dashboard/index'
-import { Route as GamesAuthenticatedImport } from './routes/games/_authenticated'
-import { Route as DashboardSigninImport } from './routes/_dashboard/signin'
-import { Route as DashboardLearnImport } from './routes/_dashboard/learn'
-import { Route as DashboardFeaturesImport } from './routes/_dashboard/features'
-import { Route as DashboardAuthenticatedImport } from './routes/_dashboard/_authenticated'
-import { Route as DashboardAuthenticatedGamesIndexImport } from './routes/_dashboard/_authenticated.games/index'
-import { Route as DashboardAuthenticatedGamesLobbyIdImport } from './routes/_dashboard/_authenticated.games/lobby.$id'
-
-// Create Virtual Routes
-
-const GamesImport = createFileRoute('/games')()
-const GamesAuthenticatedIdLazyImport = createFileRoute(
+const GamesRouteImport = createFileRoute('/games')()
+const GamesAuthenticatedIdLazyRouteImport = createFileRoute(
   '/games/_authenticated/$id',
 )()
-const GamesAuthenticatedIdShipDesignsLazyImport = createFileRoute(
+const GamesAuthenticatedIdShipDesignsLazyRouteImport = createFileRoute(
   '/games/_authenticated/$id/ship-designs',
 )()
-const GamesAuthenticatedIdStarSystemStarSystemIdLazyImport = createFileRoute(
-  '/games/_authenticated/$id/star-system/$starSystemId',
-)()
-const GamesAuthenticatedIdShipDesignsNewLazyImport = createFileRoute(
+const GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteImport =
+  createFileRoute('/games/_authenticated/$id/star-system/$starSystemId')()
+const GamesAuthenticatedIdShipDesignsNewLazyRouteImport = createFileRoute(
   '/games/_authenticated/$id/ship-designs/new',
 )()
 
-// Create/Update Routes
-
-const GamesRoute = GamesImport.update({
+const GamesRoute = GamesRouteImport.update({
   id: '/games',
   path: '/games',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DashboardRoute = DashboardImport.update({
+const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DashboardIndexRoute = DashboardIndexImport.update({
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const GamesAuthenticatedRoute = GamesAuthenticatedImport.update({
+const GamesAuthenticatedRoute = GamesAuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => GamesRoute,
 } as any)
-
-const DashboardSigninRoute = DashboardSigninImport.update({
+const DashboardSigninRoute = DashboardSigninRouteImport.update({
   id: '/signin',
   path: '/signin',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const DashboardLearnRoute = DashboardLearnImport.update({
+const DashboardLearnRoute = DashboardLearnRouteImport.update({
   id: '/learn',
   path: '/learn',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const DashboardFeaturesRoute = DashboardFeaturesImport.update({
+const DashboardFeaturesRoute = DashboardFeaturesRouteImport.update({
   id: '/features',
   path: '/features',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const DashboardAuthenticatedRoute = DashboardAuthenticatedImport.update({
+const DashboardAuthenticatedRoute = DashboardAuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const GamesAuthenticatedIdLazyRoute = GamesAuthenticatedIdLazyImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => GamesAuthenticatedRoute,
-} as any).lazy(() =>
-  import('./routes/games/_authenticated.$id.lazy').then((d) => d.Route),
-)
-
+const GamesAuthenticatedIdLazyRoute =
+  GamesAuthenticatedIdLazyRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => GamesAuthenticatedRoute,
+  } as any).lazy(() =>
+    import('./routes/games/_authenticated.$id.lazy').then((d) => d.Route),
+  )
 const DashboardAuthenticatedGamesIndexRoute =
-  DashboardAuthenticatedGamesIndexImport.update({
+  DashboardAuthenticatedGamesIndexRouteImport.update({
     id: '/games/',
     path: '/games/',
     getParentRoute: () => DashboardAuthenticatedRoute,
   } as any)
-
 const GamesAuthenticatedIdShipDesignsLazyRoute =
-  GamesAuthenticatedIdShipDesignsLazyImport.update({
+  GamesAuthenticatedIdShipDesignsLazyRouteImport.update({
     id: '/ship-designs',
     path: '/ship-designs',
     getParentRoute: () => GamesAuthenticatedIdLazyRoute,
@@ -111,9 +95,8 @@ const GamesAuthenticatedIdShipDesignsLazyRoute =
       (d) => d.Route,
     ),
   )
-
 const GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute =
-  GamesAuthenticatedIdStarSystemStarSystemIdLazyImport.update({
+  GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteImport.update({
     id: '/star-system/$starSystemId',
     path: '/star-system/$starSystemId',
     getParentRoute: () => GamesAuthenticatedIdLazyRoute,
@@ -122,9 +105,8 @@ const GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute =
       './routes/games/_authenticated.$id/star-system.$starSystemId.lazy'
     ).then((d) => d.Route),
   )
-
 const GamesAuthenticatedIdShipDesignsNewLazyRoute =
-  GamesAuthenticatedIdShipDesignsNewLazyImport.update({
+  GamesAuthenticatedIdShipDesignsNewLazyRouteImport.update({
     id: '/new',
     path: '/new',
     getParentRoute: () => GamesAuthenticatedIdShipDesignsLazyRoute,
@@ -133,120 +115,204 @@ const GamesAuthenticatedIdShipDesignsNewLazyRoute =
       (d) => d.Route,
     ),
   )
-
 const DashboardAuthenticatedGamesLobbyIdRoute =
-  DashboardAuthenticatedGamesLobbyIdImport.update({
+  DashboardAuthenticatedGamesLobbyIdRouteImport.update({
     id: '/games/lobby/$id',
     path: '/games/lobby/$id',
     getParentRoute: () => DashboardAuthenticatedRoute,
   } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/features': typeof DashboardFeaturesRoute
+  '/learn': typeof DashboardLearnRoute
+  '/signin': typeof DashboardSigninRoute
+  '/games': typeof DashboardAuthenticatedGamesIndexRoute
+  '/': typeof DashboardIndexRoute
+  '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
+  '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
+  '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
+  '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
+  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
+}
+export interface FileRoutesByTo {
+  '/features': typeof DashboardFeaturesRoute
+  '/learn': typeof DashboardLearnRoute
+  '/signin': typeof DashboardSigninRoute
+  '/games': typeof DashboardAuthenticatedGamesIndexRoute
+  '/': typeof DashboardIndexRoute
+  '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
+  '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
+  '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
+  '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
+  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/_dashboard': typeof DashboardRouteWithChildren
+  '/_dashboard/_authenticated': typeof DashboardAuthenticatedRouteWithChildren
+  '/_dashboard/features': typeof DashboardFeaturesRoute
+  '/_dashboard/learn': typeof DashboardLearnRoute
+  '/_dashboard/signin': typeof DashboardSigninRoute
+  '/games': typeof GamesRouteWithChildren
+  '/games/_authenticated': typeof GamesAuthenticatedRouteWithChildren
+  '/_dashboard/': typeof DashboardIndexRoute
+  '/games/_authenticated/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
+  '/games/_authenticated/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
+  '/_dashboard/_authenticated/games/': typeof DashboardAuthenticatedGamesIndexRoute
+  '/_dashboard/_authenticated/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
+  '/games/_authenticated/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
+  '/games/_authenticated/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/features'
+    | '/learn'
+    | '/signin'
+    | '/games'
+    | '/'
+    | '/games/$id'
+    | '/games/$id/ship-designs'
+    | '/games/lobby/$id'
+    | '/games/$id/ship-designs/new'
+    | '/games/$id/star-system/$starSystemId'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/features'
+    | '/learn'
+    | '/signin'
+    | '/games'
+    | '/'
+    | '/games/$id'
+    | '/games/$id/ship-designs'
+    | '/games/lobby/$id'
+    | '/games/$id/ship-designs/new'
+    | '/games/$id/star-system/$starSystemId'
+  id:
+    | '__root__'
+    | '/_dashboard'
+    | '/_dashboard/_authenticated'
+    | '/_dashboard/features'
+    | '/_dashboard/learn'
+    | '/_dashboard/signin'
+    | '/games'
+    | '/games/_authenticated'
+    | '/_dashboard/'
+    | '/games/_authenticated/$id'
+    | '/games/_authenticated/$id/ship-designs'
+    | '/_dashboard/_authenticated/games/'
+    | '/_dashboard/_authenticated/games/lobby/$id'
+    | '/games/_authenticated/$id/ship-designs/new'
+    | '/games/_authenticated/$id/star-system/$starSystemId'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  DashboardRoute: typeof DashboardRouteWithChildren
+  GamesRoute: typeof GamesRouteWithChildren
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_dashboard': {
-      id: '/_dashboard'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
-    }
-    '/_dashboard/_authenticated': {
-      id: '/_dashboard/_authenticated'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof DashboardAuthenticatedImport
-      parentRoute: typeof DashboardImport
-    }
-    '/_dashboard/features': {
-      id: '/_dashboard/features'
-      path: '/features'
-      fullPath: '/features'
-      preLoaderRoute: typeof DashboardFeaturesImport
-      parentRoute: typeof DashboardImport
-    }
-    '/_dashboard/learn': {
-      id: '/_dashboard/learn'
-      path: '/learn'
-      fullPath: '/learn'
-      preLoaderRoute: typeof DashboardLearnImport
-      parentRoute: typeof DashboardImport
-    }
-    '/_dashboard/signin': {
-      id: '/_dashboard/signin'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof DashboardSigninImport
-      parentRoute: typeof DashboardImport
-    }
     '/games': {
       id: '/games'
       path: '/games'
       fullPath: '/games'
-      preLoaderRoute: typeof GamesImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof GamesRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/games/_authenticated': {
-      id: '/games/_authenticated'
-      path: '/games'
-      fullPath: '/games'
-      preLoaderRoute: typeof GamesAuthenticatedImport
-      parentRoute: typeof GamesRoute
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_dashboard/': {
       id: '/_dashboard/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof DashboardImport
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/games/_authenticated': {
+      id: '/games/_authenticated'
+      path: '/games'
+      fullPath: '/games'
+      preLoaderRoute: typeof GamesAuthenticatedRouteImport
+      parentRoute: typeof GamesRoute
+    }
+    '/_dashboard/signin': {
+      id: '/_dashboard/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof DashboardSigninRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/learn': {
+      id: '/_dashboard/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof DashboardLearnRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/features': {
+      id: '/_dashboard/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof DashboardFeaturesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/_authenticated': {
+      id: '/_dashboard/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DashboardAuthenticatedRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/games/_authenticated/$id': {
       id: '/games/_authenticated/$id'
       path: '/$id'
       fullPath: '/games/$id'
-      preLoaderRoute: typeof GamesAuthenticatedIdLazyImport
-      parentRoute: typeof GamesAuthenticatedImport
-    }
-    '/games/_authenticated/$id/ship-designs': {
-      id: '/games/_authenticated/$id/ship-designs'
-      path: '/ship-designs'
-      fullPath: '/games/$id/ship-designs'
-      preLoaderRoute: typeof GamesAuthenticatedIdShipDesignsLazyImport
-      parentRoute: typeof GamesAuthenticatedIdLazyImport
+      preLoaderRoute: typeof GamesAuthenticatedIdLazyRouteImport
+      parentRoute: typeof GamesAuthenticatedRoute
     }
     '/_dashboard/_authenticated/games/': {
       id: '/_dashboard/_authenticated/games/'
       path: '/games'
       fullPath: '/games'
-      preLoaderRoute: typeof DashboardAuthenticatedGamesIndexImport
-      parentRoute: typeof DashboardAuthenticatedImport
+      preLoaderRoute: typeof DashboardAuthenticatedGamesIndexRouteImport
+      parentRoute: typeof DashboardAuthenticatedRoute
     }
-    '/_dashboard/_authenticated/games/lobby/$id': {
-      id: '/_dashboard/_authenticated/games/lobby/$id'
-      path: '/games/lobby/$id'
-      fullPath: '/games/lobby/$id'
-      preLoaderRoute: typeof DashboardAuthenticatedGamesLobbyIdImport
-      parentRoute: typeof DashboardAuthenticatedImport
-    }
-    '/games/_authenticated/$id/ship-designs/new': {
-      id: '/games/_authenticated/$id/ship-designs/new'
-      path: '/new'
-      fullPath: '/games/$id/ship-designs/new'
-      preLoaderRoute: typeof GamesAuthenticatedIdShipDesignsNewLazyImport
-      parentRoute: typeof GamesAuthenticatedIdShipDesignsLazyImport
+    '/games/_authenticated/$id/ship-designs': {
+      id: '/games/_authenticated/$id/ship-designs'
+      path: '/ship-designs'
+      fullPath: '/games/$id/ship-designs'
+      preLoaderRoute: typeof GamesAuthenticatedIdShipDesignsLazyRouteImport
+      parentRoute: typeof GamesAuthenticatedIdLazyRoute
     }
     '/games/_authenticated/$id/star-system/$starSystemId': {
       id: '/games/_authenticated/$id/star-system/$starSystemId'
       path: '/star-system/$starSystemId'
       fullPath: '/games/$id/star-system/$starSystemId'
-      preLoaderRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyImport
-      parentRoute: typeof GamesAuthenticatedIdLazyImport
+      preLoaderRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteImport
+      parentRoute: typeof GamesAuthenticatedIdLazyRoute
+    }
+    '/games/_authenticated/$id/ship-designs/new': {
+      id: '/games/_authenticated/$id/ship-designs/new'
+      path: '/new'
+      fullPath: '/games/$id/ship-designs/new'
+      preLoaderRoute: typeof GamesAuthenticatedIdShipDesignsNewLazyRouteImport
+      parentRoute: typeof GamesAuthenticatedIdShipDesignsLazyRoute
+    }
+    '/_dashboard/_authenticated/games/lobby/$id': {
+      id: '/_dashboard/_authenticated/games/lobby/$id'
+      path: '/games/lobby/$id'
+      fullPath: '/games/lobby/$id'
+      preLoaderRoute: typeof DashboardAuthenticatedGamesLobbyIdRouteImport
+      parentRoute: typeof DashboardAuthenticatedRoute
     }
   }
 }
-
-// Create and export the route tree
 
 interface DashboardAuthenticatedRouteChildren {
   DashboardAuthenticatedGamesIndexRoute: typeof DashboardAuthenticatedGamesIndexRoute
@@ -340,200 +406,10 @@ const GamesRouteChildren: GamesRouteChildren = {
 
 const GamesRouteWithChildren = GamesRoute._addFileChildren(GamesRouteChildren)
 
-export interface FileRoutesByFullPath {
-  '': typeof DashboardAuthenticatedRouteWithChildren
-  '/features': typeof DashboardFeaturesRoute
-  '/learn': typeof DashboardLearnRoute
-  '/signin': typeof DashboardSigninRoute
-  '/games': typeof DashboardAuthenticatedGamesIndexRoute
-  '/': typeof DashboardIndexRoute
-  '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
-  '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
-  '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
-  '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
-  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
-}
-
-export interface FileRoutesByTo {
-  '': typeof DashboardAuthenticatedRouteWithChildren
-  '/features': typeof DashboardFeaturesRoute
-  '/learn': typeof DashboardLearnRoute
-  '/signin': typeof DashboardSigninRoute
-  '/games': typeof DashboardAuthenticatedGamesIndexRoute
-  '/': typeof DashboardIndexRoute
-  '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
-  '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
-  '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
-  '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
-  '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/_dashboard': typeof DashboardRouteWithChildren
-  '/_dashboard/_authenticated': typeof DashboardAuthenticatedRouteWithChildren
-  '/_dashboard/features': typeof DashboardFeaturesRoute
-  '/_dashboard/learn': typeof DashboardLearnRoute
-  '/_dashboard/signin': typeof DashboardSigninRoute
-  '/games': typeof GamesRouteWithChildren
-  '/games/_authenticated': typeof GamesAuthenticatedRouteWithChildren
-  '/_dashboard/': typeof DashboardIndexRoute
-  '/games/_authenticated/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
-  '/games/_authenticated/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
-  '/_dashboard/_authenticated/games/': typeof DashboardAuthenticatedGamesIndexRoute
-  '/_dashboard/_authenticated/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
-  '/games/_authenticated/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
-  '/games/_authenticated/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | ''
-    | '/features'
-    | '/learn'
-    | '/signin'
-    | '/games'
-    | '/'
-    | '/games/$id'
-    | '/games/$id/ship-designs'
-    | '/games/lobby/$id'
-    | '/games/$id/ship-designs/new'
-    | '/games/$id/star-system/$starSystemId'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | ''
-    | '/features'
-    | '/learn'
-    | '/signin'
-    | '/games'
-    | '/'
-    | '/games/$id'
-    | '/games/$id/ship-designs'
-    | '/games/lobby/$id'
-    | '/games/$id/ship-designs/new'
-    | '/games/$id/star-system/$starSystemId'
-  id:
-    | '__root__'
-    | '/_dashboard'
-    | '/_dashboard/_authenticated'
-    | '/_dashboard/features'
-    | '/_dashboard/learn'
-    | '/_dashboard/signin'
-    | '/games'
-    | '/games/_authenticated'
-    | '/_dashboard/'
-    | '/games/_authenticated/$id'
-    | '/games/_authenticated/$id/ship-designs'
-    | '/_dashboard/_authenticated/games/'
-    | '/_dashboard/_authenticated/games/lobby/$id'
-    | '/games/_authenticated/$id/ship-designs/new'
-    | '/games/_authenticated/$id/star-system/$starSystemId'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  DashboardRoute: typeof DashboardRouteWithChildren
-  GamesRoute: typeof GamesRouteWithChildren
-}
-
 const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   GamesRoute: GamesRouteWithChildren,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/_dashboard",
-        "/games"
-      ]
-    },
-    "/_dashboard": {
-      "filePath": "_dashboard.tsx",
-      "children": [
-        "/_dashboard/_authenticated",
-        "/_dashboard/features",
-        "/_dashboard/learn",
-        "/_dashboard/signin",
-        "/_dashboard/"
-      ]
-    },
-    "/_dashboard/_authenticated": {
-      "filePath": "_dashboard/_authenticated.tsx",
-      "parent": "/_dashboard",
-      "children": [
-        "/_dashboard/_authenticated/games/",
-        "/_dashboard/_authenticated/games/lobby/$id"
-      ]
-    },
-    "/_dashboard/features": {
-      "filePath": "_dashboard/features.tsx",
-      "parent": "/_dashboard"
-    },
-    "/_dashboard/learn": {
-      "filePath": "_dashboard/learn.tsx",
-      "parent": "/_dashboard"
-    },
-    "/_dashboard/signin": {
-      "filePath": "_dashboard/signin.tsx",
-      "parent": "/_dashboard"
-    },
-    "/games": {
-      "filePath": "games",
-      "children": [
-        "/games/_authenticated"
-      ]
-    },
-    "/games/_authenticated": {
-      "filePath": "games/_authenticated.tsx",
-      "parent": "/games",
-      "children": [
-        "/games/_authenticated/$id"
-      ]
-    },
-    "/_dashboard/": {
-      "filePath": "_dashboard/index.tsx",
-      "parent": "/_dashboard"
-    },
-    "/games/_authenticated/$id": {
-      "filePath": "games/_authenticated.$id.lazy.tsx",
-      "parent": "/games/_authenticated",
-      "children": [
-        "/games/_authenticated/$id/ship-designs",
-        "/games/_authenticated/$id/star-system/$starSystemId"
-      ]
-    },
-    "/games/_authenticated/$id/ship-designs": {
-      "filePath": "games/_authenticated.$id/ship-designs.lazy.tsx",
-      "parent": "/games/_authenticated/$id",
-      "children": [
-        "/games/_authenticated/$id/ship-designs/new"
-      ]
-    },
-    "/_dashboard/_authenticated/games/": {
-      "filePath": "_dashboard/_authenticated.games/index.tsx",
-      "parent": "/_dashboard/_authenticated"
-    },
-    "/_dashboard/_authenticated/games/lobby/$id": {
-      "filePath": "_dashboard/_authenticated.games/lobby.$id.tsx",
-      "parent": "/_dashboard/_authenticated"
-    },
-    "/games/_authenticated/$id/ship-designs/new": {
-      "filePath": "games/_authenticated.$id/ship-designs.new.lazy.tsx",
-      "parent": "/games/_authenticated/$id/ship-designs"
-    },
-    "/games/_authenticated/$id/star-system/$starSystemId": {
-      "filePath": "games/_authenticated.$id/star-system.$starSystemId.lazy.tsx",
-      "parent": "/games/_authenticated/$id"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

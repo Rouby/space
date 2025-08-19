@@ -6,16 +6,16 @@
 	},
 	"type": "module",
 	"devDependencies": {
-		"@eddeee888/gcg-typescript-resolver-files": "0.10.4",
-		"@graphql-codegen/cli": "5.0.5",
-		"@swc/cli": "0.4.1-nightly.20240914",
-		"@swc/core": "1.11.1",
-		"@types/bcrypt": "5.0.2",
-		"@types/node": "22.13.5",
-		"nodemon": "3.1.9",
-		"tsx": "4.19.3",
-		"typescript": "5.7.3",
-		"vitest": "3.0.7"
+		"@eddeee888/gcg-typescript-resolver-files": "0.12.1",
+		"@graphql-codegen/cli": "5.0.7",
+		"@swc/cli": "0.7.8",
+		"@swc/core": "1.13.3",
+		"@types/bcrypt": "6.0.0",
+		"@types/node": "24.3.0",
+		"nodemon": "3.1.10",
+		"tsx": "4.20.4",
+		"typescript": "5.9.2",
+		"vitest": "3.2.4"
 	},
 	"nodemonConfig": {
 		"exec": "node --import=tsx --env-file=.env",
@@ -32,17 +32,17 @@
 		"delay": 500
 	},
 	"dependencies": {
-		"@graphql-yoga/plugin-defer-stream": "3.12.1",
-		"@graphql-yoga/plugin-jwt": "3.6.1",
+		"@graphql-yoga/plugin-defer-stream": "3.15.1",
+		"@graphql-yoga/plugin-jwt": "3.9.1",
 		"@space/data": "workspace:*",
 		"@space/gameloop": "workspace:*",
-		"@whatwg-node/server-plugin-cookies": "1.0.4",
-		"bcrypt": "5.1.1",
+		"@whatwg-node/server-plugin-cookies": "1.0.5",
+		"bcrypt": "6.0.0",
 		"dayjs": "1.11.13",
-		"graphql": "16.10.0",
-		"graphql-scalars": "1.24.1",
-		"graphql-yoga": "5.12.1",
-		"jose": "5.10.0",
+		"graphql": "16.11.0",
+		"graphql-scalars": "1.24.2",
+		"graphql-yoga": "5.15.1",
+		"jose": "6.0.12",
 		"rxjs": "7.8.2"
 	}
 }

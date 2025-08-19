@@ -2,10 +2,10 @@
 	"name": "@space/integration",
 	"type": "module",
 	"devDependencies": {
-		"@playwright/test": "1.50.1",
+		"@playwright/test": "1.54.2",
 		"@space/data": "workspace:*",
-		"@types/node": "22.13.5",
-		"jose": "5.10.0",
-		"pg": "8.13.3"
+		"@types/node": "24.3.0",
+		"jose": "6.0.12",
+		"pg": "8.16.3"
 	}
 }
