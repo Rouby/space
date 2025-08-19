@@ -1,16 +1,14 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
+	"$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
 	"formatter": {
 		"enabled": true,
-		"ignore": [
-			"**/gql/*.ts",
-			"**/dist/**/*",
-			"**/*.generated.ts",
-			"**/*.gen.ts",
-			"./.pnp.cjs"
+		"includes": [
+			"**/src/**/*",
+			"!**/gql/*.ts",
+			"!**/dist/**/*",
+			"!**/*.generated.ts",
+			"!**/*.gen.ts",
+			"!./.pnp.cjs"
 		]
 	},
 	"linter": {
@@ -18,17 +16,17 @@
 		"rules": {
 			"recommended": true
 		},
-		"ignore": [
-			"**/gql/*.ts",
-			"**/dist/**/*",
-			"**/*.generated.ts",
-			"**/*.gen.ts"
-		],
-		"include": ["**/src/**/*"]
+		"includes": [
+			"**/src/**/*",
+			"!**/gql/*.ts",
+			"!**/dist/**/*",
+			"!**/*.generated.ts",
+			"!**/*.gen.ts"
+		]
 	},
 	"overrides": [
 		{
-			"include": [
+			"includes": [
 				"./packages/backend/src/**/*",
 				"./packages/data/src/**/*",
 				"./packages/gameloop/src/**/*"
@@ -40,12 +38,7 @@
 							"fix": "safe",
 							"level": "error",
 							"options": {
-								"suggestedExtensions": {
-									"ts": {
-										"module": "ts",
-										"component": "tsx"
-									}
-								}
+								"forceJsExtensions": false
 							}
 						}
 					}

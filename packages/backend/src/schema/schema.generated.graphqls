@@ -5,251 +5,259 @@ scalar DateTime
 union Discovery = ResourceDiscovery | UnknownDiscovery
 
 type Game {
-  id: ID!
-  me: Player
-  name: String!
-  players: [Player!]!
-  resources: [Resource!]!
-  shipComponents: [ShipComponent!]!
-  shipDesigns: [ShipDesign!]!
-  starSystems: [StarSystem!]!
-  startedAt: DateTime
-  taskForces: [TaskForce!]!
-  tickRate: Int!
+	id: ID!
+	me: Player
+	name: String!
+	players: [Player!]!
+	resources: [Resource!]!
+	shipComponents: [ShipComponent!]!
+	shipDesigns: [ShipDesign!]!
+	starSystems: [StarSystem!]!
+	startedAt: DateTime
+	taskForces: [TaskForce!]!
+	tickRate: Int!
 }
 
 type Mutation {
-  createGame(name: String!): Game!
-  createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
-  joinGame(id: ID!): Game!
-  loginWithPassword(email: String!, password: String!): User!
-  loginWithRefreshToken: User!
-  orderTaskForce(id: ID!, orders: [TaskForceOrderInput!]!, queue: Boolean): TaskForce!
-  registerWithPassword(email: String!, name: String!, password: String!): User!
-  startGame(id: ID!): Game!
-  updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
+	createGame(name: String!): Game!
+	createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
+	joinGame(id: ID!): Game!
+	loginWithPassword(email: String!, password: String!): User!
+	loginWithRefreshToken: User!
+	orderTaskForce(
+		id: ID!
+		orders: [TaskForceOrderInput!]!
+		queue: Boolean
+	): TaskForce!
+	registerWithPassword(email: String!, name: String!, password: String!): User!
+	startGame(id: ID!): Game!
+	updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
 }
 
 type Player {
-  color: String!
-  id: ID!
-  name: String!
-  resources: [Resource!]!
-  shipComponents: [ShipComponent!]!
-  shipDesigns: [ShipDesign!]!
-  user: User!
+	color: String!
+	id: ID!
+	name: String!
+	resources: [Resource!]!
+	shipComponents: [ShipComponent!]!
+	shipDesigns: [ShipDesign!]!
+	user: User!
 }
 
 type Population {
-  amount: BigInt!
-  id: ID!
+	amount: BigInt!
+	id: ID!
 }
 
 interface Positionable {
-  id: ID!
-  position: Vector!
+	id: ID!
+	position: Vector!
 }
 
 type PositionableApppearsEvent {
-  subject: Positionable!
+	subject: Positionable!
 }
 
 type PositionableDisappearsEvent {
-  removed: Boolean
-  subject: Positionable!
+	removed: Boolean
+	subject: Positionable!
 }
 
 type PositionableMovesEvent {
-  subject: Positionable!
+	subject: Positionable!
 }
 
 type Query {
-  game(id: ID!): Game!
-  games: [Game!]!
-  me: User
-  starSystem(id: ID!): StarSystem!
+	game(id: ID!): Game!
+	games: [Game!]!
+	me: User
+	starSystem(id: ID!): StarSystem!
 }
 
 type Resource {
-  id: ID!
-  name: String!
+	id: ID!
+	name: String!
 }
 
 type ResourceCost {
-  quantity: Float!
-  resource: Resource!
+	quantity: Float!
+	resource: Resource!
 }
 
 type ResourceDiscovery {
-  id: ID!
-  miningRate: Float!
-  remainingDeposits: Float!
-  resource: Resource!
+	id: ID!
+	miningRate: Float!
+	remainingDeposits: Float!
+	resource: Resource!
 }
 
 type ShipComponent {
-  armorEffectivenessAgainst: ShipComponentEffectivenessAgainst
-  armorThickness: Float
-  constructionCost: Float!
-  costs: [ResourceCost!]!
-  crewCapacity: Float
-  crewNeed: Float!
-  description: String!
-  ftlSpeed: Float
-  id: ID!
-  name: String!
-  powerGeneration: Float
-  powerNeed: Float!
-  sensorPrecision: Float
-  sensorRange: Float
-  shieldEffectivenessAgainst: ShipComponentEffectivenessAgainst
-  shieldStrength: Float
-  structuralIntegrity: Float
-  supplyCapacity: Float
-  supplyNeedCombat: Float!
-  supplyNeedMovement: Float!
-  supplyNeedPassive: Float!
-  thruster: Float
-  weaponAccuracy: Float
-  weaponArmorPenetration: Float
-  weaponCooldown: Float
-  weaponDamage: Float
-  weaponDeliveryType: WeaponDeliveryType
-  weaponRange: Float
-  weaponShieldPenetration: Float
-  zoneOfControl: Float
+	armorEffectivenessAgainst: ShipComponentEffectivenessAgainst
+	armorThickness: Float
+	constructionCost: Float!
+	costs: [ResourceCost!]!
+	crewCapacity: Float
+	crewNeed: Float!
+	description: String!
+	ftlSpeed: Float
+	id: ID!
+	name: String!
+	powerGeneration: Float
+	powerNeed: Float!
+	sensorPrecision: Float
+	sensorRange: Float
+	shieldEffectivenessAgainst: ShipComponentEffectivenessAgainst
+	shieldStrength: Float
+	structuralIntegrity: Float
+	supplyCapacity: Float
+	supplyNeedCombat: Float!
+	supplyNeedMovement: Float!
+	supplyNeedPassive: Float!
+	thruster: Float
+	weaponAccuracy: Float
+	weaponArmorPenetration: Float
+	weaponCooldown: Float
+	weaponDamage: Float
+	weaponDeliveryType: WeaponDeliveryType
+	weaponRange: Float
+	weaponShieldPenetration: Float
+	zoneOfControl: Float
 }
 
 type ShipComponentEffectivenessAgainst {
-  beam: Float
-  instant: Float
-  missile: Float
-  projectile: Float
+	beam: Float
+	instant: Float
+	missile: Float
+	projectile: Float
 }
 
 type ShipDesign {
-  components: [ShipDesignComponent!]!
-  costs: [ResourceCost!]!
-  decommissioned: Boolean!
-  description: String!
-  id: ID!
-  name: String!
-  owner: Player!
+	components: [ShipDesignComponent!]!
+	costs: [ResourceCost!]!
+	decommissioned: Boolean!
+	description: String!
+	id: ID!
+	name: String!
+	owner: Player!
 }
 
 type ShipDesignComponent {
-  component: ShipComponent!
-  id: ID!
-  position: Vector!
+	component: ShipComponent!
+	id: ID!
+	position: Vector!
 }
 
 input ShipDesignComponentInput {
-  componentId: ID!
-  gridPosition: Vector!
+	componentId: ID!
+	gridPosition: Vector!
 }
 
 input ShipDesignInput {
-  components: [ShipDesignComponentInput!]!
-  description: String!
-  name: String!
+	components: [ShipDesignComponentInput!]!
+	description: String!
+	name: String!
 }
 
 type StarSystem implements Positionable {
-  discoveries: [Discovery!]
-  discoveryProgress: Float
-  id: ID!
-  isVisible: Boolean!
-  lastUpdate: DateTime
-  name: String!
-  owner: Player
-  populations: [Population!]
-  position: Vector!
-  sensorRange: Float
-  taskForces: [TaskForce!]!
+	discoveries: [Discovery!]
+	discoveryProgress: Float
+	id: ID!
+	isVisible: Boolean!
+	lastUpdate: DateTime
+	name: String!
+	owner: Player
+	populations: [Population!]
+	position: Vector!
+	sensorRange: Float
+	taskForces: [TaskForce!]!
 }
 
 type StarSystemUpdateEvent {
-  subject: StarSystem!
+	subject: StarSystem!
 }
 
 type Subscription {
-  trackGalaxy(gameId: ID!): TrackGalaxyEvent!
-  trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
+	trackGalaxy(gameId: ID!): TrackGalaxyEvent!
+	trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
 }
 
 type TaskForce implements Positionable {
-  game: Game!
-  id: ID!
-  isVisible: Boolean!
-  lastUpdate: DateTime
-  movementVector: Vector
-  name: String!
-  orders: [TaskForceOrder!]
-  owner: Player
-  position: Vector!
+	game: Game!
+	id: ID!
+	isVisible: Boolean!
+	lastUpdate: DateTime
+	movementVector: Vector
+	name: String!
+	orders: [TaskForceOrder!]
+	owner: Player
+	position: Vector!
 }
 
 type TaskForceColonizeOrder implements TaskForceOrder {
-  id: ID!
+	id: ID!
 }
 
 type TaskForceFollowOrder implements TaskForceOrder {
-  id: ID!
-  taskForce: TaskForce!
+	id: ID!
+	taskForce: TaskForce!
 }
 
 input TaskForceFollowOrderInput {
-  taskForceId: ID!
+	taskForceId: ID!
 }
 
 type TaskForceMoveOrder implements TaskForceOrder {
-  destination: Vector!
-  id: ID!
+	destination: Vector!
+	id: ID!
 }
 
 input TaskForceMoveOrderInput {
-  destination: Vector!
+	destination: Vector!
 }
 
 interface TaskForceOrder {
-  id: ID!
+	id: ID!
 }
 
 input TaskForceOrderInput {
-  colonize: Boolean
-  follow: TaskForceFollowOrderInput
-  move: TaskForceMoveOrderInput
+	colonize: Boolean
+	follow: TaskForceFollowOrderInput
+	move: TaskForceMoveOrderInput
 }
 
 enum TaskForceShipRole {
-  capital
-  screen
-  support
+	capital
+	screen
+	support
 }
 
-union TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent
+union TrackGalaxyEvent =
+	| PositionableApppearsEvent
+	| PositionableDisappearsEvent
+	| PositionableMovesEvent
+	| StarSystemUpdateEvent
 
 union TrackStarSystemEvent = StarSystemUpdateEvent
 
 type UnknownDiscovery {
-  id: ID!
+	id: ID!
 }
 
 input UpdatePlayerInput {
-  color: String
+	color: String
 }
 
 type User {
-  email: String!
-  id: ID!
-  name: String!
+	email: String!
+	id: ID!
+	name: String!
 }
 
 scalar Vector
 
 enum WeaponDeliveryType {
-  beam
-  instant
-  missile
-  projectile
+	beam
+	instant
+	missile
+	projectile
 }
