@@ -6,7 +6,10 @@ import { graphql } from "../../gql";
 export function SignInForm({
 	onSignedIn,
 	onNavigateToSignUp,
-}: { onSignedIn: () => void; onNavigateToSignUp: () => void }) {
+}: {
+	onSignedIn: () => void;
+	onNavigateToSignUp: () => void;
+}) {
 	const [{ fetching: signingIn, error: signInError }, signIn] = useMutation(
 		graphql(`
     mutation SignIn($email: String!, $password: String!) {
@@ -17,7 +20,7 @@ export function SignInForm({
     }`),
 	);
 
-	const { me, invalidate } = useAuth();
+	const { invalidate } = useAuth();
 
 	return (
 		<>

@@ -9,7 +9,7 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-import React, { useRef, useState } from "react";
+import React, { useId, useRef, useState } from "react";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery } from "urql";
 import { useAuth } from "../../Auth";
@@ -20,14 +20,17 @@ import type {
 } from "../../gql/graphql";
 import { theme } from "../../theme";
 import { DraggableComponent } from "./DraggableComponent";
-import { GridCell } from "./GridCell";
 import placeholderBlueprintBackground from "./example-blueprint-paper.png";
 import placeholderStatsBackground from "./example-stats-background.png";
+import { GridCell } from "./GridCell";
 
 export function ShipDesigner({
 	gameId,
 	onCreate,
-}: { gameId: string; onCreate: () => void }) {
+}: {
+	gameId: string;
+	onCreate: () => void;
+}) {
 	const [{ data }] = useQuery({
 		query: graphql(`query ShipComponents($gameId: ID!) {
 			game(id: $gameId) {
@@ -354,570 +357,567 @@ export function ShipDesigner({
 			},
 		);
 
+	const circuitPattern = useId();
+
 	return (
-		<>
-			<form
-				ref={formRef}
-				onSubmit={async (evt) => {
-					evt.preventDefault();
+		<form
+			ref={formRef}
+			onSubmit={async (evt) => {
+				evt.preventDefault();
 
-					const formData = new FormData(evt.currentTarget as HTMLFormElement);
+				const formData = new FormData(evt.currentTarget as HTMLFormElement);
 
-					const design: ShipDesignInput = {
-						name: formData.get("name") as string,
-						description: formData.get("description") as string,
-						components: componentPositions.map(({ componentId, row, col }) => ({
-							componentId,
-							gridPosition: { x: col, y: row },
-						})),
-					};
+				const design: ShipDesignInput = {
+					name: formData.get("name") as string,
+					description: formData.get("description") as string,
+					components: componentPositions.map(({ componentId, row, col }) => ({
+						componentId,
+						gridPosition: { x: col, y: row },
+					})),
+				};
 
-					await createShipDesign({
-						gameId,
-						design,
-						// extras
-						userId: auth.me?.id,
-					} as CreateShipDesignMutationVariables);
+				await createShipDesign({
+					gameId,
+					design,
+					// extras
+					userId: auth.me?.id,
+				} as CreateShipDesignMutationVariables);
 
-					onCreate();
-				}}
-			>
-				<Stack>
-					<TextInput name="name" required label="Name" />
-					<TextInput name="description" required label="Description" />
-					<Select
-						name="resourceId"
-						required
-						label="Resource"
-						data={
-							data?.game.me?.resources.map((resource) => ({
-								label: resource.name,
-								value: resource.id,
-							})) ?? []
-						}
+				onCreate();
+			}}
+		>
+			<Stack>
+				<TextInput name="name" required label="Name" />
+				<TextInput name="description" required label="Description" />
+				<Select
+					name="resourceId"
+					required
+					label="Resource"
+					data={
+						data?.game.me?.resources.map((resource) => ({
+							label: resource.name,
+							value: resource.id,
+						})) ?? []
+					}
+				/>
+
+				{/* Grid size configuration */}
+				<Group grow>
+					<NumberInput
+						label="Grid Rows"
+						value={gridRows}
+						onChange={(value) => updateGridSize(Number(value) || 5, gridCols)}
+						min={3}
+						max={10}
 					/>
+					<NumberInput
+						label="Grid Columns"
+						value={gridCols}
+						onChange={(value) => updateGridSize(gridRows, Number(value) || 7)}
+						min={3}
+						max={12}
+					/>
+				</Group>
 
-					{/* Grid size configuration */}
-					<Group grow>
-						<NumberInput
-							label="Grid Rows"
-							value={gridRows}
-							onChange={(value) => updateGridSize(Number(value) || 5, gridCols)}
-							min={3}
-							max={10}
-						/>
-						<NumberInput
-							label="Grid Columns"
-							value={gridCols}
-							onChange={(value) => updateGridSize(gridRows, Number(value) || 7)}
-							min={3}
-							max={12}
-						/>
-					</Group>
-
-					<Stack>
-						<AspectRatio ratio={768 / 512}>
+				<Stack>
+					<AspectRatio ratio={768 / 512}>
+						<div
+							className={css({
+								backgroundImage: `url(${placeholderBlueprintBackground})`,
+								backgroundSize: "cover",
+								backgroundRepeat: "no-repeat",
+								padding: theme.spacing.md,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								position: "relative",
+							})}
+						>
 							<div
 								className={css({
-									backgroundImage: `url(${placeholderBlueprintBackground})`,
-									backgroundSize: "cover",
-									backgroundRepeat: "no-repeat",
-									padding: theme.spacing.md,
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
+									display: "grid",
+									// Make cells square by setting a fixed size based on the smaller dimension
+									gridTemplateRows: `repeat(${gridRows}, minmax(0, 1fr))`,
+									gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
+									gap: theme.spacing.xs,
+									// Ensure the grid maintains its aspect ratio and is centered
+									aspectRatio: `${gridCols} / ${gridRows}`,
+									// Limit the maximum size to fit within the container while maintaining square cells
+									maxWidth: `min(100%, calc(100vh * ${gridCols} / ${gridRows} * 0.6))`,
+									maxHeight: `min(100%, calc(100vw * ${gridRows} / ${gridCols} * 0.6))`,
+									width: "100%",
+									height: "100%",
 									position: "relative",
+									background: "rgba(10, 25, 40, 0.7)",
+									borderRadius: "4px",
+									boxShadow:
+										"0 0 20px rgba(0, 60, 120, 0.4), inset 0 0 30px rgba(0, 120, 255, 0.2)",
+									border: `2px solid ${theme.colors.blue[7]}`,
+									padding: theme.spacing.xs,
+									backdropFilter: "blur(2px)",
 								})}
 							>
+								{/* Grid coordinate markers */}
 								<div
-									id="design-grid"
 									className={css({
-										display: "grid",
-										// Make cells square by setting a fixed size based on the smaller dimension
-										gridTemplateRows: `repeat(${gridRows}, minmax(0, 1fr))`,
-										gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
-										gap: theme.spacing.xs,
-										// Ensure the grid maintains its aspect ratio and is centered
-										aspectRatio: `${gridCols} / ${gridRows}`,
-										// Limit the maximum size to fit within the container while maintaining square cells
-										maxWidth: `min(100%, calc(100vh * ${gridCols} / ${gridRows} * 0.6))`,
-										maxHeight: `min(100%, calc(100vw * ${gridRows} / ${gridCols} * 0.6))`,
-										width: "100%",
-										height: "100%",
-										position: "relative",
-										background: "rgba(10, 25, 40, 0.7)",
-										borderRadius: "4px",
-										boxShadow:
-											"0 0 20px rgba(0, 60, 120, 0.4), inset 0 0 30px rgba(0, 120, 255, 0.2)",
-										border: `2px solid ${theme.colors.blue[7]}`,
-										padding: theme.spacing.xs,
-										backdropFilter: "blur(2px)",
+										position: "absolute",
+										top: -28,
+										left: 0,
+										right: 0,
+										display: "flex",
+										justifyContent: "space-between",
+										padding: `0 ${theme.spacing.md}`,
+										color: theme.colors.blue[8],
+										fontSize: theme.fontSizes.xs,
+										fontWeight: 600,
+										pointerEvents: "none",
+										textShadow: "0 0 4px rgba(0, 30, 60, 0.5)",
 									})}
 								>
-									{/* Grid coordinate markers */}
+									{Array.from({ length: gridCols }).map((_, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: These are static grid markers
+										<div key={`col-marker-${i}`}>{i + 1}</div>
+									))}
+								</div>
+								<div
+									className={css({
+										position: "absolute",
+										left: -28,
+										top: 0,
+										bottom: 0,
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "space-between",
+										padding: `${theme.spacing.md} 0`,
+										color: theme.colors.blue[8],
+										fontSize: theme.fontSizes.xs,
+										fontWeight: 600,
+										pointerEvents: "none",
+										textShadow: "0 0 4px rgba(0, 30, 60, 0.5)",
+									})}
+								>
+									{Array.from({ length: gridRows }).map((_, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: These are static grid markers
+										<div key={`row-marker-${i}`}>{i + 1}</div>
+									))}
+								</div>
+
+								{/* Ship Silhouette Outline */}
+								{componentPositions.length > 0 && (
 									<div
 										className={css({
 											position: "absolute",
-											top: -28,
+											top: 0,
 											left: 0,
 											right: 0,
-											display: "flex",
-											justifyContent: "space-between",
-											padding: `0 ${theme.spacing.md}`,
-											color: theme.colors.blue[8],
-											fontSize: theme.fontSizes.xs,
-											fontWeight: 600,
-											pointerEvents: "none",
-											textShadow: "0 0 4px rgba(0, 30, 60, 0.5)",
-										})}
-									>
-										{Array.from({ length: gridCols }).map((_, i) => (
-											// biome-ignore lint/suspicious/noArrayIndexKey: These are static grid markers
-											<div key={`col-marker-${i}`}>{i + 1}</div>
-										))}
-									</div>
-									<div
-										className={css({
-											position: "absolute",
-											left: -28,
-											top: 0,
 											bottom: 0,
-											display: "flex",
-											flexDirection: "column",
-											justifyContent: "space-between",
-											padding: `${theme.spacing.md} 0`,
-											color: theme.colors.blue[8],
-											fontSize: theme.fontSizes.xs,
-											fontWeight: 600,
 											pointerEvents: "none",
-											textShadow: "0 0 4px rgba(0, 30, 60, 0.5)",
+											zIndex: 2,
 										})}
 									>
-										{Array.from({ length: gridRows }).map((_, i) => (
-											// biome-ignore lint/suspicious/noArrayIndexKey: These are static grid markers
-											<div key={`row-marker-${i}`}>{i + 1}</div>
-										))}
-									</div>
-
-									{/* Ship Silhouette Outline */}
-									{componentPositions.length > 0 && (
-										<div
-											className={css({
+										<svg
+											width="100%"
+											height="100%"
+											viewBox={`0 0 ${gridCols} ${gridRows}`}
+											preserveAspectRatio="none"
+											style={{
 												position: "absolute",
 												top: 0,
 												left: 0,
 												right: 0,
 												bottom: 0,
-												pointerEvents: "none",
-												zIndex: 2,
-											})}
+											}}
+											aria-label="Ship Outline"
+											role="img"
 										>
-											<svg
-												width="100%"
-												height="100%"
-												viewBox={`0 0 ${gridCols} ${gridRows}`}
-												preserveAspectRatio="none"
+											{/* Add a subtle fill for the ship area */}
+											<path
+												d={generateShipAreaPath(
+													componentPositions,
+													gridRows,
+													gridCols,
+												)}
+												fill="rgba(0, 60, 120, 0.1)"
+												stroke="none"
+											/>
+											{/* Add a subtle glow effect */}
+											<path
+												d={generateShipOutlinePath(
+													componentPositions,
+													gridRows,
+													gridCols,
+												)}
+												fill="none"
+												stroke={theme.colors.blue[5]}
+												strokeWidth="0.08"
+												strokeLinejoin="round"
+												strokeLinecap="round"
 												style={{
-													position: "absolute",
-													top: 0,
-													left: 0,
-													right: 0,
-													bottom: 0,
+													filter: "blur(0.2px)",
+													opacity: 0.6,
 												}}
-												aria-label="Ship Outline"
-												role="img"
-											>
-												{/* Add a subtle fill for the ship area */}
-												<path
-													d={generateShipAreaPath(
-														componentPositions,
-														gridRows,
-														gridCols,
-													)}
-													fill="rgba(0, 60, 120, 0.1)"
-													stroke="none"
-												/>
-												{/* Add a subtle glow effect */}
-												<path
-													d={generateShipOutlinePath(
-														componentPositions,
-														gridRows,
-														gridCols,
-													)}
-													fill="none"
-													stroke={theme.colors.blue[5]}
-													strokeWidth="0.08"
-													strokeLinejoin="round"
-													strokeLinecap="round"
-													style={{
-														filter: "blur(0.2px)",
-														opacity: 0.6,
-													}}
-												/>
-												{/* Main outline */}
-												<path
-													d={generateShipOutlinePath(
-														componentPositions,
-														gridRows,
-														gridCols,
-													)}
-													fill="none"
-													stroke={theme.colors.cyan[5]}
-													strokeWidth="0.05"
-													strokeLinejoin="round"
-													strokeLinecap="round"
-													style={{
-														filter:
-															"drop-shadow(0 0 1px rgba(0, 180, 255, 0.5))",
-													}}
-												/>
-												{/* Add circuit-like details to the ship */}
-												<path
-													d={generateShipAreaPath(
-														componentPositions,
-														gridRows,
-														gridCols,
-													)}
-													fill="url(#circuitPattern)"
-													stroke="none"
-													style={{
-														opacity: 0.1,
-													}}
-												/>
+											/>
+											{/* Main outline */}
+											<path
+												d={generateShipOutlinePath(
+													componentPositions,
+													gridRows,
+													gridCols,
+												)}
+												fill="none"
+												stroke={theme.colors.cyan[5]}
+												strokeWidth="0.05"
+												strokeLinejoin="round"
+												strokeLinecap="round"
+												style={{
+													filter: "drop-shadow(0 0 1px rgba(0, 180, 255, 0.5))",
+												}}
+											/>
+											{/* Add circuit-like details to the ship */}
+											<path
+												d={generateShipAreaPath(
+													componentPositions,
+													gridRows,
+													gridCols,
+												)}
+												fill={`url(#${circuitPattern})`}
+												stroke="none"
+												style={{
+													opacity: 0.1,
+												}}
+											/>
 
-												{/* Define patterns */}
-												<defs>
-													<pattern
-														id="circuitPattern"
-														patternUnits="userSpaceOnUse"
-														width="1"
-														height="1"
-														patternTransform="scale(0.2)"
-													>
-														<path
-															d="M0,0 L10,0 M0,5 L10,5 M0,0 L0,10 M5,0 L5,10"
-															stroke={theme.colors.cyan[5]}
-															strokeWidth="0.2"
-															fill="none"
-														/>
-														<circle
-															cx="5"
-															cy="5"
-															r="0.5"
-															fill={theme.colors.cyan[4]}
-														/>
-													</pattern>
-												</defs>
-											</svg>
-										</div>
-									)}
-
-									{Array.from({ length: gridRows }).map((_, rowIndex) => (
-										<React.Fragment
-											key={`row-${
-												// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-												rowIndex
-											}`}
-										>
-											{Array.from({ length: gridCols }).map((_, colIndex) => {
-												const cellData = grid[rowIndex][colIndex];
-												const component = data?.game.me?.shipComponents.find(
-													(c) => c.id === cellData.componentId,
-												);
-
-												return (
-													<GridCell
-														key={`cell-${rowIndex}-${
-															// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-															colIndex
-														}`}
-														row={rowIndex}
-														col={colIndex}
-														component={component}
-														onRemove={(row, col) => {
-															const { componentId, instanceId } =
-																grid[row][col];
-															if (!componentId || !instanceId) return;
-
-															// Update the grid
-															const newGrid = [...grid];
-															newGrid[row][col] = {
-																componentId: null,
-																instanceId: null,
-															};
-															setGrid(newGrid);
-
-															// Update component positions
-															setComponentPositions((prev) =>
-																prev.filter(
-																	(pos) => pos.instanceId !== instanceId,
-																),
-															);
-														}}
+											{/* Define patterns */}
+											<defs>
+												<pattern
+													id={circuitPattern}
+													patternUnits="userSpaceOnUse"
+													width="1"
+													height="1"
+													patternTransform="scale(0.2)"
+												>
+													<path
+														d="M0,0 L10,0 M0,5 L10,5 M0,0 L0,10 M5,0 L5,10"
+														stroke={theme.colors.cyan[5]}
+														strokeWidth="0.2"
+														fill="none"
 													/>
-												);
-											})}
-										</React.Fragment>
-									))}
-								</div>
-							</div>
-						</AspectRatio>
+													<circle
+														cx="5"
+														cy="5"
+														r="0.5"
+														fill={theme.colors.cyan[4]}
+													/>
+												</pattern>
+											</defs>
+										</svg>
+									</div>
+								)}
 
-						{/* Component palette - on the right side */}
-						<div
-							className={css({
-								display: "flex",
-								flexDirection: "column",
-								height: "100%",
-								background: "rgba(10, 25, 40, 0.7)",
-								borderRadius: "4px",
-								boxShadow: "0 0 15px rgba(0, 60, 120, 0.3)",
-								border: `1px solid ${theme.colors.blue[7]}`,
-								backdropFilter: "blur(2px)",
-							})}
-						>
-							<Text
-								fw="bold"
-								size="lg"
-								p="md"
-								className={css({
-									borderBottom: `1px solid ${theme.colors.blue[7]}`,
-									color: theme.colors.blue[1],
-									background: "rgba(0, 30, 60, 0.7)",
-									borderTopLeftRadius: "4px",
-									borderTopRightRadius: "4px",
-								})}
-							>
-								Available Components
-							</Text>
-							<div
-								className={css({
-									//overflowY: "auto",
-									padding: theme.spacing.sm,
-									flexGrow: 1,
-									display: "flex",
-									flexDirection: "column",
-									gap: theme.spacing.xs,
-									maxHeight: "calc(100vh - 300px)",
-									"&::-webkit-scrollbar": {
-										width: "8px",
-									},
-									"&::-webkit-scrollbar-track": {
-										background: "rgba(0, 30, 60, 0.3)",
-										borderRadius: "4px",
-									},
-									"&::-webkit-scrollbar-thumb": {
-										background: theme.colors.blue[7],
-										borderRadius: "4px",
-									},
-								})}
-							>
-								{data?.game.me?.shipComponents.map((component) => (
-									<DraggableComponent
-										key={component.id}
-										component={component}
-										gridRows={gridRows}
-										gridCols={gridCols}
-										onDrop={(componentId, row, col) => {
-											// Check if the cell is already occupied
-											if (grid[row][col].componentId !== null) {
-												return false;
-											}
+								{Array.from({ length: gridRows }).map((_, rowIndex) => (
+									<React.Fragment
+										key={`row-${
+											// biome-ignore lint/suspicious/noArrayIndexKey: just index
+											rowIndex
+										}`}
+									>
+										{Array.from({ length: gridCols }).map((_, colIndex) => {
+											const cellData = grid[rowIndex][colIndex];
+											const component = data?.game.me?.shipComponents.find(
+												(c) => c.id === cellData.componentId,
+											);
 
-											// Generate a unique instance ID for this component placement
-											const instanceId = generateInstanceId();
+											return (
+												<GridCell
+													key={`cell-${rowIndex}-${
+														// biome-ignore lint/suspicious/noArrayIndexKey: just index
+														colIndex
+													}`}
+													row={rowIndex}
+													col={colIndex}
+													component={component}
+													onRemove={(row, col) => {
+														const { componentId, instanceId } = grid[row][col];
+														if (!componentId || !instanceId) return;
 
-											// Update the grid
-											const newGrid = [...grid];
-											newGrid[row][col] = { componentId, instanceId };
-											setGrid(newGrid);
+														// Update the grid
+														const newGrid = [...grid];
+														newGrid[row][col] = {
+															componentId: null,
+															instanceId: null,
+														};
+														setGrid(newGrid);
 
-											// Update component positions
-											setComponentPositions((prev) => [
-												...prev,
-												{ componentId, instanceId, row, col },
-											]);
-
-											return true;
-										}}
-									/>
+														// Update component positions
+														setComponentPositions((prev) =>
+															prev.filter(
+																(pos) => pos.instanceId !== instanceId,
+															),
+														);
+													}}
+												/>
+											);
+										})}
+									</React.Fragment>
 								))}
 							</div>
 						</div>
+					</AspectRatio>
 
-						{/* Stats display - now below both grid and palette */}
-						<SimpleGrid
-							cols={3}
+					{/* Component palette - on the right side */}
+					<div
+						className={css({
+							display: "flex",
+							flexDirection: "column",
+							height: "100%",
+							background: "rgba(10, 25, 40, 0.7)",
+							borderRadius: "4px",
+							boxShadow: "0 0 15px rgba(0, 60, 120, 0.3)",
+							border: `1px solid ${theme.colors.blue[7]}`,
+							backdropFilter: "blur(2px)",
+						})}
+					>
+						<Text
+							fw="bold"
+							size="lg"
+							p="md"
 							className={css({
-								backgroundImage: `url(${placeholderStatsBackground})`,
-								backgroundSize: "cover",
-								backgroundRepeat: "no-repeat",
-								display: "grid",
-								color: theme.colors.black,
-								borderRadius: "4px",
-								boxShadow: "0 0 15px rgba(0, 60, 120, 0.3)",
+								borderBottom: `1px solid ${theme.colors.blue[7]}`,
+								color: theme.colors.blue[1],
+								background: "rgba(0, 30, 60, 0.7)",
+								borderTopLeftRadius: "4px",
+								borderTopRightRadius: "4px",
 							})}
-							px="md"
-							py="xs"
 						>
-							<Stack
-								gap={0}
-								className={css({
-									borderRight: "1px solid black",
-									paddingRight: theme.spacing.xs,
-								})}
-							>
-								<Text fw="bold">Base stats</Text>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Supply need (passive)</span>
-									<span>{stats.supplyNeedPassive}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Supply need (movement)</span>
-									<span>{stats.supplyNeedMovement}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Supply need (combat)</span>
-									<span>{stats.supplyNeedCombat}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Power need</span>
-									<span>{stats.powerNeed}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Crew need</span>
-									<span>{stats.crewNeed}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Supply capacity</span>
-									<span>{stats.supplyCapacity}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Power generation</span>
-									<span>{stats.powerGeneration}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Crew capacity</span>
-									<span>{stats.crewCapacity}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Maximum FTL speed</span>
-									<span>{stats.ftlSpeed}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Zone of control</span>
-									<span>{stats.zoneOfControl}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Sensor range</span>
-									<span>{stats.sensorRange}</span>
-								</Group>
-							</Stack>
-							<Stack
-								gap={0}
-								className={css({
-									borderRight: "1px solid black",
-									paddingRight: theme.spacing.xs,
-								})}
-							>
-								<Text fw="bold">Combat stats</Text>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Structural integrity</span>
-									<span>{stats.structuralIntegrity}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Thruster</span>
-									<span>{stats.thruster}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Sensor precision</span>
-									<span>{stats.sensorPrecision}</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Armor thickness</span>
-									<span>
-										{stats.armorThickness.min} - {stats.armorThickness.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Shield strength</span>
-									<span>
-										{stats.shieldStrength.min} - {stats.shieldStrength.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Weapon damage</span>
-									<span>
-										{stats.weaponDamage.min} - {stats.weaponDamage.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Weapon cooldown</span>
-									<span>
-										{stats.weaponCooldown.min} - {stats.weaponCooldown.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Weapon range</span>
-									<span>
-										{stats.weaponRange.min} - {stats.weaponRange.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Armor penetration</span>
-									<span>
-										{stats.weaponArmorPenetration.min} -{" "}
-										{stats.weaponArmorPenetration.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Shield penetration</span>
-									<span>
-										{stats.weaponShieldPenetration.min} -{" "}
-										{stats.weaponShieldPenetration.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Weapon accuracy</span>
-									<span>
-										{stats.weaponAccuracy.min} - {stats.weaponAccuracy.max}
-									</span>
-								</Group>
-								<Group justify="space-between" wrap="nowrap">
-									<span>Weapon delivery types</span>
-									<span>
-										{new Intl.ListFormat().format(stats.weaponDeliveryTypes)}
-									</span>
-								</Group>
-							</Stack>
-							<Stack gap={0}>
-								<Text fw="bold">Costs</Text>
+							Available Components
+						</Text>
+						<div
+							className={css({
+								//overflowY: "auto",
+								padding: theme.spacing.sm,
+								flexGrow: 1,
+								display: "flex",
+								flexDirection: "column",
+								gap: theme.spacing.xs,
+								maxHeight: "calc(100vh - 300px)",
+								"&::-webkit-scrollbar": {
+									width: "8px",
+								},
+								"&::-webkit-scrollbar-track": {
+									background: "rgba(0, 30, 60, 0.3)",
+									borderRadius: "4px",
+								},
+								"&::-webkit-scrollbar-thumb": {
+									background: theme.colors.blue[7],
+									borderRadius: "4px",
+								},
+							})}
+						>
+							{data?.game.me?.shipComponents.map((component) => (
+								<DraggableComponent
+									key={component.id}
+									component={component}
+									gridRows={gridRows}
+									gridCols={gridCols}
+									onDrop={(componentId, row, col) => {
+										// Check if the cell is already occupied
+										if (grid[row][col].componentId !== null) {
+											return false;
+										}
+
+										// Generate a unique instance ID for this component placement
+										const instanceId = generateInstanceId();
+
+										// Update the grid
+										const newGrid = [...grid];
+										newGrid[row][col] = { componentId, instanceId };
+										setGrid(newGrid);
+
+										// Update component positions
+										setComponentPositions((prev) => [
+											...prev,
+											{ componentId, instanceId, row, col },
+										]);
+
+										return true;
+									}}
+								/>
+							))}
+						</div>
+					</div>
+
+					{/* Stats display - now below both grid and palette */}
+					<SimpleGrid
+						cols={3}
+						className={css({
+							backgroundImage: `url(${placeholderStatsBackground})`,
+							backgroundSize: "cover",
+							backgroundRepeat: "no-repeat",
+							display: "grid",
+							color: theme.colors.black,
+							borderRadius: "4px",
+							boxShadow: "0 0 15px rgba(0, 60, 120, 0.3)",
+						})}
+						px="md"
+						py="xs"
+					>
+						<Stack
+							gap={0}
+							className={css({
+								borderRight: "1px solid black",
+								paddingRight: theme.spacing.xs,
+							})}
+						>
+							<Text fw="bold">Base stats</Text>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Supply need (passive)</span>
+								<span>{stats.supplyNeedPassive}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Supply need (movement)</span>
+								<span>{stats.supplyNeedMovement}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Supply need (combat)</span>
+								<span>{stats.supplyNeedCombat}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Power need</span>
+								<span>{stats.powerNeed}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Crew need</span>
+								<span>{stats.crewNeed}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Supply capacity</span>
+								<span>{stats.supplyCapacity}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Power generation</span>
+								<span>{stats.powerGeneration}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Crew capacity</span>
+								<span>{stats.crewCapacity}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Maximum FTL speed</span>
+								<span>{stats.ftlSpeed}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Zone of control</span>
+								<span>{stats.zoneOfControl}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Sensor range</span>
+								<span>{stats.sensorRange}</span>
+							</Group>
+						</Stack>
+						<Stack
+							gap={0}
+							className={css({
+								borderRight: "1px solid black",
+								paddingRight: theme.spacing.xs,
+							})}
+						>
+							<Text fw="bold">Combat stats</Text>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Structural integrity</span>
+								<span>{stats.structuralIntegrity}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Thruster</span>
+								<span>{stats.thruster}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Sensor precision</span>
+								<span>{stats.sensorPrecision}</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Armor thickness</span>
 								<span>
+									{stats.armorThickness.min} - {stats.armorThickness.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Shield strength</span>
+								<span>
+									{stats.shieldStrength.min} - {stats.shieldStrength.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Weapon damage</span>
+								<span>
+									{stats.weaponDamage.min} - {stats.weaponDamage.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Weapon cooldown</span>
+								<span>
+									{stats.weaponCooldown.min} - {stats.weaponCooldown.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Weapon range</span>
+								<span>
+									{stats.weaponRange.min} - {stats.weaponRange.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Armor penetration</span>
+								<span>
+									{stats.weaponArmorPenetration.min} -{" "}
+									{stats.weaponArmorPenetration.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Shield penetration</span>
+								<span>
+									{stats.weaponShieldPenetration.min} -{" "}
+									{stats.weaponShieldPenetration.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Weapon accuracy</span>
+								<span>
+									{stats.weaponAccuracy.min} - {stats.weaponAccuracy.max}
+								</span>
+							</Group>
+							<Group justify="space-between" wrap="nowrap">
+								<span>Weapon delivery types</span>
+								<span>
+									{new Intl.ListFormat().format(stats.weaponDeliveryTypes)}
+								</span>
+							</Group>
+						</Stack>
+						<Stack gap={0}>
+							<Text fw="bold">Costs</Text>
+							<span>
+								{new Intl.NumberFormat(undefined, {
+									style: "decimal",
+									notation: "compact",
+								}).format(stats.constructionCost)}{" "}
+								Construction
+							</span>
+							{costs.map((cost) => (
+								<span key={cost.resourceId}>
 									{new Intl.NumberFormat(undefined, {
 										style: "decimal",
 										notation: "compact",
-									}).format(stats.constructionCost)}{" "}
-									Construction
+									}).format(cost.quantity)}{" "}
+									{cost.resourceName}
 								</span>
-								{costs.map((cost) => (
-									<span key={cost.resourceId}>
-										{new Intl.NumberFormat(undefined, {
-											style: "decimal",
-											notation: "compact",
-										}).format(cost.quantity)}{" "}
-										{cost.resourceName}
-									</span>
-								))}
-							</Stack>
-						</SimpleGrid>
+							))}
+						</Stack>
+					</SimpleGrid>
 
-						<Button type="submit" loading={fetching}>
-							Create
-						</Button>
-					</Stack>
+					<Button type="submit" loading={fetching}>
+						Create
+					</Button>
 				</Stack>
-			</form>
-		</>
+			</Stack>
+		</form>
 	);
 }
 
@@ -982,8 +982,8 @@ function generateShipOutlinePath(
 // Generate a path for the filled ship area
 function generateShipAreaPath(
 	positions: { row: number; col: number }[],
-	rows: number,
-	cols: number,
+	_rows: number,
+	_cols: number,
 ): string {
 	if (positions.length === 0) return "";
 

@@ -11,7 +11,7 @@ import {
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
-export async function tickStarSystemEconomy(tx: Transaction, ctx: Context) {
+export async function tickStarSystemEconomy(tx: Transaction, _ctx: Context) {
 	const starSystemsWithResourcesLeft = await tx
 		.select({
 			id: starSystems.id,

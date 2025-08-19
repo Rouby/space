@@ -1,14 +1,13 @@
-import { OutlineFilter } from "pixi-filters";
 import {
 	Color,
 	type FederatedPointerEvent,
 	type Graphics,
 	type PointData,
 } from "pixi.js";
+import { OutlineFilter } from "pixi-filters";
 import { useCallback } from "react";
 
 export function TaskForce({
-	id,
 	position,
 	isVisible,
 	isSelected,

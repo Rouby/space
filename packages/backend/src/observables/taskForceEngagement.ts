@@ -4,7 +4,6 @@ import { fromGameEvents } from "../workers.ts";
 export function taskForceEngagement$({
 	taskForceEngagementId,
 	gameId,
-	userId,
 }: {
 	taskForceEngagementId: string;
 	gameId: string;

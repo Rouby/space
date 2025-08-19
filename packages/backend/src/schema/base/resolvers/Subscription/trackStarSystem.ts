@@ -55,7 +55,7 @@ export const trackStarSystem: NonNullable<
 					filter((count) => count >= 10n ** magnitude),
 				),
 			),
-			map((events) => ({
+			map((_events) => ({
 				__typename: "StarSystemUpdateEvent" as const,
 				subject: {
 					__typename: "StarSystem" as const,
@@ -87,6 +87,6 @@ export const trackStarSystem: NonNullable<
 			),
 		);
 	},
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: can be any
 	resolve: (input: any) => input,
 };

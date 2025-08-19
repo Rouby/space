@@ -18,7 +18,7 @@ export const Vector = new GraphQLScalarType({
 			return value;
 		}
 	},
-	parseLiteral: (ast) => {
+	parseLiteral: (_ast) => {
 		/* Implement logic to parse input that was sent to the server as literal values (string, number, or boolean) */
 		return null;
 	},

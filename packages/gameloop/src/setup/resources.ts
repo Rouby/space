@@ -2,7 +2,7 @@ import { resources } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./setup.ts";
 
-export async function setupResources(tx: Transaction, ctx: Context) {
+export async function setupResources(tx: Transaction, _ctx: Context) {
 	// TODO generate random resources
 
 	await tx.insert(resources).values([

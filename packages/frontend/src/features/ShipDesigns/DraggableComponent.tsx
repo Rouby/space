@@ -54,7 +54,7 @@ export function DraggableComponent({
 	onDrop: (componentId: string, row: number, col: number) => boolean;
 }) {
 	const controls = useDragControls();
-	const [isDragging, setIsDragging] = useState(false);
+	const [_isDragging, setIsDragging] = useState(false);
 
 	return (
 		<>

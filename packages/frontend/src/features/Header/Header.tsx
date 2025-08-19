@@ -118,8 +118,7 @@ export function Header() {
 					{me ? (
 						<UserButton />
 					) : (
-						<>
-							<Group visibleFrom="sm">
+						<Group visibleFrom="sm">
 								<Button variant="default" component={RouterLink} to="/signin">
 									Log in
 								</Button>
@@ -127,7 +126,6 @@ export function Header() {
 									Sign up
 								</Button>
 							</Group>
-						</>
 					)}
 
 					<Burger

@@ -7,7 +7,6 @@ import {
 import { useCallback } from "react";
 
 export function StarSystem({
-	id,
 	position,
 	isVisible,
 	isSelected,

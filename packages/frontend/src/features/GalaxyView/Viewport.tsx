@@ -18,14 +18,8 @@ export function Viewport({
 	children,
 }: {
 	initialViewbox?: { minX: number; maxX: number; minY: number; maxY: number };
-	onClick: (data: {
-		event: FederatedPointerEvent;
-		point: Point;
-	}) => void;
-	onRightClick: (data: {
-		event: FederatedPointerEvent;
-		point: Point;
-	}) => void;
+	onClick: (data: { event: FederatedPointerEvent; point: Point }) => void;
+	onRightClick: (data: { event: FederatedPointerEvent; point: Point }) => void;
 	children: React.ReactNode;
 }) {
 	const { app, isInitialised } = useApplication();
@@ -192,7 +186,7 @@ function useInitialViewportRect(
 ) {
 	const { app, isInitialised } = useApplication();
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: perf
 	useEffect(() => {
 		if (viewportRef.current && initialViewbox && isInitialised) {
 			app.renderer.events.domElement.oncontextmenu = (event) =>

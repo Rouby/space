@@ -333,7 +333,7 @@ query Galaxy($id: ID!) {
 													{
 														move: {
 															destination:
-																// biome-ignore lint/style/noNonNullAssertion: <explanation>
+																// biome-ignore lint/style/noNonNullAssertion: exists
 																menuContextResolved.starSystem!.position,
 														},
 													},
@@ -358,7 +358,7 @@ query Galaxy($id: ID!) {
 												{
 													follow: {
 														taskForceId:
-															// biome-ignore lint/style/noNonNullAssertion: <explanation>
+															// biome-ignore lint/style/noNonNullAssertion: id exists
 															menuContextResolved.taskForce!.id,
 													},
 												},

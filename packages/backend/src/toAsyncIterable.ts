@@ -63,7 +63,7 @@ class ObservableAsyncIterator<T> {
 		const lastPending = pendingPromises[pendingPromises.length - 1];
 		const pending =
 			lastPending && !lastPending.settled ? lastPending : this.queue();
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: any
 		this.discardIfNeeded(pending[method](value as any));
 	}
 
@@ -76,17 +76,6 @@ class ObservableAsyncIterator<T> {
 }
 
 class PendingPromise<T> {
-	static resolve<U>(): PendingPromise<U> {
-		const pending = new PendingPromise<U>();
-		pending.settled = true;
-		pending.resolveFn({ done: true, value: undefined });
-		return pending;
-	}
-
-	static reject<U>(reason?: unknown): PendingPromise<U> {
-		return new PendingPromise<U>().reject(reason);
-	}
-
 	readonly promise: Promise<IteratorResult<T>>;
 
 	polled = false;
@@ -104,10 +93,21 @@ class PendingPromise<T> {
 		});
 	}
 
+	static resolve<U>(): PendingPromise<U> {
+		const pending = new PendingPromise<U>();
+		pending.settled = true;
+		pending.resolveFn({ done: true, value: undefined });
+		return pending;
+	}
+
 	resolve(value: T): this {
 		this.settled = true;
 		this.resolveFn({ done: false, value });
 		return this;
+	}
+
+	static reject<U>(reason?: unknown): PendingPromise<U> {
+		return new PendingPromise<U>().reject(reason);
 	}
 
 	reject(reason?: unknown): this {

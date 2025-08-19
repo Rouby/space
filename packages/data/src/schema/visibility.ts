@@ -4,7 +4,7 @@ import { starSystems } from "./starSystems.ts";
 import { taskForces } from "./taskForces.ts";
 
 const circle = customType<{ data: { x: number; y: number; radius: number } }>({
-	dataType(config) {
+	dataType(_config) {
 		return "circle";
 	},
 	toDriver(value) {

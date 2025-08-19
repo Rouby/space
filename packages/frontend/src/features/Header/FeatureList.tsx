@@ -8,8 +8,7 @@ export function FeatureList() {
 	const { css } = useStyles();
 
 	return (
-		<>
-			<UnstyledButton
+		<UnstyledButton
 				component={Link}
 				className={css({
 					width: "100%",
@@ -39,6 +38,5 @@ export function FeatureList() {
 					</div>
 				</Group>
 			</UnstyledButton>
-		</>
 	);
 }

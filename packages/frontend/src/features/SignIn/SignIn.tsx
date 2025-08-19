@@ -12,5 +12,5 @@ mutation SignIn($email:String!, $password:String!) {
 }`),
 	);
 
-	return <>hello?</>;
+	return "hello?";
 }

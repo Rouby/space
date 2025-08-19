@@ -117,28 +117,20 @@ export function StarSystemDetails({ id }: { id: string }) {
 					<Card>
 						<Text variant="gradient">Population</Text>
 						<Text>
-							{!data?.starSystem.populations ? (
-								<>
-									Our scanners could not pick up information about the
-									population.
-								</>
-							) : (
-								formatNumber(
-									data.starSystem.populations.reduce(
-										(acc, pop) => acc + pop.amount,
-										0,
-									),
-								)
-							)}
+							{!data?.starSystem.populations
+								? "Our scanners could not pick up information about the population."
+								: formatNumber(
+										data.starSystem.populations.reduce(
+											(acc, pop) => acc + pop.amount,
+											0,
+										),
+									)}
 						</Text>
 					</Card>
 					<Card>
 						<Text variant="gradient">Discoveries</Text>
 						{data?.starSystem.discoveries === null ? (
-							<>
-								Our scanners could not pick up information about possible
-								discoveries.
-							</>
+							"Our scanners could not pick up information about possible discoveries."
 						) : (
 							<div
 								className={css({

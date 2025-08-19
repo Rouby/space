@@ -26,7 +26,7 @@ export const taskForces = pgTable("taskForces", {
 	movementVector: point({ mode: "xy" }),
 });
 
-export const taskForcesRelations = relations(taskForces, ({ one, many }) => ({
+export const taskForcesRelations = relations(taskForces, ({ one }) => ({
 	owner: one(users, {
 		fields: [taskForces.ownerId],
 		references: [users.id],

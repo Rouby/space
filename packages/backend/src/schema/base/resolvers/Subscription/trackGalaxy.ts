@@ -81,6 +81,6 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 			merge(taskForceEvents, starSystemEvents, taskForceEngagementEvents),
 		);
 	},
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: can be any
 	resolve: (input: any) => input,
 };

@@ -3,7 +3,7 @@ export const domain = (process.env.APP_ORIGIN || "localhost").replace(
 	"",
 );
 
-export async function generateUserClaims(user: { id: string }) {
+export async function generateUserClaims(_user: { id: string }) {
 	return {
 		"urn:space:claim": true,
 	};
