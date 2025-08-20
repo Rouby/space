@@ -31,6 +31,8 @@ export const starSystems = pgTable("starSystems", {
 export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({
 	game: one(games, { fields: [starSystems.gameId], references: [games.id] }),
 	owner: one(users, { fields: [starSystems.ownerId], references: [users.id] }),
+	resourceDiscoveries: many(starSystemResourceDiscoveries),
+	resourceDepots: many(starSystemResourceDepots),
 	populations: many(starSystemPopulations),
 }));
 

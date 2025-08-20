@@ -1,8 +1,8 @@
-import { starSystemPopulations, starSystems } from "@space/data/schema";
+import { starSystems } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./setup.ts";
 
-export async function setupGalaxy(tx: Transaction, ctx: Context) {
+export async function setupGalaxy(tx: Transaction, _ctx: Context) {
 	console.log("Setting up galaxy...");
 
 	const stars = generateSpiralPositions();
@@ -18,31 +18,7 @@ export async function setupGalaxy(tx: Transaction, ctx: Context) {
 			}) as typeof starSystems.$inferInsert,
 	);
 
-	for (const player of ctx.players) {
-		while (true) {
-			const playerStar = Math.floor(Math.random() * starSystemValues.length);
-			// TODO: other conditions, like distance etc.
-			if (starSystemValues[playerStar].ownerId) {
-				continue;
-			}
-			starSystemValues[playerStar].ownerId = player.userId;
-			starSystemValues[playerStar].discoverySlots = 5;
-			break;
-		}
-	}
-
-	const insertedSystems = await tx
-		.insert(starSystems)
-		.values(starSystemValues)
-		.returning();
-
-	for (const { id, ownerId } of insertedSystems.filter((s) => s.ownerId)) {
-		await tx.insert(starSystemPopulations).values({
-			starSystemId: id,
-			amount: 10_000_000_000n,
-			allegianceToPlayerId: ownerId as string,
-		});
-	}
+	await tx.insert(starSystems).values(starSystemValues).returning();
 }
 
 function generateSpiralPositions() {

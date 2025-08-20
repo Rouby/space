@@ -60,6 +60,26 @@ query Galaxy($id: ID!) {
 			isVisible
 			lastUpdate
 		}
+		dilemmas {
+			id
+			title
+			description
+			choices {
+				id
+				text
+			}
+			position
+			correlation {
+				... on StarSystem {
+					id
+					position
+				}
+				... on Dilemma {
+					id
+					title
+				}
+			}
+		}
   }
 }`),
 		variables: { id },
@@ -171,6 +191,10 @@ query Galaxy($id: ID!) {
 				)
 			: null,
 	};
+
+	if (!data?.game.starSystems.length) {
+		return null;
+	}
 
 	return (
 		<div

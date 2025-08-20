@@ -106,7 +106,7 @@ it("should track taskforce movements", async () => {
 	});
 });
 
-it("should track taskforce movements", async () => {
+it("should track taskforce movements 2", async () => {
 	const testScheduler = new TestScheduler((actual, expected) => {
 		// asserting the two objects are equal - required
 		// for TestScheduler assertions to work via your test framework

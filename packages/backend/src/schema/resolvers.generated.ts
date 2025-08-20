@@ -12,10 +12,14 @@ import    { loginWithRefreshToken as Mutation_loginWithRefreshToken } from './us
 import    { orderTaskForce as Mutation_orderTaskForce } from './taskForce/resolvers/Mutation/orderTaskForce.js';
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
+import    { updateGameSettings as Mutation_updateGameSettings } from './game/resolvers/Mutation/updateGameSettings.js';
 import    { updatePlayer as Mutation_updatePlayer } from './game/resolvers/Mutation/updatePlayer.js';
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
+import    { Dilemma } from './dilemma/resolvers/Dilemma.js';
+import    { DilemmaChoice } from './dilemma/resolvers/DilemmaChoice.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
+import    { Game as dilemma_Game } from './dilemma/resolvers/Game.js';
 import    { Game as resource_Game } from './resource/resolvers/Game.js';
 import    { Game as shipComponent_Game } from './shipComponent/resolvers/Game.js';
 import    { Game as shipDesign_Game } from './shipDesign/resolvers/Game.js';
@@ -48,12 +52,18 @@ import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
 import    { Positionable } from './base/resolvers/Positionable.js';
 import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
+import    { Discovery } from './starSystem/resolvers/Discovery.js';
+import    { Reference } from './dilemma/resolvers/Reference.js';
+import    { TrackGalaxyEvent } from './base/resolvers/TrackGalaxyEvent.js';
+import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.js';
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
-      Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame,updatePlayer: Mutation_updatePlayer },
+      Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
-      Game: { ...game_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
+      Dilemma: Dilemma,
+DilemmaChoice: DilemmaChoice,
+Game: { ...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
 Population: Population,
 PositionableApppearsEvent: PositionableApppearsEvent,
@@ -77,6 +87,10 @@ User: User,
 Vector: Vector,
 Positionable: Positionable,
 TaskForceOrder: TaskForceOrder,
+Discovery: Discovery,
+Reference: Reference,
+TrackGalaxyEvent: TrackGalaxyEvent,
+TrackStarSystemEvent: TrackStarSystemEvent,
 BigInt: BigIntResolver,
 DateTime: DateTimeResolver
     }

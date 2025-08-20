@@ -1,4 +1,16 @@
-import { Button, ColorInput, Grid, LoadingOverlay } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Collapse,
+	ColorInput,
+	Grid,
+	Group,
+	LoadingOverlay,
+	SegmentedControl,
+	Slider,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -18,6 +30,8 @@ export function GameLobby() {
         id
         name
         startedAt
+        autoEndTurnAfterHoursInactive
+        autoEndTurnEveryHours
         players {
           id
           color
@@ -49,6 +63,16 @@ export function GameLobby() {
   }`),
 	);
 
+	const [{ fetching: updatingSettings }, updateSettings] = useMutation(
+		graphql(`mutation UpdateGameSettings($gameId: ID!, $input: UpdateGameSettingsInput!) {
+      updateGameSettings(gameId: $gameId, input: $input) {
+        id
+        autoEndTurnAfterHoursInactive
+        autoEndTurnEveryHours
+      }
+    }`),
+	);
+
 	const navigate = useNavigate();
 
 	const currentPlayer = data?.game.players.find(
@@ -56,6 +80,10 @@ export function GameLobby() {
 	);
 
 	const [previewColor, setPreviewColor] = useState<string | null>(null);
+
+	const [autoTurn, setAutoTurn] = useState<
+		"disabled" | "inactivity" | "periodic"
+	>("disabled");
 
 	return (
 		<div>
@@ -100,18 +128,102 @@ export function GameLobby() {
 				))}
 			</Grid>
 
-			{currentPlayer && (
-				<Button
-					onClick={async () => {
-						await startGame({ id });
-						navigate({ to: "/games/$id", params: { id } });
-					}}
-					loading={starting}
-					mt="xl"
-				>
-					Start game
-				</Button>
-			)}
+			<h2>Settings</h2>
+
+			<Stack>
+				<SegmentedControl
+					value={autoTurn}
+					onChange={(value) =>
+						setAutoTurn(value as "disabled" | "inactivity" | "periodic")
+					}
+					data={[
+						{ value: "disabled", label: "No auto-turns" },
+						{ value: "inactivity", label: "Auto-turn after inactivity" },
+						{ value: "periodic", label: "Auto-turn every X hours" },
+					]}
+				/>
+
+				<Collapse in={autoTurn !== "disabled"}>
+					<Box>
+						{autoTurn === "inactivity" && (
+							<Text>Auto end turn after hours of inactivity:</Text>
+						)}
+						{autoTurn === "periodic" && (
+							<Text>Auto end turn every X hours:</Text>
+						)}
+						<Slider
+							domain={[1, 48]}
+							restrictToMarks
+							label={null}
+							marks={[
+								{
+									value: 1,
+									label: "1h",
+								},
+								{
+									value: 2,
+									label: "2h",
+								},
+								{
+									value: 4,
+									label: "4h",
+								},
+								{
+									value: 8,
+									label: "8h",
+								},
+								{
+									value: 12,
+									label: "12h",
+								},
+								{
+									value: 24,
+									label: "24h",
+								},
+								{
+									value: 48,
+									label: "48h",
+								},
+							]}
+							value={
+								autoTurn === "inactivity"
+									? (data?.game.autoEndTurnAfterHoursInactive ?? 0)
+									: (data?.game.autoEndTurnEveryHours ?? 0)
+							}
+							onChange={(value) => {
+								updateSettings({
+									gameId: id,
+									input:
+										autoTurn === "inactivity"
+											? {
+													autoEndTurnAfterHoursInactive: value,
+													autoEndTurnEveryHours: 0,
+												}
+											: {
+													autoEndTurnAfterHoursInactive: 0,
+													autoEndTurnEveryHours: value,
+												},
+								});
+							}}
+						/>
+					</Box>
+				</Collapse>
+			</Stack>
+
+			<Group justify="end" mt="xl">
+				{currentPlayer && (
+					<Button
+						onClick={async () => {
+							await startGame({ id });
+							navigate({ to: "/games/$id", params: { id } });
+						}}
+						loading={starting}
+						mt="xl"
+					>
+						Start game
+					</Button>
+				)}
+			</Group>
 		</div>
 	);
 }

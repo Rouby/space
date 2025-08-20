@@ -1,7 +1,7 @@
 import type { JWTExtendContextFields } from "@graphql-yoga/plugin-jwt";
 import type { getDrizzle } from "@space/data";
 import { userHasVision } from "@space/data/functions";
-import { type YogaInitialContext, createGraphQLError } from "graphql-yoga";
+import { createGraphQLError, type YogaInitialContext } from "graphql-yoga";
 import type { generateUserClaims } from "./config.ts";
 import { fromGameEvents } from "./workers.ts";
 
@@ -25,7 +25,7 @@ export function extendContext({
 		userId,
 		throwWithoutClaim(
 			claim: keyof Awaited<ReturnType<typeof generateUserClaims>>,
-		) {
+		): asserts this is { userId: string } {
 			if (!userId) {
 				throw createGraphQLError(`Missing claim ${claim}`, {
 					extensions: { code: "NOT_AUTHORIZED" },

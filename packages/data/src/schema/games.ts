@@ -13,10 +13,14 @@ import { users } from "./users.ts";
 export const games = pgTable("games", {
 	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
 	name: varchar({ length: 256 }).notNull(),
+	// settings
+	autoEndTurnAfterHoursInactive: integer().notNull().default(0),
+	autoEndTurnEveryHours: integer().notNull().default(0),
+	// gameplay
 	startedAt: timestamp(),
 	setupCompleted: boolean().notNull().default(false),
+	turnNumber: integer().notNull().default(0),
 	version: integer().notNull().default(0),
-	tickRate: integer().notNull().default(100),
 });
 
 export const players = pgTable(
@@ -29,6 +33,8 @@ export const players = pgTable(
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
 		color: varchar({ length: 7 }).notNull().default("#000000"),
+		// gameplay
+		turnEndedAt: timestamp(),
 	},
 	(table) => [primaryKey({ columns: [table.userId, table.gameId] })],
 );

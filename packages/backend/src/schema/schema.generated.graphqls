@@ -2,9 +2,27 @@ scalar BigInt
 
 scalar DateTime
 
+type Dilemma {
+	causation: Reference
+	choices: [DilemmaChoice!]!
+	correlation: Reference
+	description: String!
+	id: ID!
+	position: Vector
+	title: String!
+}
+
+type DilemmaChoice {
+	id: ID!
+	text: String!
+}
+
 union Discovery = ResourceDiscovery | UnknownDiscovery
 
 type Game {
+	autoEndTurnAfterHoursInactive: Int
+	autoEndTurnEveryHours: Int
+	dilemmas: [Dilemma!]!
 	id: ID!
 	me: Player
 	name: String!
@@ -15,7 +33,6 @@ type Game {
 	starSystems: [StarSystem!]!
 	startedAt: DateTime
 	taskForces: [TaskForce!]!
-	tickRate: Int!
 }
 
 type Mutation {
@@ -31,6 +48,7 @@ type Mutation {
 	): TaskForce!
 	registerWithPassword(email: String!, name: String!, password: String!): User!
 	startGame(id: ID!): Game!
+	updateGameSettings(gameId: ID!, input: UpdateGameSettingsInput!): Game!
 	updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
 }
 
@@ -73,6 +91,8 @@ type Query {
 	me: User
 	starSystem(id: ID!): StarSystem!
 }
+
+union Reference = Dilemma | StarSystem
 
 type Resource {
 	id: ID!
@@ -241,6 +261,11 @@ union TrackStarSystemEvent = StarSystemUpdateEvent
 
 type UnknownDiscovery {
 	id: ID!
+}
+
+input UpdateGameSettingsInput {
+	autoEndTurnAfterHoursInactive: Int
+	autoEndTurnEveryHours: Int
 }
 
 input UpdatePlayerInput {

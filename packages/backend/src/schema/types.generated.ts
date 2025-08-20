@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { DilemmaMapper } from './dilemma/schema.mappers.js';
 import { GameMapper, PlayerMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
@@ -28,10 +29,30 @@ export type Scalars = {
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
 
+export type Dilemma = {
+  __typename?: 'Dilemma';
+  causation?: Maybe<Reference>;
+  choices: Array<DilemmaChoice>;
+  correlation?: Maybe<Reference>;
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  position?: Maybe<Scalars['Vector']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type DilemmaChoice = {
+  __typename?: 'DilemmaChoice';
+  id: Scalars['ID']['output'];
+  text: Scalars['String']['output'];
+};
+
 export type Discovery = ResourceDiscovery | UnknownDiscovery;
 
 export type Game = {
   __typename?: 'Game';
+  autoEndTurnAfterHoursInactive?: Maybe<Scalars['Int']['output']>;
+  autoEndTurnEveryHours?: Maybe<Scalars['Int']['output']>;
+  dilemmas: Array<Dilemma>;
   id: Scalars['ID']['output'];
   me?: Maybe<Player>;
   name: Scalars['String']['output'];
@@ -42,7 +63,6 @@ export type Game = {
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
   taskForces: Array<TaskForce>;
-  tickRate: Scalars['Int']['output'];
 };
 
 export type Mutation = {
@@ -55,6 +75,7 @@ export type Mutation = {
   orderTaskForce: TaskForce;
   registerWithPassword: User;
   startGame: Game;
+  updateGameSettings: Game;
   updatePlayer: Player;
 };
 
@@ -97,6 +118,12 @@ export type MutationregisterWithPasswordArgs = {
 
 export type MutationstartGameArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationupdateGameSettingsArgs = {
+  gameId: Scalars['ID']['input'];
+  input: UpdateGameSettingsInput;
 };
 
 
@@ -160,6 +187,8 @@ export type QuerygameArgs = {
 export type QuerystarSystemArgs = {
   id: Scalars['ID']['input'];
 };
+
+export type Reference = Dilemma | StarSystem;
 
 export type Resource = {
   __typename?: 'Resource';
@@ -350,6 +379,11 @@ export type UnknownDiscovery = {
   id: Scalars['ID']['output'];
 };
 
+export type UpdateGameSettingsInput = {
+  autoEndTurnAfterHoursInactive?: InputMaybe<Scalars['Int']['input']>;
+  autoEndTurnEveryHours?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type UpdatePlayerInput = {
   color?: InputMaybe<Scalars['String']['input']>;
 };
@@ -437,6 +471,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
+  Reference: ( DilemmaMapper & { __typename: 'Dilemma' } ) | ( StarSystemMapper & { __typename: 'StarSystem' } );
   TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
   TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
 };
@@ -451,10 +486,12 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  Dilemma: ResolverTypeWrapper<DilemmaMapper>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  DilemmaChoice: ResolverTypeWrapper<DilemmaChoice>;
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
-  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -465,6 +502,7 @@ export type ResolversTypes = {
   PositionableDisappearsEvent: ResolverTypeWrapper<Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   PositionableMovesEvent: ResolverTypeWrapper<Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   Query: ResolverTypeWrapper<{}>;
+  Reference: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Reference']>;
   Resource: ResolverTypeWrapper<ResourceMapper>;
   ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
@@ -490,6 +528,7 @@ export type ResolversTypes = {
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
+  UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
   User: ResolverTypeWrapper<User>;
   Vector: ResolverTypeWrapper<Scalars['Vector']['output']>;
@@ -500,10 +539,12 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   BigInt: Scalars['BigInt']['output'];
   DateTime: Scalars['DateTime']['output'];
+  Dilemma: DilemmaMapper;
+  String: Scalars['String']['output'];
+  ID: Scalars['ID']['output'];
+  DilemmaChoice: DilemmaChoice;
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
-  ID: Scalars['ID']['output'];
-  String: Scalars['String']['output'];
   Int: Scalars['Int']['output'];
   Mutation: {};
   Boolean: Scalars['Boolean']['output'];
@@ -514,6 +555,7 @@ export type ResolversParentTypes = {
   PositionableDisappearsEvent: Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   Query: {};
+  Reference: ResolversUnionTypes<ResolversParentTypes>['Reference'];
   Resource: ResourceMapper;
   ResourceCost: ResourceCostMapper;
   Float: Scalars['Float']['output'];
@@ -538,6 +580,7 @@ export type ResolversParentTypes = {
   TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   UnknownDiscovery: UnknownDiscovery;
+  UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
   User: User;
   Vector: Scalars['Vector']['output'];
@@ -551,11 +594,31 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type DilemmaResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Dilemma'] = ResolversParentTypes['Dilemma']> = {
+  causation?: Resolver<Maybe<ResolversTypes['Reference']>, ParentType, ContextType>;
+  choices?: Resolver<Array<ResolversTypes['DilemmaChoice']>, ParentType, ContextType>;
+  correlation?: Resolver<Maybe<ResolversTypes['Reference']>, ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  position?: Resolver<Maybe<ResolversTypes['Vector']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DilemmaChoiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DilemmaChoice'] = ResolversParentTypes['DilemmaChoice']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type DiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Discovery'] = ResolversParentTypes['Discovery']> = {
   __resolveType?: TypeResolveFn<'ResourceDiscovery' | 'UnknownDiscovery', ParentType, ContextType>;
 };
 
 export type GameResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
+  autoEndTurnAfterHoursInactive?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  autoEndTurnEveryHours?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  dilemmas?: Resolver<Array<ResolversTypes['Dilemma']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -566,7 +629,6 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
-  tickRate?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -579,6 +641,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
+  updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
   updatePlayer?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationupdatePlayerArgs, 'gameId' | 'input'>>;
 };
 
@@ -626,6 +689,10 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<QuerystarSystemArgs, 'id'>>;
+};
+
+export type ReferenceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Reference'] = ResolversParentTypes['Reference']> = {
+  __resolveType?: TypeResolveFn<'Dilemma' | 'StarSystem', ParentType, ContextType>;
 };
 
 export type ResourceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
@@ -799,6 +866,8 @@ export type WeaponDeliveryTypeResolvers = EnumResolverSignature<{ beam?: any, in
 export type Resolvers<ContextType = Context> = {
   BigInt?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
+  Dilemma?: DilemmaResolvers<ContextType>;
+  DilemmaChoice?: DilemmaChoiceResolvers<ContextType>;
   Discovery?: DiscoveryResolvers<ContextType>;
   Game?: GameResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
@@ -809,6 +878,7 @@ export type Resolvers<ContextType = Context> = {
   PositionableDisappearsEvent?: PositionableDisappearsEventResolvers<ContextType>;
   PositionableMovesEvent?: PositionableMovesEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Reference?: ReferenceResolvers<ContextType>;
   Resource?: ResourceResolvers<ContextType>;
   ResourceCost?: ResourceCostResolvers<ContextType>;
   ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;

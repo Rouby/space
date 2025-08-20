@@ -1,29 +1,21 @@
 import { and, eq, players } from "@space/data/schema";
-import type { GameResolvers } from "./../../types.generated";
+import type { GameResolvers } from "./../../types.generated.ts";
 export const Game: Pick<
 	GameResolvers,
-	"id" | "me" | "name" | "players" | "startedAt" | "tickRate" | "__isTypeOf"
+	| "autoEndTurnAfterHoursInactive"
+	| "autoEndTurnEveryHours"
+	| "id"
+	| "me"
+	| "name"
+	| "players"
+	| "startedAt"
+	| "__isTypeOf"
 > = {
 	players: async (parent, _args, ctx) => {
 		return ctx.drizzle.query.players.findMany({
 			where: eq(players.gameId, parent.id),
 			with: { user: true },
 		});
-	},
-	id: async (_parent, _arg, _ctx) => {
-		// typegeneration bugged?
-		return _parent.id;
-	},
-	name: async (_parent, _arg, _ctx) => {
-		// typegeneration bugged?
-		return _parent.name;
-	},
-	startedAt: async (_parent, _arg, _ctx) => {
-		// typegeneration bugged?
-		return _parent.startedAt;
-	},
-	tickRate: async (_parent, _arg, _ctx) => {
-		return _parent.tickRate;
 	},
 	me: async (parent, _args, ctx) => {
 		const player = await ctx.drizzle.query.players.findFirst({
@@ -39,5 +31,20 @@ export const Game: Pick<
 		}
 
 		return player;
+	},
+	autoEndTurnAfterHoursInactive: async (_parent, _arg, _ctx) => {
+		return _parent.autoEndTurnAfterHoursInactive;
+	},
+	autoEndTurnEveryHours: async (_parent, _arg, _ctx) => {
+		return _parent.autoEndTurnEveryHours;
+	},
+	id: async (_parent, _arg, _ctx) => {
+		return _parent.id;
+	},
+	name: async (_parent, _arg, _ctx) => {
+		return _parent.name;
+	},
+	startedAt: async (_parent, _arg, _ctx) => {
+		return _parent.startedAt;
 	},
 };

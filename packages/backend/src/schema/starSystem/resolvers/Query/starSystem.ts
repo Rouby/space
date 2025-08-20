@@ -8,13 +8,15 @@ import {
 	visibility,
 } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
+import type { Context } from "../../../../context.js";
 import type { QueryResolvers } from "./../../../types.generated.js";
 export const starSystem: NonNullable<QueryResolvers["starSystem"]> = async (
 	_parent,
 	{ id },
 	ctx,
 ) => {
-	ctx.throwWithoutClaim("urn:space:claim");
+	const context: Context = ctx;
+	context.throwWithoutClaim("urn:space:claim");
 
 	const [starSystem] = await ctx.drizzle
 		.select({

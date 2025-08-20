@@ -1,3 +1,4 @@
+import { parentPort } from "node:worker_threads";
 import {
 	and,
 	eq,
@@ -9,7 +10,6 @@ import {
 	taskForces,
 	visibility,
 } from "@space/data/schema";
-import { parentPort } from "node:worker_threads";
 import type { GameEvent } from "../../../backend/src/events.ts";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";

@@ -1,5 +1,5 @@
 import { Worker } from "node:worker_threads";
-import { Subject, from } from "rxjs";
+import { from, Subject } from "rxjs";
 import type { GameEvent } from "./events.ts";
 
 const eventsPerGame = new Map<string, Subject<GameEvent>>();

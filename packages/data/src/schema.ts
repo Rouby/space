@@ -2,14 +2,17 @@ import pg from "pg";
 export const DatabaseError = pg.DatabaseError;
 
 export {
+	type AnyColumn,
 	aliasedTable,
 	and,
 	between,
 	eq,
 	exists,
+	type GetColumnData,
 	getTableColumns,
 	gt,
 	gte,
+	type InferModelFromColumns,
 	ilike,
 	inArray,
 	isNotNull,
@@ -26,11 +29,9 @@ export {
 	notLike,
 	or,
 	sql,
-	type AnyColumn,
-	type GetColumnData,
-	type InferModelFromColumns,
 } from "drizzle-orm";
 
+export * from "./schema/dilemmas.ts";
 export * from "./schema/games.ts";
 export * from "./schema/lastKnownStates.ts";
 export * from "./schema/resources.ts";

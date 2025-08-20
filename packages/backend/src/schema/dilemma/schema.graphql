@@ -1,0 +1,20 @@
+type Dilemma {
+	id: ID!
+	title: String!
+	description: String!
+	choices: [DilemmaChoice!]!
+	position: Vector
+	correlation: Reference
+	causation: Reference
+}
+
+type DilemmaChoice {
+	id: ID!
+	text: String!
+}
+
+extend type Game {
+	dilemmas: [Dilemma!]!
+}
+
+union Reference = StarSystem | Dilemma

@@ -18,7 +18,7 @@ const config: CodegenConfig = {
 				subscription: "*",
 				scalar: "*",
 				object: "*",
-				union: "",
+				union: "*",
 				interface: "*",
 				enum: "",
 			},
