@@ -5,6 +5,7 @@ scalar DateTime
 type Dilemma {
 	causation: Reference
 	choices: [DilemmaChoice!]!
+	choosen: ID
 	correlation: Reference
 	description: String!
 	id: ID!
@@ -38,9 +39,11 @@ type Game {
 type Mutation {
 	createGame(name: String!): Game!
 	createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
+	endTurn(gameId: ID!): Game!
 	joinGame(id: ID!): Game!
 	loginWithPassword(email: String!, password: String!): User!
 	loginWithRefreshToken: User!
+	makeDilemmaChoice(choiceId: ID!, dilemmaId: ID!): Dilemma!
 	orderTaskForce(
 		id: ID!
 		orders: [TaskForceOrderInput!]!
@@ -59,6 +62,7 @@ type Player {
 	resources: [Resource!]!
 	shipComponents: [ShipComponent!]!
 	shipDesigns: [ShipDesign!]!
+	turnEnded: Boolean
 	user: User!
 }
 
@@ -86,6 +90,7 @@ type PositionableMovesEvent {
 }
 
 type Query {
+	dilemma(id: ID!): Dilemma!
 	game(id: ID!): Game!
 	games: [Game!]!
 	me: User

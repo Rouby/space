@@ -33,6 +33,7 @@ export type Dilemma = {
   __typename?: 'Dilemma';
   causation?: Maybe<Reference>;
   choices: Array<DilemmaChoice>;
+  choosen?: Maybe<Scalars['ID']['output']>;
   correlation?: Maybe<Reference>;
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -69,9 +70,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   createGame: Game;
   createShipDesign: ShipDesign;
+  endTurn: Game;
   joinGame: Game;
   loginWithPassword: User;
   loginWithRefreshToken: User;
+  makeDilemmaChoice: Dilemma;
   orderTaskForce: TaskForce;
   registerWithPassword: User;
   startGame: Game;
@@ -91,6 +94,11 @@ export type MutationcreateShipDesignArgs = {
 };
 
 
+export type MutationendTurnArgs = {
+  gameId: Scalars['ID']['input'];
+};
+
+
 export type MutationjoinGameArgs = {
   id: Scalars['ID']['input'];
 };
@@ -99,6 +107,12 @@ export type MutationjoinGameArgs = {
 export type MutationloginWithPasswordArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationmakeDilemmaChoiceArgs = {
+  choiceId: Scalars['ID']['input'];
+  dilemmaId: Scalars['ID']['input'];
 };
 
 
@@ -140,6 +154,7 @@ export type Player = {
   resources: Array<Resource>;
   shipComponents: Array<ShipComponent>;
   shipDesigns: Array<ShipDesign>;
+  turnEnded?: Maybe<Scalars['Boolean']['output']>;
   user: User;
 };
 
@@ -172,10 +187,16 @@ export type PositionableMovesEvent = {
 
 export type Query = {
   __typename?: 'Query';
+  dilemma: Dilemma;
   game: Game;
   games: Array<Game>;
   me?: Maybe<User>;
   starSystem: StarSystem;
+};
+
+
+export type QuerydilemmaArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -487,8 +508,8 @@ export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Dilemma: ResolverTypeWrapper<DilemmaMapper>;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
   DilemmaChoice: ResolverTypeWrapper<DilemmaChoice>;
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
@@ -540,8 +561,8 @@ export type ResolversParentTypes = {
   BigInt: Scalars['BigInt']['output'];
   DateTime: Scalars['DateTime']['output'];
   Dilemma: DilemmaMapper;
-  String: Scalars['String']['output'];
   ID: Scalars['ID']['output'];
+  String: Scalars['String']['output'];
   DilemmaChoice: DilemmaChoice;
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
@@ -597,6 +618,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type DilemmaResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Dilemma'] = ResolversParentTypes['Dilemma']> = {
   causation?: Resolver<Maybe<ResolversTypes['Reference']>, ParentType, ContextType>;
   choices?: Resolver<Array<ResolversTypes['DilemmaChoice']>, ParentType, ContextType>;
+  choosen?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   correlation?: Resolver<Maybe<ResolversTypes['Reference']>, ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -635,9 +657,11 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
   createShipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType, RequireFields<MutationcreateShipDesignArgs, 'design' | 'gameId'>>;
+  endTurn?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationendTurnArgs, 'gameId'>>;
   joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationjoinGameArgs, 'id'>>;
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  makeDilemmaChoice?: Resolver<ResolversTypes['Dilemma'], ParentType, ContextType, RequireFields<MutationmakeDilemmaChoiceArgs, 'choiceId' | 'dilemmaId'>>;
   orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
@@ -652,6 +676,7 @@ export type PlayerResolvers<ContextType = Context, ParentType extends ResolversP
   resources?: Resolver<Array<ResolversTypes['Resource']>, ParentType, ContextType>;
   shipComponents?: Resolver<Array<ResolversTypes['ShipComponent']>, ParentType, ContextType>;
   shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
+  turnEnded?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -685,6 +710,7 @@ export type PositionableMovesEventResolvers<ContextType = Context, ParentType ex
 };
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  dilemma?: Resolver<ResolversTypes['Dilemma'], ParentType, ContextType, RequireFields<QuerydilemmaArgs, 'id'>>;
   game?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<QuerygameArgs, 'id'>>;
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;

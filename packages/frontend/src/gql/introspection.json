@@ -45,6 +45,14 @@
             "args": []
           },
           {
+            "name": "choosen",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
             "name": "correlation",
             "type": {
               "kind": "UNION",
@@ -455,6 +463,39 @@
               }
             },
             "args": []
+          },
+          {
+            "name": "makeDilemmaChoice",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Dilemma",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "choiceId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              },
+              {
+                "name": "dilemmaId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
           },
           {
             "name": "orderTaskForce",
@@ -880,6 +921,29 @@
         "kind": "OBJECT",
         "name": "Query",
         "fields": [
+          {
+            "name": "dilemma",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Dilemma",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "id",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
           {
             "name": "game",
             "type": {

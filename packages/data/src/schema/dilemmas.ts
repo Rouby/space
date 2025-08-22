@@ -6,6 +6,7 @@ import {
 	point,
 	text,
 	uuid,
+	varchar,
 } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
 import { users } from "./users.ts";
@@ -38,6 +39,7 @@ export const dilemmas = pgTable("dilemmas", {
 			effectScript: string;
 		}[]
 	>(),
+	choosen: varchar({ length: 256 }),
 	position: point({ mode: "xy" }),
 	correlation: reference(),
 	causation: reference(),

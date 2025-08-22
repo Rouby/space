@@ -3,6 +3,7 @@ type Dilemma {
 	title: String!
 	description: String!
 	choices: [DilemmaChoice!]!
+	choosen: ID
 	position: Vector
 	correlation: Reference
 	causation: Reference
@@ -15,6 +16,14 @@ type DilemmaChoice {
 
 extend type Game {
 	dilemmas: [Dilemma!]!
+}
+
+extend type Query {
+	dilemma(id: ID!): Dilemma!
+}
+
+extend type Mutation {
+	makeDilemmaChoice(dilemmaId: ID!, choiceId: ID!): Dilemma!
 }
 
 union Reference = StarSystem | Dilemma

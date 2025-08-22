@@ -8,6 +8,7 @@ import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
+import { Dilemma } from "./Dilemma";
 import { Sensors } from "./Sensors";
 import { StarSystem } from "./StarSystem";
 import { TaskForce } from "./TaskForce";
@@ -321,6 +322,32 @@ query Galaxy($id: ID!) {
 								}}
 							/>
 						))}
+						{data?.game.dilemmas.map((dilemma) => {
+							const position = dilemma.position
+								? dilemma.position
+								: dilemma.correlation && "position" in dilemma.correlation
+									? dilemma.correlation.position
+									: undefined;
+
+							if (!position) return null;
+
+							return (
+								<Dilemma
+									key={dilemma.id}
+									id={dilemma.id}
+									title={dilemma.title}
+									position={position}
+									onClick={(event) => {
+										event.preventDefault();
+										navigate({
+											from: "/games/$id",
+											to: "dilemma/$dilemmaId",
+											params: { dilemmaId: dilemma.id },
+										});
+									}}
+								/>
+							);
+						})}
 					</Viewport>
 				</container>
 			</Application>

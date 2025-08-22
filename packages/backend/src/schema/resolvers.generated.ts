@@ -1,14 +1,17 @@
 /* This file was automatically generated. DO NOT UPDATE MANUALLY. */
     import type   { Resolvers } from './types.generated.js';
-    import    { game as Query_game } from './game/resolvers/Query/game.js';
+    import    { dilemma as Query_dilemma } from './dilemma/resolvers/Query/dilemma.js';
+import    { game as Query_game } from './game/resolvers/Query/game.js';
 import    { games as Query_games } from './game/resolvers/Query/games.js';
 import    { me as Query_me } from './user/resolvers/Query/me.js';
 import    { starSystem as Query_starSystem } from './starSystem/resolvers/Query/starSystem.js';
 import    { createGame as Mutation_createGame } from './game/resolvers/Mutation/createGame.js';
 import    { createShipDesign as Mutation_createShipDesign } from './shipDesign/resolvers/Mutation/createShipDesign.js';
+import    { endTurn as Mutation_endTurn } from './game/resolvers/Mutation/endTurn.js';
 import    { joinGame as Mutation_joinGame } from './game/resolvers/Mutation/joinGame.js';
 import    { loginWithPassword as Mutation_loginWithPassword } from './user/resolvers/Mutation/loginWithPassword.js';
 import    { loginWithRefreshToken as Mutation_loginWithRefreshToken } from './user/resolvers/Mutation/loginWithRefreshToken.js';
+import    { makeDilemmaChoice as Mutation_makeDilemmaChoice } from './dilemma/resolvers/Mutation/makeDilemmaChoice.js';
 import    { orderTaskForce as Mutation_orderTaskForce } from './taskForce/resolvers/Mutation/orderTaskForce.js';
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
@@ -58,8 +61,8 @@ import    { TrackGalaxyEvent } from './base/resolvers/TrackGalaxyEvent.js';
 import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.js';
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
-      Query: { game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
-      Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
+      Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
       Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,

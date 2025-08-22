@@ -155,4 +155,7 @@ export const Dilemma: DilemmaResolvers = {
 
 		return null;
 	},
+	choosen: async (_parent, _arg, _ctx) => {
+		return _parent.choosen;
+	},
 };
