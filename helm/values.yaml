@@ -50,10 +50,6 @@ database:
   password: space
   name: space
 
-backend:
-  nodeSelector:
-    kubernetes.io/hostname: pi-cluster-01
-
 volumes: {}
 
 volumeMounts: {}
