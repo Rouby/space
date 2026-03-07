@@ -36,8 +36,7 @@ securityContext:
 
 ingress:
   enabled: true
-  className: "nginx"
-  clusterIssuer: "letsencrypt-production"
+  clusterIssuer: "letsencrypt-prod"
   annotations: {}
   host: staging.space.aiacta.com
   tls:
