@@ -9,7 +9,7 @@ export const Route = createLazyFileRoute(
 });
 
 function RouteComponent() {
-	const { dilemmaId } = Route.useParams();
+	const { dilemmaId, id: gameId } = Route.useParams();
 	const navigate = Route.useNavigate();
 
 	return (
@@ -21,11 +21,23 @@ function RouteComponent() {
 			>
 				<DilemmaChoice
 					id={dilemmaId}
-					onChoosen={() =>
+					gameId={gameId}
+					onChoosen={(nextDilemmaId) => {
+						if (nextDilemmaId) {
+							navigate({
+								to: "/games/$id/dilemmas/$dilemmaId",
+								params: {
+									id: gameId,
+									dilemmaId: nextDilemmaId,
+								},
+							});
+							return;
+						}
+
 						navigate({
 							to: "../..",
-						})
-					}
+						});
+					}}
 				/>
 			</DetailsModal>
 

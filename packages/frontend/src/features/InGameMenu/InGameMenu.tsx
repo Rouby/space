@@ -34,6 +34,9 @@ export function InGameMenu() {
 		variables: { gameId },
 	});
 
+	const unresolvedDilemmasCount =
+		data?.game.dilemmas.filter((dilemma) => !dilemma.choosen).length ?? 0;
+
 	return (
 		<nav
 			className={css({
@@ -63,7 +66,7 @@ export function InGameMenu() {
 						to="./dilemmas"
 						icon={IconAd}
 						activeOptions={{ exact: true }}
-						notificationCount={data?.game.dilemmas.length}
+						notificationCount={unresolvedDilemmasCount}
 					>
 						Dilemmas
 					</NavLink>
@@ -155,6 +158,10 @@ function EndTurnButton() {
 			query CurrentTurnEnded($gameId: ID!) {
 				game(id: $gameId) {
 					id
+					dilemmas {
+						id
+						choosen
+					}
           me {
 						id
             turnEnded
@@ -193,15 +200,31 @@ function EndTurnButton() {
 	`),
 	);
 
+	const hasUnresolvedDilemmas =
+		(data?.game.dilemmas.filter((dilemma) => !dilemma.choosen).length ?? 0) > 0;
+
 	const TurnIcon = data?.game.me?.turnEnded ? IconHourglass : IconPlayerPlay;
+	const isTurnEnded = Boolean(data?.game.me?.turnEnded);
+	const buttonDescription = hasUnresolvedDilemmas
+		? "Resolve all dilemmas before ending turn"
+		: isTurnEnded
+			? "Turn already ended"
+			: "Ready to end turn";
 
 	return (
 		<MantineNavLink
 			component="button"
-			onClick={() => endTurn({ gameId })}
+			onClick={() => {
+				if (hasUnresolvedDilemmas) {
+					return;
+				}
+
+				endTurn({ gameId });
+			}}
+			disabled={hasUnresolvedDilemmas || isTurnEnded}
 			label="End Turn"
 			leftSection={<TurnIcon size={20} stroke={1.5} />}
-			description="test"
+			description={buttonDescription}
 		/>
 	);
 }

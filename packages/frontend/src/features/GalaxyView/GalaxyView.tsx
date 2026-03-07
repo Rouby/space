@@ -1,9 +1,9 @@
 import { Menu } from "@mantine/core";
 import { Application, extend } from "@pixi/react";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useMatchRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { Container, Graphics, Sprite } from "pixi.js";
 import "pixi.js/math-extras";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { useAuth } from "../../Auth";
@@ -174,6 +174,34 @@ query Galaxy($id: ID!) {
 	const parentRef = useRef<HTMLDivElement>(null);
 
 	const navigate = useNavigate();
+	const matchRoute = useMatchRoute();
+
+	const isDilemmaDetailsOpen = Boolean(
+		matchRoute({
+			to: "/games/$id/dilemmas/$dilemmaId",
+			params: { id },
+		}),
+	);
+
+	useEffect(() => {
+		if (isDilemmaDetailsOpen) {
+			return;
+		}
+
+		const nextPendingDilemma = data?.game.dilemmas.find(
+			(dilemma) => !dilemma.choosen,
+		);
+
+		if (!nextPendingDilemma) {
+			return;
+		}
+
+		navigate({
+			from: "/games/$id",
+			to: "dilemmas/$dilemmaId",
+			params: { dilemmaId: nextPendingDilemma.id },
+		});
+	}, [data?.game.dilemmas, isDilemmaDetailsOpen, navigate]);
 
 	const [selectedTaskForce, setSelectedTaskForce] = useState<string>();
 

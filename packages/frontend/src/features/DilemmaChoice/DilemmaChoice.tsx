@@ -18,7 +18,7 @@ import {
 	IconStar,
 	IconUser,
 } from "@tabler/icons-react";
-import { useMutation, useQuery } from "urql";
+import { useClient, useMutation, useQuery } from "urql";
 import { graphql } from "../../gql";
 
 const icons = [
@@ -36,11 +36,15 @@ const icons = [
 
 export function DilemmaChoice({
 	id,
+	gameId,
 	onChoosen,
 }: {
 	id: string;
-	onChoosen: () => void;
+	gameId: string;
+	onChoosen: (nextDilemmaId?: string) => void;
 }) {
+	const client = useClient();
+
 	const [{ data }] = useQuery({
 		query: graphql(`
       query DilemmaDetails($id: ID!) {
@@ -84,6 +88,56 @@ export function DilemmaChoice({
     `),
 	);
 
+	const findNextDilemmaId = async () => {
+		for (let attempt = 0; attempt < 10; attempt++) {
+			const result = await client
+				.query(
+					graphql(`
+						query NextPendingDilemma($gameId: ID!) {
+							game(id: $gameId) {
+								id
+								dilemmas {
+									id
+									choosen
+									causation {
+										... on Dilemma {
+											id
+										}
+									}
+								}
+							}
+						}
+					`),
+					{ gameId },
+					{ requestPolicy: "network-only" },
+				)
+				.toPromise();
+
+			const dilemmas = result.data?.game.dilemmas ?? [];
+			const pending = dilemmas.filter((dilemma) => !dilemma.choosen);
+
+			const directFollowUp = pending.find(
+				(dilemma) =>
+					dilemma.causation?.__typename === "Dilemma" &&
+					dilemma.causation.id === id,
+			);
+
+			if (directFollowUp) {
+				return directFollowUp.id;
+			}
+
+			if (pending.length > 0) {
+				return pending[0].id;
+			}
+
+			await new Promise((resolve) => {
+				setTimeout(resolve, 250);
+			});
+		}
+
+		return undefined;
+	};
+
 	const selectedChoiceId = data?.dilemma.choosen;
 	const selectedChoice = selectedChoiceId
 		? data?.dilemma.choices.find((choice) => choice.id === selectedChoiceId)
@@ -125,8 +179,13 @@ export function DilemmaChoice({
 								chooseDilemmaChoice({
 									id,
 									choiceId: choice.id,
-								}).then(() => {
-									onChoosen();
+								}).then(async (result) => {
+									if (result.error) {
+										return;
+									}
+
+									const nextDilemmaId = await findNextDilemmaId();
+									onChoosen(nextDilemmaId);
 								});
 							}}
 							styles={{

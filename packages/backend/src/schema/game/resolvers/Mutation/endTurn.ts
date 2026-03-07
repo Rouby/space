@@ -10,7 +10,7 @@ export const endTurn: NonNullable<MutationResolvers["endTurn"]> = async (
 	const context: Context = ctx;
 	context.throwWithoutClaim("urn:space:claim");
 
-	const player = ctx.drizzle
+	const [player] = await ctx.drizzle
 		.select()
 		.from(players)
 		.where(and(eq(players.userId, context.userId), eq(players.gameId, gameId)));
