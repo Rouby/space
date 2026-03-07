@@ -1,6 +1,6 @@
-import { chats, createChat } from "@space/ai";
 import { dilemmas, eq, starSystems } from "@space/data/schema";
 import { drizzle } from "../db.ts";
+import { generateRandomDilemma } from "../randomGameContent.ts";
 
 export async function reactDilemmaChoice({
 	playerId,
@@ -22,14 +22,7 @@ export async function reactDilemmaChoice({
 			case "generateDilemma":
 				switch (effect.params.promptName) {
 					case "startingDilemmaFollowUp1": {
-						const generated = await createChat({
-							messages: [
-								...chats.startingDilemmas.startingMessages,
-								chats.startingDilemmas.assistantGeneration(dilemma),
-								chats.startingDilemmas.followUp1(dilemma.choosen ?? ""),
-							],
-							format: chats.startingDilemmas.format,
-						});
+						const generated = generateRandomDilemma("startingDilemmaFollowUp1");
 
 						const [homeSystem] = await drizzle
 							.select()
@@ -66,22 +59,9 @@ export async function reactDilemmaChoice({
 						break;
 					}
 					case "startingDilemmaFollowUp2": {
-						const [prevDilemma] = await drizzle
-							.select()
-							.from(dilemmas)
-							.where(eq(dilemmas.id, dilemma.causation?.id ?? ""))
-							.limit(1);
-
-						const generated = await createChat({
-							messages: [
-								...chats.startingDilemmas.startingMessages,
-								chats.startingDilemmas.assistantGeneration(prevDilemma),
-								chats.startingDilemmas.followUp1(prevDilemma.choosen ?? ""),
-								chats.startingDilemmas.assistantGeneration(dilemma),
-								chats.startingDilemmas.followUp2(dilemma.choosen ?? ""),
-							],
-							format: chats.startingDilemmas.format,
-						});
+						const generated = generateRandomDilemma(
+							"startingDilemmaFollowUp2",
+						);
 
 						const [homeSystem] = await drizzle
 							.select()

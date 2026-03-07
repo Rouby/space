@@ -1,4 +1,3 @@
-import { chats, createChat } from "@space/ai";
 import {
 	dilemmas,
 	eq,
@@ -9,6 +8,7 @@ import {
 	starSystems,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
+import { generateRandomDilemma } from "../randomGameContent.ts";
 import type { Context, Transaction } from "./setup.ts";
 
 export async function setupStartingConditions(tx: Transaction, ctx: Context) {
@@ -61,12 +61,7 @@ export async function setupStartingConditions(tx: Transaction, ctx: Context) {
 			});
 
 			// create a starting dilemma
-			const generated = await createChat({
-				messages: [...chats.startingDilemmas.startingMessages],
-				format: chats.startingDilemmas.format,
-			});
-
-			console.log(generated);
+			const generated = generateRandomDilemma();
 
 			await tx.insert(dilemmas).values({
 				gameId,
