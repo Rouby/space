@@ -7120,7 +7120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esprima@npm:~4.0.0":
+"esprima@npm:4.0.1, esprima@npm:~4.0.0":
   version: 4.0.1
   resolution: "esprima@npm:4.0.1"
   bin:
@@ -10870,6 +10870,7 @@ __metadata:
   resolution: "space@workspace:."
   dependencies:
     "@biomejs/biome": "npm:2.2.0"
+    esprima: "npm:4.0.1"
     typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft

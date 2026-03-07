@@ -3856,6 +3856,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["@biomejs/biome", "npm:2.2.0"],\
+          ["esprima", "npm:4.0.1"],\
           ["typescript", "patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\
@@ -18315,6 +18316,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["space", "workspace:."],\
           ["@biomejs/biome", "npm:2.2.0"],\
+          ["esprima", "npm:4.0.1"],\
           ["typescript", "patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\
