@@ -47,7 +47,7 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /graphql
+              path: /graphql?query=%7B__typename%7D
               port: http
             initialDelaySeconds: 30
             periodSeconds: 15
@@ -55,7 +55,7 @@ spec:
             failureThreshold: 6
           readinessProbe:
             httpGet:
-              path: /graphql
+              path: /graphql?query=%7B__typename%7D
               port: http
             initialDelaySeconds: 15
             periodSeconds: 10
