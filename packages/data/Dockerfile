@@ -12,7 +12,8 @@ COPY .yarn/ ./.yarn/
 RUN yarn config set nodeLinker node-modules
 RUN yarn workspaces focus @space/data --production
 
-ADD ./packages/data ./packages/data
+ADD ./packages/data/src ./packages/data/src
+ADD ./packages/data/drizzle ./packages/data/drizzle
 
 FROM node:22-alpine
 
