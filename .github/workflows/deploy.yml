@@ -134,6 +134,7 @@ jobs:
       cancel-in-progress: true
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           - image: backend
@@ -150,6 +151,10 @@ jobs:
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
+
+      - name: 🏷️ Sanitize ref name for Docker tag
+        id: sanitize
+        run: echo "ref_name=$(echo '${{ github.ref_name }}' | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_OUTPUT
 
       - name: ⎔ Setup node
         if: matrix.prebuild
@@ -196,7 +201,7 @@ jobs:
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/rouby/space-${{ matrix.image }}:latest
-            ghcr.io/rouby/space-${{ matrix.image }}:${{ github.ref_name }}-${{ github.sha }}
+            ghcr.io/rouby/space-${{ matrix.image }}:${{ steps.sanitize.outputs.ref_name }}-${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-${{ matrix.image }}-cache
           cache-to: type=local,dest=/tmp/.buildx-${{ matrix.image }}-cache-new,mode=max
 
