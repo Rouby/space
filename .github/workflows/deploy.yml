@@ -163,8 +163,8 @@ jobs:
         with:
           context: .
           file: packages/backend/Dockerfile
-          platforms: linux/amd64
-          push: true
+          platforms: linux/arm64
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/rouby/space-backend:latest
             ghcr.io/rouby/space-backend:${{ github.ref_name }}-${{ github.sha }}
@@ -235,8 +235,8 @@ jobs:
         with:
           context: packages/frontend/dist
           file: packages/frontend/Dockerfile
-          platforms: linux/amd64
-          push: true
+          platforms: linux/arm64
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/rouby/space-frontend:latest
             ghcr.io/rouby/space-frontend:${{ github.ref_name }}-${{ github.sha }}
@@ -295,8 +295,8 @@ jobs:
         with:
           context: .
           file: packages/data/Dockerfile
-          platforms: linux/amd64
-          push: true
+          platforms: linux/arm64
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/rouby/space-migrations:latest
             ghcr.io/rouby/space-migrations:${{ github.ref_name }}-${{ github.sha }}
