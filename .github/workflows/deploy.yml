@@ -293,6 +293,7 @@ jobs:
   deploy:
     name: 🚀 Deploy
     runs-on: arc-runner-set-space
+    container: ghcr.io/actions/actions-runner:latest
     needs:
       - lint
       - typecheck
