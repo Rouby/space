@@ -1,10 +1,12 @@
 import { and, eq, games, players } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
+import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
 export const updateGameSettings: NonNullable<
 	MutationResolvers["updateGameSettings"]
 > = async (_parent, { gameId, input }, ctx) => {
-	ctx.throwWithoutClaim("urn:space:claim");
+	const context: Context = ctx;
+	context.throwWithoutClaim("urn:space:claim");
 
 	if (!ctx.userId) {
 		throw createGraphQLError("Not authenticated");

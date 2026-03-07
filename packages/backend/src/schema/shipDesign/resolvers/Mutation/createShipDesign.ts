@@ -1,9 +1,11 @@
 import { shipDesignComponents, shipDesigns } from "@space/data/schema";
+import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
 export const createShipDesign: NonNullable<
 	MutationResolvers["createShipDesign"]
 > = async (_parent, { gameId, design }, ctx) => {
-	ctx.throwWithoutClaim("urn:space:claim");
+	const context: Context = ctx;
+	context.throwWithoutClaim("urn:space:claim");
 
 	return ctx.drizzle.transaction(async (tx) => {
 		const [shipDesign] = await tx

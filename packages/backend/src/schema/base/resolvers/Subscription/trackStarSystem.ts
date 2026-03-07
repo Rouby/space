@@ -1,13 +1,15 @@
 import { eq, starSystems } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import { bufferWhen, filter, map, merge, scan, tap } from "rxjs";
+import type { Context } from "../../../../context.js";
 import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
 import type { SubscriptionResolvers } from "./../../../types.generated.ts";
 export const trackStarSystem: NonNullable<
 	SubscriptionResolvers["trackStarSystem"]
 > = {
 	subscribe: async (_parent, { starSystemId }, ctx) => {
-		ctx.throwWithoutClaim("urn:space:claim");
+		const context: Context = ctx;
+		context.throwWithoutClaim("urn:space:claim");
 
 		const [ss] = await ctx.drizzle
 			.select()

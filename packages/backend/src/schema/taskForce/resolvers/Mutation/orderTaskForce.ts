@@ -1,11 +1,13 @@
+import { randomUUID } from "node:crypto";
 import { eq, taskForces } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
-import { randomUUID } from "node:crypto";
+import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
 export const orderTaskForce: NonNullable<
 	MutationResolvers["orderTaskForce"]
 > = async (_parent, { id, orders, queue }, ctx) => {
-	ctx.throwWithoutClaim("urn:space:claim");
+	const context: Context = ctx;
+	context.throwWithoutClaim("urn:space:claim");
 
 	const taskForce = await ctx.drizzle.query.taskForces.findFirst();
 

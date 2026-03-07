@@ -8,6 +8,7 @@ import {
 	visibility,
 } from "@space/data/schema";
 import { merge } from "rxjs";
+import type { Context } from "../../../../context.js";
 import { starSystems$ } from "../../../../observables/starSystems.ts";
 import { taskForceEngagements$ } from "../../../../observables/taskForceEngagements.ts";
 import { taskForces$ } from "../../../../observables/taskForces.ts";
@@ -15,7 +16,8 @@ import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
 import type { SubscriptionResolvers } from "./../../../types.generated.js";
 export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 	subscribe: async (_parent, { gameId }, ctx) => {
-		ctx.throwWithoutClaim("urn:space:claim");
+		const context: Context = ctx;
+		context.throwWithoutClaim("urn:space:claim");
 
 		const initialTfs = await ctx.drizzle
 			.select()
