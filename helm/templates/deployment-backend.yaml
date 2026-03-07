@@ -49,10 +49,18 @@ spec:
             httpGet:
               path: /graphql
               port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 6
           readinessProbe:
             httpGet:
               path: /graphql
               port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           resources:
             limits:
               cpu: 1000m
@@ -65,7 +73,8 @@ spec:
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- $nodeSelector := merge (default dict .Values.backend.nodeSelector) .Values.nodeSelector }}
+      {{- with $nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

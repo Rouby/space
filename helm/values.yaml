@@ -36,6 +36,7 @@ securityContext:
 
 ingress:
   enabled: true
+  className: traefik
   clusterIssuer: "letsencrypt-prod"
   annotations: {}
   host: staging.space.aiacta.com
@@ -48,6 +49,10 @@ database:
   user: space
   password: space
   name: space
+
+backend:
+  nodeSelector:
+    kubernetes.io/hostname: pi-cluster-01
 
 volumes: {}
 

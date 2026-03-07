@@ -9,8 +9,6 @@ metadata:
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
@@ -26,21 +24,14 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: "/(graphql)"
-            pathType: Exact
+          - path: "/graphql"
+            pathType: Prefix
             backend:
               service:
                 name: {{ $fullName }}-backend
                 port:
                   number: 3000
-          - path: "/((?:(?!graphql).*\\.(?:\\w+)))"
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ $fullName }}-frontend
-                port:
-                  number: 3000
-          - path: "/()((?:(?!graphql)[^.]*))"
+          - path: "/"
             pathType: Prefix
             backend:
               service:
