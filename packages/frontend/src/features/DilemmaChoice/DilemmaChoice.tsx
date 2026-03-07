@@ -1,6 +1,7 @@
 import {
 	Badge,
 	Group,
+	Loader,
 	Stack,
 	Text,
 	Title,
@@ -18,6 +19,7 @@ import {
 	IconStar,
 	IconUser,
 } from "@tabler/icons-react";
+import { useState } from "react";
 import { useClient, useMutation, useQuery } from "urql";
 import { graphql } from "../../gql";
 
@@ -76,7 +78,7 @@ export function DilemmaChoice({
 		variables: { id },
 	});
 
-	const [_, chooseDilemmaChoice] = useMutation(
+	const [{ fetching: isChoosing }, chooseDilemmaChoice] = useMutation(
 		graphql(`
       mutation MakeDilemmaChoice($id: ID!, $choiceId: ID!) {
         makeDilemmaChoice(dilemmaId: $id, choiceId: $choiceId) {
@@ -87,6 +89,10 @@ export function DilemmaChoice({
       }
     `),
 	);
+
+	const [isWaitingForNext, setIsWaitingForNext] = useState(false);
+	const [choosingChoiceId, setChoosingChoiceId] = useState<string>();
+	const isBusy = isChoosing || isWaitingForNext;
 
 	const findNextDilemmaId = async () => {
 		for (let attempt = 0; attempt < 10; attempt++) {
@@ -147,6 +153,14 @@ export function DilemmaChoice({
 		<Stack>
 			<Text>{data?.dilemma.description}</Text>
 			<Title order={4}>{data?.dilemma.question}</Title>
+			{isBusy && (
+				<Group gap="xs">
+					<Loader size="sm" type="dots" />
+					<Text c="dimmed" size="sm">
+						Applying your choice and loading the next dilemma...
+					</Text>
+				</Group>
+			)}
 			{selectedChoice && (
 				<Group>
 					<Badge color="teal" variant="light">
@@ -160,7 +174,7 @@ export function DilemmaChoice({
 			<Group grow align="stretch">
 				{data?.dilemma.choices.map((choice) => {
 					const isSelected = choice.id === selectedChoiceId;
-					const isDisabled = Boolean(selectedChoiceId);
+					const isDisabled = Boolean(selectedChoiceId) || isBusy;
 					const hash = choice.id
 						.split("")
 						.reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -172,30 +186,41 @@ export function DilemmaChoice({
 							p="lg"
 							disabled={isDisabled}
 							onClick={() => {
-								if (selectedChoiceId) {
+								if (selectedChoiceId || isBusy) {
 									return;
 								}
+
+								setChoosingChoiceId(choice.id);
 
 								chooseDilemmaChoice({
 									id,
 									choiceId: choice.id,
-								}).then(async (result) => {
-									if (result.error) {
-										return;
-									}
+								})
+									.then(async (result) => {
+										if (result.error) {
+											return;
+										}
 
-									const nextDilemmaId = await findNextDilemmaId();
-									onChoosen(nextDilemmaId);
-								});
+										setIsWaitingForNext(true);
+										const nextDilemmaId = await findNextDilemmaId();
+										onChoosen(nextDilemmaId);
+									})
+									.finally(() => {
+										setIsWaitingForNext(false);
+										setChoosingChoiceId(undefined);
+									});
 							}}
 							styles={{
 								root: {
 									borderRadius: "var(--mantine-radius-md)",
 									border: isSelected
-										? "1px solid var(--mantine-color-teal-6)"
-										: "1px solid var(--mantine-color-gray-4)",
+										? "1px solid var(--mantine-color-teal-5)"
+										: "1px solid var(--mantine-color-default-border)",
 									background: isSelected
-										? "var(--mantine-color-teal-0)"
+										? "color-mix(in srgb, var(--mantine-color-teal-7) 16%, transparent)"
+										: undefined,
+									boxShadow: isSelected
+										? "inset 0 0 0 1px color-mix(in srgb, var(--mantine-color-teal-5) 65%, transparent)"
 										: undefined,
 									display: "flex",
 									flexDirection: "column",
@@ -213,6 +238,11 @@ export function DilemmaChoice({
 							{isSelected && (
 								<Badge color="teal" variant="filled">
 									Selected
+								</Badge>
+							)}
+							{isBusy && choosingChoiceId === choice.id && (
+								<Badge color="blue" variant="light">
+									Processing...
 								</Badge>
 							)}
 						</UnstyledButton>
