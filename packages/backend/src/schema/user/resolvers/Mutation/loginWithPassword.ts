@@ -30,6 +30,7 @@ export const loginWithPassword: NonNullable<
 		ctx.request.cookieStore?.set({
 			domain,
 			expires: expirationTime,
+			secure: true,
 			httpOnly: false,
 			sameSite: "strict",
 			name: "accessToken",
@@ -43,6 +44,7 @@ export const loginWithPassword: NonNullable<
 		ctx.request.cookieStore?.set({
 			domain,
 			expires: expirationTime,
+			secure: true,
 			httpOnly: true,
 			sameSite: "strict",
 			name: "refreshToken",

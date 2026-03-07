@@ -10,12 +10,14 @@ type Dilemma {
 	description: String!
 	id: ID!
 	position: Vector
+	question: String!
 	title: String!
 }
 
 type DilemmaChoice {
+	description: String!
 	id: ID!
-	text: String!
+	title: String!
 }
 
 union Discovery = ResourceDiscovery | UnknownDiscovery
@@ -34,6 +36,7 @@ type Game {
 	starSystems: [StarSystem!]!
 	startedAt: DateTime
 	taskForces: [TaskForce!]!
+	turnNumber: Int!
 }
 
 type Mutation {
@@ -203,6 +206,7 @@ type StarSystemUpdateEvent {
 
 type Subscription {
 	trackGalaxy(gameId: ID!): TrackGalaxyEvent!
+	trackGame(gameId: ID!): TrackGameEvent!
 	trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
 }
 
@@ -262,7 +266,13 @@ union TrackGalaxyEvent =
 	| PositionableMovesEvent
 	| StarSystemUpdateEvent
 
+union TrackGameEvent = TurnEndedEvent
+
 union TrackStarSystemEvent = StarSystemUpdateEvent
+
+type TurnEndedEvent {
+	game: Game!
+}
 
 type UnknownDiscovery {
 	id: ID!

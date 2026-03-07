@@ -92,6 +92,17 @@
             "args": []
           },
           {
+            "name": "question",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "title",
             "type": {
               "kind": "NON_NULL",
@@ -110,6 +121,17 @@
         "name": "DilemmaChoice",
         "fields": [
           {
+            "name": "description",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -121,7 +143,7 @@
             "args": []
           },
           {
-            "name": "text",
+            "name": "title",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -332,6 +354,17 @@
               }
             },
             "args": []
+          },
+          {
+            "name": "turnNumber",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
           }
         ],
         "interfaces": []
@@ -384,6 +417,29 @@
                   }
                 }
               },
+              {
+                "name": "gameId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "endTurn",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Game",
+                "ofType": null
+              }
+            },
+            "args": [
               {
                 "name": "gameId",
                 "type": {
@@ -766,6 +822,14 @@
                   }
                 }
               }
+            },
+            "args": []
+          },
+          {
+            "name": "turnEnded",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
             },
             "args": []
           },
@@ -1794,6 +1858,29 @@
             ]
           },
           {
+            "name": "trackGame",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "UNION",
+                "name": "TrackGameEvent",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "gameId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
             "name": "trackStarSystem",
             "type": {
               "kind": "NON_NULL",
@@ -2075,6 +2162,16 @@
       },
       {
         "kind": "UNION",
+        "name": "TrackGameEvent",
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "TurnEndedEvent"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
         "name": "TrackStarSystemEvent",
         "possibleTypes": [
           {
@@ -2082,6 +2179,25 @@
             "name": "StarSystemUpdateEvent"
           }
         ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TurnEndedEvent",
+        "fields": [
+          {
+            "name": "game",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Game",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "OBJECT",

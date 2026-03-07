@@ -20,7 +20,6 @@ export const client = createClient({
 			schema,
 			keys: {
 				ResourceCost: () => null,
-				ResourceNeed: () => null,
 			},
 			updates: {
 				Mutation: {

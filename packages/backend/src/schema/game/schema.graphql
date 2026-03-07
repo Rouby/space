@@ -10,6 +10,8 @@ type Game {
 	startedAt: DateTime
 	players: [Player!]!
 
+	turnNumber: Int!
+
 	me: Player
 }
 
@@ -43,4 +45,14 @@ type Mutation {
 	updateGameSettings(gameId: ID!, input: UpdateGameSettingsInput!): Game!
 
 	endTurn(gameId: ID!): Game!
+}
+
+union TrackGameEvent = TurnEndedEvent
+
+type TurnEndedEvent {
+	game: Game!
+}
+
+type Subscription {
+	trackGame(gameId: ID!): TrackGameEvent!
 }

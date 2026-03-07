@@ -16,7 +16,7 @@ const AuthContext = createContext<{
 }>({ me: null, invalidate() {} });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const [me, setMe] = useState<{ id: string } | null>(null);
+	const [me, setMe] = useState<{ id: string } | null>(() => getMeFromToken());
 
 	const [, refreshLogin] = useMutation(
 		graphql(`mutation RefreshLogin {
@@ -27,17 +27,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	);
 
 	const invalidate = useCallback(() => {
-		const accessToken = document.cookie
-			.split("; ")
-			.find((c) => c.startsWith("accessToken="))
-			?.split("=")
-			.at(1);
+		const currentMe = getMeFromToken();
 
-		if (accessToken) {
-			const { sub } = decodeJwt(accessToken);
-			if (sub) {
-				setMe({ id: sub });
-			}
+		if (currentMe) {
+			setMe(currentMe);
 		} else {
 			refreshLogin({}).then(
 				(d) => d.data?.loginWithRefreshToken.id && invalidate(),
@@ -56,6 +49,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			{children}
 		</AuthContext.Provider>
 	);
+}
+
+function getMeFromToken() {
+	const accessToken = document.cookie
+		.split("; ")
+		.find((c) => c.startsWith("accessToken="))
+		?.split("=")
+		.at(1);
+
+	if (accessToken) {
+		const { sub } = decodeJwt(accessToken);
+		if (sub) {
+			return { id: sub };
+		}
+	}
+	return null;
 }
 
 export function useAuth() {

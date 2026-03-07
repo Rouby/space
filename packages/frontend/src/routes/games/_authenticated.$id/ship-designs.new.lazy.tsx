@@ -1,4 +1,4 @@
-import { Outlet, createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, Outlet } from "@tanstack/react-router";
 import { DetailsDrawer } from "../../../components/DetailsDrawer/DetailsDrawer";
 import { ShipDesigner } from "../../../features/ShipDesigns/ShipDesigner";
 
@@ -14,15 +14,7 @@ function Details() {
 
 	return (
 		<>
-			<DetailsDrawer
-				size="60%"
-				onClose={() =>
-					navigate({
-						from: "/games/$id/ship-designs/new",
-						to: "..",
-					})
-				}
-			>
+			<DetailsDrawer size="60%" onClose={() => navigate({ to: ".." })}>
 				<ShipDesigner gameId={id} onCreate={() => navigate({ to: ".." })} />
 			</DetailsDrawer>
 

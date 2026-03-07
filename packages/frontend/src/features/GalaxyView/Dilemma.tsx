@@ -2,7 +2,6 @@ import type { FederatedPointerEvent, Graphics, PointData } from "pixi.js";
 import { useCallback } from "react";
 
 export function Dilemma({
-	title,
 	position,
 	onClick,
 }: {
@@ -14,7 +13,7 @@ export function Dilemma({
 	const drawCircle = useCallback((graphics: Graphics) => {
 		graphics.clear();
 		graphics.setFillStyle({ color: "00ff00" });
-		graphics.circle(0, 0, 20);
+		graphics.circle(0, 0, 5);
 		graphics.fill();
 	}, []);
 

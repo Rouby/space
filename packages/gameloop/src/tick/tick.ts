@@ -2,6 +2,7 @@ import { parentPort } from "node:worker_threads";
 import {
 	and,
 	eq,
+	games,
 	isNotNull,
 	lastKnownStates,
 	players,
@@ -23,12 +24,19 @@ export type Transaction = FirstArgument<
 >;
 export type Context = {
 	postMessage: (event: GameEvent) => void;
+	turn: number;
 };
 
 export async function tick() {
 	const messages: GameEvent[] = [];
 	const ctx: Context = {
 		postMessage: (event) => messages.push(event),
+		turn: (
+			await drizzle
+				.select({ turnNumber: games.turnNumber })
+				.from(games)
+				.where(eq(games.id, gameId))
+		)[0].turnNumber,
 	};
 
 	await drizzle.transaction(async (tx) => {
@@ -43,6 +51,21 @@ export async function tick() {
 		await tickStarSystemEconomy(tx, ctx);
 
 		await notifyAboutVisibilityChanges();
+
+		await tx
+			.update(players)
+			.set({ turnEndedAt: null })
+			.where(eq(players.gameId, gameId));
+
+		await tx
+			.update(games)
+			.set({ turnNumber: ctx.turn + 1 })
+			.where(eq(games.id, gameId));
+
+		ctx.postMessage({
+			type: "game:turnEnded",
+			turnNumber: ctx.turn + 1,
+		});
 
 		/// ------------------------------------------------------------
 

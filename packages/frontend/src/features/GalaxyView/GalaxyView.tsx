@@ -64,11 +64,14 @@ query Galaxy($id: ID!) {
 		dilemmas {
 			id
 			title
+			question
 			description
 			choices {
 				id
-				text
+				title
+				description
 			}
+			choosen
 			position
 			correlation {
 				... on StarSystem {
@@ -322,32 +325,34 @@ query Galaxy($id: ID!) {
 								}}
 							/>
 						))}
-						{data?.game.dilemmas.map((dilemma) => {
-							const position = dilemma.position
-								? dilemma.position
-								: dilemma.correlation && "position" in dilemma.correlation
-									? dilemma.correlation.position
-									: undefined;
+						{data?.game.dilemmas
+							.filter((dilemma) => !dilemma.choosen)
+							.map((dilemma) => {
+								const position = dilemma.position
+									? dilemma.position
+									: dilemma.correlation && "position" in dilemma.correlation
+										? dilemma.correlation.position
+										: undefined;
 
-							if (!position) return null;
+								if (!position) return null;
 
-							return (
-								<Dilemma
-									key={dilemma.id}
-									id={dilemma.id}
-									title={dilemma.title}
-									position={position}
-									onClick={(event) => {
-										event.preventDefault();
-										navigate({
-											from: "/games/$id",
-											to: "dilemma/$dilemmaId",
-											params: { dilemmaId: dilemma.id },
-										});
-									}}
-								/>
-							);
-						})}
+								return (
+									<Dilemma
+										key={dilemma.id}
+										id={dilemma.id}
+										title={dilemma.title}
+										position={position}
+										onClick={(event) => {
+											event.preventDefault();
+											navigate({
+												from: "/games/$id",
+												to: "dilemmas/$dilemmaId",
+												params: { dilemmaId: dilemma.id },
+											});
+										}}
+									/>
+								);
+							})}
 					</Viewport>
 				</container>
 			</Application>

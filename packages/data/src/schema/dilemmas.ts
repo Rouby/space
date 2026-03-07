@@ -32,11 +32,13 @@ export const dilemmas = pgTable("dilemmas", {
 		.references(() => users.id, { onDelete: "restrict" }),
 	title: text().notNull(),
 	description: text().notNull(),
+	question: text().notNull(),
 	choices: jsonb().notNull().$type<
 		{
 			id: string;
-			text: string;
-			effectScript: string;
+			title: string;
+			description: string;
+			effects: ChoiceEffect[];
 		}[]
 	>(),
 	choosen: varchar({ length: 256 }),
@@ -44,3 +46,12 @@ export const dilemmas = pgTable("dilemmas", {
 	correlation: reference(),
 	causation: reference(),
 });
+
+type ChoiceEffect = GenerateDilemmaEffect;
+
+interface GenerateDilemmaEffect {
+	type: "generateDilemma";
+	params: {
+		promptName: string;
+	};
+}

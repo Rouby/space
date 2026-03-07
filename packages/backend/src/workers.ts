@@ -3,8 +3,7 @@ import { from, Subject } from "rxjs";
 import type { GameEvent } from "./events.ts";
 
 const eventsPerGame = new Map<string, Subject<GameEvent>>();
-
-const workers: Worker[] = [];
+const workerPerGame = new Map<string, Worker>();
 
 export function startWorker(gameId: string) {
 	const worker = new Worker(new URL(import.meta.resolve("@space/gameloop")), {
@@ -19,14 +18,14 @@ export function startWorker(gameId: string) {
 		subject.next(message);
 	});
 
-	workers.push(worker);
+	workerPerGame.set(gameId, worker);
 }
 
 export async function stopWorkers() {
 	return Promise.all([
-		...workers.map((worker) => {
+		...workerPerGame.values().map((worker) => {
 			const promise = new Promise((res) => worker.once("exit", res));
-			worker.postMessage("shutdown");
+			worker.postMessage({ type: "shutdown" });
 			return promise;
 		}),
 	]);
@@ -39,4 +38,8 @@ export function fromGameEvents(gameId: string) {
 	}
 
 	return from(subject);
+}
+
+export function notifyWorker(gameId: string, event: unknown) {
+	workerPerGame.get(gameId)?.postMessage({ type: "notify", event });
 }

@@ -28,13 +28,16 @@ const GamesAuthenticatedIdLazyRouteImport = createFileRoute(
 const GamesAuthenticatedIdShipDesignsLazyRouteImport = createFileRoute(
   '/games/_authenticated/$id/ship-designs',
 )()
+const GamesAuthenticatedIdDilemmasIndexLazyRouteImport = createFileRoute(
+  '/games/_authenticated/$id/dilemmas/',
+)()
 const GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteImport =
   createFileRoute('/games/_authenticated/$id/star-system/$starSystemId')()
 const GamesAuthenticatedIdShipDesignsNewLazyRouteImport = createFileRoute(
   '/games/_authenticated/$id/ship-designs/new',
 )()
-const GamesAuthenticatedIdDilemmaDilemmaIdLazyRouteImport = createFileRoute(
-  '/games/_authenticated/$id/dilemma/$dilemmaId',
+const GamesAuthenticatedIdDilemmasDilemmaIdLazyRouteImport = createFileRoute(
+  '/games/_authenticated/$id/dilemmas/$dilemmaId',
 )()
 
 const GamesRoute = GamesRouteImport.update({
@@ -98,6 +101,16 @@ const GamesAuthenticatedIdShipDesignsLazyRoute =
       (d) => d.Route,
     ),
   )
+const GamesAuthenticatedIdDilemmasIndexLazyRoute =
+  GamesAuthenticatedIdDilemmasIndexLazyRouteImport.update({
+    id: '/dilemmas/',
+    path: '/dilemmas/',
+    getParentRoute: () => GamesAuthenticatedIdLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/games/_authenticated.$id/dilemmas.index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute =
   GamesAuthenticatedIdStarSystemStarSystemIdLazyRouteImport.update({
     id: '/star-system/$starSystemId',
@@ -118,13 +131,13 @@ const GamesAuthenticatedIdShipDesignsNewLazyRoute =
       (d) => d.Route,
     ),
   )
-const GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute =
-  GamesAuthenticatedIdDilemmaDilemmaIdLazyRouteImport.update({
-    id: '/dilemma/$dilemmaId',
-    path: '/dilemma/$dilemmaId',
+const GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute =
+  GamesAuthenticatedIdDilemmasDilemmaIdLazyRouteImport.update({
+    id: '/dilemmas/$dilemmaId',
+    path: '/dilemmas/$dilemmaId',
     getParentRoute: () => GamesAuthenticatedIdLazyRoute,
   } as any).lazy(() =>
-    import('./routes/games/_authenticated.$id/dilemma.$dilemmaId.lazy').then(
+    import('./routes/games/_authenticated.$id/dilemmas.$dilemmaId.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -144,9 +157,10 @@ export interface FileRoutesByFullPath {
   '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
   '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
-  '/games/$id/dilemma/$dilemmaId': typeof GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute
+  '/games/$id/dilemmas/$dilemmaId': typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
   '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
   '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
+  '/games/$id/dilemmas': typeof GamesAuthenticatedIdDilemmasIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/features': typeof DashboardFeaturesRoute
@@ -157,9 +171,10 @@ export interface FileRoutesByTo {
   '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
   '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
-  '/games/$id/dilemma/$dilemmaId': typeof GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute
+  '/games/$id/dilemmas/$dilemmaId': typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
   '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
   '/games/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
+  '/games/$id/dilemmas': typeof GamesAuthenticatedIdDilemmasIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -175,9 +190,10 @@ export interface FileRoutesById {
   '/games/_authenticated/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
   '/_dashboard/_authenticated/games/': typeof DashboardAuthenticatedGamesIndexRoute
   '/_dashboard/_authenticated/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
-  '/games/_authenticated/$id/dilemma/$dilemmaId': typeof GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute
+  '/games/_authenticated/$id/dilemmas/$dilemmaId': typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
   '/games/_authenticated/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
   '/games/_authenticated/$id/star-system/$starSystemId': typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
+  '/games/_authenticated/$id/dilemmas/': typeof GamesAuthenticatedIdDilemmasIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,9 +206,10 @@ export interface FileRouteTypes {
     | '/games/$id'
     | '/games/$id/ship-designs'
     | '/games/lobby/$id'
-    | '/games/$id/dilemma/$dilemmaId'
+    | '/games/$id/dilemmas/$dilemmaId'
     | '/games/$id/ship-designs/new'
     | '/games/$id/star-system/$starSystemId'
+    | '/games/$id/dilemmas'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/features'
@@ -203,9 +220,10 @@ export interface FileRouteTypes {
     | '/games/$id'
     | '/games/$id/ship-designs'
     | '/games/lobby/$id'
-    | '/games/$id/dilemma/$dilemmaId'
+    | '/games/$id/dilemmas/$dilemmaId'
     | '/games/$id/ship-designs/new'
     | '/games/$id/star-system/$starSystemId'
+    | '/games/$id/dilemmas'
   id:
     | '__root__'
     | '/_dashboard'
@@ -220,9 +238,10 @@ export interface FileRouteTypes {
     | '/games/_authenticated/$id/ship-designs'
     | '/_dashboard/_authenticated/games/'
     | '/_dashboard/_authenticated/games/lobby/$id'
-    | '/games/_authenticated/$id/dilemma/$dilemmaId'
+    | '/games/_authenticated/$id/dilemmas/$dilemmaId'
     | '/games/_authenticated/$id/ship-designs/new'
     | '/games/_authenticated/$id/star-system/$starSystemId'
+    | '/games/_authenticated/$id/dilemmas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -309,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesAuthenticatedIdShipDesignsLazyRouteImport
       parentRoute: typeof GamesAuthenticatedIdLazyRoute
     }
+    '/games/_authenticated/$id/dilemmas/': {
+      id: '/games/_authenticated/$id/dilemmas/'
+      path: '/dilemmas'
+      fullPath: '/games/$id/dilemmas'
+      preLoaderRoute: typeof GamesAuthenticatedIdDilemmasIndexLazyRouteImport
+      parentRoute: typeof GamesAuthenticatedIdLazyRoute
+    }
     '/games/_authenticated/$id/star-system/$starSystemId': {
       id: '/games/_authenticated/$id/star-system/$starSystemId'
       path: '/star-system/$starSystemId'
@@ -323,11 +349,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesAuthenticatedIdShipDesignsNewLazyRouteImport
       parentRoute: typeof GamesAuthenticatedIdShipDesignsLazyRoute
     }
-    '/games/_authenticated/$id/dilemma/$dilemmaId': {
-      id: '/games/_authenticated/$id/dilemma/$dilemmaId'
-      path: '/dilemma/$dilemmaId'
-      fullPath: '/games/$id/dilemma/$dilemmaId'
-      preLoaderRoute: typeof GamesAuthenticatedIdDilemmaDilemmaIdLazyRouteImport
+    '/games/_authenticated/$id/dilemmas/$dilemmaId': {
+      id: '/games/_authenticated/$id/dilemmas/$dilemmaId'
+      path: '/dilemmas/$dilemmaId'
+      fullPath: '/games/$id/dilemmas/$dilemmaId'
+      preLoaderRoute: typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRouteImport
       parentRoute: typeof GamesAuthenticatedIdLazyRoute
     }
     '/_dashboard/_authenticated/games/lobby/$id': {
@@ -395,18 +421,21 @@ const GamesAuthenticatedIdShipDesignsLazyRouteWithChildren =
 
 interface GamesAuthenticatedIdLazyRouteChildren {
   GamesAuthenticatedIdShipDesignsLazyRoute: typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
-  GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute: typeof GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute
+  GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute: typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
   GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
+  GamesAuthenticatedIdDilemmasIndexLazyRoute: typeof GamesAuthenticatedIdDilemmasIndexLazyRoute
 }
 
 const GamesAuthenticatedIdLazyRouteChildren: GamesAuthenticatedIdLazyRouteChildren =
   {
     GamesAuthenticatedIdShipDesignsLazyRoute:
       GamesAuthenticatedIdShipDesignsLazyRouteWithChildren,
-    GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute:
-      GamesAuthenticatedIdDilemmaDilemmaIdLazyRoute,
+    GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute:
+      GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute,
     GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute:
       GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute,
+    GamesAuthenticatedIdDilemmasIndexLazyRoute:
+      GamesAuthenticatedIdDilemmasIndexLazyRoute,
   }
 
 const GamesAuthenticatedIdLazyRouteWithChildren =

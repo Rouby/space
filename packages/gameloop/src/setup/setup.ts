@@ -12,14 +12,6 @@ export type Transaction = FirstArgument<
 >;
 export type Context = {
 	players: (typeof players.$inferSelect)[];
-	ai: {
-		completions: {
-			create<T = string>(opt: {
-				prompt: string;
-				parse: (input: string) => T;
-			}): Promise<T>;
-		};
-	};
 };
 
 export async function setup() {
@@ -29,37 +21,6 @@ export async function setup() {
 
 	const ctx: Context = {
 		players: playersInGame,
-		ai: {
-			completions: {
-				create: async ({ prompt, parse }) => {
-					const response = await fetch(
-						"http://192.168.128.1:11434/api/generate",
-						{
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json",
-							},
-							body: JSON.stringify({
-								model: "gemma3n",
-								prompt: prompt.replaceAll("\n", "\\n"),
-								stream: false,
-								format: "json",
-							}),
-						},
-					);
-
-					const data = (await response.json()) as
-						| { done: boolean; response: string }
-						| undefined;
-
-					if (!data?.done) {
-						throw new Error("AI generation did not complete");
-					}
-
-					return parse(data.response);
-				},
-			},
-		},
 	};
 
 	await drizzle.transaction(async (tx) => {

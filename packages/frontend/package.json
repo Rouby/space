@@ -35,7 +35,7 @@
 		"@pixi/react": "8.0.3",
 		"@tabler/icons-react": "3.34.1",
 		"@tanstack/react-router": "1.131.27",
-		"@tanstack/router-devtools": "1.131.27",
+		"@tanstack/react-router-devtools": "1.131.28",
 		"@tiptap/core": "3.2.0",
 		"@tiptap/extension-link": "3.2.0",
 		"@tiptap/pm": "3.2.0",

@@ -3,13 +3,20 @@ import { applyMigrations } from "@space/data/game-migrations";
 import { eq, games, players } from "@space/data/schema";
 import { gameId } from "./config.ts";
 import { drizzle } from "./db.ts";
+import { react } from "./react/react.ts";
 import { setup } from "./setup/setup.ts";
 import { tick } from "./tick/tick.ts";
 
 parentPort?.on("message", (message) => {
-	if (message === "shutdown") {
+	if (message.type === "shutdown") {
 		console.log("Worker shutting down");
 		process.exit();
+	}
+	if (message.type === "notify") {
+		console.log("Worker received notification");
+		react(message.event).catch((err) => {
+			console.error("Error occurred while processing event:", err);
+		});
 	}
 });
 
@@ -49,21 +56,3 @@ while (true) {
 		await tick();
 	}
 }
-// start game loop
-// const tickRate = game.tickRate;
-// let ticking = false;
-// setInterval(() => {
-// 	if (ticking) {
-// 		console.warn(`Tick took longer than ${tickRate}ms; skipping tick`);
-// 		return;
-// 	}
-// 	ticking = true;
-// 	const start = Date.now();
-// 	tick()
-// 		.catch((err) => console.error(err))
-// 		.finally(() => {
-// 			ticking = false;
-// 			const duration = Date.now() - start;
-// 			if (duration > tickRate) console.warn(`Tick took ${duration}ms`);
-// 		});
-// }, tickRate);

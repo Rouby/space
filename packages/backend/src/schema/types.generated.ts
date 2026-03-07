@@ -38,13 +38,15 @@ export type Dilemma = {
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   position?: Maybe<Scalars['Vector']['output']>;
+  question: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
 
 export type DilemmaChoice = {
   __typename?: 'DilemmaChoice';
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  text: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 export type Discovery = ResourceDiscovery | UnknownDiscovery;
@@ -64,6 +66,7 @@ export type Game = {
   starSystems: Array<StarSystem>;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
   taskForces: Array<TaskForce>;
+  turnNumber: Scalars['Int']['output'];
 };
 
 export type Mutation = {
@@ -325,11 +328,17 @@ export type StarSystemUpdateEvent = {
 export type Subscription = {
   __typename?: 'Subscription';
   trackGalaxy: TrackGalaxyEvent;
+  trackGame: TrackGameEvent;
   trackStarSystem: TrackStarSystemEvent;
 };
 
 
 export type SubscriptiontrackGalaxyArgs = {
+  gameId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptiontrackGameArgs = {
   gameId: Scalars['ID']['input'];
 };
 
@@ -393,7 +402,14 @@ export type TaskForceShipRole =
 
 export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent;
 
+export type TrackGameEvent = TurnEndedEvent;
+
 export type TrackStarSystemEvent = StarSystemUpdateEvent;
+
+export type TurnEndedEvent = {
+  __typename?: 'TurnEndedEvent';
+  game: Game;
+};
 
 export type UnknownDiscovery = {
   __typename?: 'UnknownDiscovery';
@@ -494,6 +510,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
   Reference: ( DilemmaMapper & { __typename: 'Dilemma' } ) | ( StarSystemMapper & { __typename: 'StarSystem' } );
   TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
+  TrackGameEvent: ( Omit<TurnEndedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'TurnEndedEvent' } );
   TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
 };
 
@@ -547,7 +564,9 @@ export type ResolversTypes = {
   TaskForceOrderInput: TaskForceOrderInput;
   TaskForceShipRole: ResolverTypeWrapper<'capital' | 'screen' | 'support'>;
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
+  TrackGameEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGameEvent']>;
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
+  TurnEndedEvent: ResolverTypeWrapper<Omit<TurnEndedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
   UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
@@ -599,7 +618,9 @@ export type ResolversParentTypes = {
   TaskForceOrder: TaskForceOrderMapper;
   TaskForceOrderInput: TaskForceOrderInput;
   TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
+  TrackGameEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGameEvent'];
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
+  TurnEndedEvent: Omit<TurnEndedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   UnknownDiscovery: UnknownDiscovery;
   UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
@@ -623,13 +644,15 @@ export type DilemmaResolvers<ContextType = Context, ParentType extends Resolvers
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['Vector']>, ParentType, ContextType>;
+  question?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DilemmaChoiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DilemmaChoice'] = ResolversParentTypes['DilemmaChoice']> = {
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -651,6 +674,7 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   starSystems?: Resolver<Array<ResolversTypes['StarSystem']>, ParentType, ContextType>;
   startedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
+  turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -823,6 +847,7 @@ export type StarSystemUpdateEventResolvers<ContextType = Context, ParentType ext
 
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   trackGalaxy?: SubscriptionResolver<ResolversTypes['TrackGalaxyEvent'], "trackGalaxy", ParentType, ContextType, RequireFields<SubscriptiontrackGalaxyArgs, 'gameId'>>;
+  trackGame?: SubscriptionResolver<ResolversTypes['TrackGameEvent'], "trackGame", ParentType, ContextType, RequireFields<SubscriptiontrackGameArgs, 'gameId'>>;
   trackStarSystem?: SubscriptionResolver<ResolversTypes['TrackStarSystemEvent'], "trackStarSystem", ParentType, ContextType, RequireFields<SubscriptiontrackStarSystemArgs, 'starSystemId'>>;
 };
 
@@ -867,8 +892,17 @@ export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends 
   __resolveType?: TypeResolveFn<'PositionableApppearsEvent' | 'PositionableDisappearsEvent' | 'PositionableMovesEvent' | 'StarSystemUpdateEvent', ParentType, ContextType>;
 };
 
+export type TrackGameEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackGameEvent'] = ResolversParentTypes['TrackGameEvent']> = {
+  __resolveType?: TypeResolveFn<'TurnEndedEvent', ParentType, ContextType>;
+};
+
 export type TrackStarSystemEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackStarSystemEvent'] = ResolversParentTypes['TrackStarSystemEvent']> = {
   __resolveType?: TypeResolveFn<'StarSystemUpdateEvent', ParentType, ContextType>;
+};
+
+export type TurnEndedEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnEndedEvent'] = ResolversParentTypes['TurnEndedEvent']> = {
+  game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UnknownDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UnknownDiscovery'] = ResolversParentTypes['UnknownDiscovery']> = {
@@ -922,7 +956,9 @@ export type Resolvers<ContextType = Context> = {
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
   TaskForceShipRole?: TaskForceShipRoleResolvers;
   TrackGalaxyEvent?: TrackGalaxyEventResolvers<ContextType>;
+  TrackGameEvent?: TrackGameEventResolvers<ContextType>;
   TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;
+  TurnEndedEvent?: TurnEndedEventResolvers<ContextType>;
   UnknownDiscovery?: UnknownDiscoveryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;

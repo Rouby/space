@@ -9,11 +9,11 @@ import {
 	Drawer,
 	Group,
 	HoverCard,
+	rem,
 	ScrollArea,
 	SimpleGrid,
 	Text,
 	UnstyledButton,
-	rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronDown } from "@tabler/icons-react";
@@ -119,13 +119,13 @@ export function Header() {
 						<UserButton />
 					) : (
 						<Group visibleFrom="sm">
-								<Button variant="default" component={RouterLink} to="/signin">
-									Log in
-								</Button>
-								<Button component={RouterLink} to="/signin">
-									Sign up
-								</Button>
-							</Group>
+							<Button variant="default" component={RouterLink} to="/signin">
+								Log in
+							</Button>
+							<Button component={RouterLink} to="/signin">
+								Sign up
+							</Button>
+						</Group>
 					)}
 
 					<Burger

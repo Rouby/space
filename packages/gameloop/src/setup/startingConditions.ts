@@ -1,3 +1,4 @@
+import { chats, createChat } from "@space/ai";
 import {
 	dilemmas,
 	eq,
@@ -14,7 +15,7 @@ export async function setupStartingConditions(tx: Transaction, ctx: Context) {
 	console.log("Setting up starting conditions...");
 
 	const generatedSystems = await tx
-		.select()
+		.select({ id: starSystems.id })
 		.from(starSystems)
 		.where(eq(starSystems.gameId, gameId));
 
@@ -60,52 +61,12 @@ export async function setupStartingConditions(tx: Transaction, ctx: Context) {
 			});
 
 			// create a starting dilemma
-			const generatedDilemma = await ctx.ai.completions.create({
-				prompt: `
-You are a creative game designer for a complex 4X space opera game.
-Your task is to generate a compelling, unique pre-game dilemma that helps a player define their starting species' culture, history, or biology.
-The dilemma must not have a clear 'best' answer. Each choice should have meaningful trade-offs.
-The dilemma should be general enough to not include specific species names or pheontypes and also be of limited scope.
-This dilemma could have vaguely to do with the starting point of the players civilization space faring age.
-
-You may also reference the discovered resource ${resource.name} (${resource.description.slice(0, resource.description.indexOf("."))}).
-
-You may incorporate the following game mechanics:
-
-[
-  "popGrowth",
-  "discoverySpeed",
-  "resourceExploitationEfficiency",
-  "resourceExploitationEffectiveness"
-]
-
-The dilemma should be in JSON and follow these specs:
-
-{
-	title: string;
-	description: string;
-	choices: {
-    id: string;
-    text: string;
-    effectScript: string;
-  }[];
-}
-
-The return should be in the structure of { dilemma: Dilemma }.
-`,
-				parse: (input) =>
-					JSON.parse(input) as {
-						dilemma: {
-							title: string;
-							description: string;
-							choices: {
-								id: string;
-								text: string;
-								effectScript: string;
-							}[];
-						};
-					},
+			const generated = await createChat({
+				messages: [...chats.startingDilemmas.startingMessages],
+				format: chats.startingDilemmas.format,
 			});
+
+			console.log(generated);
 
 			await tx.insert(dilemmas).values({
 				gameId,
@@ -114,7 +75,21 @@ The return should be in the structure of { dilemma: Dilemma }.
 					origin: "starSystems",
 					id: generatedSystems[playerStar].id,
 				},
-				...generatedDilemma.dilemma,
+				...generated.dilemma,
+				choices: generated.dilemma.choices.map(
+					({ effectScript, ...choice }) => ({
+						...choice,
+						effects: [
+							{
+								type: "generateDilemma",
+								params: {
+									promptName: "startingDilemmaFollowUp1",
+								},
+							},
+							// TODO: add effectScript as effect
+						],
+					}),
+				),
 			});
 
 			break;

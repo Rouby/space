@@ -38,6 +38,7 @@ export const loginWithRefreshToken: NonNullable<
 		ctx.request.cookieStore?.set({
 			domain,
 			expires: expirationTime,
+			secure: true,
 			httpOnly: false,
 			sameSite: "strict",
 			name: "accessToken",

@@ -9,6 +9,7 @@ export const Game: Pick<
 	| "name"
 	| "players"
 	| "startedAt"
+	| "turnNumber"
 	| "__isTypeOf"
 > = {
 	players: async (parent, _args, ctx) => {
@@ -46,5 +47,8 @@ export const Game: Pick<
 	},
 	startedAt: async (_parent, _arg, _ctx) => {
 		return _parent.startedAt;
+	},
+	turnNumber: async (_parent, _arg, _ctx) => {
+		return _parent.turnNumber;
 	},
 };

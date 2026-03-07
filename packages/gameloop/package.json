@@ -11,6 +11,7 @@
 	},
 	"module": "src/main.ts",
 	"dependencies": {
+		"@space/ai": "workspace:*",
 		"@space/data": "workspace:*"
 	},
 	"devDependencies": {

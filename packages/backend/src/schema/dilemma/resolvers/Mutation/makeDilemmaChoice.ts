@@ -1,6 +1,7 @@
 import { and, dilemmas, eq } from "@space/data/schema";
 import { GraphQLError } from "graphql";
 import type { Context } from "../../../../context.js";
+import { notifyWorker } from "../../../../workers.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
 export const makeDilemmaChoice: NonNullable<
 	MutationResolvers["makeDilemmaChoice"]
@@ -23,11 +24,20 @@ export const makeDilemmaChoice: NonNullable<
 		throw new GraphQLError("Dilemma already resolved");
 	}
 
-	return (
+	const updated = (
 		await context.drizzle
 			.update(dilemmas)
 			.set({ choosen: choiceId })
 			.where(eq(dilemmas.id, dilemmaId))
 			.returning()
 	)[0];
+
+	notifyWorker(updated.gameId, {
+		type: "dilemmaChoice",
+		playerId: context.userId,
+		dilemmaId: updated.id,
+		choiceId: updated.choosen,
+	});
+
+	return updated;
 };

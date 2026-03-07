@@ -1,4 +1,5 @@
 export type GameEvent =
+	| TurnEnded
 	| TaskForceAppeared
 	| TaskForcePosition
 	| TaskForceDisappeared
@@ -16,6 +17,11 @@ export type GameEvent =
 	| StarSystemDiscoveryProgress
 	| StarSystemOwnerChanged
 	| TaskForceCommisionProgress;
+
+interface TurnEnded {
+	type: "game:turnEnded";
+	turnNumber: number;
+}
 
 interface TaskForceAppeared {
 	type: "taskForce:appeared";

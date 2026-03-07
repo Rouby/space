@@ -1,4 +1,4 @@
-import { Avatar, Group, Text, UnstyledButton, rem } from "@mantine/core";
+import { Avatar, Group, rem, Text, UnstyledButton } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { useStyles } from "tss-react";
 import { useQuery } from "urql";
@@ -14,6 +14,7 @@ export function UserButton() {
 		query: graphql(`
 			query CurrentUser {
 				me {
+					id
 					name
 					email
 				}

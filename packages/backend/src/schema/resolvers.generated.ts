@@ -18,6 +18,7 @@ import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/st
 import    { updateGameSettings as Mutation_updateGameSettings } from './game/resolvers/Mutation/updateGameSettings.js';
 import    { updatePlayer as Mutation_updatePlayer } from './game/resolvers/Mutation/updatePlayer.js';
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
+import    { trackGame as Subscription_trackGame } from './game/resolvers/Subscription/trackGame.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
 import    { Dilemma } from './dilemma/resolvers/Dilemma.js';
 import    { DilemmaChoice } from './dilemma/resolvers/DilemmaChoice.js';
@@ -50,6 +51,7 @@ import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
 import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColonizeOrder.js';
 import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOrder.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
+import    { TurnEndedEvent } from './game/resolvers/TurnEndedEvent.js';
 import    { UnknownDiscovery } from './starSystem/resolvers/UnknownDiscovery.js';
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
@@ -58,12 +60,13 @@ import    { TaskForceOrder } from './taskForce/resolvers/TaskForceOrder.js';
 import    { Discovery } from './starSystem/resolvers/Discovery.js';
 import    { Reference } from './dilemma/resolvers/Reference.js';
 import    { TrackGalaxyEvent } from './base/resolvers/TrackGalaxyEvent.js';
+import    { TrackGameEvent } from './game/resolvers/TrackGameEvent.js';
 import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.js';
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
       Mutation: { createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
-      Subscription: { trackGalaxy: Subscription_trackGalaxy,trackStarSystem: Subscription_trackStarSystem },
+      Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem },
       Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,
 Game: { ...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
@@ -85,6 +88,7 @@ TaskForce: TaskForce,
 TaskForceColonizeOrder: TaskForceColonizeOrder,
 TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
+TurnEndedEvent: TurnEndedEvent,
 UnknownDiscovery: UnknownDiscovery,
 User: User,
 Vector: Vector,
@@ -93,6 +97,7 @@ TaskForceOrder: TaskForceOrder,
 Discovery: Discovery,
 Reference: Reference,
 TrackGalaxyEvent: TrackGalaxyEvent,
+TrackGameEvent: TrackGameEvent,
 TrackStarSystemEvent: TrackStarSystemEvent,
 BigInt: BigIntResolver,
 DateTime: DateTimeResolver
