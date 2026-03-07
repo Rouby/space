@@ -123,6 +123,12 @@ jobs:
     name: 🏗️ Build backend
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
     concurrency:
       group: build-backend-${{ github.ref }}
       cancel-in-progress: true
@@ -176,6 +182,12 @@ jobs:
   build-frontend:
     name: 🏗️ Build frontend
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
 
     concurrency:
       group: build-frontend-${{ github.ref }}
@@ -242,6 +254,12 @@ jobs:
   build-migrations:
     name: 🏗️ Build migrations
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
 
     concurrency:
       group: build-migrations-${{ github.ref }}
