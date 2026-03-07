@@ -1,4 +1,11 @@
-import { Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import {
+	Badge,
+	Group,
+	Stack,
+	Text,
+	Title,
+	UnstyledButton,
+} from "@mantine/core";
 import {
 	IconAlien,
 	IconComet,
@@ -77,12 +84,29 @@ export function DilemmaChoice({
     `),
 	);
 
+	const selectedChoiceId = data?.dilemma.choosen;
+	const selectedChoice = selectedChoiceId
+		? data?.dilemma.choices.find((choice) => choice.id === selectedChoiceId)
+		: undefined;
+
 	return (
 		<Stack>
 			<Text>{data?.dilemma.description}</Text>
 			<Title order={4}>{data?.dilemma.question}</Title>
+			{selectedChoice && (
+				<Group>
+					<Badge color="teal" variant="light">
+						Resolved
+					</Badge>
+					<Text>
+						Chosen option: <strong>{selectedChoice.title}</strong>
+					</Text>
+				</Group>
+			)}
 			<Group grow align="stretch">
 				{data?.dilemma.choices.map((choice) => {
+					const isSelected = choice.id === selectedChoiceId;
+					const isDisabled = Boolean(selectedChoiceId);
 					const hash = choice.id
 						.split("")
 						.reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -92,7 +116,12 @@ export function DilemmaChoice({
 						<UnstyledButton
 							key={choice.id}
 							p="lg"
+							disabled={isDisabled}
 							onClick={() => {
+								if (selectedChoiceId) {
+									return;
+								}
+
 								chooseDilemmaChoice({
 									id,
 									choiceId: choice.id,
@@ -103,18 +132,30 @@ export function DilemmaChoice({
 							styles={{
 								root: {
 									borderRadius: "var(--mantine-radius-md)",
-									border: "1px solid var(--mantine-color-gray-4)",
+									border: isSelected
+										? "1px solid var(--mantine-color-teal-6)"
+										: "1px solid var(--mantine-color-gray-4)",
+									background: isSelected
+										? "var(--mantine-color-teal-0)"
+										: undefined,
 									display: "flex",
 									flexDirection: "column",
 									alignItems: "center",
 									justifyContent: "flex-start",
 									gap: "var(--mantine-spacing-xs)",
+									opacity: isDisabled && !isSelected ? 0.5 : 1,
+									cursor: isDisabled ? "default" : "pointer",
 								},
 							}}
 						>
 							<Icon size="4rem" />
 							<Text fw={500}>{choice.title}</Text>
 							<Text fw={500}>{choice.description}</Text>
+							{isSelected && (
+								<Badge color="teal" variant="filled">
+									Selected
+								</Badge>
+							)}
 						</UnstyledButton>
 					);
 				})}
