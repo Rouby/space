@@ -119,8 +119,8 @@ jobs:
           path: packages/integration/playwright-report/
           retention-days: 30
 
-  build-backend:
-    name: 🏗️ Build backend
+  build:
+    name: 🏗️ Build ${{ matrix.image }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -130,92 +130,49 @@ jobs:
       id-token: write
 
     concurrency:
-      group: build-backend-${{ github.ref }}
+      group: build-${{ matrix.image }}-${{ github.ref }}
       cancel-in-progress: true
 
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: ⚡️ Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: 🐳 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: 🐳 Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🐳 Docker build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: packages/backend/Dockerfile
-          platforms: linux/arm64
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: |
-            ghcr.io/rouby/space-backend:latest
-            ghcr.io/rouby/space-backend:${{ github.ref_name }}-${{ github.sha }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-
-      - # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-        name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  build-frontend:
-    name: 🏗️ Build frontend
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-
-    concurrency:
-      group: build-frontend-${{ github.ref }}
-      cancel-in-progress: true
+    strategy:
+      matrix:
+        include:
+          - image: backend
+            dockerfile: packages/backend/Dockerfile
+            context: .
+          - image: frontend
+            dockerfile: packages/frontend/Dockerfile
+            context: packages/frontend/dist
+            prebuild: yarn workspace @space/frontend build
+          - image: migrations
+            dockerfile: packages/data/Dockerfile
+            context: .
 
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
       - name: ⎔ Setup node
+        if: matrix.prebuild
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
 
       - name: 📥 Install deps
+        if: matrix.prebuild
         run: yarn install --immutable --immutable-cache
 
-      - name: 🔨 Build
-        run: yarn workspace @space/frontend build
+      - name: 🔨 Pre-build
+        if: matrix.prebuild
+        run: ${{ matrix.prebuild }}
 
       - name: ⚡️ Cache Docker layers
         uses: actions/cache@v4
         with:
-          path: /tmp/.buildxfrontend-cache
-          key: ${{ runner.os }}-buildxfrontend-${{ github.sha }}
+          path: /tmp/.buildx-${{ matrix.image }}-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.image }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildxfrontend-
+            ${{ runner.os }}-buildx-${{ matrix.image }}-
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -233,83 +190,23 @@ jobs:
       - name: 🐳 Docker build
         uses: docker/build-push-action@v5
         with:
-          context: packages/frontend/dist
-          file: packages/frontend/Dockerfile
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
           platforms: linux/arm64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
-            ghcr.io/rouby/space-frontend:latest
-            ghcr.io/rouby/space-frontend:${{ github.ref_name }}-${{ github.sha }}
-          cache-from: type=local,src=/tmp/.buildxfrontend-cache
-          cache-to: type=local,dest=/tmp/.buildxfrontend-cache-new,mode=max
+            ghcr.io/rouby/space-${{ matrix.image }}:latest
+            ghcr.io/rouby/space-${{ matrix.image }}:${{ github.ref_name }}-${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-${{ matrix.image }}-cache
+          cache-to: type=local,dest=/tmp/.buildx-${{ matrix.image }}-cache-new,mode=max
 
       - # Temp fix
         # https://github.com/docker/build-push-action/issues/252
         # https://github.com/moby/buildkit/issues/1896
         name: Move cache
         run: |
-          rm -rf /tmp/.buildxfrontend-cache
-          mv /tmp/.buildxfrontend-cache-new /tmp/.buildxfrontend-cache
-
-  build-migrations:
-    name: 🏗️ Build migrations
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-
-    concurrency:
-      group: build-migrations-${{ github.ref }}
-      cancel-in-progress: true
-
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: ⚡️ Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildxmigrations-cache
-          key: ${{ runner.os }}-buildxmigrations-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildxmigrations-
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: 🐳 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: 🐳 Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🐳 Docker build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: packages/data/Dockerfile
-          platforms: linux/arm64
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: |
-            ghcr.io/rouby/space-migrations:latest
-            ghcr.io/rouby/space-migrations:${{ github.ref_name }}-${{ github.sha }}
-          cache-from: type=local,src=/tmp/.buildxmigrations-cache
-          cache-to: type=local,dest=/tmp/.buildxmigrations-cache-new,mode=max
-
-      - # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-        name: Move cache
-        run: |
-          rm -rf /tmp/.buildxmigrations-cache
-          mv /tmp/.buildxmigrations-cache-new /tmp/.buildxmigrations-cache
+          rm -rf /tmp/.buildx-${{ matrix.image }}-cache
+          mv /tmp/.buildx-${{ matrix.image }}-cache-new /tmp/.buildx-${{ matrix.image }}-cache
 
   deploy:
     name: 🚀 Deploy
@@ -320,9 +217,7 @@ jobs:
       - typecheck
       - test
       - integration
-      - build-backend
-      - build-frontend
-      - build-migrations
+      - build
 
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     strategy:
