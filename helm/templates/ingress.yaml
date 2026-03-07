@@ -10,6 +10,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-{{ $fullName }}-https-redirect@kubernetescrd
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
@@ -38,3 +39,14 @@ spec:
                 name: {{ $fullName }}-frontend
                 port:
                   number: 3000
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}-https-redirect
+  labels:
+    {{- include "space.labels" . | nindent 4 }}
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
