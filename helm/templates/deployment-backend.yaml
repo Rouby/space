@@ -73,8 +73,7 @@ spec:
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- $nodeSelector := merge (default dict .Values.backend.nodeSelector) .Values.nodeSelector }}
-      {{- with $nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
