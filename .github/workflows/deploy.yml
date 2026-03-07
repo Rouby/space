@@ -292,7 +292,7 @@ jobs:
 
   deploy:
     name: 🚀 Deploy
-    runs-on: self-hosted
+    runs-on: arc-runner-set-space
     needs:
       - lint
       - typecheck
@@ -322,21 +322,21 @@ jobs:
 
       - name: 📥 Setup kubeconfig
         run: |
-          New-Item -ItemType Directory -Path "$HOME\.kube" -Force
-          $env:KUBECONFIG_CONTENT = "${{ secrets.KUBECONFIG }}"
-          $env:KUBECONFIG_CONTENT | Out-File -FilePath "$HOME\.kube\config" -Force -Encoding UTF8
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBECONFIG }}" > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
       - name: 🚀 Deploy
         run: |
-          $env:JWT_SECRET = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('${{ secrets.JWT_SECRET }}'))
-          $env:APP_ORIGIN = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com"))
+          JWT_SECRET=$(printf '%s' '${{ secrets.JWT_SECRET }}' | base64 | tr -d '\n')
+          APP_ORIGIN=$(printf '%s' "https://${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com" | base64 | tr -d '\n')
 
-          helm upgrade space -n "space-${{ matrix.env_name }}" --install --create-namespace `
-              --set image.repository=ghcr.io/rouby/space `
-              --set image.tag="${{ github.ref_name }}-${{ github.sha }}" `
-              --set ingress.host="${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com" `
-              --set ingress.clusterIssuer="letsencrypt-production" `
-              --set ingress.tls[0].hosts="{${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com}" `
-              --set ingress.tls[0].secretName="space-tls" `
-              --set-string secrets.JWT_SECRET="$env:JWT_SECRET" `
-              --set-string secrets.APP_ORIGIN="$env:APP_ORIGIN" `
+          helm upgrade space -n "space-${{ matrix.env_name }}" --install --create-namespace \
+              --set image.repository=ghcr.io/rouby/space \
+              --set "image.tag=${{ github.ref_name }}-${{ github.sha }}" \
+              --set "ingress.host=${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com" \
+              --set ingress.clusterIssuer=letsencrypt-production \
+              --set "ingress.tls[0].hosts={${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com}" \
+              --set ingress.tls[0].secretName=space-tls \
+              --set-string "secrets.JWT_SECRET=$JWT_SECRET" \
+              --set-string "secrets.APP_ORIGIN=$APP_ORIGIN" \
               ./helm
