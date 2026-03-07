@@ -360,7 +360,7 @@ jobs:
               --set image.repository=ghcr.io/rouby/space \
               --set "image.tag=${{ github.ref_name }}-${{ github.sha }}" \
               --set "ingress.host=${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com" \
-              --set ingress.clusterIssuer=letsencrypt-production \
+              --set ingress.clusterIssuer=letsencrypt-prod \
               --set "ingress.tls[0].hosts={${{ matrix.env_name == 'staging' && 'staging.' || '' }}space.aiacta.com}" \
               --set ingress.tls[0].secretName=space-tls \
               --set-string "secrets.JWT_SECRET=$JWT_SECRET" \
