@@ -1,6 +1,6 @@
 import { filter } from "rxjs";
-import { toAsyncIterable } from "../../../../toAsyncIterable.js";
-import { fromGameEvents } from "../../../../workers.js";
+import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
+import { fromGameEvents } from "../../../../workers.ts";
 import type { SubscriptionResolvers } from "./../../../types.generated.js";
 export const trackGame: NonNullable<SubscriptionResolvers["trackGame"]> = {
 	subscribe: async (_parent, { gameId }, _ctx) => {

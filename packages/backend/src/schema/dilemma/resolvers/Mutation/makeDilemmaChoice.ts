@@ -1,7 +1,7 @@
 import { and, dilemmas, eq } from "@space/data/schema";
 import { GraphQLError } from "graphql";
 import type { Context } from "../../../../context.js";
-import { notifyWorker } from "../../../../workers.js";
+import { notifyWorker } from "../../../../workers.ts";
 import type { MutationResolvers } from "./../../../types.generated.js";
 export const makeDilemmaChoice: NonNullable<
 	MutationResolvers["makeDilemmaChoice"]
