@@ -59,9 +59,7 @@ export async function reactDilemmaChoice({
 						break;
 					}
 					case "startingDilemmaFollowUp2": {
-						const generated = generateRandomDilemma(
-							"startingDilemmaFollowUp2",
-						);
+						const generated = generateRandomDilemma("startingDilemmaFollowUp2");
 
 						const [homeSystem] = await drizzle
 							.select()

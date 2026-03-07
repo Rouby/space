@@ -3756,7 +3756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@space/ai@workspace:*, @space/ai@workspace:packages/ai":
+"@space/ai@workspace:packages/ai":
   version: 0.0.0-use.local
   resolution: "@space/ai@workspace:packages/ai"
   dependencies:
@@ -3864,7 +3864,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@space/gameloop@workspace:packages/gameloop"
   dependencies:
-    "@space/ai": "workspace:*"
     "@space/data": "workspace:*"
     typescript: "npm:5.9.2"
     vitest: "npm:3.2.4"

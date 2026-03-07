@@ -9622,7 +9622,6 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/gameloop/",\
         "packageDependencies": [\
           ["@space/gameloop", "workspace:packages/gameloop"],\
-          ["@space/ai", "workspace:packages/ai"],\
           ["@space/data", "workspace:packages/data"],\
           ["typescript", "patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"],\
           ["vitest", "virtual:9a323c05a09e7b355c1d12a5bc9133f9f2f79fcd76611abaabb5c8ae35991383bb3297643fdf1220d1ebcee106d2dc021578252519a1835c0eea5d59ecd5e9a8#npm:3.2.4"]\

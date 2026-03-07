@@ -171,7 +171,8 @@ const LAUNCH_DILEMMAS: DilemmaTemplate[] = [
 		choices: [
 			{
 				title: "Sign the Pact",
-				description: "You traded cohesion for immediate technological acceleration.",
+				description:
+					"You traded cohesion for immediate technological acceleration.",
 				effectScript:
 					"Start with prototype drive advantages and bonus rare resource stock. -12% political stability from coalition rivalries.",
 			},
