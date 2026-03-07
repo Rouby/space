@@ -4,7 +4,7 @@
 		"lint": "biome lint",
 		"typecheck": "yarn workspaces foreach -Ap run typecheck",
 		"test": "yarn workspaces foreach -Ap run test",
-		"integrate": "yarn workspaces foreach -Ap run integrate",
+		"integrate": "yarn workspace @space/integration integrate",
 		"dev:backend": "yarn workspace @space/backend dev",
 		"dev:frontend": "yarn workspace @space/frontend dev",
 		"db:generate": "yarn workspace @space/data drizzle-kit generate",

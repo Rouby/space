@@ -1,6 +1,12 @@
 {
 	"name": "@space/integration",
 	"type": "module",
+	"scripts": {
+		"prepare:db": "node ./prepare-test-db.mjs",
+		"integrate": "playwright test",
+		"integrate:ui": "playwright test --ui",
+		"integrate:headed": "playwright test --headed"
+	},
 	"devDependencies": {
 		"@playwright/test": "1.54.2",
 		"@space/data": "workspace:*",

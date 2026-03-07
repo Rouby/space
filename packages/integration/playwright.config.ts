@@ -49,7 +49,7 @@ export default defineConfig({
 	webServer: [
 		{
 			command:
-				"yarn db:push --config=drizzle.config.test.ts && yarn dev:backend",
+				"yarn prepare:db && yarn --cwd ../.. db:push --config=drizzle.config.test.ts && yarn --cwd ../.. dev:backend",
 			port: 3000,
 			reuseExistingServer: !process.env.CI,
 			env: {
@@ -60,7 +60,7 @@ export default defineConfig({
 			stderr: !process.env.CI ? "pipe" : "ignore",
 		},
 		{
-			command: "yarn dev:frontend",
+			command: "yarn --cwd ../.. dev:frontend",
 			port: 5173,
 			reuseExistingServer: !process.env.CI,
 			stdout: !process.env.CI ? "pipe" : "ignore",
