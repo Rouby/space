@@ -6,7 +6,10 @@ import { graphql } from "../../gql";
 export function SignUpForm({
 	onSignedUp,
 	onNavigateToSignIn,
-}: { onSignedUp: () => void; onNavigateToSignIn: () => void }) {
+}: {
+	onSignedUp: () => void;
+	onNavigateToSignIn: () => void;
+}) {
 	const [{ fetching: signingUp, error: signUpError }, signUp] = useMutation(
 		graphql(`
 		mutation SignUp($email: String!, $password: String!, $name:String!) {
@@ -36,7 +39,11 @@ export function SignUpForm({
 						evt.currentTarget.elements.namedItem("name") as HTMLInputElement
 					).value;
 
-					await signUp({ email, password, name });
+					const result = await signUp({ email, password, name });
+
+					if (result.error) {
+						return;
+					}
 
 					invalidate();
 

@@ -36,7 +36,11 @@ export function SignInForm({
 						evt.currentTarget.elements.namedItem("password") as HTMLInputElement
 					).value;
 
-					await signIn({ email, password });
+					const result = await signIn({ email, password });
+
+					if (result.error) {
+						return;
+					}
 
 					invalidate();
 

@@ -1,5 +1,9 @@
 import { createGraphQLError } from "graphql-yoga";
-import { domain, generateUserClaims } from "../../../../config.ts";
+import {
+	cookieDomain,
+	generateUserClaims,
+	secureCookies,
+} from "../../../../config.ts";
 import type { MutationResolvers } from "./../../../types.generated.js";
 import { signToken, verifyToken } from "./token.ts";
 export const loginWithRefreshToken: NonNullable<
@@ -36,9 +40,9 @@ export const loginWithRefreshToken: NonNullable<
 			expirationTime,
 		);
 		ctx.request.cookieStore?.set({
-			domain,
+			domain: cookieDomain,
 			expires: expirationTime,
-			secure: true,
+			secure: secureCookies,
 			httpOnly: false,
 			sameSite: "strict",
 			name: "accessToken",
