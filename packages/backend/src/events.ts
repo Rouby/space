@@ -16,6 +16,7 @@ export type GameEvent =
 	| StarSystemDisappeared
 	| StarSystemPopulationChanged
 	| StarSystemDiscoveryProgress
+	| StarSystemColonizationProgress
 	| StarSystemOwnerChanged
 	| TaskForceCommisionProgress;
 
@@ -128,6 +129,11 @@ interface StarSystemDiscoveryProgress {
 	id: string;
 	discoveryProgress: number;
 	discoveryProgressChange: number;
+}
+interface StarSystemColonizationProgress {
+	type: "starSystem:colonizationProgress";
+	id: string;
+	turnsRemaining: number;
 }
 interface StarSystemOwnerChanged {
 	type: "starSystem:ownerChanged";

@@ -15,6 +15,7 @@ import {
 import type { GameEvent } from "../../../backend/src/events.ts";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
+import { tickColonization } from "./colonization.ts";
 import { tickDiscoveries } from "./discoveries.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
@@ -46,6 +47,8 @@ export async function tick() {
 		await storePreTickVisibility();
 
 		await tickDiscoveries(tx, ctx);
+
+		await tickColonization(tx, ctx);
 
 		const populationChanges = await tickStarSystemPopulation(tx, ctx);
 

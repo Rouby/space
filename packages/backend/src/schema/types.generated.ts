@@ -1,7 +1,7 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
 import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper } from './game/schema.mappers.js';
-import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
+import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper, StarSystemColonizationMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
 import { ShipDesignMapper } from './shipDesign/schema.mappers.js';
@@ -86,6 +86,7 @@ export type Mutation = {
   makeDilemmaChoice: Dilemma;
   orderTaskForce: TaskForce;
   registerWithPassword: User;
+  startColonization: StarSystem;
   startGame: Game;
   updateGameSettings: Game;
   updatePlayer: Player;
@@ -137,6 +138,11 @@ export type MutationregisterWithPasswordArgs = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationstartColonizationArgs = {
+  starSystemId: Scalars['ID']['input'];
 };
 
 
@@ -319,6 +325,7 @@ export type ShipDesignInput = {
 
 export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
+  colonization?: Maybe<StarSystemColonization>;
   discoveries?: Maybe<Array<Discovery>>;
   discoveryProgress?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
@@ -330,6 +337,16 @@ export type StarSystem = Positionable & {
   position: Scalars['Vector']['output'];
   sensorRange?: Maybe<Scalars['Float']['output']>;
   taskForces: Array<TaskForce>;
+};
+
+export type StarSystemColonization = {
+  __typename?: 'StarSystemColonization';
+  dueTurn: Scalars['Int']['output'];
+  originStarSystem: StarSystem;
+  player: Player;
+  startedAtTurn: Scalars['Int']['output'];
+  turnsRemaining: Scalars['Int']['output'];
+  turnsRequired: Scalars['Int']['output'];
 };
 
 export type StarSystemUpdateEvent = {
@@ -592,6 +609,7 @@ export type ResolversTypes = {
   ShipDesignComponentInput: ShipDesignComponentInput;
   ShipDesignInput: ShipDesignInput;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
+  StarSystemColonization: ResolverTypeWrapper<StarSystemColonizationMapper>;
   StarSystemUpdateEvent: ResolverTypeWrapper<Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversTypes['StarSystem'] }>;
   Subscription: ResolverTypeWrapper<{}>;
   TaskForce: ResolverTypeWrapper<TaskForceMapper>;
@@ -651,6 +669,7 @@ export type ResolversParentTypes = {
   ShipDesignComponentInput: ShipDesignComponentInput;
   ShipDesignInput: ShipDesignInput;
   StarSystem: StarSystemMapper;
+  StarSystemColonization: StarSystemColonizationMapper;
   StarSystemUpdateEvent: Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversParentTypes['StarSystem'] };
   Subscription: {};
   TaskForce: TaskForceMapper;
@@ -736,6 +755,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   makeDilemmaChoice?: Resolver<ResolversTypes['Dilemma'], ParentType, ContextType, RequireFields<MutationmakeDilemmaChoiceArgs, 'choiceId' | 'dilemmaId'>>;
   orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
+  startColonization?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationstartColonizationArgs, 'starSystemId'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
   updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
   updatePlayer?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationupdatePlayerArgs, 'gameId' | 'input'>>;
@@ -879,6 +899,7 @@ export type ShipDesignComponentResolvers<ContextType = Context, ParentType exten
 };
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
+  colonization?: Resolver<Maybe<ResolversTypes['StarSystemColonization']>, ParentType, ContextType>;
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
   discoveryProgress?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -890,6 +911,16 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StarSystemColonizationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystemColonization'] = ResolversParentTypes['StarSystemColonization']> = {
+  dueTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  originStarSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
+  player?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
+  startedAtTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  turnsRemaining?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  turnsRequired?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1028,6 +1059,7 @@ export type Resolvers<ContextType = Context> = {
   ShipDesign?: ShipDesignResolvers<ContextType>;
   ShipDesignComponent?: ShipDesignComponentResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
+  StarSystemColonization?: StarSystemColonizationResolvers<ContextType>;
   StarSystemUpdateEvent?: StarSystemUpdateEventResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;

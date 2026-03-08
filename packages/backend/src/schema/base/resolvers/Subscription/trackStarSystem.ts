@@ -108,10 +108,40 @@ export const trackStarSystem: NonNullable<
 			})),
 		);
 
+		const colonizationUpdates = ctx.fromGameEvents(ss.gameId).pipe(
+			filter((event) => event.type === "starSystem:colonizationProgress"),
+			filter((event) => event.id === starSystemId),
+			map((_event) => ({
+				__typename: "StarSystemUpdateEvent" as const,
+				subject: {
+					__typename: "StarSystem" as const,
+					...ss,
+				},
+			})),
+		);
+
+		const ownerChangedUpdates = ctx.fromGameEvents(ss.gameId).pipe(
+			filter((event) => event.type === "starSystem:ownerChanged"),
+			filter((event) => event.id === starSystemId),
+			map((event) => ({
+				__typename: "StarSystemUpdateEvent" as const,
+				subject: {
+					__typename: "StarSystem" as const,
+					...ss,
+					ownerId: event.ownerId,
+				},
+			})),
+			tap((event) => {
+				ss.ownerId = event.subject.ownerId;
+			}),
+		);
+
 		return toAsyncIterable(
 			merge(
 				thresholdDiscoveryEvents,
 				thresholdPopulationChangeEvents,
+				colonizationUpdates,
+				ownerChangedUpdates,
 				commisionUpdates,
 			).pipe(
 				mergeMap(async (event) => {

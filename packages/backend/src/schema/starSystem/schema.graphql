@@ -3,12 +3,22 @@ type StarSystem implements Positionable {
 	name: String!
 	position: Vector!
 	owner: Player
+	colonization: StarSystemColonization
 	sensorRange: Float
 	discoveries: [Discovery!]
 	discoveryProgress: Float
 	populations: [Population!]
 	isVisible: Boolean!
 	lastUpdate: DateTime
+}
+
+type StarSystemColonization {
+	player: Player!
+	originStarSystem: StarSystem!
+	turnsRequired: Int!
+	startedAtTurn: Int!
+	dueTurn: Int!
+	turnsRemaining: Int!
 }
 
 union Discovery = ResourceDiscovery | UnknownDiscovery
@@ -35,4 +45,8 @@ extend type Game {
 
 type Query {
 	starSystem(id: ID!): StarSystem!
+}
+
+extend type Mutation {
+	startColonization(starSystemId: ID!): StarSystem!
 }

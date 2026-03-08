@@ -184,6 +184,62 @@ test("redacts star-system details for authorized players without visibility", as
 	expect(payload.data?.starSystem?.discoveryProgress).toBeNull();
 });
 
+test("starts colonization as in-progress with distance-based remaining turns", async ({
+	page,
+	api,
+}) => {
+	const { id: playerId } = await api.seed("user", {
+		email: "colonizer@example.com",
+		name: "Colonizer",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Colonization Game",
+		hostUserId: playerId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: playerId,
+		color: "#123456",
+	});
+
+	await api.seed("starSystem", {
+		gameId,
+		ownerId: playerId,
+		name: "Origin",
+		position: { x: 0, y: 0 },
+	});
+	const { id: targetId } = await api.seed("starSystem", {
+		gameId,
+		ownerId: null,
+		name: "Target",
+		position: { x: 500, y: 0 },
+	});
+
+	await api.login(playerId);
+
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation StartColonization($starSystemId: ID!) { startColonization(starSystemId: $starSystemId) { id colonization { turnsRemaining turnsRequired player { id } } } }",
+			variables: { starSystemId: targetId },
+		},
+	});
+	const startPayload = await startResponse.json();
+
+	expect(startPayload.errors).toBeUndefined();
+	expect(startPayload.data?.startColonization?.id).toBe(targetId);
+	expect(
+		startPayload.data?.startColonization?.colonization?.player?.id,
+	).toContain(playerId);
+	expect(startPayload.data?.startColonization?.colonization?.turnsRequired).toBe(
+		4,
+	);
+	expect(
+		startPayload.data?.startColonization?.colonization?.turnsRemaining,
+	).toBe(4);
+});
+
 test("supports idempotent join requests and shows joined participation state", async ({
 	page,
 	api,

@@ -2,12 +2,14 @@ import {
 	and,
 	eq,
 	players,
+	starSystemColonizations,
 	starSystemPopulations,
 	starSystemResourceDiscoveries,
 } from "@space/data/schema";
 import type { StarSystemResolvers } from "./../../types.generated.js";
 export const StarSystem: Pick<
 	StarSystemResolvers,
+	| "colonization"
 	| "discoveries"
 	| "discoveryProgress"
 	| "id"
@@ -76,5 +78,12 @@ export const StarSystem: Pick<
 		return _parent.discoveryProgress === null
 			? null
 			: +_parent.discoveryProgress;
+	},
+	colonization: async (parent, _arg, ctx) => {
+		return (
+			(await ctx.drizzle.query.starSystemColonizations.findFirst({
+				where: eq(starSystemColonizations.starSystemId, parent.id),
+			})) ?? null
+		);
 	},
 };

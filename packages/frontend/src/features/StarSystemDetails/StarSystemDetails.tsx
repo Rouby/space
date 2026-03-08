@@ -13,7 +13,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { Fragment } from "react/jsx-runtime";
 import { useStyles } from "tss-react";
-import { useQuery, useSubscription } from "urql";
+import { useMutation, useQuery, useSubscription } from "urql";
 import {
 	formatInteger,
 	formatRoundsToRelativeRounds,
@@ -33,6 +33,17 @@ export function StarSystemDetails({ id }: { id: string }) {
 		starSystem(id: $id) {
 			id
 			name
+			owner {
+				id
+				name
+			}
+			colonization {
+				turnsRemaining
+				player {
+					id
+					name
+				}
+			}
 			position
 			taskForces {
 				id
@@ -75,6 +86,17 @@ export function StarSystemDetails({ id }: { id: string }) {
 				subject {
 					id
 					name
+					owner {
+						id
+						name
+					}
+					colonization {
+						turnsRemaining
+						player {
+							id
+							name
+						}
+					}
 					position
 					taskForces {
 						id
@@ -110,6 +132,21 @@ export function StarSystemDetails({ id }: { id: string }) {
 	}`),
 		variables: { id },
 	});
+
+	const [startColonizationState, startColonization] = useMutation(
+		graphql(`mutation StartColonization($starSystemId: ID!) {
+			startColonization(starSystemId: $starSystemId) {
+				id
+				colonization {
+					turnsRemaining
+					player {
+						id
+						name
+					}
+				}
+			}
+		}`),
+	);
 
 	const starSystem =
 		subscriptionData?.trackStarSystem.__typename === "StarSystemUpdateEvent"
@@ -235,6 +272,24 @@ export function StarSystemDetails({ id }: { id: string }) {
 						</Stack>
 					))}
 				</div>
+
+				{starSystem && !starSystem.owner && !starSystem.colonization && (
+					<Button
+						loading={startColonizationState.fetching}
+						onClick={() => {
+							startColonization({ starSystemId: id });
+						}}
+					>
+						Start colonization
+					</Button>
+				)}
+
+				{starSystem?.colonization && (
+					<Text mt="sm">
+						Colonization in progress by {starSystem.colonization.player.name} ({" "}
+						{starSystem.colonization.turnsRemaining} turns remaining)
+					</Text>
+				)}
 
 				<Button
 					component={Link}

@@ -1,11 +1,11 @@
-import type { VectorMapper } from "../base/schema.mappers";
+import type { VectorMapper } from "../base/schema.mappers.ts";
 
 export type StarSystemMapper = {
 	id: string;
 	name: string;
 	position: VectorMapper;
 	isVisible: boolean;
-	lastUpdate: Date;
+	lastUpdate: Date | null;
 	ownerId: string | null;
 	gameId: string;
 	discoverySlots: number | null;
@@ -26,4 +26,15 @@ export type PopulationMapper = {
 	starSystemId: string;
 	amount: bigint;
 	allegianceToPlayerId?: string | null;
+};
+
+export type StarSystemColonizationMapper = {
+	starSystemId: string;
+	gameId: string;
+	playerId: string;
+	originStarSystemId: string;
+	turnsRequired: number;
+	startedAtTurn: number;
+	dueTurn: number;
+	startedAt: Date;
 };

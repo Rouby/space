@@ -107,3 +107,48 @@ export const starSystemPopulationsRelations = relations(
 		}),
 	}),
 );
+
+export const starSystemColonizations = pgTable(
+	"starSystemColonizations",
+	{
+		starSystemId: uuid()
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "cascade" }),
+		gameId: uuid()
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
+		playerId: uuid()
+			.notNull()
+			.references(() => users.id, { onDelete: "restrict" }),
+		originStarSystemId: uuid()
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "restrict" }),
+		turnsRequired: integer().notNull(),
+		startedAtTurn: integer().notNull(),
+		dueTurn: integer().notNull(),
+		startedAt: timestamp().notNull().defaultNow(),
+	},
+	(table) => [primaryKey({ columns: [table.starSystemId] })],
+);
+
+export const starSystemColonizationsRelations = relations(
+	starSystemColonizations,
+	({ one }) => ({
+		starSystem: one(starSystems, {
+			fields: [starSystemColonizations.starSystemId],
+			references: [starSystems.id],
+		}),
+		originStarSystem: one(starSystems, {
+			fields: [starSystemColonizations.originStarSystemId],
+			references: [starSystems.id],
+		}),
+		game: one(games, {
+			fields: [starSystemColonizations.gameId],
+			references: [games.id],
+		}),
+		player: one(users, {
+			fields: [starSystemColonizations.playerId],
+			references: [users.id],
+		}),
+	}),
+);

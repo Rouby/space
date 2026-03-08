@@ -47,9 +47,9 @@ development_status:
   1-4-stabilize-async-turn-submission-resolution-and-host-monitoring: done
   epic-1-retrospective: done
 
-  epic-2: backlog
+  epic-2: in-progress
   2-1-implement-population-resource-and-turn-priority-decisions: backlog
-  2-2-deliver-discovery-and-colonization-progression: backlog
+  2-2-deliver-discovery-and-colonization-progression: review
   2-3-deliver-fleet-construction-and-movement-rules: backlog
   2-4-resolve-combat-and-surface-adaptation-signals: backlog
   epic-2-retrospective: optional

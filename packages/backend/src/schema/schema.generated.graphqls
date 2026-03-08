@@ -54,6 +54,7 @@ type Mutation {
 		queue: Boolean
 	): TaskForce!
 	registerWithPassword(email: String!, name: String!, password: String!): User!
+	startColonization(starSystemId: ID!): StarSystem!
 	startGame(id: ID!): Game!
 	updateGameSettings(gameId: ID!, input: UpdateGameSettingsInput!): Game!
 	updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
@@ -192,6 +193,7 @@ input ShipDesignInput {
 }
 
 type StarSystem implements Positionable {
+	colonization: StarSystemColonization
 	discoveries: [Discovery!]
 	discoveryProgress: Float
 	id: ID!
@@ -203,6 +205,15 @@ type StarSystem implements Positionable {
 	position: Vector!
 	sensorRange: Float
 	taskForces: [TaskForce!]!
+}
+
+type StarSystemColonization {
+	dueTurn: Int!
+	originStarSystem: StarSystem!
+	player: Player!
+	startedAtTurn: Int!
+	turnsRemaining: Int!
+	turnsRequired: Int!
 }
 
 type StarSystemUpdateEvent {

@@ -679,6 +679,29 @@
             ]
           },
           {
+            "name": "startColonization",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "starSystemId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
             "name": "startGame",
             "type": {
               "kind": "NON_NULL",
@@ -1734,6 +1757,15 @@
         "name": "StarSystem",
         "fields": [
           {
+            "name": "colonization",
+            "type": {
+              "kind": "OBJECT",
+              "name": "StarSystemColonization",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "discoveries",
             "type": {
               "kind": "LIST",
@@ -1865,6 +1897,81 @@
             "name": "Positionable"
           }
         ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "StarSystemColonization",
+        "fields": [
+          {
+            "name": "dueTurn",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "originStarSystem",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "player",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Player",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "startedAtTurn",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "turnsRemaining",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "turnsRequired",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "OBJECT",
