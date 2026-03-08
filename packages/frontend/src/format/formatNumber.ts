@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-
 const formatterNumber = new Intl.NumberFormat(undefined, {
 	notation: "compact",
 	compactDisplay: "long",
@@ -7,6 +5,15 @@ const formatterNumber = new Intl.NumberFormat(undefined, {
 
 export function formatNumber(input: number) {
 	return formatterNumber.format(input);
+}
+
+const formatterInteger = new Intl.NumberFormat(undefined, {
+	notation: "standard",
+	maximumFractionDigits: 0,
+});
+
+export function formatInteger(input: number) {
+	return formatterInteger.format(input);
 }
 
 const formatterUnit = new Intl.NumberFormat(undefined, {
@@ -18,21 +25,31 @@ export function formatUnit(input: number) {
 	return formatterUnit.format(input);
 }
 
-const formatterUnitPerHour = new Intl.NumberFormat(undefined, {
+const formatterUnitPerRound = new Intl.NumberFormat(undefined, {
 	notation: "standard",
 	compactDisplay: "short",
 });
 
-export function formatUnitPerTick(valuePerTick: number) {
-	const ticksPerSecond = 1000 / 100;
-	const input = valuePerTick * ticksPerSecond * 3600;
+const formatterRoundCount = new Intl.NumberFormat(undefined, {
+	maximumFractionDigits: 1,
+});
 
-	return `${formatterUnitPerHour.format(input)}/h`;
+export function formatUnitPerRound(valuePerRound: number) {
+	return `${formatterUnitPerRound.format(valuePerRound)}/round`;
 }
 
-export function formatTicksToRelativeTime(ticks: number) {
-	const ticksPerSecond = 1000 / 100;
-	const seconds = ticks / ticksPerSecond;
+export function formatRoundsToRelativeRounds(rounds: number) {
+	if (!Number.isFinite(rounds) || rounds <= 0) {
+		return "<1 round";
+	}
 
-	return dayjs.duration(seconds, "seconds").humanize();
+	if (rounds < 1) {
+		return "<1 round";
+	}
+
+	if (rounds < 10) {
+		return `${formatterRoundCount.format(rounds)} rounds`;
+	}
+
+	return `${Math.ceil(rounds)} rounds`;
 }

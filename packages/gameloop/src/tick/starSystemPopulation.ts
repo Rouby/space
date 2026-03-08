@@ -7,6 +7,7 @@ import {
 	starSystems,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
+import { getPopulationGrowthRatePerRound } from "./economyBalance.ts";
 import type { Context, Transaction } from "./tick.ts";
 
 export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
@@ -35,11 +36,11 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 			0n,
 		);
 
-		const growthRatePerHour =
-			0.05 * (1 - Math.log(Number(totalAmount) / 20_000_000_000 + 1));
-		const growthRatePerTick = (growthRatePerHour / 3_600_000) * 100;
+		const growthRatePerRound = getPopulationGrowthRatePerRound(
+			Number(totalAmount),
+		);
 
-		const totalGrowth = Number(totalAmount) * growthRatePerTick;
+		const totalGrowth = Number(totalAmount) * growthRatePerRound;
 
 		for (const pop of starSystem.populations) {
 			const factor = pop.amount / Number(totalAmount);
@@ -53,7 +54,15 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 					amount: amount + growthInt,
 					growthLeftover: `${growth - Number(growthInt)}`,
 				})
-				.where(eq(starSystemPopulations.starSystemId, starSystem.id));
+				.where(
+					and(
+						eq(starSystemPopulations.starSystemId, starSystem.id),
+						eq(
+							starSystemPopulations.allegianceToPlayerId,
+							pop.allegianceToPlayerId,
+						),
+					),
+				);
 
 			if (growthInt > 0n) {
 				ctx.postMessage({

@@ -15,15 +15,15 @@ import { Fragment } from "react/jsx-runtime";
 import { useStyles } from "tss-react";
 import { useQuery, useSubscription } from "urql";
 import {
-	formatNumber,
-	formatTicksToRelativeTime,
+	formatInteger,
+	formatRoundsToRelativeRounds,
 	formatUnit,
-	formatUnitPerTick,
+	formatUnitPerRound,
 } from "../../format/formatNumber";
 import { graphql } from "../../gql";
 import { coordinateToGrid } from "../GalaxyView/coordinateToGrid";
-import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
 import placeholderDiscoveryArt from "./example-discovery.png";
+import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
 import placeholderStarsystemArt from "./example-starsystem-overview.png";
 
 export function StarSystemDetails({ id }: { id: string }) {
@@ -68,12 +68,22 @@ export function StarSystemDetails({ id }: { id: string }) {
 		variables: { id },
 	});
 
-	useSubscription({
+	const [{ data: subscriptionData }] = useSubscription({
 		query: graphql(`subscription TrackStarSystem($id: ID!) {
 		trackStarSystem(starSystemId: $id) {
 			... on StarSystemUpdateEvent {
 				subject {
 					id
+					name
+					position
+					taskForces {
+						id
+						name
+						owner {
+							id
+							name
+						}
+					}
 					discoveries {
 						__typename
 						... on ResourceDiscovery {
@@ -101,26 +111,33 @@ export function StarSystemDetails({ id }: { id: string }) {
 		variables: { id },
 	});
 
+	const starSystem =
+		subscriptionData?.trackStarSystem.__typename === "StarSystemUpdateEvent"
+			? subscriptionData.trackStarSystem.subject
+			: data?.starSystem;
+
 	const { css } = useStyles();
 
 	return (
 		<>
 			<Title order={2} mb="md">
-				{data?.starSystem.name}
+				{starSystem?.name}
 			</Title>
 			<SimpleGrid type="container" cols={{ base: 1, "500px": 2 }} mb="md">
 				<Stack>
 					<Card>
 						<Text variant="gradient">Location</Text>
-						<Text>{data && coordinateToGrid(data.starSystem.position, 2)}</Text>
+						<Text>
+							{starSystem && coordinateToGrid(starSystem.position, 2)}
+						</Text>
 					</Card>
 					<Card>
 						<Text variant="gradient">Population</Text>
 						<Text>
-							{!data?.starSystem.populations
+							{!starSystem?.populations
 								? "Our scanners could not pick up information about the population."
-								: formatNumber(
-										data.starSystem.populations.reduce(
+								: formatInteger(
+										starSystem.populations.reduce(
 											(acc, pop) => acc + pop.amount,
 											0,
 										),
@@ -129,7 +146,7 @@ export function StarSystemDetails({ id }: { id: string }) {
 					</Card>
 					<Card>
 						<Text variant="gradient">Discoveries</Text>
-						{data?.starSystem.discoveries === null ? (
+						{starSystem?.discoveries === null ? (
 							"Our scanners could not pick up information about possible discoveries."
 						) : (
 							<div
@@ -138,7 +155,7 @@ export function StarSystemDetails({ id }: { id: string }) {
 									gridTemplateColumns: "repeat(auto-fit, 100px)",
 								})}
 							>
-								{data?.starSystem.discoveries?.map((discovery) => (
+								{starSystem?.discoveries?.map((discovery) => (
 									<Fragment key={discovery.id}>
 										{discovery.__typename === "ResourceDiscovery" ? (
 											<Tooltip
@@ -146,11 +163,11 @@ export function StarSystemDetails({ id }: { id: string }) {
 												label={
 													<>
 														<div>
-															Mining {formatUnitPerTick(discovery.miningRate)}
+															Mining {formatUnitPerRound(discovery.miningRate)}
 														</div>
 														<div>
 															Depletes in{" "}
-															{formatTicksToRelativeTime(
+															{formatRoundsToRelativeRounds(
 																discovery.remainingDeposits /
 																	discovery.miningRate,
 															)}
@@ -186,17 +203,15 @@ export function StarSystemDetails({ id }: { id: string }) {
 								))}
 							</div>
 						)}
-						{(data?.starSystem.discoveryProgress ?? null) !== null && (
+						{(starSystem?.discoveryProgress ?? null) !== null && (
 							<Progress.Root size={36} mt="xs">
 								<Progress.Section
-									value={(data?.starSystem.discoveryProgress ?? 0) * 100}
+									value={(starSystem?.discoveryProgress ?? 0) * 100}
 									color="cyan"
 								>
 									<Progress.Label>
 										Discovery progress (
-										{Math.floor(
-											(data?.starSystem.discoveryProgress ?? 0) * 100,
-										)}
+										{Math.floor((starSystem?.discoveryProgress ?? 0) * 100)}
 										%)
 									</Progress.Label>
 								</Progress.Section>
@@ -214,7 +229,7 @@ export function StarSystemDetails({ id }: { id: string }) {
 						gridTemplateColumns: "repeat(auto-fit, 200px)",
 					})}
 				>
-					{data?.starSystem.taskForces?.map((tf) => (
+					{starSystem?.taskForces?.map((tf) => (
 						<Stack key={tf.id} gap={0} align="center">
 							<Center>{tf.name}</Center>
 						</Stack>

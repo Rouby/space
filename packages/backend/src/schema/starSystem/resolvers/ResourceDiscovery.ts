@@ -1,6 +1,9 @@
 import { eq, resources } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { ResourceDiscoveryResolvers } from "./../../types.generated.js";
+
+const BASE_MINING_UNITS_PER_ROUND = 180;
+
 export const ResourceDiscovery: ResourceDiscoveryResolvers = {
 	/* Implement ResourceDiscovery resolver logic here */
 	id: async (parent, _arg, _ctx) => {
@@ -20,7 +23,9 @@ export const ResourceDiscovery: ResourceDiscoveryResolvers = {
 
 		return resource;
 	},
-	miningRate: async (_parent, _arg, _ctx) => {
-		return 0.01;
+	miningRate: async (parent, _arg, _ctx) => {
+		const remainingDeposits = +parent.remainingDeposits;
+
+		return Math.min(BASE_MINING_UNITS_PER_ROUND, remainingDeposits);
 	},
 };

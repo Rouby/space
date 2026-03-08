@@ -9,6 +9,7 @@ import {
 	starSystems,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
+import { getMiningRatePerRound } from "./economyBalance.ts";
 import type { Context, Transaction } from "./tick.ts";
 
 export async function tickStarSystemEconomy(tx: Transaction, _ctx: Context) {
@@ -45,7 +46,7 @@ export async function tickStarSystemEconomy(tx: Transaction, _ctx: Context) {
 
 	for (const starSystem of starSystemsWithResourcesLeft) {
 		for (const discovery of starSystem.resources) {
-			const miningRate = Math.min(0.01, discovery.remainingDeposits);
+			const miningRate = getMiningRatePerRound(discovery.remainingDeposits);
 
 			const remainingDeposits = discovery.remainingDeposits - miningRate;
 
@@ -56,7 +57,7 @@ export async function tickStarSystemEconomy(tx: Transaction, _ctx: Context) {
 			await tx
 				.update(starSystemResourceDiscoveries)
 				.set({
-					remainingDeposits: sql`${remainingDeposits} - ${miningRate}::numeric`,
+					remainingDeposits: sql`${remainingDeposits}::numeric`,
 				})
 				.where(
 					and(
