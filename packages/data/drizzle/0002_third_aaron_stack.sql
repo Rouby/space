@@ -1,0 +1,2 @@
+ALTER TABLE "games" ADD COLUMN "hostUserId" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "games" ADD CONSTRAINT "games_hostUserId_users_id_fk" FOREIGN KEY ("hostUserId") REFERENCES "public"."users"("id") ON DELETE restrict ON UPDATE no action;

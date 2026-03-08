@@ -34,7 +34,7 @@ it("should do things", async () => {
 
 	const [{ id: gameId }] = await drizzle
 		.insert(games)
-		.values({ name: "Game" })
+		.values({ name: "Game", hostUserId: user1Id })
 		.returning();
 
 	await drizzle.insert(players).values([

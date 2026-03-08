@@ -13,6 +13,9 @@ import { users } from "./users.ts";
 export const games = pgTable("games", {
 	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
 	name: varchar({ length: 256 }).notNull(),
+	hostUserId: uuid()
+		.notNull()
+		.references(() => users.id, { onDelete: "restrict" }),
 	// settings
 	autoEndTurnAfterHoursInactive: integer().notNull().default(0),
 	autoEndTurnEveryHours: integer().notNull().default(0),
