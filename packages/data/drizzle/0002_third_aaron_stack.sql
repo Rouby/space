@@ -2,9 +2,11 @@ ALTER TABLE "games" ADD COLUMN "hostUserId" uuid;--> statement-breakpoint
 UPDATE "games" AS "g"
 SET "hostUserId" = "p"."userId"
 FROM (
-	SELECT "players"."gameId", min("players"."userId") AS "userId"
+	SELECT DISTINCT ON ("players"."gameId")
+		"players"."gameId",
+		"players"."userId"
 	FROM "players"
-	GROUP BY "players"."gameId"
+	ORDER BY "players"."gameId", "players"."userId"
 ) AS "p"
 WHERE "g"."id" = "p"."gameId"
 	AND "g"."hostUserId" IS NULL;--> statement-breakpoint
