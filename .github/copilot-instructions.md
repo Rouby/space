@@ -1,217 +1,58 @@
-# Copilot Instructions for Space
+<!-- BMAD:START -->
+# BMAD Method — Project Instructions
 
-## Project Overview
+## Project Configuration
 
-**Space** is a turn-based multiplayer space strategy game. Players control star systems, planets, ships, and task forces in a browser-based client backed by a GraphQL API server that spawns per-game simulation workers.
+- **Project**: space
+- **User**: Rouby
+- **Communication Language**: English
+- **Document Output Language**: English
+- **User Skill Level**: expert
+- **Output Folder**: {project-root}/_bmad-output
+- **Planning Artifacts**: {project-root}/_bmad-output/planning-artifacts
+- **Implementation Artifacts**: {project-root}/_bmad-output/implementation-artifacts
+- **Project Knowledge**: {project-root}/docs
 
----
+## BMAD Runtime Structure
 
-## Repository Structure
+- **Agent definitions**: `_bmad/bmm/agents/` (BMM module) and `_bmad/core/agents/` (core)
+- **Workflow definitions**: `_bmad/bmm/workflows/` (organized by phase)
+- **Core tasks**: `_bmad/core/tasks/` (help, editorial review, indexing, sharding, adversarial review)
+- **Core workflows**: `_bmad/core/workflows/` (brainstorming, party-mode, advanced-elicitation)
+- **Workflow engine**: `_bmad/core/tasks/workflow.xml` (executes YAML-based workflows)
+- **Module configuration**: `_bmad/bmm/config.yaml`
+- **Core configuration**: `_bmad/core/config.yaml`
+- **Agent manifest**: `_bmad/_config/agent-manifest.csv`
+- **Workflow manifest**: `_bmad/_config/workflow-manifest.csv`
+- **Help manifest**: `_bmad/_config/bmad-help.csv`
+- **Agent memory**: `_bmad/_memory/`
 
-This is a **Yarn v4 monorepo** (PnP loose mode) with six workspaces under `packages/`:
+## Key Conventions
 
-| Package | Workspace Name | Purpose |
-|---|---|---|
-| `packages/ai` | `@space/ai` | Shared AI prompt and chat/completion helpers used by game systems |
-| `packages/backend` | `@space/backend` | GraphQL Yoga API server, JWT auth, worker orchestration |
-| `packages/data` | `@space/data` | Drizzle ORM schema & migrations (PostgreSQL) |
-| `packages/frontend` | `@space/frontend` | React 19 + Vite + Pixi.js browser client |
-| `packages/gameloop` | `@space/gameloop` | Game simulation engine (Node.js Worker Threads) |
-| `packages/integration` | `@space/integration` | Playwright end-to-end tests |
+- Always load `_bmad/bmm/config.yaml` before any agent activation or workflow execution
+- Store all config fields as session variables: `{user_name}`, `{communication_language}`, `{output_folder}`, `{planning_artifacts}`, `{implementation_artifacts}`, `{project_knowledge}`
+- MD-based workflows execute directly — load and follow the `.md` file
+- YAML-based workflows require the workflow engine — load `workflow.xml` first, then pass the `.yaml` config
+- Follow step-based workflow execution: load steps JIT, never multiple at once
+- Save outputs after EACH step when using the workflow engine
+- The `{project-root}` variable resolves to the workspace root at runtime
 
----
+## Available Agents
 
-## Tech Stack
+| Agent | Persona | Title | Capabilities |
+|---|---|---|---|
+| bmad-master | BMad Master | BMad Master Executor, Knowledge Custodian, and Workflow Orchestrator | runtime resource management, workflow orchestration, task execution, knowledge custodian |
+| analyst | Mary | Business Analyst | market research, competitive analysis, requirements elicitation, domain expertise |
+| architect | Winston | Architect | distributed systems, cloud infrastructure, API design, scalable patterns |
+| dev | Amelia | Developer Agent | story execution, test-driven development, code implementation |
+| pm | John | Product Manager | PRD creation, requirements discovery, stakeholder alignment, user interviews |
+| qa | Quinn | QA Engineer | test automation, API testing, E2E testing, coverage analysis |
+| quick-flow-solo-dev | Barry | Quick Flow Solo Dev | rapid spec creation, lean implementation, minimum ceremony |
+| sm | Bob | Scrum Master | sprint planning, story preparation, agile ceremonies, backlog management |
+| tech-writer | Paige | Technical Writer | documentation, Mermaid diagrams, standards compliance, concept explanation |
+| ux-designer | Sally | UX Designer | user research, interaction design, UI patterns, experience strategy |
 
-- **Language:** TypeScript 5.9.2 (strict mode, ESNext)
-- **Package manager:** Yarn 4.6.0 (`yarn install`)
-- **Backend:** GraphQL Yoga v5, Drizzle ORM, RxJS, bcrypt, JWT
-- **Frontend:** React 19, Vite 7, TanStack Router (file-based), Mantine 8, URQL (GraphQL client), Pixi.js 8
-- **Database:** PostgreSQL via Drizzle ORM
-- **Testing:** Vitest (unit, backend/gameloop), Playwright (E2E)
-- **Linting/Formatting:** Biome 2.2.0
-- **Deployment:** Docker → Kubernetes via Helm
+## Slash Commands
 
----
-
-## Key Commands
-
-```sh
-# Install dependencies
-yarn install
-
-# Development
-yarn dev:backend          # Start backend (nodemon + tsx, port 3000)
-yarn dev:frontend         # Start frontend (Vite dev server, port 5173)
-# Note: no root-level `yarn dev` script exists
-
-# Quality checks (run these before committing)
-yarn lint                 # Biome linter (all workspaces)
-yarn typecheck            # tsc --noEmit across all workspaces
-yarn test                 # Runs workspace `test` scripts (CI uses this with --coverage)
-yarn integrate            # Playwright E2E tests (requires running backend+db)
-
-# Database
-yarn db:generate          # Generate Drizzle migration files
-yarn db:push              # Apply migrations to the database
-yarn db:studio            # Open Drizzle Studio
-
-# Code generation (run after modifying GraphQL schema)
-yarn codegen              # GraphQL Code Generator → then Biome formats output
-
-# Frontend build
-yarn workspace @space/frontend build   # Vite production build → packages/frontend/dist/
-```
-
----
-
-## Development Environment
-
-- **Node.js v22** is required.
-- A **PostgreSQL** database is required for the backend and integration tests.
-  - Default connection (from `packages/data/drizzle.config.ts`): `postgres://postgres:password@localhost:5432/space`
-  - Integration tests use: `postgres://postgres:password@localhost:5432/testing`
-- Set `JWT_SECRET` environment variable before starting the backend (e.g., `JWT_SECRET=kitty`).
-- Optional: `LOG_LEVEL=trace` for verbose logging.
-- The `.devcontainer/devcontainer.json` provides a pre-configured VS Code dev container with Node 22 and Yarn.
-
----
-
-## Code Architecture & Conventions
-
-### Backend (`packages/backend/src/`)
-
-- **Entry:** `main.ts` — starts GraphQL Yoga, configures JWT via cookie, manages game workers.
-- **Schema:** `schema/` — organized per entity (e.g., `starSystem/`, `taskForce/`, `user/`).
-  - Each entity folder typically contains: `schema.graphql`, `schema.mappers.ts`, `resolvers/{Type}.ts`.
-  - **Always run `yarn codegen` after modifying any `.graphql` file** to regenerate `*.generated.ts` files.
-  - Generated files (`*.generated.ts`, `*.gen.ts`) are excluded from linting/formatting and must not be edited manually.
-- **Context:** `context.ts` — GraphQL context provides `drizzle` (DB client), `userId`, `claims`, `hasVision()`, `startGame()`.
-- **Real-time:** `observables/` — RxJS streams convert game worker events into GraphQL subscriptions.
-- **Workers:** `workers.ts` — spawns one Node.js Worker Thread per active game; communicates via message passing.
-- **Import style:** Use explicit `.ts` extension on all imports in backend/data/gameloop (enforced by Biome `useImportExtensions`).
-
-### AI (`packages/ai/src/`)
-
-- Shared utility package for AI interactions and prompt templates.
-- Key entry points: `createChat.ts`, `createCompletion.ts`, prompt files in `prompts/`, and scenario helpers in `chats/`.
-- Imported by `@space/gameloop` via workspace dependency.
-
-### Frontend (`packages/frontend/src/`)
-
-- **Routing:** TanStack Router with file-based routing in `routes/`. After adding/removing route files, the router regenerates `routeTree.gen.ts` automatically via the Vite plugin — do not edit this file manually.
-- **GraphQL client:** URQL configured in `urql.ts`. Generated types live in `src/gql/` (also auto-generated, do not edit).
-- **Features:** Domain-grouped feature modules in `features/` (e.g., `GalaxyView/`, `GameLobby/`).
-- **UI library:** Mantine v8; use Mantine components wherever possible before introducing new UI libraries.
-- **Game canvas:** Pixi.js v8 is used in `features/GalaxyView/` for the 2D WebGL galaxy visualization.
-
-### Data (`packages/data/src/`)
-
-- **Schema:** Drizzle ORM table definitions in `schema/` (one file per entity, e.g., `games.ts`, `taskForces.ts`).
-- **Casing:** Drizzle is configured with `casing: "camelCase"`.
-- **Migrations:** Live in `drizzle/` directory. Run `yarn db:generate` then `yarn db:push` after changing schema.
-- **Shared:** Both `@space/backend` and `@space/gameloop` import from `@space/data`.
-
-### Game Loop (`packages/gameloop/src/`)
-
-- Runs as a Node.js Worker Thread spawned by the backend.
-- Receives game ID via `workerData`, runs a tick loop at a configurable interval.
-- Skips a tick if the previous tick is still running (avoids backlog).
-- Shuts down gracefully on receiving a `"shutdown"` worker message.
-- Uses `@space/ai` and `@space/data` as internal dependencies.
-
-### Authentication
-
-- JWT tokens issued with `issuer: "urn:space:issuer"` and `audience: "urn:space:audience"`.
-- Custom claims are prefixed with `urn:space:` (e.g., `urn:space:userId`).
-- Tokens are stored in HTTP-only cookies.
-- In resolvers, validate access with `throwWithoutClaim()` from context.
-
----
-
-## Linting & Formatting
-
-- **Tool:** Biome (`biome.json` at repo root).
-- **Run:** `yarn lint` to check; `biome lint --write` or `biome format --write` to auto-fix.
-- **Ignored:** `**/gql/*.ts`, `**/dist/**/*`, `**/*.generated.ts`, `**/*.gen.ts`, `.pnp.cjs`.
-- **Enforced for backend/data/gameloop:** Explicit `.ts` file extensions on all local imports (safe auto-fix available).
-- **Imports:** Biome organizes imports automatically; do not manually sort imports.
-- **Indentation:** 2 spaces (enforced by `.editorconfig` and Biome); LF line endings.
-
----
-
-## Testing
-
-### Unit Tests (Vitest)
-
-```sh
-yarn test
-# direct package-level invocation when needed:
-yarn workspace @space/backend vitest
-yarn workspace @space/gameloop vitest
-```
-
-- Note: There are no per-workspace `test` scripts in package manifests currently; CI runs `yarn test -- --coverage` from root.
-- Test files are primarily `**/*.spec.ts`.
-- Backend tests use `RxJS TestScheduler` for testing observable streams.
-- Mock `fromGameEvents` to inject synthetic game events in backend tests.
-
-### Integration Tests (Playwright)
-
-```sh
-yarn integrate
-# Requires: JWT_SECRET env var and PostgreSQL (testing DB) on port 5432
-```
-
-- Tests live in `packages/integration/tests/`.
-- Use the custom fixtures: `page` (Playwright page) and `api` (seeding helper).
-- `global-setup.ts` / `global-teardown.ts` handle DB initialization and cleanup.
-- Playwright starts the backend (port 3000) and frontend (port 5173) internally.
-- Artifacts (traces, reports) are saved to `packages/integration/playwright-report/`.
-
----
-
-## CI/CD Pipeline (`.github/workflows/deploy.yml`)
-
-The workflow triggers on every push and pull request. Jobs run in parallel:
-
-1. **Lint** — `yarn lint`
-2. **TypeScript** — `yarn typecheck`
-3. **Unit tests** — `yarn test -- --coverage`
-4. **Integration tests** — `yarn integrate` (env: `JWT_SECRET=kitty`, `LOG_LEVEL=trace`)
-5. **Build images** (matrix) — backend, frontend, migrations to `ghcr.io/rouby/space-*`
-6. **Deploy** (main branch only) — Helm upgrade to `staging` and `production` on `arc-runner-set-space`
-
-**Note:** The deploy job runs in a Linux containerized runner and installs `kubectl` and Helm during the job.
-
----
-
-## GraphQL Code Generation
-
-When modifying the GraphQL schema (`.graphql` files or resolver types):
-
-1. Edit/add the `.graphql` file in `packages/backend/src/schema/{entity}/`.
-2. Run `yarn codegen` — this regenerates all `*.generated.ts` files and formats them.
-3. Implement/update the corresponding resolver in `schema/{entity}/resolvers/{Type}.ts`.
-4. Update `schema/{entity}/schema.mappers.ts` if the TypeScript type mapping changes.
-
-Never manually edit `*.generated.ts` or `*.gen.ts` files.
-
----
-
-## Database Changes
-
-When modifying the Drizzle schema:
-
-1. Edit the table definition in `packages/data/src/schema/{entity}.ts`.
-2. Run `yarn db:generate` to create a new migration file in `packages/data/drizzle/`.
-3. Run `yarn db:push` to apply it to your local database.
-4. Commit both the schema change and the migration file.
-
----
-
-## Known Issues & Workarounds
-
-- **Docker cache workaround:** The CI workflow moves the BuildKit cache directory after each Docker build step as a workaround for a known BuildKit bug ([moby/buildkit#1896](https://github.com/moby/buildkit/issues/1896)).
-- **Playwright install in CI:** The step to install Playwright browsers (`playwright install --with-deps`) is currently commented out in the integration CI job. If Playwright tests fail locally due to missing browsers, run: `yarn workspace @space/integration playwright install --with-deps`.
-- **Yarn PnP:** The project uses Yarn PnP (Plug'n'Play) in loose mode. If you encounter module resolution errors, ensure you're using the Yarn-provided Node.js environment (`.yarn/sdks` provides VS Code integration).
+Type `/bmad-` in Copilot Chat to see all available BMAD workflows and agent activators. Agents are also available in the agents dropdown.
+<!-- BMAD:END -->
