@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { eq, taskForces } from "@space/data/schema";
+import { and, eq, taskForces } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
@@ -9,10 +9,17 @@ export const orderTaskForce: NonNullable<
 	const context: Context = ctx;
 	context.throwWithoutClaim("urn:space:claim");
 
-	const taskForce = await ctx.drizzle.query.taskForces.findFirst();
+	const taskForce = await ctx.drizzle.query.taskForces.findFirst({
+		where: and(eq(taskForces.id, id), eq(taskForces.ownerId, context.userId)),
+	});
 
 	if (!taskForce) {
-		throw createGraphQLError("Task force not found");
+		context.denyAccess({
+			message: "Task force not found",
+			code: "NOT_AUTHORIZED",
+			reason: "order-task-force-not-owner",
+			details: { taskForceId: id },
+		});
 	}
 
 	const newOrders: NonNullable<typeof taskForces.$inferInsert.orders> = orders
@@ -48,10 +55,19 @@ export const orderTaskForce: NonNullable<
 	const [updated] = await ctx.drizzle
 		.update(taskForces)
 		.set({
-			orders: [...(queue ? taskForce.orders : []), ...newOrders],
+			orders: [...(queue && taskForce ? taskForce.orders : []), ...newOrders],
 		})
-		.where(eq(taskForces.id, id))
+		.where(and(eq(taskForces.id, id), eq(taskForces.ownerId, context.userId)))
 		.returning();
+
+	if (!updated) {
+		context.denyAccess({
+			message: "Task force not found",
+			code: "NOT_AUTHORIZED",
+			reason: "order-task-force-update-denied",
+			details: { taskForceId: id },
+		});
+	}
 
 	return { ...updated, isVisible: true, lastUpdate: null };
 };

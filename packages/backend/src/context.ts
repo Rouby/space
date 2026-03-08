@@ -20,20 +20,54 @@ export function extendContext({
 	claims: Awaited<ReturnType<typeof generateUserClaims>>;
 	startGame: (gameId: string) => void;
 }) {
+	const denyAccess = ({
+		message,
+		code,
+		reason,
+		details,
+	}: {
+		message: string;
+		code: "NOT_AUTHORIZED" | "MISSING_CLAIM";
+		reason: string;
+		details?: Record<string, unknown>;
+	}): never => {
+		console.warn(
+			JSON.stringify({
+				event: "security.authorization.denied",
+				code,
+				reason,
+				userId: userId ?? null,
+				timestamp: new Date().toISOString(),
+				...details,
+			}),
+		);
+
+		throw createGraphQLError(message, {
+			extensions: { code },
+		});
+	};
+
 	return {
 		drizzle,
 		userId,
+		denyAccess,
 		throwWithoutClaim(
 			claim: keyof Awaited<ReturnType<typeof generateUserClaims>>,
 		): asserts this is { userId: string } {
 			if (!userId) {
-				throw createGraphQLError(`Missing claim ${claim}`, {
-					extensions: { code: "NOT_AUTHORIZED" },
+				denyAccess({
+					message: `Missing claim ${claim}`,
+					code: "NOT_AUTHORIZED",
+					reason: "missing-user-id",
+					details: { claim },
 				});
 			}
 			if (!claims[claim]) {
-				throw createGraphQLError(`Missing claim ${claim}`, {
-					extensions: { code: "MISSING_CLAIM" },
+				denyAccess({
+					message: `Missing claim ${claim}`,
+					code: "MISSING_CLAIM",
+					reason: "missing-claim",
+					details: { claim },
 				});
 			}
 		},

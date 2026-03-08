@@ -2,6 +2,7 @@ import {
 	and,
 	eq,
 	lastKnownStates,
+	players,
 	possiblyHidden,
 	sql,
 	starSystems,
@@ -17,6 +18,31 @@ export const starSystem: NonNullable<QueryResolvers["starSystem"]> = async (
 ) => {
 	const context: Context = ctx;
 	context.throwWithoutClaim("urn:space:claim");
+
+	const starSystemMeta = await ctx.drizzle.query.starSystems.findFirst({
+		columns: { id: true, gameId: true },
+		where: eq(starSystems.id, id),
+	});
+
+	if (!starSystemMeta) {
+		throw createGraphQLError("Star system not found");
+	}
+
+	const player = await ctx.drizzle.query.players.findFirst({
+		where: and(
+			eq(players.gameId, starSystemMeta.gameId),
+			eq(players.userId, context.userId),
+		),
+	});
+
+	if (!player) {
+		context.denyAccess({
+			message: "Not authorized to access this star system",
+			code: "NOT_AUTHORIZED",
+			reason: "star-system-query-not-member",
+			details: { starSystemId: id, gameId: starSystemMeta.gameId },
+		});
+	}
 
 	const [starSystem] = await ctx.drizzle
 		.select({

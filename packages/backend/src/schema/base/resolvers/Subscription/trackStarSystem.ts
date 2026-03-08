@@ -1,6 +1,6 @@
-import { eq, starSystems } from "@space/data/schema";
+import { and, eq, players, starSystems } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
-import { bufferWhen, filter, map, merge, scan, tap } from "rxjs";
+import { bufferWhen, filter, map, merge, mergeMap, scan, tap } from "rxjs";
 import type { Context } from "../../../../context.js";
 import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
 import type { SubscriptionResolvers } from "./../../../types.generated.ts";
@@ -18,6 +18,33 @@ export const trackStarSystem: NonNullable<
 
 		if (!ss) {
 			throw createGraphQLError("Star system not found");
+		}
+
+		const player = await ctx.drizzle.query.players.findFirst({
+			where: and(
+				eq(players.gameId, ss.gameId),
+				eq(players.userId, context.userId),
+			),
+		});
+
+		if (!player) {
+			context.denyAccess({
+				message: "Not authorized to track this star system",
+				code: "NOT_AUTHORIZED",
+				reason: "track-star-system-not-member",
+				details: { gameId: ss.gameId, starSystemId },
+			});
+		}
+
+		const canSeeSystem = await context.hasVision(ss.gameId, ss.position);
+
+		if (!canSeeSystem) {
+			context.denyAccess({
+				message: "Not authorized to track this star system",
+				code: "NOT_AUTHORIZED",
+				reason: "track-star-system-no-vision",
+				details: { gameId: ss.gameId, starSystemId },
+			});
 		}
 
 		const discoveryEvents = ctx.fromGameEvents(ss.gameId).pipe(
@@ -86,6 +113,23 @@ export const trackStarSystem: NonNullable<
 				thresholdDiscoveryEvents,
 				thresholdPopulationChangeEvents,
 				commisionUpdates,
+			).pipe(
+				mergeMap(async (event) => {
+					const hasCurrentVision = await context.hasVision(
+						ss.gameId,
+						ss.position,
+					);
+					if (!hasCurrentVision) {
+						context.denyAccess({
+							message: "Not authorized to track this star system",
+							code: "NOT_AUTHORIZED",
+							reason: "track-star-system-vision-revoked",
+							details: { gameId: ss.gameId, starSystemId },
+						});
+					}
+
+					return event;
+				}),
 			),
 		);
 	},
