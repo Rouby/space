@@ -37,7 +37,9 @@ export const registerWithPassword: NonNullable<
 				err instanceof DatabaseError &&
 				err.constraint === "users_email_index"
 			) {
-				throw createGraphQLError("Email already in use");
+				throw createGraphQLError("Email already in use", {
+					extensions: { code: "EMAIL_ALREADY_IN_USE" },
+				});
 			}
 			throw err;
 		});

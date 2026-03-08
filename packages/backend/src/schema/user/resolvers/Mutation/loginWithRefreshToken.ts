@@ -6,6 +6,45 @@ import {
 } from "../../../../config.ts";
 import type { MutationResolvers } from "./../../../types.generated.js";
 import { signToken, verifyToken } from "./token.ts";
+
+type CookieSetterContext = {
+	request: {
+		cookieStore?: {
+			set: (cookie: {
+				domain: string | null;
+				expires: Date;
+				secure: boolean;
+				httpOnly: boolean;
+				sameSite: "strict";
+				name: string;
+				value: string;
+			}) => void;
+		};
+	};
+};
+
+const clearAuthCookies = (ctx: CookieSetterContext) => {
+	const expired = new Date(0);
+	ctx.request.cookieStore?.set({
+		domain: cookieDomain,
+		expires: expired,
+		secure: secureCookies,
+		httpOnly: false,
+		sameSite: "strict",
+		name: "accessToken",
+		value: "",
+	});
+	ctx.request.cookieStore?.set({
+		domain: cookieDomain,
+		expires: expired,
+		secure: secureCookies,
+		httpOnly: true,
+		sameSite: "strict",
+		name: "refreshToken",
+		value: "",
+	});
+};
+
 export const loginWithRefreshToken: NonNullable<
 	MutationResolvers["loginWithRefreshToken"]
 > = async (_parent, _arg, ctx) => {
@@ -14,13 +53,18 @@ export const loginWithRefreshToken: NonNullable<
 		.then((c) => c?.value);
 
 	if (!refreshToken) {
-		throw createGraphQLError("No refresh token found");
+		throw createGraphQLError("Missing refresh token", {
+			extensions: { code: "MISSING_REFRESH_TOKEN" },
+		});
 	}
 
 	const { sub } = await verifyToken(refreshToken).catch(() => ({ sub: null }));
 
 	if (!sub) {
-		throw createGraphQLError("Invalid refresh token");
+		clearAuthCookies(ctx);
+		throw createGraphQLError("Invalid refresh token", {
+			extensions: { code: "INVALID_REFRESH_TOKEN" },
+		});
 	}
 
 	const user = await ctx.drizzle.query.users.findFirst({
@@ -28,7 +72,10 @@ export const loginWithRefreshToken: NonNullable<
 	});
 
 	if (!user) {
-		throw createGraphQLError("User not found");
+		clearAuthCookies(ctx);
+		throw createGraphQLError("Invalid refresh token", {
+			extensions: { code: "INVALID_REFRESH_TOKEN" },
+		});
 	}
 
 	{
@@ -49,7 +96,20 @@ export const loginWithRefreshToken: NonNullable<
 			value: accessToken,
 		});
 	}
-	// TODO: refresh token also?
+	{
+		// 1 year - rotate refresh token on successful re-auth
+		const expirationTime = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365);
+		const nextRefreshToken = await signToken(user.id, {}, expirationTime);
+		ctx.request.cookieStore?.set({
+			domain: cookieDomain,
+			expires: expirationTime,
+			secure: secureCookies,
+			httpOnly: true,
+			sameSite: "strict",
+			name: "refreshToken",
+			value: nextRefreshToken,
+		});
+	}
 
 	return user;
 };

@@ -21,11 +21,15 @@ export const loginWithPassword: NonNullable<
 	});
 
 	if (!user?.password) {
-		throw createGraphQLError("User not found");
+		throw createGraphQLError("Invalid credentials", {
+			extensions: { code: "INVALID_CREDENTIALS" },
+		});
 	}
 
 	if (!(await compare(password, user.password.hash))) {
-		throw createGraphQLError("User not found");
+		throw createGraphQLError("Invalid credentials", {
+			extensions: { code: "INVALID_CREDENTIALS" },
+		});
 	}
 
 	const claims = await generateUserClaims(user);

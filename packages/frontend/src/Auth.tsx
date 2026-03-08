@@ -59,9 +59,15 @@ function getMeFromToken() {
 		.at(1);
 
 	if (accessToken) {
-		const { sub } = decodeJwt(accessToken);
-		if (sub) {
-			return { id: sub };
+		try {
+			const { sub, exp } = decodeJwt(accessToken);
+			const isExpired = typeof exp === "number" && Date.now() >= exp * 1000;
+
+			if (!isExpired && sub) {
+				return { id: sub };
+			}
+		} catch {
+			return null;
 		}
 	}
 	return null;
