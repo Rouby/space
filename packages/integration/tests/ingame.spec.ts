@@ -617,3 +617,273 @@ test("resolves a turn after all players end and exposes updated monitoring state
 	await expect(endTurnButton).toBeVisible();
 	await expect(endTurnButton).toBeEnabled();
 });
+
+test("constructs a fleet and applies move orders on turn resolution", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "fleet-host@example.com",
+		name: "Fleet Host",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Fleet Movement Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#ff00ff",
+	});
+
+	const { id: originStarSystemId } = await api.seed("starSystem", {
+		gameId,
+		ownerId: hostId,
+		name: "Fleet Origin",
+		position: { x: 0, y: 0 },
+		discoverySlots: 0,
+		discoveryProgress: "0",
+	});
+
+	const { id: resourceId } = await api.seed("resource", {
+		gameId,
+		name: "Construction Metal",
+		kind: "metal",
+		description: "Metal used for ship construction",
+		discoveryWeight: 1,
+	});
+
+	await api.seed("starSystemResourceDepot", {
+		starSystemId: originStarSystemId,
+		resourceId,
+		quantity: "100",
+	});
+
+	const { id: shipComponentId } = await api.seed("shipComponent", {
+		gameId,
+		ownerId: hostId,
+		name: "Hull",
+		description: "Basic hull",
+		layout: "core",
+		supplyNeedPassive: "0",
+		supplyNeedMovement: "0",
+		supplyNeedCombat: "0",
+		powerNeed: "0",
+		crewNeed: "0",
+		constructionCost: "10",
+		supplyCapacity: null,
+		powerGeneration: null,
+		crewCapacity: null,
+		ftlSpeed: null,
+		zoneOfControl: null,
+		sensorRange: null,
+		structuralIntegrity: "10",
+		thruster: null,
+		sensorPrecision: null,
+		armorThickness: null,
+		armorEffectivenessAgainst: null,
+		shieldStrength: null,
+		shieldEffectivenessAgainst: null,
+		weaponDamage: null,
+		weaponCooldown: null,
+		weaponRange: null,
+		weaponArmorPenetration: null,
+		weaponShieldPenetration: null,
+		weaponAccuracy: null,
+		weaponDeliveryType: null,
+	});
+
+	await api.seed("shipComponentResourceCost", {
+		shipComponentId,
+		resourceId,
+		quantity: "10",
+	});
+
+	const { id: shipDesignId } = await api.seed("shipDesign", {
+		gameId,
+		ownerId: hostId,
+		name: "Scout",
+		description: "Scout design",
+		decommissioned: false,
+	});
+
+	await api.seed("shipDesignComponent", {
+		shipDesignId,
+		shipComponentId,
+		column: 0,
+		row: 0,
+	});
+
+	await api.login(hostId);
+
+	const constructResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Construct($input: ConstructTaskForceInput!) { constructTaskForce(input: $input) { id name position } }",
+			variables: {
+				input: {
+					starSystemId: originStarSystemId,
+					shipDesignId,
+					name: "Alpha Fleet",
+				},
+			},
+		},
+	});
+	const constructPayload = await constructResponse.json();
+
+	expect(constructPayload.errors).toBeUndefined();
+	const taskForceId = constructPayload.data?.constructTaskForce?.id as string;
+	expect(taskForceId).toBeTruthy();
+
+	const orderResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Order($id: ID!, $orders: [TaskForceOrderInput!]!, $queue: Boolean) { orderTaskForce(id: $id, orders: $orders, queue: $queue) { id } }",
+			variables: {
+				id: taskForceId,
+				queue: false,
+				orders: [{ move: { destination: { x: 100, y: 0 } } }],
+			},
+		},
+	});
+	const orderPayload = await orderResponse.json();
+	expect(orderPayload.errors).toBeUndefined();
+
+	const endTurnResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const endTurnPayload = await endTurnResponse.json();
+	expect(endTurnPayload.errors).toBeUndefined();
+
+	const taskForceQuery = {
+		query:
+			"query TaskForces($id: ID!) { game(id: $id) { id taskForces { id position } } }",
+		variables: { id: gameId },
+	};
+
+	await expect
+		.poll(
+			async () => {
+				const response = await page.request.post("/graphql", {
+					data: taskForceQuery,
+				});
+				const payload = await response.json();
+				const taskForce = (payload.data?.game?.taskForces ?? []).find(
+					(tf: { id: string }) => tf.id === taskForceId,
+				);
+
+				return {
+					errors: payload.errors,
+					position: taskForce?.position,
+				};
+			},
+			{ timeout: 20000 },
+		)
+		.toMatchObject({
+			errors: undefined,
+			position: { x: 100, y: 0 },
+		});
+});
+
+test("denies unauthorized fleet mutation and keeps hidden movement details private", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "fleet-privacy-host@example.com",
+		name: "Fleet Privacy Host",
+	});
+	const { id: rivalId } = await api.seed("user", {
+		email: "fleet-privacy-rival@example.com",
+		name: "Fleet Privacy Rival",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Fleet Privacy Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#ff00ff",
+	});
+	await api.seed("player", {
+		gameId,
+		userId: rivalId,
+		color: "#00ffff",
+	});
+
+	await api.seed("starSystem", {
+		gameId,
+		ownerId: hostId,
+		name: "Host Origin",
+		position: { x: 0, y: 0 },
+		discoverySlots: 0,
+		discoveryProgress: "0",
+	});
+
+	await api.seed("starSystem", {
+		gameId,
+		ownerId: rivalId,
+		name: "Rival Origin",
+		position: { x: 5000, y: 0 },
+		discoverySlots: 0,
+		discoveryProgress: "0",
+	});
+
+	const { id: taskForceId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: hostId,
+		name: "Hidden Fleet",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+
+	await api.login(hostId);
+
+	await api.login(rivalId);
+
+	const unauthorizedOrderResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Order($id: ID!, $orders: [TaskForceOrderInput!]!, $queue: Boolean) { orderTaskForce(id: $id, orders: $orders, queue: $queue) { id } }",
+			variables: {
+				id: taskForceId,
+				queue: false,
+				orders: [{ move: { destination: { x: 200, y: 0 } } }],
+			},
+		},
+	});
+	const unauthorizedOrderPayload = await unauthorizedOrderResponse.json();
+	expect(unauthorizedOrderPayload.errors?.[0]?.extensions?.code).toBe(
+		"NOT_AUTHORIZED",
+	);
+
+	const hiddenViewResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"query HiddenTaskForceView($id: ID!) { game(id: $id) { id taskForces { id position isVisible } } }",
+			variables: { id: gameId },
+		},
+	});
+	const hiddenViewPayload = await hiddenViewResponse.json();
+
+	if (hiddenViewPayload.errors?.length) {
+		expect(hiddenViewPayload.errors?.[0]?.extensions?.code).toBe(
+			"NOT_AUTHORIZED",
+		);
+		expect(hiddenViewPayload.data?.game).toBeUndefined();
+	} else {
+		expect(
+			(hiddenViewPayload.data?.game?.taskForces ?? []).some(
+				(tf: { id: string }) => tf.id === taskForceId,
+			),
+		).toBe(false);
+	}
+});

@@ -19,6 +19,8 @@ import { tickColonization } from "./colonization.ts";
 import { tickDiscoveries } from "./discoveries.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
+import { tickTaskForceConstruction } from "./taskForceConstruction.ts";
+import { tickTaskForceMovement } from "./taskForceMovement.ts";
 
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
 export type Transaction = FirstArgument<
@@ -49,6 +51,10 @@ export async function tick() {
 		await tickDiscoveries(tx, ctx);
 
 		await tickColonization(tx, ctx);
+
+		await tickTaskForceConstruction(tx, ctx);
+
+		await tickTaskForceMovement(tx, ctx, gameId);
 
 		const populationChanges = await tickStarSystemPopulation(tx, ctx);
 
@@ -172,6 +178,7 @@ export async function tick() {
 						userId: players.userId,
 						taskForceId: taskForces.id,
 						position: taskForces.position,
+						movementVector: taskForces.movementVector,
 						visible: visibility.circle,
 						pre_visible: sql`${visibilityPreTick}."visible"`.as("pre_visible"),
 					})
@@ -206,10 +213,11 @@ export async function tick() {
 						{
 							id: string;
 							position: { x: number; y: number };
+							movementVector: { x: number; y: number } | null;
 							visible: boolean;
 							previouslyVisible: boolean;
 						}[]
-					>`json_agg(json_build_object('id', ${TaskForceVisibility.taskForceId}, 'position', json_build_object('x', ${TaskForceVisibility.position}[0], 'y', ${TaskForceVisibility.position}[1]), 'visible', CASE WHEN ${TaskForceVisibility.visible} IS NOT NULL THEN true ELSE false END, 'previouslyVisible', CASE WHEN ${TaskForceVisibility.pre_visible} IS NOT NULL THEN true ELSE false END))`,
+					>`json_agg(json_build_object('id', ${TaskForceVisibility.taskForceId}, 'position', json_build_object('x', ${TaskForceVisibility.position}[0], 'y', ${TaskForceVisibility.position}[1]), 'movementVector', CASE WHEN ${TaskForceVisibility.movementVector} IS NOT NULL THEN json_build_object('x', ${TaskForceVisibility.movementVector}[0], 'y', ${TaskForceVisibility.movementVector}[1]) ELSE NULL END, 'visible', CASE WHEN ${TaskForceVisibility.visible} IS NOT NULL THEN true ELSE false END, 'previouslyVisible', CASE WHEN ${TaskForceVisibility.pre_visible} IS NOT NULL THEN true ELSE false END))`,
 				})
 				.from(TaskForceVisibility)
 				.groupBy(sql`"userId"`);
@@ -219,6 +227,7 @@ export async function tick() {
 					for (const {
 						id,
 						position,
+						movementVector,
 						visible,
 						previouslyVisible,
 					} of taskForces) {
@@ -229,7 +238,7 @@ export async function tick() {
 									id,
 									position,
 									userId,
-									movementVector: null,
+									movementVector,
 								});
 							} else {
 								ctx.postMessage({
@@ -248,8 +257,7 @@ export async function tick() {
 										state: {
 											ownerId: null,
 											position,
-											// TODO: add movement vector
-											movementVector: null,
+											movementVector,
 										},
 									})
 									.onConflictDoUpdate({
@@ -258,8 +266,7 @@ export async function tick() {
 											state: {
 												ownerId: null,
 												position,
-												// TODO: add movement vector
-												movementVector: null,
+												movementVector,
 											},
 										},
 										target: [

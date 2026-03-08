@@ -2,18 +2,22 @@ import {
 	Button,
 	Card,
 	Center,
+	Group,
 	Image,
 	Progress,
+	Select,
 	SimpleGrid,
 	Stack,
 	Text,
+	TextInput,
 	Title,
 	Tooltip,
 } from "@mantine/core";
-import { Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
+import { useAuth } from "../../Auth";
 import {
 	formatInteger,
 	formatRoundsToRelativeRounds,
@@ -26,7 +30,15 @@ import placeholderDiscoveryArt from "./example-discovery.png";
 import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
 import placeholderStarsystemArt from "./example-starsystem-overview.png";
 
-export function StarSystemDetails({ id }: { id: string }) {
+export function StarSystemDetails({
+	id,
+	gameId,
+}: {
+	id: string;
+	gameId: string;
+}) {
+	const { me } = useAuth();
+
 	const [{ data }] = useQuery({
 		query: graphql(
 			`query StarSystemDetails($id: ID!) {
@@ -77,6 +89,22 @@ export function StarSystemDetails({ id }: { id: string }) {
 	}`,
 		),
 		variables: { id },
+	});
+
+	const [{ data: commissionContext }] = useQuery({
+		query: graphql(`query CommissionFleetContext($gameId: ID!) {
+			game(id: $gameId) {
+				id
+				me {
+					id
+					shipDesigns {
+						id
+						name
+					}
+				}
+			}
+		}`),
+		variables: { gameId },
 	});
 
 	const [{ data: subscriptionData }] = useSubscription({
@@ -148,10 +176,51 @@ export function StarSystemDetails({ id }: { id: string }) {
 		}`),
 	);
 
+	const [constructTaskForceState, constructTaskForce] = useMutation(
+		graphql(`mutation ConstructTaskForce($input: ConstructTaskForceInput!) {
+			constructTaskForce(input: $input) {
+				id
+				name
+			}
+		}`),
+	);
+
+	const [fleetName, setFleetName] = useState("");
+	const [shipDesignId, setShipDesignId] = useState<string | null>(null);
+
+	const shipDesignOptions = useMemo(
+		() =>
+			(commissionContext?.game.me?.shipDesigns ?? []).map((design) => ({
+				value: design.id,
+				label: design.name,
+			})),
+		[commissionContext?.game.me?.shipDesigns],
+	);
+
+	useEffect(() => {
+		if (!shipDesignOptions.length) {
+			setShipDesignId(null);
+			return;
+		}
+
+		setShipDesignId((current) =>
+			current && shipDesignOptions.some((option) => option.value === current)
+				? current
+				: (shipDesignOptions[0]?.value ?? null),
+		);
+	}, [shipDesignOptions]);
+
 	const starSystem =
 		subscriptionData?.trackStarSystem.__typename === "StarSystemUpdateEvent"
 			? subscriptionData.trackStarSystem.subject
 			: data?.starSystem;
+
+	const isOwnedByMe =
+		!!starSystem?.owner?.id && !!me?.id && starSystem.owner.id === me.id;
+
+	const commissionError =
+		constructTaskForceState.error?.graphQLErrors[0]?.message ??
+		constructTaskForceState.error?.message;
 
 	const { css } = useStyles();
 
@@ -291,13 +360,66 @@ export function StarSystemDetails({ id }: { id: string }) {
 					</Text>
 				)}
 
-				<Button
-					component={Link}
-					from="/games/$id/star-system/$starSystemId"
-					to="commision-task-force"
-				>
-					Commision a task force
-				</Button>
+				<Text mt="md" variant="gradient">
+					Commission task force
+				</Text>
+				<Stack mt="xs">
+					<TextInput
+						label="Fleet name"
+						placeholder="Expeditionary Wing"
+						value={fleetName}
+						onChange={(event) => setFleetName(event.currentTarget.value)}
+						disabled={!isOwnedByMe}
+					/>
+					<Select
+						label="Ship design"
+						placeholder="Select a design"
+						data={shipDesignOptions}
+						value={shipDesignId}
+						onChange={setShipDesignId}
+						disabled={!isOwnedByMe || shipDesignOptions.length === 0}
+					/>
+					<Group justify="space-between">
+						<Button
+							loading={constructTaskForceState.fetching}
+							disabled={!isOwnedByMe || !fleetName.trim() || !shipDesignId}
+							onClick={async () => {
+								if (!shipDesignId || !fleetName.trim()) {
+									return;
+								}
+
+								const result = await constructTaskForce({
+									input: {
+										starSystemId: id,
+										shipDesignId,
+										name: fleetName.trim(),
+									},
+								});
+
+								if (!result.error) {
+									setFleetName("");
+								}
+							}}
+						>
+							Commission
+						</Button>
+					</Group>
+					{!isOwnedByMe && (
+						<Text c="dimmed" size="sm">
+							You can commission fleets only in star systems you own.
+						</Text>
+					)}
+					{isOwnedByMe && shipDesignOptions.length === 0 && (
+						<Text c="dimmed" size="sm">
+							No ship designs available yet for this empire.
+						</Text>
+					)}
+					{commissionError && (
+						<Text c="red" size="sm">
+							{commissionError}
+						</Text>
+					)}
+				</Stack>
 			</Card>
 		</>
 	);

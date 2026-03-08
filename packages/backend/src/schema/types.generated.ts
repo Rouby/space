@@ -29,6 +29,12 @@ export type Scalars = {
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
 
+export type ConstructTaskForceInput = {
+  name: Scalars['String']['input'];
+  shipDesignId: Scalars['ID']['input'];
+  starSystemId: Scalars['ID']['input'];
+};
+
 export type Dilemma = {
   __typename?: 'Dilemma';
   causation?: Maybe<Reference>;
@@ -77,6 +83,7 @@ export type GameturnReportsArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  constructTaskForce: TaskForce;
   createGame: Game;
   createShipDesign: ShipDesign;
   endTurn: Game;
@@ -90,6 +97,11 @@ export type Mutation = {
   startGame: Game;
   updateGameSettings: Game;
   updatePlayer: Player;
+};
+
+
+export type MutationconstructTaskForceArgs = {
+  input: ConstructTaskForceInput;
 };
 
 
@@ -579,10 +591,11 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
+  ConstructTaskForceInput: ConstructTaskForceInput;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Dilemma: ResolverTypeWrapper<DilemmaMapper>;
-  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
   DilemmaChoice: ResolverTypeWrapper<DilemmaChoice>;
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
@@ -639,10 +652,11 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   BigInt: Scalars['BigInt']['output'];
+  ConstructTaskForceInput: ConstructTaskForceInput;
+  String: Scalars['String']['output'];
+  ID: Scalars['ID']['output'];
   DateTime: Scalars['DateTime']['output'];
   Dilemma: DilemmaMapper;
-  ID: Scalars['ID']['output'];
-  String: Scalars['String']['output'];
   DilemmaChoice: DilemmaChoice;
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
@@ -746,6 +760,7 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
 };
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  constructTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconstructTaskForceArgs, 'input'>>;
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
   createShipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType, RequireFields<MutationcreateShipDesignArgs, 'design' | 'gameId'>>;
   endTurn?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationendTurnArgs, 'expectedTurnNumber' | 'gameId'>>;

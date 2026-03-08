@@ -3,10 +3,12 @@ import {
 	filter,
 	from,
 	map,
+	merge,
 	mergeMap,
 	pairwise,
-	raceWith,
+	shareReplay,
 	startWith,
+	take,
 	takeUntil,
 } from "rxjs";
 import { fromGameEvents } from "../workers.ts";
@@ -53,9 +55,24 @@ export function taskForces$({
 				},
 			})),
 		),
-		mergeMap((appeared) =>
-			// for each appear event, start emitting position updates
-			concat(
+		mergeMap((appeared) => {
+			// track the first terminal event for this task force to distinguish
+			// hidden disappearances from destruction removals
+			const terminalEvent$ = merge(
+				fromGameEvents(gameId).pipe(
+					filter((event) => event.type === "taskForce:disappeared"),
+					filter((event) => event.id === appeared.subject.id),
+					filter((event) => event.userId === userId),
+					map(() => ({ removed: false })),
+				),
+				fromGameEvents(gameId).pipe(
+					filter((event) => event.type === "taskForce:destroyed"),
+					filter((event) => event.id === appeared.subject.id),
+					map(() => ({ removed: true })),
+				),
+			).pipe(take(1), shareReplay(1));
+
+			return concat(
 				// double emit because pairwise does not emit on first event
 				from([appeared, appeared]),
 				fromGameEvents(gameId).pipe(
@@ -70,23 +87,10 @@ export function taskForces$({
 							movementVector: event.movementVector,
 						},
 					})),
-					// until the task force disappears or is destroyed
-					takeUntil(
-						fromGameEvents(gameId).pipe(
-							filter((event) => event.type === "taskForce:disappeared"),
-							filter((event) => event.id === appeared.subject.id),
-							filter((event) => event.userId === userId),
-							raceWith(
-								fromGameEvents(gameId).pipe(
-									filter((event) => event.type === "taskForce:destroyed"),
-									filter((event) => event.id === appeared.subject.id),
-								),
-							),
-						),
-					),
+					takeUntil(terminalEvent$),
 				),
-				from([
-					{
+				terminalEvent$.pipe(
+					map((terminalEvent) => ({
 						__typename: "PositionableDisappearsEvent" as const,
 						subject: {
 							__typename: "TaskForce" as const,
@@ -96,11 +100,11 @@ export function taskForces$({
 							// position will be updated in mapping below
 							position: appeared.subject.position,
 						},
-						removed: false,
-					},
-				]),
+						removed: terminalEvent.removed,
+					})),
+				),
 			).pipe(
-				// keep track of current and previous event to update position on disappear as last-known position
+				// keep track of current and previous event to update position on disappear
 				pairwise(),
 				map(([prev, next]) =>
 					next.__typename === "PositionableDisappearsEvent"
@@ -110,7 +114,7 @@ export function taskForces$({
 							}
 						: next,
 				),
-			),
-		),
+			);
+		}),
 	);
 }

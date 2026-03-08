@@ -1,5 +1,11 @@
 scalar BigInt
 
+input ConstructTaskForceInput {
+	name: String!
+	shipDesignId: ID!
+	starSystemId: ID!
+}
+
 scalar DateTime
 
 type Dilemma {
@@ -41,6 +47,7 @@ type Game {
 }
 
 type Mutation {
+	constructTaskForce(input: ConstructTaskForceInput!): TaskForce!
 	createGame(name: String!): Game!
 	createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
 	endTurn(expectedTurnNumber: Int!, gameId: ID!): Game!

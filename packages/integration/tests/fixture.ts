@@ -3,6 +3,12 @@ import { getConnection, getDrizzle } from "@space/data";
 import {
 	games,
 	players,
+	resources,
+	shipComponentResourceCosts,
+	shipComponents,
+	shipDesignComponents,
+	shipDesigns,
+	starSystemResourceDepots,
 	starSystems,
 	taskForces,
 	users,
@@ -17,6 +23,27 @@ type Types = {
 		typeof starSystems.$inferInsert,
 		typeof starSystems.$inferSelect,
 	];
+	resource: [typeof resources.$inferInsert, typeof resources.$inferSelect];
+	starSystemResourceDepot: [
+		typeof starSystemResourceDepots.$inferInsert,
+		typeof starSystemResourceDepots.$inferSelect,
+	];
+	shipComponent: [
+		typeof shipComponents.$inferInsert,
+		typeof shipComponents.$inferSelect,
+	];
+	shipComponentResourceCost: [
+		typeof shipComponentResourceCosts.$inferInsert,
+		typeof shipComponentResourceCosts.$inferSelect,
+	];
+	shipDesign: [
+		typeof shipDesigns.$inferInsert,
+		typeof shipDesigns.$inferSelect,
+	];
+	shipDesignComponent: [
+		typeof shipDesignComponents.$inferInsert,
+		typeof shipDesignComponents.$inferSelect,
+	];
 	taskForce: [typeof taskForces.$inferInsert, typeof taskForces.$inferSelect];
 };
 const Tables = {
@@ -24,6 +51,12 @@ const Tables = {
 	game: games,
 	player: players,
 	starSystem: starSystems,
+	resource: resources,
+	starSystemResourceDepot: starSystemResourceDepots,
+	shipComponent: shipComponents,
+	shipComponentResourceCost: shipComponentResourceCosts,
+	shipDesign: shipDesigns,
+	shipDesignComponent: shipDesignComponents,
 	taskForce: taskForces,
 };
 
@@ -76,7 +109,8 @@ export const test = base.extend<{
 				},
 			});
 
-			await drizzle.delete(games);
+					await drizzle.delete(shipDesignComponents);
+					await drizzle.delete(games);
 			await drizzle.delete(users);
 		},
 		{ scope: "test" },

@@ -14,7 +14,7 @@ export const orderTaskForce: NonNullable<
 	});
 
 	if (!taskForce) {
-		context.denyAccess({
+		return context.denyAccess({
 			message: "Task force not found",
 			code: "NOT_AUTHORIZED",
 			reason: "order-task-force-not-owner",
@@ -22,9 +22,49 @@ export const orderTaskForce: NonNullable<
 		});
 	}
 
+	const moveRange = 1_000;
+
+	const isFiniteNumber = (value: number) => Number.isFinite(value);
+
+	const validateMove = (
+		destination: { x: number; y: number },
+		from: { x: number; y: number },
+	) => {
+		if (!isFiniteNumber(destination.x) || !isFiniteNumber(destination.y)) {
+			throw createGraphQLError("Move destination must be finite coordinates", {
+				extensions: { code: "INVALID_TASK_FORCE_ORDER" },
+			});
+		}
+
+		const distance = Math.hypot(destination.x - from.x, destination.y - from.y);
+
+		if (distance > moveRange) {
+			throw createGraphQLError("Move destination is out of range", {
+				extensions: { code: "INVALID_TASK_FORCE_ORDER" },
+			});
+		}
+	};
+
+	const queuedOrders = queue ? taskForce.orders : [];
+	let cursor = { ...taskForce.position };
+
+	for (const existingOrder of queuedOrders) {
+		if (existingOrder.type === "move") {
+			if (
+				!isFiniteNumber(existingOrder.destination.x) ||
+				!isFiniteNumber(existingOrder.destination.y)
+			) {
+				break;
+			}
+			cursor = { ...existingOrder.destination };
+		}
+	}
+
 	const newOrders: NonNullable<typeof taskForces.$inferInsert.orders> = orders
 		.map((order) => {
 			if (order.move) {
+				validateMove(order.move.destination, cursor);
+				cursor = { ...order.move.destination };
 				return {
 					id: randomUUID(),
 					type: "move" as const,
@@ -32,6 +72,11 @@ export const orderTaskForce: NonNullable<
 				};
 			}
 			if (order.follow) {
+				if (order.follow.taskForceId === id) {
+					throw createGraphQLError("Task force cannot follow itself", {
+						extensions: { code: "INVALID_TASK_FORCE_ORDER" },
+					});
+				}
 				return {
 					id: randomUUID(),
 					type: "follow" as const,
@@ -49,13 +94,15 @@ export const orderTaskForce: NonNullable<
 		.filter((d) => !!d);
 
 	if (newOrders.length === 0) {
-		throw createGraphQLError("Invalid orders");
+		throw createGraphQLError("Invalid orders", {
+			extensions: { code: "INVALID_TASK_FORCE_ORDER" },
+		});
 	}
 
 	const [updated] = await ctx.drizzle
 		.update(taskForces)
 		.set({
-			orders: [...(queue && taskForce ? taskForce.orders : []), ...newOrders],
+			orders: [...queuedOrders, ...newOrders],
 		})
 		.where(and(eq(taskForces.id, id), eq(taskForces.ownerId, context.userId)))
 		.returning();

@@ -9,13 +9,13 @@ export const Route = createLazyFileRoute(
 });
 
 function Details() {
-	const { starSystemId } = Route.useParams();
+	const { id, starSystemId } = Route.useParams();
 	const navigate = Route.useNavigate();
 
 	return (
 		<>
 			<DetailsDrawer size="70%" onClose={() => navigate({ to: "../.." })}>
-				<StarSystemDetails id={starSystemId} />
+				<StarSystemDetails id={starSystemId} gameId={id} />
 			</DetailsDrawer>
 
 			<Outlet />

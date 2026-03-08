@@ -88,7 +88,10 @@ it("should do things", async () => {
 				visibility,
 				and(
 					eq(visibility.gameId, players.gameId),
-					eq(visibility.userId, players.userId),
+					eq(
+						sql`${visibility}.${sql.identifier(visibility.userId.fieldAlias)}`,
+						players.userId,
+					),
 					sql`${visibility.circle} @> ${taskForces.position}`,
 				),
 			)
@@ -119,7 +122,10 @@ it("should do things", async () => {
 					visibility,
 					and(
 						eq(visibility.gameId, players.gameId),
-						eq(visibility.userId, players.userId),
+						eq(
+							sql`${visibility}.${sql.identifier(visibility.userId.fieldAlias)}`,
+							players.userId,
+						),
 						sql`${visibility.circle} @> ${taskForces.position}`,
 					),
 				)

@@ -4,8 +4,11 @@ const configuredGameId =
 	(workerData as { gameId?: string } | undefined)?.gameId ??
 	process.env.GAME_ID;
 
-if (!configuredGameId) {
+const fallbackGameId = process.env.VITEST ? "test-game-id" : undefined;
+const resolvedGameId = configuredGameId ?? fallbackGameId;
+
+if (!resolvedGameId) {
 	throw new Error("Missing gameId in workerData and GAME_ID env var");
 }
 
-export const gameId = configuredGameId;
+export const gameId: string = resolvedGameId;

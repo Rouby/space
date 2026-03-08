@@ -56,10 +56,17 @@ input TaskForceFollowOrderInput {
 	taskForceId: ID!
 }
 
+input ConstructTaskForceInput {
+	starSystemId: ID!
+	shipDesignId: ID!
+	name: String!
+}
+
 type Mutation {
 	orderTaskForce(
 		id: ID!
 		orders: [TaskForceOrderInput!]!
 		queue: Boolean
 	): TaskForce!
+	constructTaskForce(input: ConstructTaskForceInput!): TaskForce!
 }

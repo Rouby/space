@@ -400,6 +400,29 @@
         "name": "Mutation",
         "fields": [
           {
+            "name": "constructTaskForce",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForce",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "input",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
             "name": "createGame",
             "type": {
               "kind": "NON_NULL",

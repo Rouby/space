@@ -1,7 +1,12 @@
 import { createGraphQLError } from "graphql-yoga";
 import { Subject } from "rxjs";
 import { describe, expect, it, vi } from "vitest";
-import { trackStarSystem } from "../../base/resolvers/Subscription/trackStarSystem.js";
+import { trackStarSystem } from "../../../base/resolvers/Subscription/trackStarSystem.js";
+
+const trackStarSystemSubscribe =
+	typeof trackStarSystem === "function"
+		? trackStarSystem
+		: trackStarSystem.subscribe;
 
 function denyAccess({
 	message,
@@ -53,12 +58,12 @@ describe("trackStarSystem subscription", () => {
 			},
 		};
 
-		const iterable = await trackStarSystem.subscribe?.(
+		const iterable = (await trackStarSystemSubscribe?.(
 			{},
 			{ starSystemId: "ss-1" },
 			ctx as never,
 			{} as never,
-		);
+		)) as AsyncIterable<unknown>;
 		expect(iterable).toBeDefined();
 
 		const iterator = iterable?.[Symbol.asyncIterator]();
@@ -128,12 +133,12 @@ describe("trackStarSystem subscription", () => {
 			},
 		};
 
-		const iterable = await trackStarSystem.subscribe?.(
+		const iterable = (await trackStarSystemSubscribe?.(
 			{},
 			{ starSystemId: "ss-1" },
 			ctx as never,
 			{} as never,
-		);
+		)) as AsyncIterable<unknown>;
 
 		const iterator = iterable?.[Symbol.asyncIterator]();
 		const nextUpdate = iterator?.next();
