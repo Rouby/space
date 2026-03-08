@@ -63,8 +63,14 @@ describe("tickTaskForceMovement", () => {
 		]);
 	});
 
-	it("drops invalid move orders at resolve time without emitting movement events", async () => {
-		const returning = vi.fn().mockResolvedValue([]);
+	it("progresses long-distance move orders over multiple ticks", async () => {
+		const returning = vi.fn().mockResolvedValue([
+			{
+				id: "tf-1",
+				position: { x: 1000, y: 0 },
+				movementVector: { x: 1000, y: 0 },
+			},
+		]);
 		const where = vi.fn().mockReturnValue({ returning });
 		const set = vi.fn().mockReturnValue({ where });
 		const update = vi.fn().mockReturnValue({ set });
@@ -97,7 +103,24 @@ describe("tickTaskForceMovement", () => {
 			postMessage: (event: unknown) => events.push(event as never),
 		});
 
-		expect(set).toHaveBeenCalledWith({ orders: [] });
-		expect(events).toEqual([]);
+		expect(set).toHaveBeenCalledWith({
+			position: { x: 1000, y: 0 },
+			movementVector: { x: 1000, y: 0 },
+			orders: [
+				{
+					id: "o-1",
+					type: "move",
+					destination: { x: 2001, y: 0 },
+				},
+			],
+		});
+		expect(events).toEqual([
+			{
+				type: "taskForce:position",
+				id: "tf-1",
+				position: { x: 1000, y: 0 },
+				movementVector: { x: 1000, y: 0 },
+			},
+		]);
 	});
 });

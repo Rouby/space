@@ -38,8 +38,7 @@ function isLegalMove({
 		return false;
 	}
 
-	const distance = Math.hypot(to.x - from.x, to.y - from.y);
-	return distance <= MOVE_RANGE;
+	return isFiniteCoordinate(from.x) && isFiniteCoordinate(from.y);
 }
 
 export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
@@ -86,13 +85,26 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 			x: firstOrder.destination.x - taskForce.position.x,
 			y: firstOrder.destination.y - taskForce.position.y,
 		};
+		const distance = Math.hypot(movementVector.x, movementVector.y);
+		const isArrivingThisTick = distance <= MOVE_RANGE;
+		const moveScale = distance === 0 ? 0 : Math.min(1, MOVE_RANGE / distance);
+		const nextPosition = isArrivingThisTick
+			? firstOrder.destination
+			: {
+				x: taskForce.position.x + movementVector.x * moveScale,
+				y: taskForce.position.y + movementVector.y * moveScale,
+			};
+		const resolvedMovementVector = {
+			x: nextPosition.x - taskForce.position.x,
+			y: nextPosition.y - taskForce.position.y,
+		};
 
 		const [updated] = await tx
 			.update(taskForces)
 			.set({
-				position: firstOrder.destination,
-				movementVector,
-				orders: remainingOrders,
+				position: nextPosition,
+				movementVector: resolvedMovementVector,
+				orders: isArrivingThisTick ? remainingOrders : taskForce.orders,
 			})
 			.where(
 				and(eq(taskForces.id, taskForce.id), eq(taskForces.gameId, gameId)),

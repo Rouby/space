@@ -74,7 +74,25 @@ describe("task force construction and movement rules", () => {
 		);
 	});
 
-	it("rejects move orders beyond reachable distance", async () => {
+	it("accepts long-distance move orders for queued tick resolution", async () => {
+		const returning = vi.fn().mockResolvedValue([
+			{
+				id: "tf-1",
+				ownerId: "user-1",
+				position: { x: 0, y: 0 },
+				orders: [
+					{
+						id: expect.any(String),
+						type: "move",
+						destination: { x: 2001, y: 0 },
+					},
+				],
+			},
+		]);
+		const where = vi.fn().mockReturnValue({ returning });
+		const set = vi.fn().mockReturnValue({ where });
+		const update = vi.fn().mockReturnValue({ set });
+
 		const ctx = {
 			userId: "user-1",
 			throwWithoutClaim: vi.fn(),
@@ -90,6 +108,7 @@ describe("task force construction and movement rules", () => {
 						}),
 					},
 				},
+				update,
 			},
 		};
 
@@ -104,14 +123,18 @@ describe("task force construction and movement rules", () => {
 				ctx as never,
 				{} as never,
 			),
-		).rejects.toMatchObject(
-			createGraphQLError("Move destination is out of range", {
-				extensions: { code: "INVALID_TASK_FORCE_ORDER" },
-			}),
-		);
+		).resolves.toMatchObject({
+			id: "tf-1",
+			orders: [
+				{
+					type: "move",
+					destination: { x: 2001, y: 0 },
+				},
+			],
+		});
 	});
 
-	it("validates queued move orders against projected queued position", async () => {
+	it("queues long-distance move orders against projected queued position", async () => {
 		const returning = vi.fn().mockResolvedValue([
 			{
 				id: "tf-1",
@@ -166,13 +189,19 @@ describe("task force construction and movement rules", () => {
 				ctx as never,
 				{} as never,
 			),
-		).rejects.toMatchObject(
-			createGraphQLError("Move destination is out of range", {
-				extensions: { code: "INVALID_TASK_FORCE_ORDER" },
-			}),
-		);
+		).resolves.toMatchObject({ id: "tf-1" });
 
-		expect(update).not.toHaveBeenCalled();
+		expect(update).toHaveBeenCalled();
+		expect(set).toHaveBeenCalledWith({
+			orders: [
+				{ id: "existing-1", type: "move", destination: { x: 900, y: 0 } },
+				{
+					id: expect.any(String),
+					type: "move",
+					destination: { x: 2100, y: 0 },
+				},
+			],
+		});
 	});
 
 	it("rejects combat deck configuration when deck size is not exactly 12", async () => {
