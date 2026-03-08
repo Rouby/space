@@ -17,7 +17,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
-import { useAuth } from "../../Auth";
 import {
 	formatInteger,
 	formatRoundsToRelativeRounds,
@@ -37,8 +36,6 @@ export function StarSystemDetails({
 	id: string;
 	gameId: string;
 }) {
-	const { me } = useAuth();
-
 	const [{ data }] = useQuery({
 		query: graphql(
 			`query StarSystemDetails($id: ID!) {
@@ -215,8 +212,11 @@ export function StarSystemDetails({
 			? subscriptionData.trackStarSystem.subject
 			: data?.starSystem;
 
+	const currentPlayerId = commissionContext?.game.me?.id ?? null;
 	const isOwnedByMe =
-		!!starSystem?.owner?.id && !!me?.id && starSystem.owner.id === me.id;
+		!!starSystem?.owner?.id &&
+		!!currentPlayerId &&
+		starSystem.owner.id === currentPlayerId;
 
 	const commissionError =
 		constructTaskForceState.error?.graphQLErrors[0]?.message ??
