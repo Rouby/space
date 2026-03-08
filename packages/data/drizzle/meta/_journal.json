@@ -8,6 +8,13 @@
       "when": 1772906323307,
       "tag": "0000_flowery_gunslinger",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772932595054,
+      "tag": "0001_late_beast",
+      "breakpoints": true
     }
   ]
 }

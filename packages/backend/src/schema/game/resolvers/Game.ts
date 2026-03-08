@@ -1,4 +1,4 @@
-import { and, eq, players } from "@space/data/schema";
+import { and, eq, players, sql, turnReports } from "@space/data/schema";
 import type { GameResolvers } from "./../../types.generated.ts";
 export const Game: Pick<
 	GameResolvers,
@@ -10,6 +10,7 @@ export const Game: Pick<
 	| "players"
 	| "startedAt"
 	| "turnNumber"
+	| "turnReports"
 	| "__isTypeOf"
 > = {
 	players: async (parent, _args, ctx) => {
@@ -50,5 +51,15 @@ export const Game: Pick<
 	},
 	turnNumber: async (_parent, _arg, _ctx) => {
 		return _parent.turnNumber;
+	},
+	turnReports: async (parent, args, ctx) => {
+		const limit = Math.max(1, Math.min(args.limit ?? 20, 100));
+
+		return ctx.drizzle
+			.select()
+			.from(turnReports)
+			.where(eq(turnReports.gameId, parent.id))
+			.orderBy(sql`${turnReports.turnNumber} desc`)
+			.limit(limit);
 	},
 };

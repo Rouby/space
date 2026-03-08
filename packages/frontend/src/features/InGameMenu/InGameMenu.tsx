@@ -2,6 +2,7 @@ import { Badge, NavLink as MantineNavLink, rem } from "@mantine/core";
 import {
 	type Icon,
 	IconAd,
+	IconFileDescription,
 	IconHourglass,
 	IconLicense,
 	IconPlayerPlay,
@@ -13,6 +14,7 @@ import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { graphql } from "../../gql";
 import { mq, theme } from "../../theme";
+import { TurnReportsPanel } from "../TurnReportsPanel/TurnReportsPanel";
 import { UserButton } from "../UserButton/UserButton";
 
 export function InGameMenu() {
@@ -74,7 +76,19 @@ export function InGameMenu() {
 					<NavLink from="/games/$id" to="./ship-designs" icon={IconLicense}>
 						Ship Designs
 					</NavLink>
+
+					<NavLink
+						from="/games/$id"
+						to="./turn-reports"
+						icon={IconFileDescription}
+					>
+						Turn Reports
+					</NavLink>
 				</div>
+			</Section>
+
+			<Section>
+				<TurnReportsPanel />
 			</Section>
 
 			<Section>

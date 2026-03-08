@@ -37,6 +37,7 @@ type Game {
 	startedAt: DateTime
 	taskForces: [TaskForce!]!
 	turnNumber: Int!
+	turnReports(limit: Int = 20): [TurnReport!]!
 }
 
 type Mutation {
@@ -276,6 +277,30 @@ union TrackStarSystemEvent = StarSystemUpdateEvent
 
 type TurnEndedEvent {
 	game: Game!
+}
+
+type TurnReport {
+	createdAt: DateTime!
+	id: ID!
+	miningChanges: [TurnReportMiningChange!]!
+	populationChanges: [TurnReportPopulationChange!]!
+	turnNumber: Int!
+}
+
+type TurnReportMiningChange {
+	depotQuantity: Float!
+	mined: Float!
+	remainingDeposits: Float!
+	resourceId: ID!
+	starSystemId: ID!
+}
+
+type TurnReportPopulationChange {
+	growth: BigInt!
+	newAmount: BigInt!
+	populationId: ID!
+	previousAmount: BigInt!
+	starSystemId: ID!
 }
 
 type UnknownDiscovery {

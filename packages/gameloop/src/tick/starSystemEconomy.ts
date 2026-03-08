@@ -12,7 +12,20 @@ import { gameId } from "../config.ts";
 import { getMiningRatePerRound } from "./economyBalance.ts";
 import type { Context, Transaction } from "./tick.ts";
 
-export async function tickStarSystemEconomy(tx: Transaction, _ctx: Context) {
+export type MiningTurnChange = {
+	starSystemId: string;
+	resourceId: string;
+	mined: number;
+	remainingDeposits: number;
+	depotQuantity: number;
+};
+
+export async function tickStarSystemEconomy(
+	tx: Transaction,
+	_ctx: Context,
+): Promise<MiningTurnChange[]> {
+	const changes: MiningTurnChange[] = [];
+
 	const starSystemsWithResourcesLeft = await tx
 		.select({
 			id: starSystems.id,
@@ -47,6 +60,10 @@ export async function tickStarSystemEconomy(tx: Transaction, _ctx: Context) {
 	for (const starSystem of starSystemsWithResourcesLeft) {
 		for (const discovery of starSystem.resources) {
 			const miningRate = getMiningRatePerRound(discovery.remainingDeposits);
+
+			if (miningRate <= 0) {
+				continue;
+			}
 
 			const remainingDeposits = discovery.remainingDeposits - miningRate;
 
@@ -85,6 +102,16 @@ export async function tickStarSystemEconomy(tx: Transaction, _ctx: Context) {
 					quantity: sql`0 + ${miningRate}::numeric`,
 				});
 			}
+
+			changes.push({
+				starSystemId: starSystem.id,
+				resourceId: discovery.resourceId,
+				mined: miningRate,
+				remainingDeposits,
+				depotQuantity: (depot?.quantity ?? 0) + miningRate,
+			});
 		}
 	}
+
+	return changes;
 }

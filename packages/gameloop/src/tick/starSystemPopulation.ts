@@ -10,7 +10,20 @@ import { gameId } from "../config.ts";
 import { getPopulationGrowthRatePerRound } from "./economyBalance.ts";
 import type { Context, Transaction } from "./tick.ts";
 
-export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
+export type PopulationTurnChange = {
+	starSystemId: string;
+	populationId: string;
+	previousAmount: bigint;
+	newAmount: bigint;
+	growth: bigint;
+};
+
+export async function tickStarSystemPopulation(
+	tx: Transaction,
+	ctx: Context,
+): Promise<PopulationTurnChange[]> {
+	const changes: PopulationTurnChange[] = [];
+
 	const starSystemsWithPopulations = await tx
 		.select({
 			id: starSystems.id,
@@ -65,6 +78,14 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 				);
 
 			if (growthInt > 0n) {
+				changes.push({
+					starSystemId: starSystem.id,
+					populationId: `${starSystem.id}:${pop.allegianceToPlayerId}`,
+					previousAmount: amount,
+					newAmount: amount + growthInt,
+					growth: growthInt,
+				});
+
 				ctx.postMessage({
 					type: "starSystem:populationChanged",
 					id: starSystem.id,
@@ -75,4 +96,6 @@ export async function tickStarSystemPopulation(tx: Transaction, ctx: Context) {
 			}
 		}
 	}
+
+	return changes;
 }

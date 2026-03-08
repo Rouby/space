@@ -9,6 +9,7 @@ import {
 	sql,
 	starSystems,
 	taskForces,
+	turnReports,
 	visibility,
 } from "@space/data/schema";
 import type { GameEvent } from "../../../backend/src/events.ts";
@@ -46,9 +47,24 @@ export async function tick() {
 
 		await tickDiscoveries(tx, ctx);
 
-		await tickStarSystemPopulation(tx, ctx);
+		const populationChanges = await tickStarSystemPopulation(tx, ctx);
 
-		await tickStarSystemEconomy(tx, ctx);
+		const miningChanges = await tickStarSystemEconomy(tx, ctx);
+
+		await tx.insert(turnReports).values({
+			gameId,
+			turnNumber: ctx.turn,
+			summary: {
+				populationChanges: populationChanges.map((change) => ({
+					starSystemId: change.starSystemId,
+					populationId: change.populationId,
+					previousAmount: change.previousAmount.toString(),
+					newAmount: change.newAmount.toString(),
+					growth: change.growth.toString(),
+				})),
+				miningChanges,
+			},
+		});
 
 		await notifyAboutVisibilityChanges();
 

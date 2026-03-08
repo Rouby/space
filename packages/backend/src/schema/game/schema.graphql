@@ -11,8 +11,33 @@ type Game {
 	players: [Player!]!
 
 	turnNumber: Int!
+	turnReports(limit: Int = 20): [TurnReport!]!
 
 	me: Player
+}
+
+type TurnReport {
+	id: ID!
+	turnNumber: Int!
+	createdAt: DateTime!
+	populationChanges: [TurnReportPopulationChange!]!
+	miningChanges: [TurnReportMiningChange!]!
+}
+
+type TurnReportPopulationChange {
+	starSystemId: ID!
+	populationId: ID!
+	previousAmount: BigInt!
+	newAmount: BigInt!
+	growth: BigInt!
+}
+
+type TurnReportMiningChange {
+	starSystemId: ID!
+	resourceId: ID!
+	mined: Float!
+	remainingDeposits: Float!
+	depotQuantity: Float!
 }
 
 type Player {

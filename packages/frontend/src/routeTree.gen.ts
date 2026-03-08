@@ -25,6 +25,9 @@ const GamesRouteImport = createFileRoute('/games')()
 const GamesAuthenticatedIdLazyRouteImport = createFileRoute(
   '/games/_authenticated/$id',
 )()
+const GamesAuthenticatedIdTurnReportsLazyRouteImport = createFileRoute(
+  '/games/_authenticated/$id/turn-reports',
+)()
 const GamesAuthenticatedIdShipDesignsLazyRouteImport = createFileRoute(
   '/games/_authenticated/$id/ship-designs',
 )()
@@ -91,6 +94,16 @@ const DashboardAuthenticatedGamesIndexRoute =
     path: '/games/',
     getParentRoute: () => DashboardAuthenticatedRoute,
   } as any)
+const GamesAuthenticatedIdTurnReportsLazyRoute =
+  GamesAuthenticatedIdTurnReportsLazyRouteImport.update({
+    id: '/turn-reports',
+    path: '/turn-reports',
+    getParentRoute: () => GamesAuthenticatedIdLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/games/_authenticated.$id/turn-reports.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const GamesAuthenticatedIdShipDesignsLazyRoute =
   GamesAuthenticatedIdShipDesignsLazyRouteImport.update({
     id: '/ship-designs',
@@ -156,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/': typeof DashboardIndexRoute
   '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
   '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
+  '/games/$id/turn-reports': typeof GamesAuthenticatedIdTurnReportsLazyRoute
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
   '/games/$id/dilemmas/$dilemmaId': typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
   '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
@@ -170,6 +184,7 @@ export interface FileRoutesByTo {
   '/': typeof DashboardIndexRoute
   '/games/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
   '/games/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
+  '/games/$id/turn-reports': typeof GamesAuthenticatedIdTurnReportsLazyRoute
   '/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
   '/games/$id/dilemmas/$dilemmaId': typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
   '/games/$id/ship-designs/new': typeof GamesAuthenticatedIdShipDesignsNewLazyRoute
@@ -188,6 +203,7 @@ export interface FileRoutesById {
   '/_dashboard/': typeof DashboardIndexRoute
   '/games/_authenticated/$id': typeof GamesAuthenticatedIdLazyRouteWithChildren
   '/games/_authenticated/$id/ship-designs': typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
+  '/games/_authenticated/$id/turn-reports': typeof GamesAuthenticatedIdTurnReportsLazyRoute
   '/_dashboard/_authenticated/games/': typeof DashboardAuthenticatedGamesIndexRoute
   '/_dashboard/_authenticated/games/lobby/$id': typeof DashboardAuthenticatedGamesLobbyIdRoute
   '/games/_authenticated/$id/dilemmas/$dilemmaId': typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
@@ -205,6 +221,7 @@ export interface FileRouteTypes {
     | '/'
     | '/games/$id'
     | '/games/$id/ship-designs'
+    | '/games/$id/turn-reports'
     | '/games/lobby/$id'
     | '/games/$id/dilemmas/$dilemmaId'
     | '/games/$id/ship-designs/new'
@@ -219,6 +236,7 @@ export interface FileRouteTypes {
     | '/'
     | '/games/$id'
     | '/games/$id/ship-designs'
+    | '/games/$id/turn-reports'
     | '/games/lobby/$id'
     | '/games/$id/dilemmas/$dilemmaId'
     | '/games/$id/ship-designs/new'
@@ -236,6 +254,7 @@ export interface FileRouteTypes {
     | '/_dashboard/'
     | '/games/_authenticated/$id'
     | '/games/_authenticated/$id/ship-designs'
+    | '/games/_authenticated/$id/turn-reports'
     | '/_dashboard/_authenticated/games/'
     | '/_dashboard/_authenticated/games/lobby/$id'
     | '/games/_authenticated/$id/dilemmas/$dilemmaId'
@@ -320,6 +339,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/games'
       preLoaderRoute: typeof DashboardAuthenticatedGamesIndexRouteImport
       parentRoute: typeof DashboardAuthenticatedRoute
+    }
+    '/games/_authenticated/$id/turn-reports': {
+      id: '/games/_authenticated/$id/turn-reports'
+      path: '/turn-reports'
+      fullPath: '/games/$id/turn-reports'
+      preLoaderRoute: typeof GamesAuthenticatedIdTurnReportsLazyRouteImport
+      parentRoute: typeof GamesAuthenticatedIdLazyRoute
     }
     '/games/_authenticated/$id/ship-designs': {
       id: '/games/_authenticated/$id/ship-designs'
@@ -421,6 +447,7 @@ const GamesAuthenticatedIdShipDesignsLazyRouteWithChildren =
 
 interface GamesAuthenticatedIdLazyRouteChildren {
   GamesAuthenticatedIdShipDesignsLazyRoute: typeof GamesAuthenticatedIdShipDesignsLazyRouteWithChildren
+  GamesAuthenticatedIdTurnReportsLazyRoute: typeof GamesAuthenticatedIdTurnReportsLazyRoute
   GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute: typeof GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute
   GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute: typeof GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute
   GamesAuthenticatedIdDilemmasIndexLazyRoute: typeof GamesAuthenticatedIdDilemmasIndexLazyRoute
@@ -430,6 +457,8 @@ const GamesAuthenticatedIdLazyRouteChildren: GamesAuthenticatedIdLazyRouteChildr
   {
     GamesAuthenticatedIdShipDesignsLazyRoute:
       GamesAuthenticatedIdShipDesignsLazyRouteWithChildren,
+    GamesAuthenticatedIdTurnReportsLazyRoute:
+      GamesAuthenticatedIdTurnReportsLazyRoute,
     GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute:
       GamesAuthenticatedIdDilemmasDilemmaIdLazyRoute,
     GamesAuthenticatedIdStarSystemStarSystemIdLazyRoute:

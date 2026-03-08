@@ -39,5 +39,6 @@ export * from "./schema/shipComponents.ts";
 export * from "./schema/shipDesigns.ts";
 export * from "./schema/starSystems.ts";
 export * from "./schema/taskForces.ts";
+export * from "./schema/turnReports.ts";
 export * from "./schema/users.ts";
 export * from "./schema/visibility.ts";

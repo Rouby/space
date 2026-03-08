@@ -53,6 +53,9 @@ import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColoni
 import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOrder.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TurnEndedEvent } from './game/resolvers/TurnEndedEvent.js';
+import    { TurnReport } from './game/resolvers/TurnReport.js';
+import    { TurnReportMiningChange } from './game/resolvers/TurnReportMiningChange.js';
+import    { TurnReportPopulationChange } from './game/resolvers/TurnReportPopulationChange.js';
 import    { UnknownDiscovery } from './starSystem/resolvers/UnknownDiscovery.js';
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
@@ -91,6 +94,9 @@ TaskForceColonizeOrder: TaskForceColonizeOrder,
 TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TurnEndedEvent: TurnEndedEvent,
+TurnReport: TurnReport,
+TurnReportMiningChange: TurnReportMiningChange,
+TurnReportPopulationChange: TurnReportPopulationChange,
 UnknownDiscovery: UnknownDiscovery,
 User: User,
 Vector: Vector,
