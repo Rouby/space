@@ -736,6 +736,25 @@
       },
       {
         "kind": "OBJECT",
+        "name": "NewTurnCalculatedEvent",
+        "fields": [
+          {
+            "name": "game",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Game",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "Player",
         "fields": [
           {
@@ -2164,6 +2183,10 @@
         "kind": "UNION",
         "name": "TrackGameEvent",
         "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "NewTurnCalculatedEvent"
+          },
           {
             "kind": "OBJECT",
             "name": "TurnEndedEvent"

@@ -47,9 +47,13 @@ type Mutation {
 	endTurn(gameId: ID!): Game!
 }
 
-union TrackGameEvent = TurnEndedEvent
+union TrackGameEvent = TurnEndedEvent | NewTurnCalculatedEvent
 
 type TurnEndedEvent {
+	game: Game!
+}
+
+type NewTurnCalculatedEvent {
 	game: Game!
 }
 

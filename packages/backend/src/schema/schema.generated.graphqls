@@ -58,6 +58,10 @@ type Mutation {
 	updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
 }
 
+type NewTurnCalculatedEvent {
+	game: Game!
+}
+
 type Player {
 	color: String!
 	id: ID!
@@ -266,7 +270,7 @@ union TrackGalaxyEvent =
 	| PositionableMovesEvent
 	| StarSystemUpdateEvent
 
-union TrackGameEvent = TurnEndedEvent
+union TrackGameEvent = NewTurnCalculatedEvent | TurnEndedEvent
 
 union TrackStarSystemEvent = StarSystemUpdateEvent
 

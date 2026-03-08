@@ -8,7 +8,7 @@ import {
 	IconView360,
 } from "@tabler/icons-react";
 import { createLink, type LinkProps, useParams } from "@tanstack/react-router";
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { graphql } from "../../gql";
@@ -153,6 +153,11 @@ const NavLink = createLink(ButtonLink);
 
 function EndTurnButton() {
 	const { id: gameId } = useParams({ from: "/games/_authenticated/$id" });
+	const [endTurnRequested, setEndTurnRequested] = useState(false);
+	const [newTurnCalculated, setNewTurnCalculated] = useState(false);
+	const [hasAdvancedTurn, setHasAdvancedTurn] = useState(false);
+	const newTurnTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 	const [{ data }] = useQuery({
 		query: graphql(`
 			query CurrentTurnEnded($gameId: ID!) {
@@ -162,20 +167,22 @@ function EndTurnButton() {
 						id
 						choosen
 					}
-          me {
+					me {
 						id
-            turnEnded
-          }
+						turnEnded
+					}
 				}
 			}
 		`),
 		variables: { gameId },
 	});
-	useSubscription({
+
+	const [turnEvents] = useSubscription({
 		query: graphql(`
 			subscription CurrentTurn($gameId: ID!) {
-				trackGame(gameId: $gameId) { 
-					... on TurnEndedEvent {
+				trackGame(gameId: $gameId) {
+					__typename
+					... on NewTurnCalculatedEvent {
 						game {
 							id
 							turnNumber
@@ -186,44 +193,95 @@ function EndTurnButton() {
 						}
 					}
 				}
-			}`),
+			}
+		`),
 		variables: { gameId },
 	});
 
-	const [, endTurn] = useMutation(
+	console.log(turnEvents);
+
+	useEffect(() => {
+		if (
+			!turnEvents.data?.trackGame ||
+			turnEvents.data.trackGame.__typename !== "NewTurnCalculatedEvent"
+		) {
+			return;
+		}
+
+		setEndTurnRequested(false);
+		setHasAdvancedTurn(true);
+		setNewTurnCalculated(true);
+	}, [turnEvents.data?.trackGame]);
+
+	useEffect(() => {
+		if (data?.game.me?.turnEnded === false) {
+			setHasAdvancedTurn(false);
+		}
+	}, [data?.game.me?.turnEnded]);
+
+	useEffect(() => {
+		if (!newTurnCalculated) {
+			return;
+		}
+
+		newTurnTimeoutRef.current = setTimeout(() => {
+			setNewTurnCalculated(false);
+		}, 6000);
+
+		return () => {
+			if (newTurnTimeoutRef.current) {
+				clearTimeout(newTurnTimeoutRef.current);
+			}
+		};
+	}, [newTurnCalculated]);
+
+	const [endTurnResult, endTurn] = useMutation(
 		graphql(`
 			mutation EndTurn($gameId: ID!) {
 				endTurn(gameId: $gameId) {
 					id
 				}
 			}
-	`),
+		`),
 	);
 
 	const hasUnresolvedDilemmas =
 		(data?.game.dilemmas.filter((dilemma) => !dilemma.choosen).length ?? 0) > 0;
 
-	const TurnIcon = data?.game.me?.turnEnded ? IconHourglass : IconPlayerPlay;
-	const isTurnEnded = Boolean(data?.game.me?.turnEnded);
+	const isTurnEnded = Boolean(data?.game.me?.turnEnded) && !hasAdvancedTurn;
+	const hasEndedTurn = isTurnEnded || endTurnRequested;
+	const TurnIcon = hasEndedTurn ? IconHourglass : IconPlayerPlay;
 	const buttonDescription = hasUnresolvedDilemmas
 		? "Resolve all dilemmas before ending turn"
-		: isTurnEnded
-			? "Turn already ended"
-			: "Ready to end turn";
+		: endTurnResult.error
+			? "Could not end turn. Try again"
+			: newTurnCalculated
+				? "New turn calculated. You can issue orders"
+				: endTurnResult.fetching
+					? "Ending turn..."
+					: hasEndedTurn
+						? "Turn ended. Waiting for other players"
+						: "Ready to end turn";
 
 	return (
 		<MantineNavLink
 			component="button"
-			onClick={() => {
+			onClick={async () => {
 				if (hasUnresolvedDilemmas) {
 					return;
 				}
 
-				endTurn({ gameId });
+				setEndTurnRequested(true);
+				const result = await endTurn({ gameId });
+
+				if (result.error) {
+					setEndTurnRequested(false);
+				}
 			}}
-			disabled={hasUnresolvedDilemmas || isTurnEnded}
-			label="End Turn"
+			disabled={hasUnresolvedDilemmas || hasEndedTurn || endTurnResult.fetching}
+			label={hasEndedTurn ? "Turn Ended" : "End Turn"}
 			leftSection={<TurnIcon size={20} stroke={1.5} />}
+			rightSection={newTurnCalculated ? <Badge color="green">NEW</Badge> : null}
 			description={buttonDescription}
 		/>
 	);

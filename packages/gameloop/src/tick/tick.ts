@@ -64,6 +64,13 @@ export async function tick() {
 
 		ctx.postMessage({
 			type: "game:turnEnded",
+			gameId,
+			turnNumber: ctx.turn,
+		});
+
+		ctx.postMessage({
+			type: "game:newTurnCalculated",
+			gameId,
 			turnNumber: ctx.turn + 1,
 		});
 

@@ -1,5 +1,6 @@
 export type GameEvent =
 	| TurnEnded
+	| NewTurnCalculated
 	| TaskForceAppeared
 	| TaskForcePosition
 	| TaskForceDisappeared
@@ -20,6 +21,13 @@ export type GameEvent =
 
 interface TurnEnded {
 	type: "game:turnEnded";
+	gameId: string;
+	turnNumber: number;
+}
+
+interface NewTurnCalculated {
+	type: "game:newTurnCalculated";
+	gameId: string;
 	turnNumber: number;
 }
 

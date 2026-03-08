@@ -29,6 +29,7 @@ import    { Game as shipComponent_Game } from './shipComponent/resolvers/Game.js
 import    { Game as shipDesign_Game } from './shipDesign/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
 import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
+import    { NewTurnCalculatedEvent } from './game/resolvers/NewTurnCalculatedEvent.js';
 import    { Player as game_Player } from './game/resolvers/Player.js';
 import    { Player as resource_Player } from './resource/resolvers/Player.js';
 import    { Player as shipComponent_Player } from './shipComponent/resolvers/Player.js';
@@ -70,6 +71,7 @@ import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
       Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,
 Game: { ...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
+NewTurnCalculatedEvent: NewTurnCalculatedEvent,
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
 Population: Population,
 PositionableApppearsEvent: PositionableApppearsEvent,

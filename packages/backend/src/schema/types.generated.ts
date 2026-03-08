@@ -149,6 +149,11 @@ export type MutationupdatePlayerArgs = {
   input: UpdatePlayerInput;
 };
 
+export type NewTurnCalculatedEvent = {
+  __typename?: 'NewTurnCalculatedEvent';
+  game: Game;
+};
+
 export type Player = {
   __typename?: 'Player';
   color: Scalars['String']['output'];
@@ -402,7 +407,7 @@ export type TaskForceShipRole =
 
 export type TrackGalaxyEvent = PositionableApppearsEvent | PositionableDisappearsEvent | PositionableMovesEvent | StarSystemUpdateEvent;
 
-export type TrackGameEvent = TurnEndedEvent;
+export type TrackGameEvent = NewTurnCalculatedEvent | TurnEndedEvent;
 
 export type TrackStarSystemEvent = StarSystemUpdateEvent;
 
@@ -510,7 +515,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
   Reference: ( DilemmaMapper & { __typename: 'Dilemma' } ) | ( StarSystemMapper & { __typename: 'StarSystem' } );
   TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
-  TrackGameEvent: ( Omit<TurnEndedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'TurnEndedEvent' } );
+  TrackGameEvent: ( Omit<NewTurnCalculatedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'NewTurnCalculatedEvent' } ) | ( Omit<TurnEndedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'TurnEndedEvent' } );
   TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
 };
 
@@ -533,6 +538,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   Player: ResolverTypeWrapper<PlayerMapper>;
   Population: ResolverTypeWrapper<PopulationMapper>;
   Positionable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Positionable']>;
@@ -588,6 +594,7 @@ export type ResolversParentTypes = {
   Int: Scalars['Int']['output'];
   Mutation: {};
   Boolean: Scalars['Boolean']['output'];
+  NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   Player: PlayerMapper;
   Population: PopulationMapper;
   Positionable: ResolversInterfaceTypes<ResolversParentTypes>['Positionable'];
@@ -691,6 +698,11 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
   updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
   updatePlayer?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationupdatePlayerArgs, 'gameId' | 'input'>>;
+};
+
+export type NewTurnCalculatedEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['NewTurnCalculatedEvent'] = ResolversParentTypes['NewTurnCalculatedEvent']> = {
+  game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PlayerResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
@@ -893,7 +905,7 @@ export type TrackGalaxyEventResolvers<ContextType = Context, ParentType extends 
 };
 
 export type TrackGameEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackGameEvent'] = ResolversParentTypes['TrackGameEvent']> = {
-  __resolveType?: TypeResolveFn<'TurnEndedEvent', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'NewTurnCalculatedEvent' | 'TurnEndedEvent', ParentType, ContextType>;
 };
 
 export type TrackStarSystemEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TrackStarSystemEvent'] = ResolversParentTypes['TrackStarSystemEvent']> = {
@@ -931,6 +943,7 @@ export type Resolvers<ContextType = Context> = {
   Discovery?: DiscoveryResolvers<ContextType>;
   Game?: GameResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  NewTurnCalculatedEvent?: NewTurnCalculatedEventResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
   Population?: PopulationResolvers<ContextType>;
   Positionable?: PositionableResolvers<ContextType>;
