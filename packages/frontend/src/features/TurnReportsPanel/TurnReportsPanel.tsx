@@ -29,15 +29,23 @@ export function TurnReportsPanel() {
 						turnNumber
 						createdAt
 						populationChanges {
-							starSystemId
-							populationId
+							starSystem {
+								id
+							}
+							population {
+								id
+							}
 							previousAmount
 							newAmount
 							growth
 						}
 						miningChanges {
-							starSystemId
-							resourceId
+							starSystem {
+								id
+							}
+							resource {
+								id
+							}
 							mined
 							remainingDeposits
 							depotQuantity
@@ -80,8 +88,8 @@ export function TurnReportsPanel() {
 									</Text>
 
 									{report.populationChanges.slice(0, 5).map((change) => (
-										<Text key={change.populationId} size="xs">
-											Pop {compactId(change.populationId)}: +
+										<Text key={change.population.id} size="xs">
+											Pop {compactId(change.population.id)}: +
 											{formatInteger(change.growth)} (
 											{formatInteger(change.previousAmount)} {"->"}{" "}
 											{formatInteger(change.newAmount)})
@@ -98,11 +106,11 @@ export function TurnReportsPanel() {
 
 									{report.miningChanges.slice(0, 5).map((change) => (
 										<Text
-											key={`${change.starSystemId}:${change.resourceId}`}
+											key={`${change.starSystem.id}:${change.resource.id}`}
 											size="xs"
 										>
-											Mine {compactId(change.resourceId)} at{" "}
-											{compactId(change.starSystemId)}: +
+											Mine {compactId(change.resource.id)} at{" "}
+											{compactId(change.starSystem.id)}: +
 											{formatUnit(change.mined)} (depot{" "}
 											{formatUnit(change.depotQuantity)})
 										</Text>

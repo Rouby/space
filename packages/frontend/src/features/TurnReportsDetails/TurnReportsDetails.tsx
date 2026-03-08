@@ -8,14 +8,9 @@ import {
 	Title,
 } from "@mantine/core";
 import { useParams } from "@tanstack/react-router";
-import { useMemo } from "react";
 import { useQuery } from "urql";
 import { formatInteger, formatUnit } from "../../format/formatNumber";
 import { graphql } from "../../gql";
-
-function fallbackName(prefix: string, id: string) {
-	return `${prefix} ${id.slice(0, 8)}`;
-}
 
 export function TurnReportsDetails() {
 	const { id: gameId } = useParams({ from: "/games/_authenticated/$id" });
@@ -25,28 +20,31 @@ export function TurnReportsDetails() {
 			query TurnReportsDetails($gameId: ID!) {
 				game(id: $gameId) {
 					id
-					starSystems {
-						id
-						name
-					}
-					resources {
-						id
-						name
-					}
 					turnReports(limit: 40) {
 						id
 						turnNumber
 						createdAt
 						populationChanges {
-							starSystemId
-							populationId
+							starSystem {
+								id
+								name
+							}
+							population {
+								id
+							}
 							previousAmount
 							newAmount
 							growth
 						}
 						miningChanges {
-							starSystemId
-							resourceId
+							starSystem {
+								id
+								name
+							}
+							resource {
+								id
+								name
+							}
 							mined
 							remainingDeposits
 							depotQuantity
@@ -57,21 +55,6 @@ export function TurnReportsDetails() {
 		`),
 		variables: { gameId },
 	});
-
-	const starSystemNames = useMemo(() => {
-		return new Map(
-			(data?.game.starSystems ?? []).map((ss) => [ss.id, ss.name]),
-		);
-	}, [data?.game.starSystems]);
-
-	const resourceNames = useMemo(() => {
-		return new Map(
-			(data?.game.resources ?? []).map((resource) => [
-				resource.id,
-				resource.name,
-			]),
-		);
-	}, [data?.game.resources]);
 
 	const reports = data?.game.turnReports ?? [];
 
@@ -108,13 +91,10 @@ export function TurnReportsDetails() {
 										</Text>
 									) : (
 										report.populationChanges.map((change) => {
-											const starSystemName =
-												starSystemNames.get(change.starSystemId) ??
-												fallbackName("System", change.starSystemId);
-
 											return (
-												<Text size="sm" key={change.populationId}>
-													{starSystemName}: +{formatInteger(change.growth)} (
+												<Text size="sm" key={change.population.id}>
+													{change.starSystem.name}: +
+													{formatInteger(change.growth)} (
 													{formatInteger(change.previousAmount)} {"->"}{" "}
 													{formatInteger(change.newAmount)})
 												</Text>
@@ -133,22 +113,15 @@ export function TurnReportsDetails() {
 										</Text>
 									) : (
 										report.miningChanges.map((change) => {
-											const starSystemName =
-												starSystemNames.get(change.starSystemId) ??
-												fallbackName("System", change.starSystemId);
-											const resourceName =
-												resourceNames.get(change.resourceId) ??
-												fallbackName("Resource", change.resourceId);
-
 											return (
 												<Text
 													size="sm"
-													key={`${change.starSystemId}:${change.resourceId}`}
+													key={`${change.starSystem.id}:${change.resource.id}`}
 												>
-													{starSystemName} mined {formatUnit(change.mined)}{" "}
-													{resourceName} (depot:{" "}
-													{formatUnit(change.depotQuantity)}, remaining deposit:{" "}
-													{formatUnit(change.remainingDeposits)})
+													{change.starSystem.name} mined{" "}
+													{formatUnit(change.mined)} {change.resource.name}{" "}
+													(depot: {formatUnit(change.depotQuantity)}, remaining
+													deposit: {formatUnit(change.remainingDeposits)})
 												</Text>
 											);
 										})

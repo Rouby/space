@@ -478,17 +478,17 @@ export type TurnReportMiningChange = {
   depotQuantity: Scalars['Float']['output'];
   mined: Scalars['Float']['output'];
   remainingDeposits: Scalars['Float']['output'];
-  resourceId: Scalars['ID']['output'];
-  starSystemId: Scalars['ID']['output'];
+  resource: Resource;
+  starSystem: StarSystem;
 };
 
 export type TurnReportPopulationChange = {
   __typename?: 'TurnReportPopulationChange';
   growth: Scalars['BigInt']['output'];
   newAmount: Scalars['BigInt']['output'];
-  populationId: Scalars['ID']['output'];
+  population: Population;
   previousAmount: Scalars['BigInt']['output'];
-  starSystemId: Scalars['ID']['output'];
+  starSystem: StarSystem;
 };
 
 export type UnknownDiscovery = {
@@ -1033,17 +1033,17 @@ export type TurnReportMiningChangeResolvers<ContextType = Context, ParentType ex
   depotQuantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   mined?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   remainingDeposits?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  resourceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  starSystemId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportPopulationChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportPopulationChange'] = ResolversParentTypes['TurnReportPopulationChange']> = {
   growth?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   newAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  populationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  population?: Resolver<ResolversTypes['Population'], ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  starSystemId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

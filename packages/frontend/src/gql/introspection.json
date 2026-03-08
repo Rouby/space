@@ -2539,23 +2539,25 @@
             "args": []
           },
           {
-            "name": "resourceId",
+            "name": "resource",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
+                "kind": "OBJECT",
+                "name": "Resource",
+                "ofType": null
               }
             },
             "args": []
           },
           {
-            "name": "starSystemId",
+            "name": "starSystem",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
               }
             },
             "args": []
@@ -2590,12 +2592,13 @@
             "args": []
           },
           {
-            "name": "populationId",
+            "name": "population",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
+                "kind": "OBJECT",
+                "name": "Population",
+                "ofType": null
               }
             },
             "args": []
@@ -2612,12 +2615,13 @@
             "args": []
           },
           {
-            "name": "starSystemId",
+            "name": "starSystem",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
               }
             },
             "args": []

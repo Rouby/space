@@ -1,3 +1,5 @@
+import { eq, resources, starSystems } from "@space/data/schema";
+import { createGraphQLError } from "graphql-yoga";
 import type { TurnReportMiningChangeResolvers } from "./../../types.generated.ts";
 
 export const TurnReportMiningChange: TurnReportMiningChangeResolvers = {
@@ -10,10 +12,30 @@ export const TurnReportMiningChange: TurnReportMiningChangeResolvers = {
 	remainingDeposits: async (parent, _arg, _ctx) => {
 		return parent.remainingDeposits;
 	},
-	resourceId: async (parent, _arg, _ctx) => {
-		return parent.resourceId;
+	resource: async (parent, _arg, ctx) => {
+		const resource = await ctx.drizzle.query.resources.findFirst({
+			where: eq(resources.id, parent.resourceId),
+		});
+
+		if (!resource) {
+			throw createGraphQLError("Resource not found");
+		}
+
+		return resource;
 	},
-	starSystemId: async (parent, _arg, _ctx) => {
-		return parent.starSystemId;
+	starSystem: async (parent, _arg, ctx) => {
+		const starSystem = await ctx.drizzle.query.starSystems.findFirst({
+			where: eq(starSystems.id, parent.starSystemId),
+		});
+
+		if (!starSystem) {
+			throw createGraphQLError("Star system not found");
+		}
+
+		return {
+			...starSystem,
+			isVisible: true,
+			lastUpdate: null,
+		};
 	},
 };

@@ -25,16 +25,16 @@ type TurnReport {
 }
 
 type TurnReportPopulationChange {
-	starSystemId: ID!
-	populationId: ID!
+	starSystem: StarSystem!
+	population: Population!
 	previousAmount: BigInt!
 	newAmount: BigInt!
 	growth: BigInt!
 }
 
 type TurnReportMiningChange {
-	starSystemId: ID!
-	resourceId: ID!
+	starSystem: StarSystem!
+	resource: Resource!
 	mined: Float!
 	remainingDeposits: Float!
 	depotQuantity: Float!

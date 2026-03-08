@@ -318,16 +318,16 @@ type TurnReportMiningChange {
 	depotQuantity: Float!
 	mined: Float!
 	remainingDeposits: Float!
-	resourceId: ID!
-	starSystemId: ID!
+	resource: Resource!
+	starSystem: StarSystem!
 }
 
 type TurnReportPopulationChange {
 	growth: BigInt!
 	newAmount: BigInt!
-	populationId: ID!
+	population: Population!
 	previousAmount: BigInt!
-	starSystemId: ID!
+	starSystem: StarSystem!
 }
 
 type UnknownDiscovery {
