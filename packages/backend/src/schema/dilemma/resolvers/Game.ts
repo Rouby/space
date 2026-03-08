@@ -1,4 +1,4 @@
-import { and, dilemmas, eq, isNull } from "@space/data/schema";
+import { and, dilemmas, eq } from "@space/data/schema";
 import type { Context } from "../../../context.js";
 import type { GameResolvers } from "./../../types.generated.js";
 export const Game: Pick<GameResolvers, "dilemmas" | "__isTypeOf"> = {
@@ -14,7 +14,6 @@ export const Game: Pick<GameResolvers, "dilemmas" | "__isTypeOf"> = {
 				and(
 					eq(dilemmas.ownerId, context.userId),
 					eq(dilemmas.gameId, _parent.id),
-					// isNull(dilemmas.choosen),
 				),
 			);
 	},

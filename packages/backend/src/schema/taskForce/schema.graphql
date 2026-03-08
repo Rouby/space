@@ -9,6 +9,7 @@ type TaskForce implements Positionable {
 	name: String!
 	position: Vector!
 	orders: [TaskForceOrder!]
+	combatDeck: [String!]
 	movementVector: Vector
 	owner: Player
 	game: Game!
@@ -62,6 +63,11 @@ input ConstructTaskForceInput {
 	name: String!
 }
 
+input ConfigureTaskForceCombatDeckInput {
+	taskForceId: ID!
+	cardIds: [String!]!
+}
+
 type Mutation {
 	orderTaskForce(
 		id: ID!
@@ -69,4 +75,7 @@ type Mutation {
 		queue: Boolean
 	): TaskForce!
 	constructTaskForce(input: ConstructTaskForceInput!): TaskForce!
+	configureTaskForceCombatDeck(
+		input: ConfigureTaskForceCombatDeckInput!
+	): TaskForce!
 }

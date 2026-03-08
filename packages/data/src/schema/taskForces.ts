@@ -31,6 +31,7 @@ export const taskForces = pgTable("taskForces", {
 			)[]
 		>()
 		.default([]),
+	combatDeck: json().notNull().$type<string[]>().default([]),
 	movementVector: point({ mode: "xy" }),
 	constructionStarSystemId: uuid().references(() => starSystems.id, {
 		onDelete: "set null",

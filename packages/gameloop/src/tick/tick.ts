@@ -19,6 +19,7 @@ import { tickColonization } from "./colonization.ts";
 import { tickDiscoveries } from "./discoveries.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
+import { tickTaskForceCombat } from "./taskForceCombat.ts";
 import { tickTaskForceConstruction } from "./taskForceConstruction.ts";
 import { tickTaskForceMovement } from "./taskForceMovement.ts";
 
@@ -55,6 +56,8 @@ export async function tick() {
 		await tickTaskForceConstruction(tx, ctx);
 
 		await tickTaskForceMovement(tx, ctx);
+
+		await tickTaskForceCombat(tx, ctx);
 
 		const populationChanges = await tickStarSystemPopulation(tx, ctx);
 

@@ -1,11 +1,12 @@
-import type { VectorMapper } from "../base/schema.mappers";
-import type { TaskForceShipRole } from "../types.generated";
+import type { VectorMapper } from "../base/schema.mappers.ts";
+import type { TaskForceShipRole } from "../types.generated.ts";
 
 export type TaskForceMapper = {
 	id: string;
 	name: string | null;
 	position: VectorMapper;
 	orders: TaskForceOrderMapper[] | null;
+	combatDeck: string[] | null;
 	movementVector: VectorMapper | null;
 	isVisible: boolean;
 	lastUpdate: Date | null;

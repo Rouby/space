@@ -97,6 +97,9 @@ interface TaskForceEngagementWeaponFired {
 	weaponComponentId: string;
 	weaponComponentPosition: number;
 	damage: number;
+	round?: number;
+	effectType?: "damage" | "buff" | "special";
+	resolvedValue?: number;
 }
 
 interface TaskForceEngagementEnded {

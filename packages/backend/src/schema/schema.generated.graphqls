@@ -1,5 +1,10 @@
 scalar BigInt
 
+input ConfigureTaskForceCombatDeckInput {
+	cardIds: [String!]!
+	taskForceId: ID!
+}
+
 input ConstructTaskForceInput {
 	name: String!
 	shipDesignId: ID!
@@ -47,6 +52,9 @@ type Game {
 }
 
 type Mutation {
+	configureTaskForceCombatDeck(
+		input: ConfigureTaskForceCombatDeckInput!
+	): TaskForce!
 	constructTaskForce(input: ConstructTaskForceInput!): TaskForce!
 	createGame(name: String!): Game!
 	createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
@@ -234,6 +242,7 @@ type Subscription {
 }
 
 type TaskForce implements Positionable {
+	combatDeck: [String!]
 	game: Game!
 	id: ID!
 	isVisible: Boolean!

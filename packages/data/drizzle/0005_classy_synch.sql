@@ -1,0 +1,1 @@
+ALTER TABLE "taskForces" ADD COLUMN "combatDeck" json DEFAULT '[]'::json NOT NULL;

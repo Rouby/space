@@ -48,6 +48,276 @@ test("should be able to login and see the game", async ({ page, api }) => {
 	).toBeVisible();
 });
 
+test("configures task force combat deck with MVP validation rules", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "deck-host@example.com",
+		name: "Deck Host",
+	});
+	const { id: intruderId } = await api.seed("user", {
+		email: "deck-intruder@example.com",
+		name: "Deck Intruder",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Deck Rules Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#aabbcc",
+	});
+	await api.seed("player", {
+		gameId,
+		userId: intruderId,
+		color: "#ccaa77",
+	});
+
+	const { id: taskForceId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: hostId,
+		name: "Deck Fleet",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+
+	await api.login(hostId);
+
+	const invalidDeckResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id } }",
+			variables: {
+				input: {
+					taskForceId,
+					cardIds: ["laser_burst"],
+				},
+			},
+		},
+	});
+	const invalidDeckPayload = await invalidDeckResponse.json();
+	expect(invalidDeckPayload.errors?.[0]?.extensions?.code).toBe(
+		"INVALID_DECK_SIZE",
+	);
+
+	const duplicateDeckResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id } }",
+			variables: {
+				input: {
+					taskForceId,
+					cardIds: [
+						"laser_burst",
+						"laser_burst",
+						"laser_burst",
+						"target_lock",
+						"target_lock",
+						"emergency_repairs",
+						"emergency_repairs",
+						"shield_pulse",
+						"shield_pulse",
+						"evasive_maneuver",
+						"evasive_maneuver",
+						"overcharge_barrage",
+					],
+				},
+			},
+		},
+	});
+	const duplicateDeckPayload = await duplicateDeckResponse.json();
+	expect(duplicateDeckPayload.errors?.[0]?.extensions?.code).toBe(
+		"DUPLICATE_CARD_LIMIT_EXCEEDED",
+	);
+
+	await api.login(intruderId);
+	const unauthorizedDeckResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id } }",
+			variables: {
+				input: {
+					taskForceId,
+					cardIds: [
+						"laser_burst",
+						"laser_burst",
+						"target_lock",
+						"target_lock",
+						"emergency_repairs",
+						"emergency_repairs",
+						"shield_pulse",
+						"shield_pulse",
+						"evasive_maneuver",
+						"evasive_maneuver",
+						"overcharge_barrage",
+						"overcharge_barrage",
+					],
+				},
+			},
+		},
+	});
+	const unauthorizedDeckPayload = await unauthorizedDeckResponse.json();
+	expect(unauthorizedDeckPayload.errors?.[0]?.extensions?.code).toBe(
+		"NOT_AUTHORIZED",
+	);
+
+	await api.login(hostId);
+
+	const validDeck = [
+		"laser_burst",
+		"laser_burst",
+		"target_lock",
+		"target_lock",
+		"emergency_repairs",
+		"emergency_repairs",
+		"shield_pulse",
+		"shield_pulse",
+		"evasive_maneuver",
+		"evasive_maneuver",
+		"overcharge_barrage",
+		"overcharge_barrage",
+	];
+
+	const validDeckResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id combatDeck } }",
+			variables: {
+				input: {
+					taskForceId,
+					cardIds: validDeck,
+				},
+			},
+		},
+	});
+	const validDeckPayload = await validDeckResponse.json();
+	expect(validDeckPayload.errors).toBeUndefined();
+	expect(validDeckPayload.data?.configureTaskForceCombatDeck?.id).toBe(taskForceId);
+	expect(validDeckPayload.data?.configureTaskForceCombatDeck?.combatDeck).toEqual(
+		validDeck,
+	);
+});
+
+test("resolves configured combat decks during turn resolution and applies engagement outcomes", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "combat-flow-host@example.com",
+		name: "Combat Flow Host",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Combat Flow Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#8899aa",
+	});
+
+	const { id: tfA } = await api.seed("taskForce", {
+		gameId,
+		ownerId: hostId,
+		name: "Aggressor A",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+	const { id: tfB } = await api.seed("taskForce", {
+		gameId,
+		ownerId: hostId,
+		name: "Aggressor B",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+
+	await api.login(hostId);
+
+	const combatDeck = [
+		"target_lock",
+		"overcharge_barrage",
+		"overcharge_barrage",
+		"laser_burst",
+		"laser_burst",
+		"shield_pulse",
+		"shield_pulse",
+		"emergency_repairs",
+		"emergency_repairs",
+		"evasive_maneuver",
+		"evasive_maneuver",
+		"target_lock",
+	];
+
+	for (const taskForceId of [tfA, tfB]) {
+		const configureResponse = await page.request.post("/graphql", {
+			data: {
+				query:
+					"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id combatDeck } }",
+				variables: {
+					input: {
+						taskForceId,
+						cardIds: combatDeck,
+					},
+				},
+			},
+		});
+		const configurePayload = await configureResponse.json();
+		expect(configurePayload.errors).toBeUndefined();
+		expect(configurePayload.data?.configureTaskForceCombatDeck?.id).toBe(taskForceId);
+	}
+
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
+		},
+	});
+	const startPayload = await startResponse.json();
+	expect(startPayload.errors).toBeUndefined();
+
+	const endTurnResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const endTurnPayload = await endTurnResponse.json();
+	expect(endTurnPayload.errors).toBeUndefined();
+
+	await expect
+		.poll(
+			async () => {
+				const stateResponse = await page.request.post("/graphql", {
+					data: {
+						query:
+							"query GameTaskForces($id: ID!) { game(id: $id) { id turnNumber taskForces { id } } }",
+						variables: { id: gameId },
+					},
+				});
+				const statePayload = await stateResponse.json();
+				return {
+					errors: statePayload.errors,
+					turnNumber: statePayload.data?.game?.turnNumber,
+					taskForceCount: (statePayload.data?.game?.taskForces ?? []).length,
+				};
+			},
+			{ timeout: 20000 },
+		)
+		.toMatchObject({
+			errors: undefined,
+			turnNumber: 1,
+			taskForceCount: 1,
+		});
+});
+
 test("denies querying a game for users that are not campaign participants", async ({
 	page,
 	api,

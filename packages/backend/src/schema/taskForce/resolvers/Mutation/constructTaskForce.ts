@@ -14,6 +14,7 @@ import {
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "../../../types.generated.js";
+import { STARTER_COMBAT_DECK } from "./configureTaskForceCombatDeck.js";
 
 export const constructTaskForce: NonNullable<
 	MutationResolvers["constructTaskForce"]
@@ -197,6 +198,7 @@ export const constructTaskForce: NonNullable<
 				constructionDone: "0",
 				constructionTotal: constructionTotal.toString(),
 				constructionPerTick: constructionTotal.toString(),
+				combatDeck: STARTER_COMBAT_DECK,
 				orders: [],
 			})
 			.returning();

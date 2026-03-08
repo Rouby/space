@@ -44,5 +44,8 @@
 	},
 	"[typescriptreact]": {
 		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"chat.tools.terminal.autoApprove": {
+		"git rev-parse": true
 	}
 }

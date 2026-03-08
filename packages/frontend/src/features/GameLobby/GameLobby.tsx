@@ -63,7 +63,7 @@ export function GameLobby() {
   }`),
 	);
 
-	const [{ fetching: updatingSettings }, updateSettings] = useMutation(
+	const [_, updateSettings] = useMutation(
 		graphql(`mutation UpdateGameSettings($gameId: ID!, $input: UpdateGameSettingsInput!) {
       updateGameSettings(gameId: $gameId, input: $input) {
         id

@@ -36,6 +36,13 @@
       "when": 1773003355704,
       "tag": "0004_shallow_grandmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1773005716143,
+      "tag": "0005_classy_synch",
+      "breakpoints": true
     }
   ]
 }

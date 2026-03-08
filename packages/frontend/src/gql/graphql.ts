@@ -19,6 +19,11 @@ export type Scalars = {
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
 
+export type ConfigureTaskForceCombatDeckInput = {
+  cardIds: Array<Scalars['String']['input']>;
+  taskForceId: Scalars['ID']['input'];
+};
+
 export type ConstructTaskForceInput = {
   name: Scalars['String']['input'];
   shipDesignId: Scalars['ID']['input'];
@@ -73,6 +78,7 @@ export type GameTurnReportsArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  configureTaskForceCombatDeck: TaskForce;
   constructTaskForce: TaskForce;
   createGame: Game;
   createShipDesign: ShipDesign;
@@ -87,6 +93,11 @@ export type Mutation = {
   startGame: Game;
   updateGameSettings: Game;
   updatePlayer: Player;
+};
+
+
+export type MutationConfigureTaskForceCombatDeckArgs = {
+  input: ConfigureTaskForceCombatDeckInput;
 };
 
 
@@ -380,6 +391,7 @@ export type SubscriptionTrackStarSystemArgs = {
 
 export type TaskForce = Positionable & {
   __typename?: 'TaskForce';
+  combatDeck?: Maybe<Array<Scalars['String']['output']>>;
   game: Game;
   id: Scalars['ID']['output'];
   isVisible: Scalars['Boolean']['output'];
