@@ -43,7 +43,7 @@ type Game {
 type Mutation {
 	createGame(name: String!): Game!
 	createShipDesign(design: ShipDesignInput!, gameId: ID!): ShipDesign!
-	endTurn(gameId: ID!): Game!
+	endTurn(expectedTurnNumber: Int!, gameId: ID!): Game!
 	joinGame(id: ID!): Game!
 	loginWithPassword(email: String!, password: String!): User!
 	loginWithRefreshToken: User!

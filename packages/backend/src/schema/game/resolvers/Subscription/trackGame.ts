@@ -1,4 +1,5 @@
 import { and, eq, games, players } from "@space/data/schema";
+import { createGraphQLError } from "graphql-yoga";
 import { filter } from "rxjs";
 import type { Context } from "../../../../context.js";
 import { toAsyncIterable } from "../../../../toAsyncIterable.ts";
@@ -64,16 +65,24 @@ export const trackGame: NonNullable<SubscriptionResolvers["trackGame"]> = {
 			throw new Error("Game not found for trackGame event");
 		}
 
-		if (event.type === "game:newTurnCalculated") {
-			return {
-				__typename: "NewTurnCalculatedEvent" as const,
-				game,
-			};
+		switch (event.type) {
+			case "game:newTurnCalculated":
+				return {
+					__typename: "NewTurnCalculatedEvent" as const,
+					game,
+				};
+			case "game:turnEnded":
+				return {
+					__typename: "TurnEndedEvent" as const,
+					game,
+				};
+			default:
+				throw createGraphQLError("Unsupported game event received", {
+					extensions: {
+						code: "INVALID_GAME_EVENT",
+						eventType: event.type,
+					},
+				});
 		}
-
-		return {
-			__typename: "TurnEndedEvent" as const,
-			game,
-		};
 	},
 };

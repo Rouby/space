@@ -69,7 +69,7 @@ type Mutation {
 	updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
 	updateGameSettings(gameId: ID!, input: UpdateGameSettingsInput!): Game!
 
-	endTurn(gameId: ID!): Game!
+	endTurn(gameId: ID!, expectedTurnNumber: Int!): Game!
 }
 
 union TrackGameEvent = TurnEndedEvent | NewTurnCalculatedEvent

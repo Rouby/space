@@ -1,6 +1,7 @@
 import { createGraphQLError } from "graphql-yoga";
 import { describe, expect, it, vi } from "vitest";
 import { createGame } from "../Mutation/createGame.js";
+import { endTurn } from "../Mutation/endTurn.js";
 import { joinGame } from "../Mutation/joinGame.js";
 import { startGame } from "../Mutation/startGame.js";
 import { updateGameSettings } from "../Mutation/updateGameSettings.js";
@@ -16,6 +17,7 @@ function resolverFn<TArgs extends unknown[], TResult>(
 }
 
 const callCreateGame = resolverFn(createGame);
+const callEndTurn = resolverFn(endTurn);
 const callJoinGame = resolverFn(joinGame);
 const callStartGame = resolverFn(startGame);
 const callUpdateGameSettings = resolverFn(updateGameSettings);
@@ -380,6 +382,174 @@ describe("story 1.3 game lifecycle controls", () => {
 		).rejects.toMatchObject(
 			createGraphQLError("Game name must be between 3 and 64 characters", {
 				extensions: { code: "INVALID_GAME_NAME" },
+			}),
+		);
+	});
+
+	it("rejects endTurn for non-members with NOT_AUTHORIZED", async () => {
+		const ctx = {
+			userId: "intruder",
+			throwWithoutClaim: vi.fn(),
+			drizzle: {
+				query: {
+					games: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "game-1",
+							startedAt: new Date("2026-03-08T01:00:00.000Z"),
+							turnNumber: 0,
+						}),
+					},
+				},
+				select: vi.fn().mockReturnValue({
+					from: vi.fn().mockReturnValue({
+						where: vi.fn().mockResolvedValue([]),
+					}),
+				}),
+			},
+		};
+
+		await expect(
+			callEndTurn(
+				{},
+				{ expectedTurnNumber: 0, gameId: "game-1" },
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError("Not authorized to end turn in this game", {
+				extensions: { code: "NOT_AUTHORIZED" },
+			}),
+		);
+	});
+
+	it("rejects endTurn when unresolved dilemmas exist", async () => {
+		const where = vi
+			.fn()
+			.mockResolvedValueOnce([{ userId: "player-1", gameId: "game-1" }])
+			.mockResolvedValueOnce([{ id: "dilemma-1" }]);
+
+		const ctx = {
+			userId: "player-1",
+			throwWithoutClaim: vi.fn(),
+			drizzle: {
+				query: {
+					games: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "game-1",
+							startedAt: new Date("2026-03-08T01:00:00.000Z"),
+							turnNumber: 0,
+						}),
+					},
+				},
+				select: vi.fn().mockReturnValue({
+					from: vi.fn().mockReturnValue({ where }),
+				}),
+			},
+		};
+
+		await expect(
+			callEndTurn(
+				{},
+				{ expectedTurnNumber: 0, gameId: "game-1" },
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError(
+				"You cannot end your turn while there are unresolved dilemmas",
+				{
+					extensions: { code: "UNRESOLVED_DILEMMAS" },
+				},
+			),
+		);
+	});
+
+	it("rejects duplicate endTurn submissions with TURN_ALREADY_ENDED", async () => {
+		const where = vi
+			.fn()
+			.mockResolvedValueOnce([
+				{
+					userId: "player-1",
+					gameId: "game-1",
+					turnEndedAt: new Date("2026-03-08T00:00:00.000Z"),
+				},
+			])
+			.mockResolvedValueOnce([]);
+
+		const returning = vi.fn().mockResolvedValue([]);
+		const updateWhere = vi.fn().mockReturnValue({ returning });
+		const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
+		const update = vi.fn().mockReturnValue({ set: updateSet });
+
+		const ctx = {
+			userId: "player-1",
+			throwWithoutClaim: vi.fn(),
+			drizzle: {
+				query: {
+					games: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "game-1",
+							startedAt: new Date("2026-03-08T01:00:00.000Z"),
+							turnNumber: 0,
+						}),
+					},
+				},
+				select: vi.fn().mockReturnValue({
+					from: vi.fn().mockReturnValue({ where }),
+				}),
+				update,
+			},
+		};
+
+		await expect(
+			callEndTurn(
+				{},
+				{ expectedTurnNumber: 0, gameId: "game-1" },
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError("Turn already ended for this turn window", {
+				extensions: { code: "TURN_ALREADY_ENDED" },
+			}),
+		);
+	});
+
+	it("rejects stale endTurn submissions when turn window has advanced", async () => {
+		const where = vi
+			.fn()
+			.mockResolvedValueOnce([{ userId: "player-1", gameId: "game-1" }])
+			.mockResolvedValueOnce([]);
+
+		const ctx = {
+			userId: "player-1",
+			throwWithoutClaim: vi.fn(),
+			drizzle: {
+				query: {
+					games: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "game-1",
+							startedAt: new Date("2026-03-08T01:00:00.000Z"),
+							turnNumber: 2,
+						}),
+					},
+				},
+				select: vi.fn().mockReturnValue({
+					from: vi.fn().mockReturnValue({ where }),
+				}),
+			},
+		};
+
+		await expect(
+			callEndTurn(
+				{},
+				{ expectedTurnNumber: 1, gameId: "game-1" },
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError("Turn window changed before submission", {
+				extensions: { code: "TURN_WINDOW_MISMATCH" },
 			}),
 		);
 	});

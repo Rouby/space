@@ -460,3 +460,104 @@ test("denies settings updates for participants that are not host", async ({
 
 	expect(payload.errors?.[0]?.extensions?.code).toBe("NOT_AUTHORIZED");
 });
+
+test("resolves a turn after all players end and exposes updated monitoring state", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "host-turn-resolution@example.com",
+		name: "Host Turn Resolution",
+	});
+	const { id: memberId } = await api.seed("user", {
+		email: "member-turn-resolution@example.com",
+		name: "Member Turn Resolution",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Turn Resolution Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#101010",
+	});
+	await api.seed("player", {
+		gameId,
+		userId: memberId,
+		color: "#202020",
+	});
+
+	await api.login(hostId);
+
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
+		},
+	});
+	const startPayload = await startResponse.json();
+	expect(startPayload.errors).toBeUndefined();
+
+	const endTurnMutation = {
+		query:
+			"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+		variables: { expectedTurnNumber: 0, gameId },
+	};
+
+	const hostEndTurnResponse = await page.request.post("/graphql", {
+		data: endTurnMutation,
+	});
+	const hostEndTurnPayload = await hostEndTurnResponse.json();
+	expect(hostEndTurnPayload.errors).toBeUndefined();
+
+	await api.login(memberId);
+
+	const memberEndTurnResponse = await page.request.post("/graphql", {
+		data: endTurnMutation,
+	});
+	const memberEndTurnPayload = await memberEndTurnResponse.json();
+	expect(memberEndTurnPayload.errors).toBeUndefined();
+
+	await api.login(hostId);
+
+	const monitorQuery = {
+		query:
+			"query Monitor($id: ID!) { game(id: $id) { id turnNumber players { user { id } turnEnded } turnReports(limit: 1) { id turnNumber } } }",
+		variables: { id: gameId },
+	};
+
+	await expect
+		.poll(
+			async () => {
+				const response = await page.request.post("/graphql", {
+					data: monitorQuery,
+				});
+				const payload = await response.json();
+
+				return {
+					errors: payload.errors,
+					turnNumber: payload.data?.game?.turnNumber ?? 0,
+					reportCount: payload.data?.game?.turnReports?.length ?? 0,
+					allPlayersReset:
+						(payload.data?.game?.players ?? []).every(
+							(player: { turnEnded: boolean | null }) =>
+								player.turnEnded === false,
+						) ?? false,
+				};
+			},
+			{ timeout: 20000 },
+		)
+		.toMatchObject({
+			errors: undefined,
+			turnNumber: 1,
+			reportCount: 1,
+			allPlayersReset: true,
+		});
+
+	await page.goto(`/games/${gameId}`);
+	const endTurnButton = page.getByRole("button", { name: /End Turn/i });
+	await expect(endTurnButton).toBeVisible();
+	await expect(endTurnButton).toBeEnabled();
+});

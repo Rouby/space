@@ -17,6 +17,46 @@ import { mq, theme } from "../../theme";
 import { TurnReportsPanel } from "../TurnReportsPanel/TurnReportsPanel";
 import { UserButton } from "../UserButton/UserButton";
 
+function getEndTurnErrorMessage(
+	error:
+		| { graphQLErrors?: Array<{ extensions?: { code?: string } }> }
+		| null
+		| undefined,
+) {
+	const code = error?.graphQLErrors?.[0]?.extensions?.code;
+
+	switch (code) {
+		case "UNRESOLVED_DILEMMAS":
+			return "Resolve all dilemmas before ending turn";
+		case "TURN_ALREADY_ENDED":
+			return "Turn already ended. Waiting for other players";
+		case "NOT_AUTHORIZED":
+			return "You are not allowed to end turn for this campaign";
+		case "GAME_NOT_STARTED":
+			return "Campaign has not started yet";
+		case "TURN_WINDOW_MISMATCH":
+			return "Turn window changed. Refresh and try again";
+		default:
+			return "Could not end turn. Try again";
+	}
+}
+
+function getTrackGameErrorMessage(
+	error:
+		| { graphQLErrors?: Array<{ extensions?: { code?: string } }> }
+		| null
+		| undefined,
+) {
+	const code = error?.graphQLErrors?.[0]?.extensions?.code;
+
+	switch (code) {
+		case "NOT_AUTHORIZED":
+			return "Live turn monitoring is not available for this campaign";
+		default:
+			return "Live turn monitoring disconnected. Retry or refresh";
+	}
+}
+
 export function InGameMenu() {
 	const { css } = useStyles();
 
@@ -177,6 +217,7 @@ function EndTurnButton() {
 			query CurrentTurnEnded($gameId: ID!) {
 				game(id: $gameId) {
 					id
+					turnNumber
 					dilemmas {
 						id
 						choosen
@@ -249,8 +290,8 @@ function EndTurnButton() {
 
 	const [endTurnResult, endTurn] = useMutation(
 		graphql(`
-			mutation EndTurn($gameId: ID!) {
-				endTurn(gameId: $gameId) {
+			mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) {
+				endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) {
 					id
 				}
 			}
@@ -265,15 +306,17 @@ function EndTurnButton() {
 	const TurnIcon = hasEndedTurn ? IconHourglass : IconPlayerPlay;
 	const buttonDescription = hasUnresolvedDilemmas
 		? "Resolve all dilemmas before ending turn"
-		: endTurnResult.error
-			? "Could not end turn. Try again"
-			: newTurnCalculated
-				? "New turn calculated. You can issue orders"
-				: endTurnResult.fetching
-					? "Ending turn..."
-					: hasEndedTurn
-						? "Turn ended. Waiting for other players"
-						: "Ready to end turn";
+		: turnEvents.error
+			? getTrackGameErrorMessage(turnEvents.error)
+			: endTurnResult.error
+				? getEndTurnErrorMessage(endTurnResult.error)
+				: newTurnCalculated
+					? "New turn calculated. You can issue orders"
+					: endTurnResult.fetching
+						? "Ending turn..."
+						: hasEndedTurn
+							? "Turn ended. Waiting for other players"
+							: "Ready to end turn";
 
 	return (
 		<MantineNavLink
@@ -283,8 +326,15 @@ function EndTurnButton() {
 					return;
 				}
 
+				if (typeof data?.game.turnNumber !== "number") {
+					return;
+				}
+
 				setEndTurnRequested(true);
-				const result = await endTurn({ gameId });
+				const result = await endTurn({
+					expectedTurnNumber: data.game.turnNumber,
+					gameId,
+				});
 
 				if (result.error) {
 					setEndTurnRequested(false);

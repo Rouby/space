@@ -1,14 +1,40 @@
 import { and, dilemmas, eq, games, isNull, players } from "@space/data/schema";
-import { GraphQLError } from "graphql";
+import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
 export const endTurn: NonNullable<MutationResolvers["endTurn"]> = async (
 	_parent,
-	{ gameId },
+	{ expectedTurnNumber, gameId },
 	ctx,
 ) => {
 	const context: Context = ctx;
 	context.throwWithoutClaim("urn:space:claim");
+
+	const game = await ctx.drizzle.query.games.findFirst({
+		where: eq(games.id, gameId),
+	});
+
+	if (!game) {
+		throw createGraphQLError("Game not found", {
+			extensions: { code: "GAME_NOT_FOUND" },
+		});
+	}
+
+	if (!game.startedAt) {
+		throw createGraphQLError("Game has not started yet", {
+			extensions: { code: "GAME_NOT_STARTED" },
+		});
+	}
+
+	if (game.turnNumber !== expectedTurnNumber) {
+		throw createGraphQLError("Turn window changed before submission", {
+			extensions: {
+				code: "TURN_WINDOW_MISMATCH",
+				expectedTurnNumber,
+				actualTurnNumber: game.turnNumber,
+			},
+		});
+	}
 
 	const [player] = await ctx.drizzle
 		.select()
@@ -16,7 +42,15 @@ export const endTurn: NonNullable<MutationResolvers["endTurn"]> = async (
 		.where(and(eq(players.userId, context.userId), eq(players.gameId, gameId)));
 
 	if (!player) {
-		throw new GraphQLError("You are not a player in this game");
+		throw createGraphQLError("Not authorized to end turn in this game", {
+			extensions: { code: "NOT_AUTHORIZED" },
+		});
+	}
+
+	if (player.turnEndedAt) {
+		throw createGraphQLError("Turn already ended for this turn window", {
+			extensions: { code: "TURN_ALREADY_ENDED" },
+		});
 	}
 
 	const hasUnresolvedDilemmas = await ctx.drizzle
@@ -31,24 +65,32 @@ export const endTurn: NonNullable<MutationResolvers["endTurn"]> = async (
 		);
 
 	if (hasUnresolvedDilemmas.length > 0) {
-		throw new GraphQLError(
+		throw createGraphQLError(
 			"You cannot end your turn while there are unresolved dilemmas",
+			{
+				extensions: { code: "UNRESOLVED_DILEMMAS" },
+			},
 		);
 	}
 
-	await ctx.drizzle
+	const updatedPlayers = await ctx.drizzle
 		.update(players)
 		.set({
 			turnEndedAt: new Date(),
 		})
-		.where(and(eq(players.userId, context.userId), eq(players.gameId, gameId)));
+		.where(
+			and(
+				eq(players.userId, context.userId),
+				eq(players.gameId, gameId),
+				isNull(players.turnEndedAt),
+			),
+		)
+		.returning({ gameId: players.gameId });
 
-	const game = await ctx.drizzle.query.games.findFirst({
-		where: eq(games.id, gameId),
-	});
-
-	if (!game) {
-		throw new GraphQLError("Game not found");
+	if (updatedPlayers.length === 0) {
+		throw createGraphQLError("Turn already ended for this turn window", {
+			extensions: { code: "TURN_ALREADY_ENDED" },
+		});
 	}
 
 	return game;

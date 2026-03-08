@@ -467,6 +467,16 @@
             },
             "args": [
               {
+                "name": "expectedTurnNumber",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              },
+              {
                 "name": "gameId",
                 "type": {
                   "kind": "NON_NULL",

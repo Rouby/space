@@ -31,6 +31,8 @@ const callGame = resolverFn(game);
 const callOrderTaskForce = resolverFn(orderTaskForce);
 const trackGameSubscribe =
 	typeof trackGame === "function" ? trackGame : trackGame.subscribe;
+const trackGameResolve =
+	typeof trackGame === "function" ? undefined : trackGame.resolve;
 const trackStarSystemSubscribe =
 	typeof trackStarSystem === "function"
 		? trackStarSystem
@@ -131,6 +133,43 @@ describe("story 1.2 authorization boundaries", () => {
 		).rejects.toMatchObject(
 			createGraphQLError("Not authorized to track this game", {
 				extensions: { code: "NOT_AUTHORIZED" },
+			}),
+		);
+	});
+
+	it("rejects unknown trackGame events with INVALID_GAME_EVENT", async () => {
+		const ctx = {
+			userId: "user-6",
+			throwWithoutClaim: vi.fn(),
+			denyAccess,
+			drizzle: {
+				query: {
+					players: {
+						findFirst: vi.fn().mockResolvedValue({
+							gameId: "game-1",
+							userId: "user-6",
+						}),
+					},
+					games: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "game-1",
+							turnNumber: 3,
+						}),
+					},
+				},
+			},
+		};
+
+		await expect(
+			trackGameResolve?.(
+				{ type: "game:unknown", gameId: "game-1" } as never,
+				{} as never,
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError("Unsupported game event received", {
+				extensions: { code: "INVALID_GAME_EVENT" },
 			}),
 		);
 	});

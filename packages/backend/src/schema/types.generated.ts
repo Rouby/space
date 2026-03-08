@@ -104,6 +104,7 @@ export type MutationcreateShipDesignArgs = {
 
 
 export type MutationendTurnArgs = {
+  expectedTurnNumber: Scalars['Int']['input'];
   gameId: Scalars['ID']['input'];
 };
 
@@ -728,7 +729,7 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
   createShipDesign?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType, RequireFields<MutationcreateShipDesignArgs, 'design' | 'gameId'>>;
-  endTurn?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationendTurnArgs, 'gameId'>>;
+  endTurn?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationendTurnArgs, 'expectedTurnNumber' | 'gameId'>>;
   joinGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationjoinGameArgs, 'id'>>;
   loginWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationloginWithPasswordArgs, 'email' | 'password'>>;
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
