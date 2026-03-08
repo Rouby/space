@@ -57,14 +57,14 @@ export default defineConfig({
 					"postgres://postgres:password@localhost:5432/testing",
 			},
 			stdout: !process.env.CI ? "pipe" : "ignore",
-			stderr: !process.env.CI ? "pipe" : "ignore",
+			stderr: "pipe",
 		},
 		{
 			command: "yarn --cwd ../.. dev:frontend",
 			port: 5173,
 			reuseExistingServer: !process.env.CI,
 			stdout: !process.env.CI ? "pipe" : "ignore",
-			stderr: !process.env.CI ? "pipe" : "ignore",
+			stderr: "pipe",
 		},
 	],
 });
