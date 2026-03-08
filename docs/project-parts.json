@@ -1,0 +1,99 @@
+{
+  "repository_type": "monorepo",
+  "parts": [
+    {
+      "part_id": "frontend",
+      "name": "Frontend",
+      "root_path": "packages/frontend",
+      "project_type_id": "web",
+      "primary_language": "TypeScript",
+      "runtime": "Vite + React"
+    },
+    {
+      "part_id": "backend",
+      "name": "Backend API",
+      "root_path": "packages/backend",
+      "project_type_id": "backend",
+      "primary_language": "TypeScript",
+      "runtime": "Node.js + GraphQL Yoga"
+    },
+    {
+      "part_id": "data",
+      "name": "Data Layer",
+      "root_path": "packages/data",
+      "project_type_id": "data",
+      "primary_language": "TypeScript",
+      "runtime": "Drizzle ORM + PostgreSQL"
+    },
+    {
+      "part_id": "gameloop",
+      "name": "Game Loop Engine",
+      "root_path": "packages/gameloop",
+      "project_type_id": "game",
+      "primary_language": "TypeScript",
+      "runtime": "Domain simulation package"
+    },
+    {
+      "part_id": "ai",
+      "name": "AI Utilities",
+      "root_path": "packages/ai",
+      "project_type_id": "library",
+      "primary_language": "TypeScript",
+      "runtime": "Reusable library"
+    },
+    {
+      "part_id": "integration",
+      "name": "Integration Tests",
+      "root_path": "packages/integration",
+      "project_type_id": "cli",
+      "primary_language": "TypeScript",
+      "runtime": "Playwright test harness"
+    },
+    {
+      "part_id": "infra",
+      "name": "Infrastructure",
+      "root_path": "helm",
+      "project_type_id": "infra",
+      "primary_language": "YAML",
+      "runtime": "Helm chart"
+    }
+  ],
+  "integration_points": [
+    {
+      "from": "frontend",
+      "to": "backend",
+      "type": "GraphQL over HTTP",
+      "details": "Frontend Vite dev server proxies /graphql to backend on localhost:3000"
+    },
+    {
+      "from": "backend",
+      "to": "data",
+      "type": "Internal package dependency",
+      "details": "@space/backend imports @space/data schema and persistence APIs"
+    },
+    {
+      "from": "backend",
+      "to": "gameloop",
+      "type": "Internal package dependency",
+      "details": "@space/backend imports @space/gameloop for simulation/game progression"
+    },
+    {
+      "from": "integration",
+      "to": "backend",
+      "type": "Test runtime dependency",
+      "details": "Playwright webServer starts backend before tests"
+    },
+    {
+      "from": "integration",
+      "to": "frontend",
+      "type": "Test runtime dependency",
+      "details": "Playwright webServer starts frontend before browser tests"
+    },
+    {
+      "from": "deploy workflow",
+      "to": "infra",
+      "type": "CI/CD deployment",
+      "details": "GitHub Actions deploy job performs helm upgrade with image tag and secrets"
+    }
+  ]
+}
