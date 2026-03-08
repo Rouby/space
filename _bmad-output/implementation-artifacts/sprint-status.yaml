@@ -1,0 +1,83 @@
+# generated: 2026-03-08
+# project: space
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: /home/rouby/space/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog -> in-progress: Automatically when first story is created (via create-story)
+#   - in-progress -> done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-08
+project: space
+project_key: NOKEY
+tracking_system: file-system
+story_location: /home/rouby/space/_bmad-output/implementation-artifacts
+
+development_status:
+  epic-1: backlog
+  1-1-set-up-initial-project-from-starter-template-brownfield-baseline-validation-and-harden-account-identity-session-continuity: backlog
+  1-2-enforce-player-scoped-authorization-and-visibility: backlog
+  1-3-validate-campaign-join-and-host-configuration-controls: backlog
+  1-4-stabilize-async-turn-submission-resolution-and-host-monitoring: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-implement-population-resource-and-turn-priority-decisions: backlog
+  2-2-deliver-discovery-and-colonization-progression: backlog
+  2-3-deliver-fleet-construction-and-movement-rules: backlog
+  2-4-resolve-combat-and-surface-adaptation-signals: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-present-contextual-dilemmas-in-the-turn-flow: backlog
+  3-2-apply-dilemma-choices-and-strategic-consequences: backlog
+  3-3-enforce-agency-and-fairness-guardrails-for-dilemmas: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-build-re-entry-summary-and-campaign-digest: backlog
+  4-2-implement-critical-decision-detection-and-readiness-checks: backlog
+  4-3-deliver-guided-missed-turn-recovery-workflow: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-provide-campaign-health-monitoring-and-anomaly-detection: backlog
+  5-2-create-support-investigation-workspace: backlog
+  5-3-implement-auditable-resolution-workflows: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-build-campaign-kpi-pipeline-and-reporting-baselines: backlog
+  6-2-deliver-balance-insight-and-tuning-decision-support: backlog
+  epic-6-retrospective: optional
+
+  epic-7: backlog
+  7-1-harden-internal-graphql-reporting-interfaces: backlog
+  7-2-implement-requirement-traceability-coverage-checks: backlog
+  epic-7-retrospective: optional
