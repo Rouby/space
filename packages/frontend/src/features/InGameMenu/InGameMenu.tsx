@@ -198,8 +198,6 @@ function EndTurnButton() {
 		variables: { gameId },
 	});
 
-	console.log(turnEvents);
-
 	useEffect(() => {
 		if (
 			!turnEvents.data?.trackGame ||
