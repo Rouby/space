@@ -54,7 +54,7 @@ export async function tick() {
 
 		await tickTaskForceConstruction(tx, ctx);
 
-		await tickTaskForceMovement(tx, ctx, gameId);
+		await tickTaskForceMovement(tx, ctx);
 
 		const populationChanges = await tickStarSystemPopulation(tx, ctx);
 

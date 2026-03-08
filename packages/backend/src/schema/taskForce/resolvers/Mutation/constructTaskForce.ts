@@ -3,6 +3,7 @@ import {
 	eq,
 	players,
 	shipComponentResourceCosts,
+	shipComponents,
 	shipDesignComponents,
 	shipDesigns,
 	sql,
@@ -51,7 +52,11 @@ export const constructTaskForce: NonNullable<
 
 	if (originSystem.ownerId !== context.userId) {
 		throw createGraphQLError("You can only construct fleets at owned systems", {
-			extensions: { code: "INVALID_CONSTRUCTION_ORDER" },
+			extensions: {
+				code: "INVALID_CONSTRUCTION_ORDER",
+				violation: "ORIGIN_NOT_OWNED",
+				starSystemId: input.starSystemId,
+			},
 		});
 	}
 
@@ -65,7 +70,11 @@ export const constructTaskForce: NonNullable<
 
 	if (!shipDesign || shipDesign.decommissioned) {
 		throw createGraphQLError("Ship design is not available", {
-			extensions: { code: "INVALID_CONSTRUCTION_ORDER" },
+			extensions: {
+				code: "INVALID_CONSTRUCTION_ORDER",
+				violation: "SHIP_DESIGN_UNAVAILABLE",
+				shipDesignId: input.shipDesignId,
+			},
 		});
 	}
 
@@ -102,6 +111,22 @@ export const constructTaskForce: NonNullable<
 		.where(eq(shipDesignComponents.shipDesignId, shipDesign.id))
 		.groupBy(shipComponentResourceCosts.resourceId);
 
+	const [{ constructionTotal: constructionTotalRaw }] = await ctx.drizzle
+		.select({
+			constructionTotal:
+				sql<string>`coalesce(sum(${shipComponents.constructionCost}), 0)::text`.as(
+					"constructionTotal",
+				),
+		})
+		.from(shipDesignComponents)
+		.innerJoin(
+			shipComponents,
+			eq(shipComponents.id, shipDesignComponents.shipComponentId),
+		)
+		.where(eq(shipDesignComponents.shipDesignId, shipDesign.id));
+
+	const constructionTotal = Math.max(1, Number(constructionTotalRaw ?? "0"));
+
 	const depots = await ctx.drizzle
 		.select({
 			resourceId: starSystemResourceDepots.resourceId,
@@ -119,7 +144,14 @@ export const constructTaskForce: NonNullable<
 		const available = depotByResource.get(cost.resourceId) ?? 0;
 		if (available < required) {
 			throw createGraphQLError("Insufficient resources for construction", {
-				extensions: { code: "INSUFFICIENT_RESOURCES" },
+				extensions: {
+					code: "INSUFFICIENT_RESOURCES",
+					violation: "RESOURCE_SHORTAGE",
+					resourceId: cost.resourceId,
+					required,
+					available,
+					starSystemId: originSystem.id,
+				},
 			});
 		}
 	}
@@ -142,7 +174,13 @@ export const constructTaskForce: NonNullable<
 
 			if (updatedDepots.length !== 1) {
 				throw createGraphQLError("Insufficient resources for construction", {
-					extensions: { code: "INSUFFICIENT_RESOURCES" },
+					extensions: {
+						code: "INSUFFICIENT_RESOURCES",
+						violation: "RESOURCE_SHORTAGE_RACE",
+						resourceId: cost.resourceId,
+						required: Number(cost.quantity),
+						starSystemId: originSystem.id,
+					},
 				});
 			}
 		}
@@ -155,6 +193,10 @@ export const constructTaskForce: NonNullable<
 				name: input.name,
 				position: originSystem.position,
 				movementVector: null,
+				constructionStarSystemId: originSystem.id,
+				constructionDone: "0",
+				constructionTotal: constructionTotal.toString(),
+				constructionPerTick: constructionTotal.toString(),
 				orders: [],
 			})
 			.returning();

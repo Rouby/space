@@ -1,6 +1,6 @@
 # Story 2.3: Deliver Fleet Construction and Movement Rules
 
-Status: in-progress
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,7 +20,7 @@ so that I can project power and explore effectively.
 - [x] Implement fleet construction order lifecycle with explicit rule validation (AC: 1)
 - [x] Add/extend mutation contract for fleet construction orders scoped to authenticated player game membership.
 - [x] Validate construction legality before persistence (ownership, build origin eligibility, design validity, resource affordability, duplicate/incompatible order checks).
-- [ ] Persist accepted construction intents in a deterministic form consumable by gameloop tick processing.
+- [x] Persist accepted construction intents in a deterministic form consumable by gameloop tick processing.
 - [x] Return stable typed GraphQL errors for illegal requests (`extensions.code` + actionable violation context).
 - [x] Implement deterministic fleet movement resolution in gameloop tick flow (AC: 2)
 - [x] Validate movement legality before/at resolve time (reachable target rules, queue semantics, stale-order handling).
@@ -232,43 +232,37 @@ GPT-5.3-Codex
 - Added resolve-time legality checks in tick movement processing and deterministic stale-order dropping.
 - Made construction resource deduction transaction-safe by guarding debit updates against concurrent overspend.
 - Added integration coverage for unauthorized task-force mutation and visibility-safe hidden fleet access behavior.
-- Construction lifecycle remains command-time, not deferred tick-time; tracked as follow-up below.
+- Persisted construction intent/progress (`constructionDone`, `constructionTotal`, `constructionPerTick`) on task forces and advanced it deterministically in `tickTaskForceConstruction`.
+- Emitted `taskForceCommision:progress` from tick construction processing and gated movement resolution until construction completes.
+- ✅ Resolved review finding [High]: Implement deferred construction intent processing in gameloop tick flow so construction lifecycle is fully tick-consumable.
 
 ### Review Follow-ups (AI)
 
-- [ ] [AI-Review][High] Implement deferred construction intent processing in gameloop tick flow so construction lifecycle is fully tick-consumable (`packages/gameloop/src/tick/taskForceConstruction.ts`).
+- [x] [AI-Review][High] Implement deferred construction intent processing in gameloop tick flow so construction lifecycle is fully tick-consumable (`packages/gameloop/src/tick/taskForceConstruction.ts`).
+
+### Senior Developer Review (AI)
+
+- 2026-03-08: Completed adversarial re-review and fixed all High/Medium findings from review pass.
+- Fixed cross-game construction tick leakage by scoping `tickTaskForceConstruction` to the active game ID.
+- Added actionable GraphQL violation context metadata to construction validation errors.
+- Reconciled story file inventory with actual changed files for accurate audit traceability.
 
 ### File List
 
 - _bmad-output/implementation-artifacts/2-3-deliver-fleet-construction-and-movement-rules.md
 - _bmad-output/implementation-artifacts/sprint-status.yaml
-- packages/backend/src/schema/taskForce/schema.graphql
 - packages/backend/src/schema/taskForce/resolvers/Mutation/constructTaskForce.ts
-- packages/backend/src/schema/taskForce/resolvers/Mutation/orderTaskForce.ts
-- packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts
-- packages/backend/src/observables/taskForces.ts
-- packages/backend/src/schema/starSystem/resolvers/__tests__/trackStarSystem.spec.ts
-- packages/backend/src/schema/resolvers.generated.ts
-- packages/backend/src/schema/schema.generated.graphqls
-- packages/backend/src/schema/typeDefs.generated.ts
-- packages/backend/src/schema/types.generated.ts
-- packages/frontend/src/gql/graphql.ts
-- packages/frontend/src/gql/gql.ts
-- packages/frontend/src/gql/introspection.json
-- packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx
-- packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx
+- packages/data/src/schema/taskForces.ts
 - packages/gameloop/src/tick/tick.ts
 - packages/gameloop/src/tick/taskForceConstruction.ts
 - packages/gameloop/src/tick/taskForceMovement.ts
-- packages/gameloop/src/__tests__/taskForceMovement.spec.ts
-- packages/gameloop/src/__tests__/something.spec.ts
-- packages/gameloop/src/config.ts
-- packages/integration/tests/fixture.ts
+- packages/gameloop/src/__tests__/taskForceConstruction.spec.ts
 - packages/integration/tests/ingame.spec.ts
-- packages/integration/global-teardown.ts
 
 ## Change Log
 
 - 2026-03-08: Created Story 2.3 implementation context file and set story status to ready-for-dev.
 - 2026-03-08: Implemented Story 2.3 fleet construction and deterministic movement, added backend/gameloop/integration regression coverage, and validated lint/typecheck/test gates.
 - 2026-03-08: Addressed AI review findings: queue-aware movement validation, resolve-time legality/stale-order handling, transaction-safe construction debits, and unauthorized mutation/visibility integration coverage; story kept in-progress for deferred construction-lifecycle follow-up.
+- 2026-03-08: Implemented deferred tick-consumable construction intent/progress persistence and deterministic tick advancement; resolved remaining AI-review follow-up and moved story to review.
+- 2026-03-08: Completed code review remediation by scoping construction tick processing per game, enriching construction error violation context, and reconciling story file list with git reality; status moved to done.

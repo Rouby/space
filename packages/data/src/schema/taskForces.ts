@@ -1,6 +1,14 @@
 import { relations, sql } from "drizzle-orm";
-import { json, pgTable, point, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+	decimal,
+	json,
+	pgTable,
+	point,
+	uuid,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
+import { starSystems } from "./starSystems.ts";
 import { users } from "./users.ts";
 
 export const taskForces = pgTable("taskForces", {
@@ -24,6 +32,12 @@ export const taskForces = pgTable("taskForces", {
 		>()
 		.default([]),
 	movementVector: point({ mode: "xy" }),
+	constructionStarSystemId: uuid().references(() => starSystems.id, {
+		onDelete: "set null",
+	}),
+	constructionDone: decimal({ precision: 30, scale: 6 }),
+	constructionTotal: decimal({ precision: 30, scale: 6 }),
+	constructionPerTick: decimal({ precision: 30, scale: 6 }),
 });
 
 export const taskForcesRelations = relations(taskForces, ({ one }) => ({

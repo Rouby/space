@@ -29,6 +29,13 @@
       "when": 1772989963173,
       "tag": "0003_uneven_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1773003355704,
+      "tag": "0004_shallow_grandmaster",
+      "breakpoints": true
     }
   ]
 }

@@ -717,6 +717,15 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 
 	await api.login(hostId);
 
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
+		},
+	});
+	const startPayload = await startResponse.json();
+	expect(startPayload.errors).toBeUndefined();
+
 	const constructResponse = await page.request.post("/graphql", {
 		data: {
 			query:

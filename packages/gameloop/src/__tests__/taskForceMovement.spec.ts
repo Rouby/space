@@ -43,14 +43,10 @@ describe("tickTaskForceMovement", () => {
 			movementVector: { x: number; y: number } | null;
 		}> = [];
 
-		await tickTaskForceMovement(
-			tx as never,
-			{
-				turn: 3,
-				postMessage: (event: unknown) => events.push(event as never),
-			},
-			"game-1",
-		);
+		await tickTaskForceMovement(tx as never, {
+			turn: 3,
+			postMessage: (event: unknown) => events.push(event as never),
+		});
 
 		expect(set).toHaveBeenCalledWith({
 			position: { x: 10, y: 20 },
@@ -96,14 +92,10 @@ describe("tickTaskForceMovement", () => {
 
 		const events: Array<{ type: string }> = [];
 
-		await tickTaskForceMovement(
-			tx as never,
-			{
-				turn: 3,
-				postMessage: (event: unknown) => events.push(event as never),
-			},
-			"game-1",
-		);
+		await tickTaskForceMovement(tx as never, {
+			turn: 3,
+			postMessage: (event: unknown) => events.push(event as never),
+		});
 
 		expect(set).toHaveBeenCalledWith({ orders: [] });
 		expect(events).toEqual([]);

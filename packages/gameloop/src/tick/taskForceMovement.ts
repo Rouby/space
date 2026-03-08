@@ -1,4 +1,5 @@
 import { and, eq, taskForces } from "@space/data/schema";
+import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
 type MoveOrder = {
@@ -41,21 +42,25 @@ function isLegalMove({
 	return distance <= MOVE_RANGE;
 }
 
-export async function tickTaskForceMovement(
-	tx: Transaction,
-	ctx: Context,
-	gameId: string,
-) {
+export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 	const allTaskForces = await tx
 		.select({
 			id: taskForces.id,
 			position: taskForces.position,
+			constructionDone: taskForces.constructionDone,
+			constructionTotal: taskForces.constructionTotal,
 			orders: taskForces.orders,
 		})
 		.from(taskForces)
 		.where(eq(taskForces.gameId, gameId));
 
 	for (const taskForce of allTaskForces) {
+		const constructionDone = Number(taskForce.constructionDone ?? "0");
+		const constructionTotal = Number(taskForce.constructionTotal ?? "0");
+		if (constructionTotal > 0 && constructionDone < constructionTotal) {
+			continue;
+		}
+
 		const [firstOrder, ...remainingOrders] = taskForce.orders;
 		if (!isMoveOrder(firstOrder)) {
 			continue;
