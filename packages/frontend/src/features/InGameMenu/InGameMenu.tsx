@@ -14,7 +14,7 @@ import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { graphql } from "../../gql";
 import { mq, theme } from "../../theme";
-import { TurnReportsPanel } from "../TurnReportsPanel/TurnReportsPanel";
+
 import { UserButton } from "../UserButton/UserButton";
 
 function getEndTurnErrorMessage(
@@ -125,10 +125,6 @@ export function InGameMenu() {
 						Turn Reports
 					</NavLink>
 				</div>
-			</Section>
-
-			<Section>
-				<TurnReportsPanel />
 			</Section>
 
 			<Section>
