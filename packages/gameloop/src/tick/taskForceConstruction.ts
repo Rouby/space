@@ -8,7 +8,7 @@ export type IndustryTurnChange = {
 	industryUtilized: number;
 };
 
-export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): Promise<IndustryTurnChange[]> {
+export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): Promise<void> {
 	const allTaskForces = await tx
 		.select({
 			id: taskForces.id,
@@ -28,15 +28,13 @@ export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): 
 		.from(starSystems)
 		.where(eq(starSystems.gameId, gameId));
 
-	const industryChanges: IndustryTurnChange[] = [];
-
 	for (const system of systemsWithIndustry) {
 		const forcesInSystem = allTaskForces.filter(
 			(tf) => tf.constructionStarSystemId === system.id && Number(tf.constructionTotal ?? "0") > Number(tf.constructionDone ?? "0")
 		);
 
 		if (forcesInSystem.length === 0) {
-			industryChanges.push({
+			ctx.addIndustryChange({
 				starSystemId: system.id,
 				industryTotal: system.industry,
 				industryUtilized: 0,
@@ -88,12 +86,10 @@ export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): 
 			});
 		}
 
-		industryChanges.push({
+		ctx.addIndustryChange({
 			starSystemId: system.id,
 			industryTotal: system.industry,
 			industryUtilized: utilizedIndustry,
 		});
 	}
-
-	return industryChanges;
 }

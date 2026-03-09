@@ -23,6 +23,10 @@ import { tickTaskForceCombat } from "./taskForceCombat.ts";
 import { tickTaskForceConstruction } from "./taskForceConstruction.ts";
 import { tickTaskForceMovement } from "./taskForceMovement.ts";
 
+import type { IndustryTurnChange } from "./taskForceConstruction.ts";
+import type { MiningTurnChange } from "./starSystemEconomy.ts";
+import type { PopulationTurnChange } from "./starSystemPopulation.ts";
+
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
 export type Transaction = FirstArgument<
 	FirstArgument<(typeof drizzle)["transaction"]>
@@ -30,10 +34,17 @@ export type Transaction = FirstArgument<
 export type Context = {
 	postMessage: (event: GameEvent) => void;
 	turn: number;
+	addPopulationChange: (change: PopulationTurnChange) => void;
+	addMiningChange: (change: MiningTurnChange) => void;
+	addIndustryChange: (change: IndustryTurnChange) => void;
 };
 
 export async function tick() {
 	const messages: GameEvent[] = [];
+	const populationChanges: PopulationTurnChange[] = [];
+	const miningChanges: MiningTurnChange[] = [];
+	const industryChanges: IndustryTurnChange[] = [];
+
 	const ctx: Context = {
 		postMessage: (event) => messages.push(event),
 		turn: (
@@ -42,6 +53,9 @@ export async function tick() {
 				.from(games)
 				.where(eq(games.id, gameId))
 		)[0].turnNumber,
+		addPopulationChange: (change) => populationChanges.push(change),
+		addMiningChange: (change) => miningChanges.push(change),
+		addIndustryChange: (change) => industryChanges.push(change),
 	};
 
 	await drizzle.transaction(async (tx) => {
@@ -53,31 +67,75 @@ export async function tick() {
 
 		await tickColonization(tx, ctx);
 
-		const industryChanges = await tickTaskForceConstruction(tx, ctx);
+		await tickTaskForceConstruction(tx, ctx);
 
 		await tickTaskForceMovement(tx, ctx);
 
 		await tickTaskForceCombat(tx, ctx);
 
-		const populationChanges = await tickStarSystemPopulation(tx, ctx);
+		await tickStarSystemPopulation(tx, ctx);
 
-		const miningChanges = await tickStarSystemEconomy(tx, ctx);
+		await tickStarSystemEconomy(tx, ctx);
 
-		await tx.insert(turnReports).values({
-			gameId,
-			turnNumber: ctx.turn,
-			summary: {
-				populationChanges: populationChanges.map((change) => ({
-					starSystemId: change.starSystemId,
-					populationId: change.populationId,
-					previousAmount: change.previousAmount.toString(),
-					newAmount: change.newAmount.toString(),
-					growth: change.growth.toString(),
-				})),
-				miningChanges,
-				industryChanges,
-			},
+		const visibleSystemsPerPlayer = await tx
+			.select({
+				userId: players.userId,
+				starSystemId: starSystems.id,
+			})
+			.from(players)
+			.innerJoin(starSystems, eq(players.gameId, starSystems.gameId))
+			.where(eq(players.gameId, gameId))
+			.innerJoin(
+				visibility,
+				and(
+					eq(visibility.gameId, players.gameId),
+					eq(
+						sql`${visibility}.${sql.identifier(visibility.userId.fieldAlias)}`,
+						players.userId,
+					),
+					sql`${visibility.circle} @> ${starSystems.position}`,
+				),
+			);
+
+		const playersInGame = await tx
+			.select({ userId: players.userId })
+			.from(players)
+			.where(eq(players.gameId, gameId));
+
+		const reportsToInsert = playersInGame.map((p) => {
+			const visibleSystemIds = new Set(
+				visibleSystemsPerPlayer
+					.filter((vs) => vs.userId === p.userId)
+					.map((vs) => vs.starSystemId),
+			);
+
+			return {
+				gameId,
+				ownerId: p.userId,
+				turnNumber: ctx.turn,
+				summary: {
+					populationChanges: populationChanges
+						.filter((c) => visibleSystemIds.has(c.starSystemId))
+						.map((change) => ({
+							starSystemId: change.starSystemId,
+							populationId: change.populationId,
+							previousAmount: change.previousAmount.toString(),
+							newAmount: change.newAmount.toString(),
+							growth: change.growth.toString(),
+						})),
+					miningChanges: miningChanges.filter((c) =>
+						visibleSystemIds.has(c.starSystemId),
+					),
+					industryChanges: industryChanges.filter((c) =>
+						visibleSystemIds.has(c.starSystemId),
+					),
+				},
+			};
 		});
+
+		if (reportsToInsert.length > 0) {
+			await tx.insert(turnReports).values(reportsToInsert);
+		}
 
 		await notifyAboutVisibilityChanges();
 

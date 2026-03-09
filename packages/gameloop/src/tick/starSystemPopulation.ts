@@ -21,9 +21,7 @@ export type PopulationTurnChange = {
 export async function tickStarSystemPopulation(
 	tx: Transaction,
 	ctx: Context,
-): Promise<PopulationTurnChange[]> {
-	const changes: PopulationTurnChange[] = [];
-
+): Promise<void> {
 	const starSystemsWithPopulations = await tx
 		.select({
 			id: starSystems.id,
@@ -78,7 +76,7 @@ export async function tickStarSystemPopulation(
 				);
 
 			if (growthInt > 0n) {
-				changes.push({
+				ctx.addPopulationChange({
 					starSystemId: starSystem.id,
 					populationId: `${starSystem.id}:${pop.allegianceToPlayerId}`,
 					previousAmount: amount,
@@ -96,6 +94,4 @@ export async function tickStarSystemPopulation(
 			}
 		}
 	}
-
-	return changes;
 }

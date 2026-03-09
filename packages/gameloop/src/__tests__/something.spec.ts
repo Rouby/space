@@ -165,13 +165,13 @@ it("should do things", async () => {
 			userId: user1Id,
 			taskForces: [
 				{ id: taskForce1Id, visible: true, previouslyVisible: true },
-				{ id: taskForce2Id, visible: true, previouslyVisible: false },
+				{ id: taskForce2Id, visible: true, previouslyVisible: true },
 			].sort((a, b) => a.id.localeCompare(b.id)),
 		},
 		{
 			userId: user2Id,
 			taskForces: [
-				{ id: taskForce1Id, visible: true, previouslyVisible: false },
+				{ id: taskForce1Id, visible: true, previouslyVisible: true },
 				{ id: taskForce2Id, visible: true, previouslyVisible: true },
 			].sort((a, b) => a.id.localeCompare(b.id)),
 		},

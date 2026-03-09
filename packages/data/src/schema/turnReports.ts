@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+	foreignKey,
 	index,
 	integer,
 	jsonb,
@@ -7,7 +8,8 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { games } from "./games.ts";
+import { games, players } from "./games.ts";
+import { users } from "./users.ts";
 
 export type TurnReportPopulationChange = {
 	starSystemId: string;
@@ -44,13 +46,15 @@ export const turnReports = pgTable(
 		gameId: uuid()
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
+		ownerId: uuid().notNull().references(() => users.id, { onDelete: "restrict" }),
 		turnNumber: integer().notNull(),
 		summary: jsonb().$type<TurnReportSummary>().notNull(),
 		createdAt: timestamp().notNull().defaultNow(),
 	},
 	(table) => [
 		index().on(table.gameId, table.turnNumber),
-		index().on(table.gameId, table.createdAt),
+		index().on(table.gameId, table.ownerId),
+		index().on(table.ownerId, table.turnNumber),
 	],
 );
 
@@ -58,5 +62,9 @@ export const turnReportsRelations = relations(turnReports, ({ one }) => ({
 	game: one(games, {
 		fields: [turnReports.gameId],
 		references: [games.id],
+	}),
+	owner: one(users, {
+		fields: [turnReports.ownerId],
+		references: [users.id],
 	}),
 }));

@@ -55,10 +55,19 @@ export const Game: Pick<
 	turnReports: async (parent, args, ctx) => {
 		const limit = Math.max(1, Math.min(args.limit ?? 20, 100));
 
+		if (!ctx.userId) {
+			return [];
+		}
+
 		return ctx.drizzle
 			.select()
 			.from(turnReports)
-			.where(eq(turnReports.gameId, parent.id))
+			.where(
+				and(
+					eq(turnReports.gameId, parent.id),
+					eq(turnReports.ownerId, ctx.userId),
+				),
+			)
 			.orderBy(sql`${turnReports.turnNumber} desc`)
 			.limit(limit);
 	},

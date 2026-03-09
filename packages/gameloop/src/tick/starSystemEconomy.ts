@@ -22,10 +22,8 @@ export type MiningTurnChange = {
 
 export async function tickStarSystemEconomy(
 	tx: Transaction,
-	_ctx: Context,
-): Promise<MiningTurnChange[]> {
-	const changes: MiningTurnChange[] = [];
-
+	ctx: Context,
+): Promise<void> {
 	const starSystemsWithResourcesLeft = await tx
 		.select({
 			id: starSystems.id,
@@ -103,7 +101,7 @@ export async function tickStarSystemEconomy(
 				});
 			}
 
-			changes.push({
+			ctx.addMiningChange({
 				starSystemId: starSystem.id,
 				resourceId: discovery.resourceId,
 				mined: miningRate,
@@ -112,6 +110,4 @@ export async function tickStarSystemEconomy(
 			});
 		}
 	}
-
-	return changes;
 }
