@@ -30,14 +30,24 @@ export function StarSystem({
 			? new Color(ownerColor).multiply(0.5).toHex()
 			: "gray";
 
-	const drawCircle = useCallback(
+	const drawStar = useCallback(
 		(graphics: Graphics) => {
 			graphics.clear();
-			graphics.setFillStyle({ color });
-			graphics.circle(0, 0, 20);
+			const baseColor = new Color(color);
+			
+			// Outer glow layers
+			for (let i = 4; i >= 1; i--) {
+				graphics.setFillStyle({ color: baseColor.toHex(), alpha: 0.15 });
+				graphics.circle(0, 0, 8 + i * 4);
+				graphics.fill();
+			}
+			
+			// Bright core
+			graphics.setFillStyle({ color: isVisible ? "#ffffff" : baseColor.toHex() });
+			graphics.circle(0, 0, 8);
 			graphics.fill();
 		},
-		[color],
+		[color, isVisible],
 	);
 
 	const drawSensorRange = useCallback(
@@ -53,7 +63,7 @@ export function StarSystem({
 	return (
 		<container position={position}>
 			<graphics
-				draw={drawCircle}
+				draw={drawStar}
 				interactive
 				cursor="pointer"
 				onPointerTap={onClick}

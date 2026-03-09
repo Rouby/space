@@ -15,6 +15,7 @@ export function TaskForce({
 	onClick,
 	onRightClick,
 	sensorRange,
+	movementVector,
 }: {
 	id: string;
 	position: PointData;
@@ -24,6 +25,7 @@ export function TaskForce({
 	onClick: (event: FederatedPointerEvent) => void;
 	onRightClick: (event: FederatedPointerEvent) => void;
 	sensorRange?: number | null;
+	movementVector?: PointData | null;
 }) {
 	const color = isVisible
 		? (ownerColor ?? "white")
@@ -31,15 +33,24 @@ export function TaskForce({
 			? new Color(ownerColor).multiply(0x999999).toHex()
 			: "gray";
 
-	const drawCircle = useCallback(
+	const drawShip = useCallback(
 		(graphics: Graphics) => {
 			graphics.clear();
 			graphics.setFillStyle({ color });
-			graphics.circle(0, 0, 10);
+			graphics.moveTo(12, 0);
+			graphics.lineTo(-8, 10);
+			graphics.lineTo(-4, 0);
+			graphics.lineTo(-8, -10);
+			graphics.lineTo(12, 0);
 			graphics.fill();
 		},
 		[color],
 	);
+
+	const rotation =
+		movementVector && (movementVector.x !== 0 || movementVector.y !== 0)
+			? Math.atan2(movementVector.y, movementVector.x)
+			: -Math.PI / 2;
 
 	const drawSensorRange = useCallback(
 		(graphics: Graphics) => {
@@ -52,9 +63,9 @@ export function TaskForce({
 	);
 
 	return (
-		<container position={position}>
+		<container position={position} rotation={rotation}>
 			<graphics
-				draw={drawCircle}
+				draw={drawShip}
 				interactive
 				cursor="pointer"
 				onPointerTap={onClick}

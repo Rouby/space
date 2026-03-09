@@ -1,7 +1,7 @@
 import { Menu } from "@mantine/core";
 import { Application, extend } from "@pixi/react";
 import { useMatchRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { Container, Graphics, Sprite } from "pixi.js";
+import { Color, Container, Graphics, Sprite } from "pixi.js";
 import "pixi.js/math-extras";
 import { useEffect, useRef, useState } from "react";
 import { useStyles } from "tss-react";
@@ -52,6 +52,7 @@ query Galaxy($id: ID!) {
 				color
 			}
 			orders {
+				__typename
 				id
 				...on TaskForceMoveOrder {
 					destination
@@ -278,6 +279,71 @@ query Galaxy($id: ID!) {
 							setMenuOpened(true);
 						}}
 					>
+						{data?.game.taskForces.map((taskForce) => {
+							const moveOrders = taskForce.orders?.filter(
+								(o) => o.__typename === "TaskForceMoveOrder",
+							) as { destination: { x: number; y: number } }[] | undefined;
+
+							if (!moveOrders || moveOrders.length === 0) return null;
+
+							return (
+								<graphics
+									key={`order-${taskForce.id}`}
+									draw={(g) => {
+										const lineColor = taskForce.owner?.color
+											? new Color(taskForce.owner.color).toNumber()
+											: 0x8888ff;
+
+										g.clear();
+
+										let currentX = taskForce.position.x;
+										let currentY = taskForce.position.y;
+
+										g.setStrokeStyle({
+											color: lineColor,
+											alpha: 0.5,
+											width: 2,
+										});
+
+										for (const order of moveOrders) {
+											const dx = order.destination.x - currentX;
+											const dy = order.destination.y - currentY;
+											const dist = Math.sqrt(dx * dx + dy * dy);
+											const dashLen = 20;
+											const gapLen = 15;
+											const numDashes = Math.floor(dist / (dashLen + gapLen));
+
+											for (let i = 0; i < numDashes; i++) {
+												const t1 = (i * (dashLen + gapLen)) / dist;
+												const t2 = (i * (dashLen + gapLen) + dashLen) / dist;
+												g.moveTo(currentX + dx * t1, currentY + dy * t1);
+												g.lineTo(currentX + dx * t2, currentY + dy * t2);
+											}
+
+											const textLastStart =
+												(numDashes * (dashLen + gapLen)) / dist;
+											if (textLastStart < 1) {
+												g.moveTo(
+													currentX + dx * textLastStart,
+													currentY + dy * textLastStart,
+												);
+												g.lineTo(order.destination.x, order.destination.y);
+											}
+
+											currentX = order.destination.x;
+											currentY = order.destination.y;
+										}
+										g.stroke();
+
+										g.setFillStyle({ color: lineColor, alpha: 0.5 });
+										for (const order of moveOrders) {
+											g.circle(order.destination.x, order.destination.y, 4);
+										}
+										g.fill();
+									}}
+								/>
+							);
+						})}
 						<Sensors
 							sensors={[
 								...(data?.game.starSystems.filter(
@@ -330,6 +396,7 @@ query Galaxy($id: ID!) {
 								key={taskForce.id}
 								id={taskForce.id}
 								position={taskForce.position}
+								movementVector={taskForce.movementVector}
 								isVisible={taskForce.isVisible}
 								isSelected={taskForce.id === selectedTaskForce}
 								ownerColor={taskForce.owner?.color}
