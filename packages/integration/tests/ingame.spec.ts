@@ -914,6 +914,7 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 		position: { x: 0, y: 0 },
 		discoverySlots: 0,
 		discoveryProgress: "0",
+		industry: 1,
 	});
 
 	const { id: resourceId } = await api.seed("resource", {

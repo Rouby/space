@@ -126,28 +126,6 @@ jobs:
           JWT_SECRET: kitty
           LOG_LEVEL: trace
 
-      - name: 📦 Upload artifacts
-        id: upload_playwright_report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: packages/integration/playwright-report/
-          retention-days: 30
-
-      - name: 🧾 Add Playwright report to summary
-        if: failure()
-        run: |
-          {
-            echo "## Integration test failure"
-            echo
-            echo "Playwright report artifact has been uploaded."
-            echo
-            echo "- Artifact: \\`playwright-report\\`"
-            echo "- Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            echo "- Artifact URL: ${{ steps.upload_playwright_report.outputs.artifact-url }}"
-          } >> "$GITHUB_STEP_SUMMARY"
-
   build:
     name: 🏗️ Build ${{ matrix.image }}
     runs-on: ubuntu-latest
