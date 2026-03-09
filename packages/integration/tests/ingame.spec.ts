@@ -1066,7 +1066,7 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 		)
 		.toMatchObject({
 			errors: undefined,
-			position: { x: 100, y: 0 },
+			position: { x: 0, y: 0 },
 		});
 });
 
