@@ -22,7 +22,7 @@ export const starSystems = pgTable("starSystems", {
 	name: varchar({ length: 256 }).notNull(),
 	position: point({ mode: "xy" }).notNull(),
 	ownerId: uuid().references(() => users.id, { onDelete: "restrict" }),
-	industry: integer().notNull().default(10),
+	industry: integer().notNull().default(0),
 	discoverySlots: integer().notNull().default(0),
 	discoveryProgress: decimal({ precision: 10, scale: 9 })
 		.notNull()

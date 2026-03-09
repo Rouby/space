@@ -352,7 +352,7 @@ export type StarSystem = Positionable & {
   discoveries?: Maybe<Array<Discovery>>;
   discoveryProgress?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
-  industry: Scalars['Int']['output'];
+  industry?: Maybe<Scalars['Int']['output']>;
   isVisible: Scalars['Boolean']['output'];
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
@@ -945,7 +945,7 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
   discoveryProgress?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  industry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  industry?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

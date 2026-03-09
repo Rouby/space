@@ -57,6 +57,7 @@ export const starSystem: NonNullable<QueryResolvers["starSystem"]> = async (
 				"discoveryProgress",
 			),
 			ownerId: possiblyHidden(starSystems.ownerId).as("ownerId"),
+			industry: possiblyHidden(starSystems.industry).as("industry"),
 			isVisible: sql<boolean>`CASE WHEN ${visibility.circle} IS NOT NULL THEN TRUE ELSE FALSE END`,
 			lastUpdate: sql<Date>`CASE WHEN ${visibility.circle} IS NULL THEN ${lastKnownStates.lastUpdate} ELSE NULL END`,
 		})

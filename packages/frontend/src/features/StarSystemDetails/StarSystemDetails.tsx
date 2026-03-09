@@ -262,7 +262,7 @@ export function StarSystemDetails({
 						<Text>
 							{starSystem?.industry 
 								? `${formatInteger(starSystem.industry)} / turn`
-								: "0"}
+								: "Our scanners could not pick up information about industrial capabilities."}
 						</Text>
 					</Card>
 					<Card>

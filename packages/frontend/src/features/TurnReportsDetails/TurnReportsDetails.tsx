@@ -52,6 +52,14 @@ export function TurnReportsDetails() {
 							remainingDeposits
 							depotQuantity
 						}
+						industryChanges {
+							starSystem {
+								id
+								name
+							}
+							industryTotal
+							industryUtilized
+						}
 					}
 				}
 			}
@@ -160,6 +168,36 @@ export function TurnReportsDetails() {
 														<Table.Td c="green">+{formatUnit(change.mined)}</Table.Td>
 														<Table.Td>{formatUnit(change.depotQuantity)}</Table.Td>
 														<Table.Td c="dimmed">{formatUnit(change.remainingDeposits)}</Table.Td>
+													</Table.Tr>
+												))}
+											</Table.Tbody>
+										</Table>
+									)}
+
+									<Divider my="xs" />
+
+									<Text size="sm" fw={500}>
+										Industry Output
+									</Text>
+									{report.industryChanges.length === 0 ? (
+										<Text size="sm" c="dimmed">
+											No industry capability.
+										</Text>
+									) : (
+										<Table striped withTableBorder withColumnBorders>
+											<Table.Thead>
+												<Table.Tr>
+													<Table.Th>Star System</Table.Th>
+													<Table.Th>Utilized</Table.Th>
+													<Table.Th>Capacity</Table.Th>
+												</Table.Tr>
+											</Table.Thead>
+											<Table.Tbody>
+												{report.industryChanges.map((change) => (
+													<Table.Tr key={change.starSystem.id}>
+														<Table.Td>{change.starSystem.name}</Table.Td>
+														<Table.Td>{change.industryUtilized}</Table.Td>
+														<Table.Td>{change.industryTotal}</Table.Td>
 													</Table.Tr>
 												))}
 											</Table.Tbody>

@@ -57,6 +57,13 @@
       "when": 1773052677810,
       "tag": "0007_overrated_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773053557932,
+      "tag": "0008_mean_black_knight",
+      "breakpoints": true
     }
   ]
 }

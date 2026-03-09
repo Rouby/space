@@ -1,0 +1,1 @@
+ALTER TABLE "starSystems" ALTER COLUMN "industry" SET DEFAULT 0;

@@ -212,7 +212,7 @@ type StarSystem implements Positionable {
 	discoveries: [Discovery!]
 	discoveryProgress: Float
 	id: ID!
-	industry: Int!
+	industry: Int
 	isVisible: Boolean!
 	lastUpdate: DateTime
 	name: String!

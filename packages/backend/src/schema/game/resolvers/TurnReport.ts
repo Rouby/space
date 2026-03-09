@@ -2,13 +2,13 @@ import type { TurnReportResolvers } from "./../../types.generated.ts";
 
 export const TurnReport: TurnReportResolvers = {
 	populationChanges: async (parent, _arg, _ctx) => {
-		return parent.summary.populationChanges;
+		return parent.summary.populationChanges || [];
 	},
 	miningChanges: async (parent, _arg, _ctx) => {
-		return parent.summary.miningChanges;
+		return parent.summary.miningChanges || [];
 	},
 	industryChanges: async (parent, _arg, _ctx) => {
-		return parent.summary.industryChanges;
+		return parent.summary.industryChanges || [];
 	},
 	createdAt: async (parent, _arg, _ctx) => {
 		return parent.createdAt;
