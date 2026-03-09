@@ -44,6 +44,9 @@ describe("tickTaskForceMovement", () => {
 		}> = [];
 
 		await tickTaskForceMovement(tx as never, {
+			addIndustryChange() {},
+			addMiningChange() {},
+			addPopulationChange() {},
 			turn: 3,
 			postMessage: (event: unknown) => events.push(event as never),
 		});
@@ -99,6 +102,9 @@ describe("tickTaskForceMovement", () => {
 		const events: Array<{ type: string }> = [];
 
 		await tickTaskForceMovement(tx as never, {
+			addIndustryChange() {},
+			addMiningChange() {},
+			addPopulationChange() {},
 			turn: 3,
 			postMessage: (event: unknown) => events.push(event as never),
 		});

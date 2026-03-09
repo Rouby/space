@@ -91,6 +91,9 @@ describe("tickTaskForceCombat", () => {
 		}> = [];
 
 		await tickTaskForceCombat(tx as never, {
+			addIndustryChange() {},
+			addMiningChange() {},
+			addPopulationChange() {},
 			turn: 4,
 			postMessage: (event: unknown) => events.push(event as never),
 		});
@@ -117,6 +120,9 @@ describe("tickTaskForceCombat", () => {
 			const { tx } = createTx();
 			const events: unknown[] = [];
 			await tickTaskForceCombat(tx as never, {
+				addIndustryChange() {},
+				addMiningChange() {},
+				addPopulationChange() {},
 				turn: 4,
 				postMessage: (event: unknown) => events.push(event),
 			});
@@ -150,6 +156,9 @@ describe("tickTaskForceCombat", () => {
 
 		await expect(
 			tickTaskForceCombat(tx as never, {
+				addIndustryChange() {},
+				addMiningChange() {},
+				addPopulationChange() {},
 				turn: 4,
 				postMessage: vi.fn(),
 			}),

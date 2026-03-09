@@ -21,6 +21,9 @@ describe("tickColonization", () => {
 		};
 
 		await tickColonization(tx as never, {
+			addIndustryChange() {},
+			addMiningChange() {},
+			addPopulationChange() {},
 			turn: 5,
 			postMessage: (event) => events.push(event as never),
 		});
@@ -62,6 +65,9 @@ describe("tickColonization", () => {
 		};
 
 		await tickColonization(tx as never, {
+			addIndustryChange() {},
+			addMiningChange() {},
+			addPopulationChange() {},
 			turn: 5,
 			postMessage: (event) => events.push(event as never),
 		});
