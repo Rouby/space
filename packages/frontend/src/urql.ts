@@ -20,6 +20,9 @@ export const client = createClient({
 			schema,
 			keys: {
 				ResourceCost: () => null,
+				StarSystemColonization: () => null,
+				TurnReportMiningChange: () => null,
+				TurnReportPopulationChange: () => null,
 			},
 			updates: {
 				Mutation: {
