@@ -43,6 +43,13 @@
       "when": 1773005716143,
       "tag": "0005_classy_synch",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773016736965,
+      "tag": "0006_grey_captain_stacy",
+      "breakpoints": true
     }
   ]
 }

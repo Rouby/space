@@ -15,6 +15,7 @@ type TaskForce implements Positionable {
 	game: Game!
 	isVisible: Boolean!
 	lastUpdate: DateTime
+	sensorRange: Float
 }
 
 interface TaskForceOrder {

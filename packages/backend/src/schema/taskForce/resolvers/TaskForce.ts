@@ -5,6 +5,7 @@ export const TaskForce: TaskForceResolvers = {
 	name: (parent) => {
 		return parent.name ?? "Unknown";
 	},
+	sensorRange: () => 250,
 	combatDeck: (parent) => parent.combatDeck ?? [],
 	owner: async (parent, _arg, ctx) => {
 		if (!parent.ownerId) {

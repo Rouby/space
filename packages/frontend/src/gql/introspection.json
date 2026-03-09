@@ -2227,6 +2227,14 @@
               }
             },
             "args": []
+          },
+          {
+            "name": "sensorRange",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
           }
         ],
         "interfaces": [

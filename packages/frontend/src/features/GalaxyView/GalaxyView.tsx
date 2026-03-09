@@ -61,6 +61,7 @@ query Galaxy($id: ID!) {
 			movementVector
 			isVisible
 			lastUpdate
+			sensorRange
 		}
 		dilemmas {
 			id
@@ -116,6 +117,7 @@ query Galaxy($id: ID!) {
 						isVisible
 						lastUpdate
 						movementVector
+						sensorRange
 					}
 					... on StarSystem {
 						owner {
@@ -146,6 +148,7 @@ query Galaxy($id: ID!) {
 					... on TaskForce {
 						isVisible
 						lastUpdate
+						sensorRange
 					}
 					... on StarSystem {
 						isVisible
@@ -352,12 +355,12 @@ query Galaxy($id: ID!) {
 										s.sensorRange > 0 &&
 										s.isVisible,
 								) ?? []),
-								// ...(data?.game.taskForces.filter(
-								// 	(s) =>
-								// 		typeof s.sensorRange === "number" &&
-								// 		s.sensorRange > 0 &&
-								// 		s.isVisible,
-								// ) ?? []),
+								...(data?.game.taskForces.filter(
+									(s) =>
+										typeof s.sensorRange === "number" &&
+										s.sensorRange > 0 &&
+										s.isVisible,
+								) ?? []),
 							]}
 						/>
 						{data?.game.starSystems.map((starSystem) => (
@@ -400,7 +403,7 @@ query Galaxy($id: ID!) {
 								isVisible={taskForce.isVisible}
 								isSelected={taskForce.id === selectedTaskForce}
 								ownerColor={taskForce.owner?.color}
-								sensorRange={0}
+								sensorRange={taskForce.sensorRange}
 								onClick={(event) => {
 									event.preventDefault();
 									setSelectedTaskForce(taskForce.id);

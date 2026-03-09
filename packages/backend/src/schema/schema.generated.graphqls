@@ -252,6 +252,7 @@ type TaskForce implements Positionable {
 	orders: [TaskForceOrder!]
 	owner: Player
 	position: Vector!
+	sensorRange: Float
 }
 
 type TaskForceColonizeOrder implements TaskForceOrder {

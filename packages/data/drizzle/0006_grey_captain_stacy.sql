@@ -1,0 +1,2 @@
+DROP VIEW "public"."visibility";--> statement-breakpoint
+CREATE VIEW "public"."visibility" AS ((select "ownerId" as "userId", "gameId", circle("position", 250) as "circle" from "taskForces" group by "taskForces"."id", "taskForces"."ownerId", "taskForces"."gameId") union all (select "ownerId" as "userId", "gameId", circle("position", 1000) as "circle" from "starSystems" where "starSystems"."ownerId" is not null));

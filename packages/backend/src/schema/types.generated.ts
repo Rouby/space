@@ -411,6 +411,7 @@ export type TaskForce = Positionable & {
   orders?: Maybe<Array<TaskForceOrder>>;
   owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
+  sensorRange?: Maybe<Scalars['Float']['output']>;
 };
 
 export type TaskForceColonizeOrder = TaskForceOrder & {
@@ -976,6 +977,7 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
   orders?: Resolver<Maybe<Array<ResolversTypes['TaskForceOrder']>>, ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
