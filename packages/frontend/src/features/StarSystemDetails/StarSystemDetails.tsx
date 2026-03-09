@@ -62,6 +62,7 @@ export function StarSystemDetails({
 					name
 				}
 			}
+			industry
 			discoveries {
 				__typename
 				... on ResourceDiscovery {
@@ -97,6 +98,11 @@ export function StarSystemDetails({
 					shipDesigns {
 						id
 						name
+						components {
+							component {
+								constructionCost
+							}
+						}
 					}
 				}
 			}
@@ -131,6 +137,7 @@ export function StarSystemDetails({
 							name
 						}
 					}
+					industry
 					discoveries {
 						__typename
 						... on ResourceDiscovery {
@@ -248,6 +255,14 @@ export function StarSystemDetails({
 											0,
 										),
 									)}
+						</Text>
+					</Card>
+					<Card>
+						<Text variant="gradient">Industry</Text>
+						<Text>
+							{starSystem?.industry 
+								? `${formatInteger(starSystem.industry)} / turn`
+								: "0"}
 						</Text>
 					</Card>
 					<Card>
@@ -379,10 +394,36 @@ export function StarSystemDetails({
 						onChange={setShipDesignId}
 						disabled={!isOwnedByMe || shipDesignOptions.length === 0}
 					/>
+					{(() => {
+						if (!shipDesignId) return null;
+						const selectedDesign = commissionContext?.game.me?.shipDesigns?.find(
+							(d) => d.id === shipDesignId,
+						);
+						if (!selectedDesign) return null;
+
+						const cost = selectedDesign.components.reduce(
+							(sum, comp) => sum + comp.component.constructionCost,
+							0,
+						);
+						const industry = starSystem?.industry ?? 1;
+						const turns = industry > 0 ? Math.ceil(cost / industry) : "Infinity";
+
+						return (
+							<Text size="sm" c="dimmed">
+								Construction cost: {formatInteger(cost)}. Time to build: {turns}{" "}
+								turns.
+							</Text>
+						);
+					})()}
 					<Group justify="space-between">
 						<Button
 							loading={constructTaskForceState.fetching}
-							disabled={!isOwnedByMe || !fleetName.trim() || !shipDesignId}
+							disabled={
+								!isOwnedByMe ||
+								!fleetName.trim() ||
+								!shipDesignId ||
+								!starSystem?.industry
+							}
 							onClick={async () => {
 								if (!shipDesignId || !fleetName.trim()) {
 									return;

@@ -212,6 +212,7 @@ type StarSystem implements Positionable {
 	discoveries: [Discovery!]
 	discoveryProgress: Float
 	id: ID!
+	industry: Int!
 	isVisible: Boolean!
 	lastUpdate: DateTime
 	name: String!
@@ -310,9 +311,16 @@ type TurnEndedEvent {
 type TurnReport {
 	createdAt: DateTime!
 	id: ID!
+	industryChanges: [TurnReportIndustryChange!]!
 	miningChanges: [TurnReportMiningChange!]!
 	populationChanges: [TurnReportPopulationChange!]!
 	turnNumber: Int!
+}
+
+type TurnReportIndustryChange {
+	industryTotal: Int!
+	industryUtilized: Int!
+	starSystem: StarSystem!
 }
 
 type TurnReportMiningChange {

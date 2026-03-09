@@ -1,6 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
-import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper } from './game/schema.mappers.js';
+import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper, StarSystemColonizationMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
@@ -352,6 +352,7 @@ export type StarSystem = Positionable & {
   discoveries?: Maybe<Array<Discovery>>;
   discoveryProgress?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
+  industry: Scalars['Int']['output'];
   isVisible: Scalars['Boolean']['output'];
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
@@ -469,9 +470,17 @@ export type TurnReport = {
   __typename?: 'TurnReport';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  industryChanges: Array<TurnReportIndustryChange>;
   miningChanges: Array<TurnReportMiningChange>;
   populationChanges: Array<TurnReportPopulationChange>;
   turnNumber: Scalars['Int']['output'];
+};
+
+export type TurnReportIndustryChange = {
+  __typename?: 'TurnReportIndustryChange';
+  industryTotal: Scalars['Int']['output'];
+  industryUtilized: Scalars['Int']['output'];
+  starSystem: StarSystem;
 };
 
 export type TurnReportMiningChange = {
@@ -653,6 +662,7 @@ export type ResolversTypes = {
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   TurnEndedEvent: ResolverTypeWrapper<Omit<TurnEndedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   TurnReport: ResolverTypeWrapper<TurnReportMapper>;
+  TurnReportIndustryChange: ResolverTypeWrapper<TurnReportIndustryChangeMapper>;
   TurnReportMiningChange: ResolverTypeWrapper<TurnReportMiningChangeMapper>;
   TurnReportPopulationChange: ResolverTypeWrapper<TurnReportPopulationChangeMapper>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
@@ -714,6 +724,7 @@ export type ResolversParentTypes = {
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   TurnEndedEvent: Omit<TurnEndedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   TurnReport: TurnReportMapper;
+  TurnReportIndustryChange: TurnReportIndustryChangeMapper;
   TurnReportMiningChange: TurnReportMiningChangeMapper;
   TurnReportPopulationChange: TurnReportPopulationChangeMapper;
   UnknownDiscovery: UnknownDiscovery;
@@ -934,6 +945,7 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
   discoveryProgress?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  industry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1025,9 +1037,17 @@ export type TurnEndedEventResolvers<ContextType = Context, ParentType extends Re
 export type TurnReportResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReport'] = ResolversParentTypes['TurnReport']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  industryChanges?: Resolver<Array<ResolversTypes['TurnReportIndustryChange']>, ParentType, ContextType>;
   miningChanges?: Resolver<Array<ResolversTypes['TurnReportMiningChange']>, ParentType, ContextType>;
   populationChanges?: Resolver<Array<ResolversTypes['TurnReportPopulationChange']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TurnReportIndustryChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportIndustryChange'] = ResolversParentTypes['TurnReportIndustryChange']> = {
+  industryTotal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  industryUtilized?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1106,6 +1126,7 @@ export type Resolvers<ContextType = Context> = {
   TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;
   TurnEndedEvent?: TurnEndedEventResolvers<ContextType>;
   TurnReport?: TurnReportResolvers<ContextType>;
+  TurnReportIndustryChange?: TurnReportIndustryChangeResolvers<ContextType>;
   TurnReportMiningChange?: TurnReportMiningChangeResolvers<ContextType>;
   TurnReportPopulationChange?: TurnReportPopulationChangeResolvers<ContextType>;
   UnknownDiscovery?: UnknownDiscoveryResolvers<ContextType>;

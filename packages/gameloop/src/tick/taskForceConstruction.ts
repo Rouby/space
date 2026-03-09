@@ -1,8 +1,14 @@
-import { and, eq, taskForces } from "@space/data/schema";
+import { and, eq, starSystems, taskForces } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
-export async function tickTaskForceConstruction(tx: Transaction, ctx: Context) {
+export type IndustryTurnChange = {
+	starSystemId: string;
+	industryTotal: number;
+	industryUtilized: number;
+};
+
+export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): Promise<IndustryTurnChange[]> {
 	const allTaskForces = await tx
 		.select({
 			id: taskForces.id,
@@ -10,41 +16,84 @@ export async function tickTaskForceConstruction(tx: Transaction, ctx: Context) {
 			constructionStarSystemId: taskForces.constructionStarSystemId,
 			constructionDone: taskForces.constructionDone,
 			constructionTotal: taskForces.constructionTotal,
-			constructionPerTick: taskForces.constructionPerTick,
 		})
 		.from(taskForces)
 		.where(eq(taskForces.gameId, gameId));
 
-	for (const taskForce of allTaskForces) {
-		const done = Number(taskForce.constructionDone ?? "0");
-		const total = Number(taskForce.constructionTotal ?? "0");
-		const perTick = Number(taskForce.constructionPerTick ?? "0");
+	const systemsWithIndustry = await tx
+		.select({
+			id: starSystems.id,
+			industry: starSystems.industry,
+		})
+		.from(starSystems)
+		.where(eq(starSystems.gameId, gameId));
 
-		if (!(total > 0) || done >= total) {
+	const industryChanges: IndustryTurnChange[] = [];
+
+	for (const system of systemsWithIndustry) {
+		const forcesInSystem = allTaskForces.filter(
+			(tf) => tf.constructionStarSystemId === system.id && Number(tf.constructionTotal ?? "0") > Number(tf.constructionDone ?? "0")
+		);
+
+		if (forcesInSystem.length === 0) {
+			industryChanges.push({
+				starSystemId: system.id,
+				industryTotal: system.industry,
+				industryUtilized: 0,
+			});
 			continue;
 		}
 
-		const nextDone = Math.min(total, done + Math.max(perTick, 0));
+		let availableIndustry = system.industry;
+		let utilizedIndustry = 0;
 
-		await tx
-			.update(taskForces)
-			.set({ constructionDone: nextDone.toString() })
-			.where(
-				and(
-					eq(taskForces.id, taskForce.id),
-					eq(taskForces.gameId, taskForce.gameId),
-				),
-			);
+		const perShip = Math.floor(availableIndustry / forcesInSystem.length);
+		let remainder = availableIndustry % forcesInSystem.length;
 
-		if (taskForce.constructionStarSystemId) {
+		for (const taskForce of forcesInSystem) {
+			const done = Number(taskForce.constructionDone ?? "0");
+			const total = Number(taskForce.constructionTotal ?? "0");
+			
+			let industryApplied = perShip + (remainder > 0 ? 1 : 0);
+			if (remainder > 0) remainder--;
+
+			if (done + industryApplied > total) {
+				industryApplied = total - done;
+				// In a perfect system we would re-add the leftover to availableIndustry
+				// for outer loop distribution, but a simple cap is fine for now.
+			}
+
+			if (industryApplied <= 0) continue;
+
+			utilizedIndustry += industryApplied;
+			const nextDone = done + industryApplied;
+
+			await tx
+				.update(taskForces)
+				.set({ constructionDone: nextDone.toString() })
+				.where(
+					and(
+						eq(taskForces.id, taskForce.id),
+						eq(taskForces.gameId, taskForce.gameId),
+					),
+				);
+
 			ctx.postMessage({
 				type: "taskForceCommision:progress",
 				id: taskForce.id,
-				starSystemId: taskForce.constructionStarSystemId,
+				starSystemId: taskForce.constructionStarSystemId!,
 				constructionDone: nextDone,
 				constructionTotal: total,
-				constructionPerTick: Math.max(perTick, 0),
+				constructionPerTick: industryApplied,
 			});
 		}
+
+		industryChanges.push({
+			starSystemId: system.id,
+			industryTotal: system.industry,
+			industryUtilized: utilizedIndustry,
+		});
 	}
+
+	return industryChanges;
 }

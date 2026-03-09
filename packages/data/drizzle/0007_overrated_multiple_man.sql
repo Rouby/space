@@ -1,0 +1,1 @@
+ALTER TABLE "starSystems" ADD COLUMN "industry" integer DEFAULT 10 NOT NULL;

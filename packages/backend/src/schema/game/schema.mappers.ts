@@ -3,6 +3,7 @@ import type {
 	players,
 	TurnReportMiningChange,
 	TurnReportPopulationChange,
+	TurnReportIndustryChange,
 	turnReports,
 	users,
 } from "@space/data/schema";
@@ -14,3 +15,4 @@ export type PlayerMapper = typeof players.$inferSelect & {
 export type TurnReportMapper = typeof turnReports.$inferSelect;
 export type TurnReportPopulationChangeMapper = TurnReportPopulationChange;
 export type TurnReportMiningChangeMapper = TurnReportMiningChange;
+export type TurnReportIndustryChangeMapper = TurnReportIndustryChange;

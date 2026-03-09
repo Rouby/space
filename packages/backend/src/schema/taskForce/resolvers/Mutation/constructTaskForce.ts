@@ -144,17 +144,30 @@ export const constructTaskForce: NonNullable<
 		const required = Number(cost.quantity);
 		const available = depotByResource.get(cost.resourceId) ?? 0;
 		if (available < required) {
-			throw createGraphQLError("Insufficient resources for construction", {
-				extensions: {
-					code: "INSUFFICIENT_RESOURCES",
-					violation: "RESOURCE_SHORTAGE",
-					resourceId: cost.resourceId,
-					required,
-					available,
-					starSystemId: originSystem.id,
+			throw createGraphQLError(
+				"Insufficient special resources for construction",
+				{
+					extensions: {
+						code: "INSUFFICIENT_RESOURCES",
+						violation: "RESOURCE_SHORTAGE",
+						resourceId: cost.resourceId,
+						required,
+						available,
+						starSystemId: originSystem.id,
+					},
 				},
-			});
+			);
 		}
+	}
+
+	if (originSystem.industry <= 0) {
+		throw createGraphQLError("This star system has no industrial capacity", {
+			extensions: {
+				code: "INSUFFICIENT_INDUSTRY",
+				violation: "INDUSTRY_SHORTAGE",
+				starSystemId: originSystem.id,
+			},
+		});
 	}
 
 	const [created] = await ctx.drizzle.transaction(async (tx) => {
@@ -197,7 +210,7 @@ export const constructTaskForce: NonNullable<
 				constructionStarSystemId: originSystem.id,
 				constructionDone: "0",
 				constructionTotal: constructionTotal.toString(),
-				constructionPerTick: constructionTotal.toString(),
+				constructionPerTick: "0",
 				combatDeck: STARTER_COMBAT_DECK,
 				orders: [],
 			})

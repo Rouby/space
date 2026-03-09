@@ -22,6 +22,7 @@ type TurnReport {
 	createdAt: DateTime!
 	populationChanges: [TurnReportPopulationChange!]!
 	miningChanges: [TurnReportMiningChange!]!
+	industryChanges: [TurnReportIndustryChange!]!
 }
 
 type TurnReportPopulationChange {
@@ -30,6 +31,12 @@ type TurnReportPopulationChange {
 	previousAmount: BigInt!
 	newAmount: BigInt!
 	growth: BigInt!
+}
+
+type TurnReportIndustryChange {
+	starSystem: StarSystem!
+	industryTotal: Int!
+	industryUtilized: Int!
 }
 
 type TurnReportMiningChange {

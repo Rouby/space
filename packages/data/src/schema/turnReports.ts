@@ -17,6 +17,12 @@ export type TurnReportPopulationChange = {
 	growth: string;
 };
 
+export type TurnReportIndustryChange = {
+	starSystemId: string;
+	industryTotal: number;
+	industryUtilized: number;
+};
+
 export type TurnReportMiningChange = {
 	starSystemId: string;
 	resourceId: string;
@@ -28,6 +34,7 @@ export type TurnReportMiningChange = {
 export type TurnReportSummary = {
 	populationChanges: TurnReportPopulationChange[];
 	miningChanges: TurnReportMiningChange[];
+	industryChanges: TurnReportIndustryChange[];
 };
 
 export const turnReports = pgTable(

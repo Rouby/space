@@ -7,6 +7,9 @@ export const TurnReport: TurnReportResolvers = {
 	miningChanges: async (parent, _arg, _ctx) => {
 		return parent.summary.miningChanges;
 	},
+	industryChanges: async (parent, _arg, _ctx) => {
+		return parent.summary.industryChanges;
+	},
 	createdAt: async (parent, _arg, _ctx) => {
 		return parent.createdAt;
 	},

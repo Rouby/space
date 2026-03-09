@@ -58,6 +58,7 @@ import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOr
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TurnEndedEvent } from './game/resolvers/TurnEndedEvent.js';
 import    { TurnReport } from './game/resolvers/TurnReport.js';
+import    { TurnReportIndustryChange } from './game/resolvers/TurnReportIndustryChange.js';
 import    { TurnReportMiningChange } from './game/resolvers/TurnReportMiningChange.js';
 import    { TurnReportPopulationChange } from './game/resolvers/TurnReportPopulationChange.js';
 import    { UnknownDiscovery } from './starSystem/resolvers/UnknownDiscovery.js';
@@ -100,6 +101,7 @@ TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TurnEndedEvent: TurnEndedEvent,
 TurnReport: TurnReport,
+TurnReportIndustryChange: TurnReportIndustryChange,
 TurnReportMiningChange: TurnReportMiningChange,
 TurnReportPopulationChange: TurnReportPopulationChange,
 UnknownDiscovery: UnknownDiscovery,

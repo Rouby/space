@@ -53,7 +53,7 @@ export async function tick() {
 
 		await tickColonization(tx, ctx);
 
-		await tickTaskForceConstruction(tx, ctx);
+		const industryChanges = await tickTaskForceConstruction(tx, ctx);
 
 		await tickTaskForceMovement(tx, ctx);
 
@@ -75,6 +75,7 @@ export async function tick() {
 					growth: change.growth.toString(),
 				})),
 				miningChanges,
+				industryChanges,
 			},
 		});
 

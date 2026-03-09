@@ -13,6 +13,7 @@ export const StarSystem: Pick<
 	| "discoveries"
 	| "discoveryProgress"
 	| "id"
+	| "industry"
 	| "isVisible"
 	| "lastUpdate"
 	| "name"
@@ -85,5 +86,8 @@ export const StarSystem: Pick<
 				where: eq(starSystemColonizations.starSystemId, parent.id),
 			})) ?? null
 		);
+	},
+	industry: async (parent: any, _arg, _ctx) => {
+		return parent.industry;
 	},
 };
