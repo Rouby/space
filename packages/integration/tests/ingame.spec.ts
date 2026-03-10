@@ -344,7 +344,7 @@ test("resolves configured combat decks during turn resolution and applies engage
 		.toMatchObject({
 			errors: undefined,
 			turnNumber: 1,
-			taskForceCount: 1,
+			taskForceCount: 2,
 		});
 });
 
