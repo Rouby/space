@@ -41,6 +41,7 @@ export const taskForceEngagements = pgTable(
 			maxHp: number;
 			hand: string[];
 			deck: string[];
+			discard: string[];
 			nextDamageBonus: number;
 			nextDamageReduction: number;
 		} | null>(),
@@ -50,6 +51,7 @@ export const taskForceEngagements = pgTable(
 			maxHp: number;
 			hand: string[];
 			deck: string[];
+			discard: string[];
 			nextDamageBonus: number;
 			nextDamageReduction: number;
 		} | null>(),

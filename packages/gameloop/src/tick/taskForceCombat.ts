@@ -42,6 +42,7 @@ type CombatState = {
 	maxHp: number;
 	hand: CardId[];
 	deck: CardId[];
+	discard: CardId[];
 	nextDamageBonus: number;
 	nextDamageReduction: number;
 };
@@ -90,8 +91,26 @@ function assertValidDeck(deck: string[], taskForceId: string): CardId[] {
 	throw new CombatRuleViolation(taskForceId, deck.length);
 }
 
+function shuffle<T>(array: T[]) {
+	let currentIndex = array.length;
+	while (currentIndex !== 0) {
+		const randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex--;
+		[array[currentIndex], array[randomIndex]] = [
+			array[randomIndex] as T,
+			array[currentIndex] as T,
+		];
+	}
+	return array;
+}
+
 function draw(state: CombatState, amount: number) {
-	for (let i = 0; i < amount && state.deck.length > 0; i += 1) {
+	for (let i = 0; i < amount; i += 1) {
+		if (state.deck.length === 0) {
+			if (state.discard.length === 0) break;
+			state.deck = shuffle(state.discard);
+			state.discard = [];
+		}
 		const card = state.deck.shift();
 		if (card) {
 			state.hand.push(card);
@@ -312,7 +331,8 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 			hp: STARTING_HP,
 			maxHp: STARTING_HP,
 			hand: [],
-			deck: assertValidDeck(left.combatDeck ?? [], left.id),
+			deck: shuffle(assertValidDeck(left.combatDeck ?? [], left.id)),
+			discard: [],
 			nextDamageBonus: 0,
 			nextDamageReduction: 0,
 		};
@@ -321,7 +341,8 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 			hp: STARTING_HP,
 			maxHp: STARTING_HP,
 			hand: [],
-			deck: assertValidDeck(right.combatDeck ?? [], right.id),
+			deck: shuffle(assertValidDeck(right.combatDeck ?? [], right.id)),
+			discard: [],
 			nextDamageBonus: 0,
 			nextDamageReduction: 0,
 		};

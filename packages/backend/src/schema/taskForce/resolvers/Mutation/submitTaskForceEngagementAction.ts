@@ -195,8 +195,12 @@ export const submitTaskForceEngagementAction: NonNullable<
 					taskForcesToDestroy.add(stateB.taskForceId);
 				}
 			} else {
-				draw(stateA, 1);
-				draw(stateB, 1);
+				stateA.discard.push(...stateA.hand);
+				stateA.hand = [];
+				stateB.discard.push(...stateB.hand);
+				stateB.hand = [];
+				draw(stateA, 3);
+				draw(stateB, 3);
 				nextCurrentRound = engagement.currentRound + 1;
 				nextPhase = "awaiting_submissions";
 			}

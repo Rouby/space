@@ -14,6 +14,7 @@ export type CombatState = {
 	maxHp: number;
 	hand: CardId[];
 	deck: CardId[];
+	discard: CardId[];
 	nextDamageBonus: number;
 	nextDamageReduction: number;
 };
@@ -84,13 +85,32 @@ export function requireCombatState(value: unknown): CombatState {
 		maxHp: state.maxHp,
 		hand: state.hand.map(parseCardId),
 		deck: state.deck.map(parseCardId),
+		discard: (state.discard ?? []).map(parseCardId),
 		nextDamageBonus: Number(state.nextDamageBonus ?? 0),
 		nextDamageReduction: Number(state.nextDamageReduction ?? 0),
 	};
 }
 
+export function shuffle<T>(array: T[]) {
+	let currentIndex = array.length;
+	while (currentIndex !== 0) {
+		const randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex--;
+		[array[currentIndex], array[randomIndex]] = [
+			array[randomIndex] as T,
+			array[currentIndex] as T,
+		];
+	}
+	return array;
+}
+
 export function draw(state: CombatState, amount: number) {
-	for (let i = 0; i < amount && state.deck.length > 0; i += 1) {
+	for (let i = 0; i < amount; i += 1) {
+		if (state.deck.length === 0) {
+			if (state.discard.length === 0) break;
+			state.deck = shuffle(state.discard);
+			state.discard = [];
+		}
 		const card = state.deck.shift();
 		if (card) {
 			state.hand.push(card);
