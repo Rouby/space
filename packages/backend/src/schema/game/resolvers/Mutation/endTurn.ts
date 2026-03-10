@@ -1,4 +1,13 @@
-import { and, dilemmas, eq, games, isNull, players } from "@space/data/schema";
+import {
+	and,
+	dilemmas,
+	eq,
+	games,
+	isNull,
+	or,
+	players,
+	taskForceEngagements,
+} from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
@@ -65,10 +74,45 @@ export const endTurn: NonNullable<MutationResolvers["endTurn"]> = async (
 		);
 
 	if (hasUnresolvedDilemmas.length > 0) {
+		const blockers = hasUnresolvedDilemmas.map((dilemma) => ({
+			type: "dilemma",
+			id: dilemma.id,
+		}));
+
 		throw createGraphQLError(
 			"You cannot end your turn while there are unresolved dilemmas",
 			{
-				extensions: { code: "UNRESOLVED_DILEMMAS" },
+				extensions: { code: "UNRESOLVED_DILEMMAS", blockers },
+			},
+		);
+	}
+
+	const hasUnresolvedEngagements = await ctx.drizzle
+		.select({
+			id: taskForceEngagements.id,
+		})
+		.from(taskForceEngagements)
+		.where(
+			and(
+				eq(taskForceEngagements.gameId, gameId),
+				isNull(taskForceEngagements.resolvedAtTurn),
+				or(
+					eq(taskForceEngagements.ownerIdA, context.userId),
+					eq(taskForceEngagements.ownerIdB, context.userId),
+				),
+			),
+		);
+
+	if (hasUnresolvedEngagements.length > 0) {
+		const blockers = hasUnresolvedEngagements.map((engagement) => ({
+			type: "engagement",
+			id: engagement.id,
+		}));
+
+		throw createGraphQLError(
+			"You cannot end your turn while there are unresolved engagements",
+			{
+				extensions: { code: "UNRESOLVED_ENGAGEMENTS", blockers },
 			},
 		);
 	}

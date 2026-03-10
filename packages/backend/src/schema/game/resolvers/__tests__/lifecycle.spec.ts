@@ -464,6 +464,49 @@ describe("story 1.3 game lifecycle controls", () => {
 		);
 	});
 
+	it("rejects endTurn when unresolved engagements exist", async () => {
+		const where = vi
+			.fn()
+			.mockResolvedValueOnce([{ userId: "player-1", gameId: "game-1" }])
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([{ id: "engagement-1" }]);
+
+		const ctx = {
+			userId: "player-1",
+			throwWithoutClaim: vi.fn(),
+			drizzle: {
+				query: {
+					games: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "game-1",
+							startedAt: new Date("2026-03-08T01:00:00.000Z"),
+							turnNumber: 0,
+						}),
+					},
+				},
+				select: vi.fn().mockReturnValue({
+					from: vi.fn().mockReturnValue({ where }),
+				}),
+			},
+		};
+
+		await expect(
+			callEndTurn(
+				{},
+				{ expectedTurnNumber: 0, gameId: "game-1" },
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError(
+				"You cannot end your turn while there are unresolved engagements",
+				{
+					extensions: { code: "UNRESOLVED_ENGAGEMENTS" },
+				},
+			),
+		);
+	});
+
 	it("rejects duplicate endTurn submissions with TURN_ALREADY_ENDED", async () => {
 		const where = vi
 			.fn()

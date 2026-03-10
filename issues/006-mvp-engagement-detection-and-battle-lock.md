@@ -1,5 +1,7 @@
 # [MVP-006] Engagement Detection and Mandatory Battle Lock
 
+DONE
+
 ## Objective
 Trigger combat automatically when opposing task forces cross paths and lock turn progression until battles are resolved.
 
