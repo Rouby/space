@@ -1,5 +1,3 @@
-ALTER TABLE "taskForceEngagements" ALTER COLUMN "id" SET DATA TYPE uuid;--> statement-breakpoint
-ALTER TABLE "taskForceEngagements" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();--> statement-breakpoint
 ALTER TABLE "taskForceEngagements" ADD COLUMN "phase" varchar(64) DEFAULT 'awaiting_submissions' NOT NULL;--> statement-breakpoint
 ALTER TABLE "taskForceEngagements" ADD COLUMN "currentRound" integer DEFAULT 1 NOT NULL;--> statement-breakpoint
 ALTER TABLE "taskForceEngagements" ADD COLUMN "stateA" json;--> statement-breakpoint

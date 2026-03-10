@@ -1,5 +1,6 @@
+-- Active: 1730208253342@@127.0.0.1@5433@space@public
 CREATE TABLE "taskForceEngagements" (
-	"id" varchar(256) PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"gameId" uuid NOT NULL,
 	"taskForceIdA" uuid NOT NULL,
 	"taskForceIdB" uuid NOT NULL,
