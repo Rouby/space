@@ -66,6 +66,7 @@ import    { TurnReportIndustrialProjectCompletion } from './game/resolvers/TurnR
 import    { TurnReportIndustryChange } from './game/resolvers/TurnReportIndustryChange.js';
 import    { TurnReportMiningChange } from './game/resolvers/TurnReportMiningChange.js';
 import    { TurnReportPopulationChange } from './game/resolvers/TurnReportPopulationChange.js';
+import    { TurnReportTaskForceConstructionChange } from './game/resolvers/TurnReportTaskForceConstructionChange.js';
 import    { UnknownDiscovery } from './starSystem/resolvers/UnknownDiscovery.js';
 import    { User } from './user/resolvers/User.js';
 import    { Vector } from './base/resolvers/Vector.js';
@@ -112,6 +113,7 @@ TurnReportIndustrialProjectCompletion: TurnReportIndustrialProjectCompletion,
 TurnReportIndustryChange: TurnReportIndustryChange,
 TurnReportMiningChange: TurnReportMiningChange,
 TurnReportPopulationChange: TurnReportPopulationChange,
+TurnReportTaskForceConstructionChange: TurnReportTaskForceConstructionChange,
 UnknownDiscovery: UnknownDiscovery,
 User: User,
 Vector: Vector,

@@ -1,5 +1,7 @@
 # [MVP-004] Task Force Creation and Assignment Flow
 
+DONE
+
 ## Objective
 Provide a reliable flow to create task forces from available assets and assign them to systems.
 

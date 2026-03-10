@@ -1,5 +1,7 @@
 # [MVP-001] Star System Development Decision Model
 
+DONE
+
 ## Objective
 Define and implement the per-turn decision model that lets players shape each owned star system toward industry growth or population growth.
 

@@ -68,6 +68,21 @@ export function TurnReportsDetails() {
 							projectType
 							industryBonus
 						}
+						taskForceConstructionChanges {
+							taskForce {
+								id
+								name
+							}
+							starSystem {
+								id
+								name
+							}
+							previousDone
+							newDone
+							total
+							perTick
+							completed
+						}
 					}
 				}
 			}
@@ -85,7 +100,8 @@ export function TurnReportsDetails() {
 			.join(" ");
 
 	// Ensure the active page isn't out of bounds if the reports change
-	const validPage = reports.length > 0 ? Math.min(activePage, reports.length) : 1;
+	const validPage =
+		reports.length > 0 ? Math.min(activePage, reports.length) : 1;
 	const report = reports[validPage - 1];
 
 	return (
@@ -94,7 +110,8 @@ export function TurnReportsDetails() {
 				<div>
 					<Title order={3}>Turn Reports</Title>
 					<Text size="sm" c="dimmed">
-						Detailed end-of-turn summaries for population, mining, industry, and completed industrial projects.
+						Detailed end-of-turn summaries for population, mining, industry,
+						industrial projects, and task force construction.
 					</Text>
 				</div>
 				{reports.length > 1 && (
@@ -116,141 +133,215 @@ export function TurnReportsDetails() {
 				<ScrollArea h="100%" type="always">
 					<Stack gap="sm" pr="sm">
 						<Card key={report.id} withBorder>
-								<Stack gap="xs">
-									<Group justify="space-between" align="baseline">
-										<Title order={5}>Turn {report.turnNumber}</Title>
-										<Text size="xs" c="dimmed">
-											{new Date(report.createdAt).toLocaleString()}
-										</Text>
-									</Group>
-
-									<Text size="sm" fw={500}>
-										Population Changes
+							<Stack gap="xs">
+								<Group justify="space-between" align="baseline">
+									<Title order={5}>Turn {report.turnNumber}</Title>
+									<Text size="xs" c="dimmed">
+										{new Date(report.createdAt).toLocaleString()}
 									</Text>
-									{report.populationChanges.length === 0 ? (
-										<Text size="sm" c="dimmed">
-											No population changes.
-										</Text>
-									) : (
-										<Table striped withTableBorder withColumnBorders>
-											<Table.Thead>
-												<Table.Tr>
-													<Table.Th>Star System</Table.Th>
-													<Table.Th>Growth</Table.Th>
-													<Table.Th>Previous</Table.Th>
-													<Table.Th>New</Table.Th>
-												</Table.Tr>
-											</Table.Thead>
-											<Table.Tbody>
-												{report.populationChanges.map((change) => (
-													<Table.Tr key={change.population.id}>
-														<Table.Td>{change.starSystem.name}</Table.Td>
-														<Table.Td c="green">+{formatInteger(change.growth)}</Table.Td>
-														<Table.Td c="dimmed">{formatInteger(change.previousAmount)}</Table.Td>
-														<Table.Td>{formatInteger(change.newAmount)}</Table.Td>
-													</Table.Tr>
-												))}
-											</Table.Tbody>
-										</Table>
-									)}
+								</Group>
 
-									<Divider my="xs" />
-
-									<Text size="sm" fw={500}>
-										Mining Changes
+								<Text size="sm" fw={500}>
+									Population Changes
+								</Text>
+								{report.populationChanges.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No population changes.
 									</Text>
-									{report.miningChanges.length === 0 ? (
-										<Text size="sm" c="dimmed">
-											No mining changes.
-										</Text>
-									) : (
-										<Table striped withTableBorder withColumnBorders>
-											<Table.Thead>
-												<Table.Tr>
-													<Table.Th>Star System</Table.Th>
-													<Table.Th>Resource</Table.Th>
-													<Table.Th>Mined</Table.Th>
-													<Table.Th>Depot Qty</Table.Th>
-													<Table.Th>Remaining</Table.Th>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Star System</Table.Th>
+												<Table.Th>Growth</Table.Th>
+												<Table.Th>Previous</Table.Th>
+												<Table.Th>New</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.populationChanges.map((change) => (
+												<Table.Tr key={change.population.id}>
+													<Table.Td>{change.starSystem.name}</Table.Td>
+													<Table.Td c="green">
+														+{formatInteger(change.growth)}
+													</Table.Td>
+													<Table.Td c="dimmed">
+														{formatInteger(change.previousAmount)}
+													</Table.Td>
+													<Table.Td>{formatInteger(change.newAmount)}</Table.Td>
 												</Table.Tr>
-											</Table.Thead>
-											<Table.Tbody>
-												{report.miningChanges.map((change) => (
-													<Table.Tr key={`${change.starSystem.id}:${change.resource.id}`}>
-														<Table.Td>{change.starSystem.name}</Table.Td>
-														<Table.Td>{change.resource.name}</Table.Td>
-														<Table.Td c="green">+{formatUnit(change.mined)}</Table.Td>
-														<Table.Td>{formatUnit(change.depotQuantity)}</Table.Td>
-														<Table.Td c="dimmed">{formatUnit(change.remainingDeposits)}</Table.Td>
-													</Table.Tr>
-												))}
-											</Table.Tbody>
-										</Table>
-									)}
+											))}
+										</Table.Tbody>
+									</Table>
+								)}
 
-									<Divider my="xs" />
+								<Divider my="xs" />
 
-									<Text size="sm" fw={500}>
-										Industry Output
+								<Text size="sm" fw={500}>
+									Mining Changes
+								</Text>
+								{report.miningChanges.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No mining changes.
 									</Text>
-									{report.industryChanges.length === 0 ? (
-										<Text size="sm" c="dimmed">
-											No industry capability.
-										</Text>
-									) : (
-										<Table striped withTableBorder withColumnBorders>
-											<Table.Thead>
-												<Table.Tr>
-													<Table.Th>Star System</Table.Th>
-													<Table.Th>Utilized</Table.Th>
-													<Table.Th>Capacity</Table.Th>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Star System</Table.Th>
+												<Table.Th>Resource</Table.Th>
+												<Table.Th>Mined</Table.Th>
+												<Table.Th>Depot Qty</Table.Th>
+												<Table.Th>Remaining</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.miningChanges.map((change) => (
+												<Table.Tr
+													key={`${change.starSystem.id}:${change.resource.id}`}
+												>
+													<Table.Td>{change.starSystem.name}</Table.Td>
+													<Table.Td>{change.resource.name}</Table.Td>
+													<Table.Td c="green">
+														+{formatUnit(change.mined)}
+													</Table.Td>
+													<Table.Td>
+														{formatUnit(change.depotQuantity)}
+													</Table.Td>
+													<Table.Td c="dimmed">
+														{formatUnit(change.remainingDeposits)}
+													</Table.Td>
 												</Table.Tr>
-											</Table.Thead>
-											<Table.Tbody>
-												{report.industryChanges.map((change) => (
-													<Table.Tr key={change.starSystem.id}>
-														<Table.Td>{change.starSystem.name}</Table.Td>
-														<Table.Td>{change.industryUtilized}</Table.Td>
-														<Table.Td>{change.industryTotal}</Table.Td>
-													</Table.Tr>
-												))}
-											</Table.Tbody>
-										</Table>
-									)}
+											))}
+										</Table.Tbody>
+									</Table>
+								)}
 
-										<Divider my="xs" />
+								<Divider my="xs" />
 
-										<Text size="sm" fw={500}>
-											Industrial Projects Completed
-										</Text>
-										{report.industrialProjectCompletions.length === 0 ? (
-											<Text size="sm" c="dimmed">
-												No industrial projects completed this turn.
-											</Text>
-										) : (
-											<Table striped withTableBorder withColumnBorders>
-												<Table.Thead>
-													<Table.Tr>
-														<Table.Th>Star System</Table.Th>
-														<Table.Th>Project</Table.Th>
-														<Table.Th>Added Industry</Table.Th>
+								<Text size="sm" fw={500}>
+									Industry Output
+								</Text>
+								{report.industryChanges.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No industry capability.
+									</Text>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Star System</Table.Th>
+												<Table.Th>Utilized</Table.Th>
+												<Table.Th>Capacity</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.industryChanges.map((change) => (
+												<Table.Tr key={change.starSystem.id}>
+													<Table.Td>{change.starSystem.name}</Table.Td>
+													<Table.Td>{change.industryUtilized}</Table.Td>
+													<Table.Td>{change.industryTotal}</Table.Td>
+												</Table.Tr>
+											))}
+										</Table.Tbody>
+									</Table>
+								)}
+
+								<Divider my="xs" />
+
+								<Text size="sm" fw={500}>
+									Industrial Projects Completed
+								</Text>
+								{report.industrialProjectCompletions.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No industrial projects completed this turn.
+									</Text>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Star System</Table.Th>
+												<Table.Th>Project</Table.Th>
+												<Table.Th>Added Industry</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.industrialProjectCompletions.map(
+												(completion, idx) => (
+													<Table.Tr
+														key={`${completion.starSystem.id}:${completion.projectType}:${idx}`}
+													>
+														<Table.Td>{completion.starSystem.name}</Table.Td>
+														<Table.Td>
+															{formatProjectType(completion.projectType)}
+														</Table.Td>
+														<Table.Td c="green">
+															+{formatInteger(completion.industryBonus)}
+														</Table.Td>
 													</Table.Tr>
-												</Table.Thead>
-												<Table.Tbody>
-													{report.industrialProjectCompletions.map((completion, idx) => (
+												),
+											)}
+										</Table.Tbody>
+									</Table>
+								)}
+
+								<Divider my="xs" />
+
+								<Text size="sm" fw={500}>
+									Task Force Construction
+								</Text>
+								{report.taskForceConstructionChanges.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No task force construction progress this turn.
+									</Text>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Task Force</Table.Th>
+												<Table.Th>Star System</Table.Th>
+												<Table.Th>Progress</Table.Th>
+												<Table.Th>This Turn</Table.Th>
+												<Table.Th>Status</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.taskForceConstructionChanges.map(
+												(change, idx) => {
+													const percent =
+														change.total > 0
+															? Math.floor(
+																	(change.newDone / change.total) * 100,
+																)
+															: 0;
+
+													return (
 														<Table.Tr
-															key={`${completion.starSystem.id}:${completion.projectType}:${idx}`}
+															key={`${change.taskForce.id}:${change.starSystem.id}:${idx}`}
 														>
-															<Table.Td>{completion.starSystem.name}</Table.Td>
-															<Table.Td>{formatProjectType(completion.projectType)}</Table.Td>
-															<Table.Td c="green">+{formatInteger(completion.industryBonus)}</Table.Td>
+															<Table.Td>{change.taskForce.name}</Table.Td>
+															<Table.Td>{change.starSystem.name}</Table.Td>
+															<Table.Td>
+																{formatInteger(change.newDone)} /{" "}
+																{formatInteger(change.total)} ({percent}%)
+															</Table.Td>
+															<Table.Td c="green">
+																+{formatInteger(change.perTick)}
+															</Table.Td>
+															<Table.Td
+																c={change.completed ? "green" : "yellow"}
+															>
+																{change.completed ? "Completed" : "In progress"}
+															</Table.Td>
 														</Table.Tr>
-													))}
-												</Table.Tbody>
-											</Table>
-										)}
-								</Stack>
-							</Card>
+													);
+												},
+											)}
+										</Table.Tbody>
+									</Table>
+								)}
+							</Stack>
+						</Card>
 					</Stack>
 				</ScrollArea>
 			)}

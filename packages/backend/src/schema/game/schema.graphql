@@ -24,6 +24,7 @@ type TurnReport {
 	miningChanges: [TurnReportMiningChange!]!
 	industryChanges: [TurnReportIndustryChange!]!
 	industrialProjectCompletions: [TurnReportIndustrialProjectCompletion!]!
+	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
 }
 
 type TurnReportPopulationChange {
@@ -52,6 +53,16 @@ type TurnReportIndustrialProjectCompletion {
 	starSystem: StarSystem!
 	projectType: IndustrialProjectType!
 	industryBonus: Int!
+}
+
+type TurnReportTaskForceConstructionChange {
+	taskForce: TaskForce!
+	starSystem: StarSystem!
+	previousDone: Int!
+	newDone: Int!
+	total: Int!
+	perTick: Int!
+	completed: Boolean!
 }
 
 type Player {

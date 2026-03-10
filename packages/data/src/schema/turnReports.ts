@@ -30,6 +30,18 @@ export type TurnReportIndustrialProjectCompletion = {
 	industryBonus: number;
 };
 
+export type TurnReportTaskForceConstructionChange = {
+	taskForceId: string;
+	taskForceName: string;
+	ownerId: string;
+	starSystemId: string;
+	previousDone: number;
+	newDone: number;
+	total: number;
+	perTick: number;
+	completed: boolean;
+};
+
 export type TurnReportMiningChange = {
 	starSystemId: string;
 	resourceId: string;
@@ -43,6 +55,7 @@ export type TurnReportSummary = {
 	miningChanges: TurnReportMiningChange[];
 	industryChanges: TurnReportIndustryChange[];
 	industrialProjectCompletions: TurnReportIndustrialProjectCompletion[];
+	taskForceConstructionChanges: TurnReportTaskForceConstructionChange[];
 };
 
 export const turnReports = pgTable(

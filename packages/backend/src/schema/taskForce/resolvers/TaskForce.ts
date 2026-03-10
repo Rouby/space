@@ -7,6 +7,19 @@ export const TaskForce: TaskForceResolvers = {
 	},
 	sensorRange: () => 250,
 	combatDeck: (parent) => parent.combatDeck ?? [],
+	constructionDone: (parent) =>
+		parent.constructionDone !== null && parent.constructionDone !== undefined
+			? Number(parent.constructionDone)
+			: null,
+	constructionTotal: (parent) =>
+		parent.constructionTotal !== null && parent.constructionTotal !== undefined
+			? Number(parent.constructionTotal)
+			: null,
+	constructionPerTick: (parent) =>
+		parent.constructionPerTick !== null &&
+		parent.constructionPerTick !== undefined
+			? Number(parent.constructionPerTick)
+			: null,
 	owner: async (parent, _arg, ctx) => {
 		if (!parent.ownerId) {
 			return null;

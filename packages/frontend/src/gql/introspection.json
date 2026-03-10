@@ -2422,6 +2422,30 @@
             "args": []
           },
           {
+            "name": "constructionDone",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "constructionPerTick",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "constructionTotal",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
             "name": "game",
             "type": {
               "kind": "NON_NULL",
@@ -2821,6 +2845,24 @@
             "args": []
           },
           {
+            "name": "taskForceConstructionChanges",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "TurnReportTaskForceConstructionChange",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
             "name": "turnNumber",
             "type": {
               "kind": "NON_NULL",
@@ -3037,6 +3079,92 @@
                 "kind": "OBJECT",
                 "name": "StarSystem",
                 "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TurnReportTaskForceConstructionChange",
+        "fields": [
+          {
+            "name": "completed",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "newDone",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "perTick",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "previousDone",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "starSystem",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "taskForce",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForce",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "total",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
               }
             },
             "args": []

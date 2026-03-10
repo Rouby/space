@@ -1,5 +1,7 @@
 # [MVP-002] Industrial Expansion Projects and Production Capacity
 
+DONE
+
 ## Objective
 Create concrete industrial investment actions that improve a star system's industrial capacity over time.
 

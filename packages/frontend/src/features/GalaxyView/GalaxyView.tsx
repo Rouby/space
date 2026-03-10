@@ -46,6 +46,8 @@ query Galaxy($id: ID!) {
 			id
 			name
 			position
+			constructionDone
+			constructionTotal
 			owner {
 				id
 				name
@@ -118,6 +120,8 @@ query Galaxy($id: ID!) {
 						lastUpdate
 						movementVector
 						sensorRange
+						constructionDone
+						constructionTotal
 					}
 					... on StarSystem {
 						owner {
@@ -149,6 +153,8 @@ query Galaxy($id: ID!) {
 						isVisible
 						lastUpdate
 						sensorRange
+						constructionDone
+						constructionTotal
 					}
 					... on StarSystem {
 						isVisible
@@ -227,6 +233,16 @@ query Galaxy($id: ID!) {
 				)
 			: null,
 	};
+
+	const selectedTaskForceDetails = selectedTaskForce
+		? data?.game.taskForces.find(
+				(taskForce) => taskForce.id === selectedTaskForce,
+			)
+		: undefined;
+	const selectedTaskForceIsUnderConstruction =
+		(selectedTaskForceDetails?.constructionTotal ?? 0) > 0 &&
+		(selectedTaskForceDetails?.constructionDone ?? 0) <
+			(selectedTaskForceDetails?.constructionTotal ?? 0);
 
 	if (!data?.game.starSystems.length) {
 		return null;
@@ -463,8 +479,18 @@ query Galaxy($id: ID!) {
 					<Menu.Label>Menu</Menu.Label>
 					{selectedTaskForce && (
 						<>
+							{selectedTaskForceIsUnderConstruction && (
+								<Menu.Item disabled>
+									Task force is under construction and cannot be controlled.
+								</Menu.Item>
+							)}
 							<Menu.Item
+								disabled={selectedTaskForceIsUnderConstruction}
 								onClick={() => {
+									if (selectedTaskForceIsUnderConstruction) {
+										return;
+									}
+
 									if (menuContext?.point) {
 										orderTaskForce({
 											id: selectedTaskForce,
@@ -480,7 +506,12 @@ query Galaxy($id: ID!) {
 							{menuContextResolved.starSystem &&
 								!menuContextResolved.starSystem.owner && (
 									<Menu.Item
+										disabled={selectedTaskForceIsUnderConstruction}
 										onClick={() => {
+											if (selectedTaskForceIsUnderConstruction) {
+												return;
+											}
+
 											orderTaskForce({
 												id: selectedTaskForce,
 												orders: [
@@ -505,7 +536,12 @@ query Galaxy($id: ID!) {
 
 							{menuContextResolved.taskForce && (
 								<Menu.Item
+									disabled={selectedTaskForceIsUnderConstruction}
 									onClick={() => {
+										if (selectedTaskForceIsUnderConstruction) {
+											return;
+										}
+
 										orderTaskForce({
 											id: selectedTaskForce,
 											orders: [

@@ -1,5 +1,7 @@
 # [MVP-003] Population Growth Policies and Migration Pressure
 
+SKIPPED
+
 ## Objective
 Enable players to influence local population growth via policy choices with clear economic consequences.
 

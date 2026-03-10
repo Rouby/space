@@ -11,6 +11,9 @@ type TaskForce implements Positionable {
 	orders: [TaskForceOrder!]
 	combatDeck: [String!]
 	movementVector: Vector
+	constructionDone: Float
+	constructionTotal: Float
+	constructionPerTick: Float
 	owner: Player
 	game: Game!
 	isVisible: Boolean!

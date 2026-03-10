@@ -1,10 +1,11 @@
 import type {
 	games,
 	players,
+	TurnReportIndustrialProjectCompletion,
+	TurnReportIndustryChange,
 	TurnReportMiningChange,
 	TurnReportPopulationChange,
-	TurnReportIndustryChange,
-	TurnReportIndustrialProjectCompletion,
+	TurnReportTaskForceConstructionChange,
 	turnReports,
 	users,
 } from "@space/data/schema";
@@ -19,3 +20,5 @@ export type TurnReportMiningChangeMapper = TurnReportMiningChange;
 export type TurnReportIndustryChangeMapper = TurnReportIndustryChange;
 export type TurnReportIndustrialProjectCompletionMapper =
 	TurnReportIndustrialProjectCompletion;
+export type TurnReportTaskForceConstructionChangeMapper =
+	TurnReportTaskForceConstructionChange;

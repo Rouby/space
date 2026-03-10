@@ -13,6 +13,9 @@ export const TurnReport: TurnReportResolvers = {
 	industrialProjectCompletions: async (parent, _arg, _ctx) => {
 		return parent.summary.industrialProjectCompletions || [];
 	},
+	taskForceConstructionChanges: async (parent, _arg, _ctx) => {
+		return parent.summary.taskForceConstructionChanges || [];
+	},
 	createdAt: async (parent, _arg, _ctx) => {
 		return parent.createdAt;
 	},

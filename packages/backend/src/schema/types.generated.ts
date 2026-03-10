@@ -1,6 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
-import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper } from './game/schema.mappers.js';
+import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper, StarSystemColonizationMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
@@ -453,6 +453,9 @@ export type SubscriptiontrackStarSystemArgs = {
 export type TaskForce = Positionable & {
   __typename?: 'TaskForce';
   combatDeck?: Maybe<Array<Scalars['String']['output']>>;
+  constructionDone?: Maybe<Scalars['Float']['output']>;
+  constructionPerTick?: Maybe<Scalars['Float']['output']>;
+  constructionTotal?: Maybe<Scalars['Float']['output']>;
   game: Game;
   id: Scalars['ID']['output'];
   isVisible: Scalars['Boolean']['output'];
@@ -524,6 +527,7 @@ export type TurnReport = {
   industryChanges: Array<TurnReportIndustryChange>;
   miningChanges: Array<TurnReportMiningChange>;
   populationChanges: Array<TurnReportPopulationChange>;
+  taskForceConstructionChanges: Array<TurnReportTaskForceConstructionChange>;
   turnNumber: Scalars['Int']['output'];
 };
 
@@ -557,6 +561,17 @@ export type TurnReportPopulationChange = {
   population: Population;
   previousAmount: Scalars['BigInt']['output'];
   starSystem: StarSystem;
+};
+
+export type TurnReportTaskForceConstructionChange = {
+  __typename?: 'TurnReportTaskForceConstructionChange';
+  completed: Scalars['Boolean']['output'];
+  newDone: Scalars['Int']['output'];
+  perTick: Scalars['Int']['output'];
+  previousDone: Scalars['Int']['output'];
+  starSystem: StarSystem;
+  taskForce: TaskForce;
+  total: Scalars['Int']['output'];
 };
 
 export type UnknownDiscovery = {
@@ -728,6 +743,7 @@ export type ResolversTypes = {
   TurnReportIndustryChange: ResolverTypeWrapper<TurnReportIndustryChangeMapper>;
   TurnReportMiningChange: ResolverTypeWrapper<TurnReportMiningChangeMapper>;
   TurnReportPopulationChange: ResolverTypeWrapper<TurnReportPopulationChangeMapper>;
+  TurnReportTaskForceConstructionChange: ResolverTypeWrapper<TurnReportTaskForceConstructionChangeMapper>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
   UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
@@ -793,6 +809,7 @@ export type ResolversParentTypes = {
   TurnReportIndustryChange: TurnReportIndustryChangeMapper;
   TurnReportMiningChange: TurnReportMiningChangeMapper;
   TurnReportPopulationChange: TurnReportPopulationChangeMapper;
+  TurnReportTaskForceConstructionChange: TurnReportTaskForceConstructionChangeMapper;
   UnknownDiscovery: UnknownDiscovery;
   UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
@@ -1078,6 +1095,9 @@ export type SubscriptionResolvers<ContextType = Context, ParentType extends Reso
 
 export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
   combatDeck?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  constructionDone?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  constructionPerTick?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  constructionTotal?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -1139,6 +1159,7 @@ export type TurnReportResolvers<ContextType = Context, ParentType extends Resolv
   industryChanges?: Resolver<Array<ResolversTypes['TurnReportIndustryChange']>, ParentType, ContextType>;
   miningChanges?: Resolver<Array<ResolversTypes['TurnReportMiningChange']>, ParentType, ContextType>;
   populationChanges?: Resolver<Array<ResolversTypes['TurnReportPopulationChange']>, ParentType, ContextType>;
+  taskForceConstructionChanges?: Resolver<Array<ResolversTypes['TurnReportTaskForceConstructionChange']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1172,6 +1193,17 @@ export type TurnReportPopulationChangeResolvers<ContextType = Context, ParentTyp
   population?: Resolver<ResolversTypes['Population'], ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TurnReportTaskForceConstructionChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportTaskForceConstructionChange'] = ResolversParentTypes['TurnReportTaskForceConstructionChange']> = {
+  completed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  newDone?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  perTick?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  previousDone?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
+  taskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1240,6 +1272,7 @@ export type Resolvers<ContextType = Context> = {
   TurnReportIndustryChange?: TurnReportIndustryChangeResolvers<ContextType>;
   TurnReportMiningChange?: TurnReportMiningChangeResolvers<ContextType>;
   TurnReportPopulationChange?: TurnReportPopulationChangeResolvers<ContextType>;
+  TurnReportTaskForceConstructionChange?: TurnReportTaskForceConstructionChangeResolvers<ContextType>;
   UnknownDiscovery?: UnknownDiscoveryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;

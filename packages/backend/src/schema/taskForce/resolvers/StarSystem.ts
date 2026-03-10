@@ -44,6 +44,15 @@ export const StarSystem: Pick<
 				movementVector: possiblyHidden(taskForces.movementVector).as(
 					"movementVector",
 				),
+				constructionDone: possiblyHidden(taskForces.constructionDone).as(
+					"constructionDone",
+				),
+				constructionTotal: possiblyHidden(taskForces.constructionTotal).as(
+					"constructionTotal",
+				),
+				constructionPerTick: possiblyHidden(taskForces.constructionPerTick).as(
+					"constructionPerTick",
+				),
 				ownerId: possiblyHidden(taskForces.ownerId).as("ownerId"),
 
 				isVisible:

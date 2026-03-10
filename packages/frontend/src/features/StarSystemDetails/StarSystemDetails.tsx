@@ -19,6 +19,7 @@ import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import {
 	formatInteger,
+	formatNumber,
 	formatRoundsToRelativeRounds,
 	formatUnit,
 	formatUnitPerRound,
@@ -80,6 +81,9 @@ export function StarSystemDetails({
 			taskForces {
 				id
 				name
+				constructionDone
+				constructionTotal
+				constructionPerTick
 				owner {
 					id
 					name
@@ -177,6 +181,9 @@ export function StarSystemDetails({
 					taskForces {
 						id
 						name
+						constructionDone
+						constructionTotal
+						constructionPerTick
 						owner {
 							id
 							name
@@ -307,9 +314,52 @@ export function StarSystemDetails({
 		!!currentPlayerId &&
 		starSystem.owner.id === currentPlayerId;
 
-	const commissionError =
-		constructTaskForceState.error?.graphQLErrors[0]?.message ??
-		constructTaskForceState.error?.message;
+	const commissionError = (() => {
+		const gqlError = constructTaskForceState.error?.graphQLErrors[0];
+		const code = gqlError?.extensions?.code;
+		const violation = gqlError?.extensions?.violation;
+
+		if (code === "DUPLICATE_TASK_FORCE_NAME") {
+			return "Task force name already exists. Choose another name.";
+		}
+
+		if (code === "INVALID_CONSTRUCTION_ORDER") {
+			if (violation === "ORIGIN_NOT_OWNED") {
+				return "You can only commission task forces in systems you own.";
+			}
+
+			if (violation === "SHIP_DESIGN_UNAVAILABLE") {
+				return "Selected ship design is unavailable for this empire.";
+			}
+		}
+
+		if (code === "INSUFFICIENT_INDUSTRY") {
+			return "This star system has no industrial capacity.";
+		}
+
+		if (code === "INSUFFICIENT_RESOURCES") {
+			const resourceId =
+				typeof gqlError?.extensions?.resourceId === "string"
+					? gqlError.extensions.resourceId
+					: null;
+			const required =
+				typeof gqlError?.extensions?.required === "number"
+					? gqlError.extensions.required
+					: null;
+			const available =
+				typeof gqlError?.extensions?.available === "number"
+					? gqlError.extensions.available
+					: null;
+
+			if (resourceId && required !== null && available !== null) {
+				return `Insufficient resource ${resourceId}: required ${required}, available ${available}.`;
+			}
+
+			return "Insufficient special resources for construction.";
+		}
+
+		return gqlError?.message ?? constructTaskForceState.error?.message;
+	})();
 
 	const developmentStanceError =
 		setDevelopmentStanceError?.graphQLErrors[0]?.message ??
@@ -366,6 +416,35 @@ export function StarSystemDetails({
 	}, [starSystem?.currentDevelopmentStance]);
 
 	const { css } = useStyles();
+
+	const formatReadiness = (
+		constructionDone: number | null | undefined,
+		constructionTotal: number | null | undefined,
+		constructionPerTick: number | null | undefined,
+	) => {
+		const done = constructionDone ?? 0;
+		const total = constructionTotal ?? 0;
+		if (total <= 0 || done >= total) {
+			return {
+				label: "Ready",
+				detail: "Operational",
+				progress: 100,
+			};
+		}
+
+		const perTick = constructionPerTick ?? 0;
+		const remaining = Math.max(0, total - done);
+		const etaTurns = perTick > 0 ? Math.ceil(remaining / perTick) : null;
+
+		return {
+			label: "Under construction",
+			detail:
+				etaTurns === null
+					? `${formatNumber(done)} / ${formatNumber(total)} progress, awaiting industry`
+					: `${formatNumber(done)} / ${formatNumber(total)} progress, ETA ${etaTurns} turn${etaTurns === 1 ? "" : "s"}`,
+			progress: Math.min(100, (done / total) * 100),
+		};
+	};
 
 	return (
 		<>
@@ -487,8 +566,40 @@ export function StarSystemDetails({
 					})}
 				>
 					{starSystem?.taskForces?.map((tf) => (
-						<Stack key={tf.id} gap={0} align="center">
+						<Stack
+							key={tf.id}
+							gap="xs"
+							align="stretch"
+							className={css({
+								padding: "8px",
+								border: "1px solid var(--mantine-color-dark-4)",
+								borderRadius: "8px",
+							})}
+						>
 							<Center>{tf.name}</Center>
+							{(() => {
+								const readiness = formatReadiness(
+									tf.constructionDone,
+									tf.constructionTotal,
+									tf.constructionPerTick,
+								);
+
+								return (
+									<>
+										<Text size="xs" c="dimmed" ta="center">
+											{readiness.label}
+										</Text>
+										<Text size="xs" c="dimmed" ta="center">
+											{readiness.detail}
+										</Text>
+										<Progress
+											size="xs"
+											value={readiness.progress}
+											color={readiness.progress >= 100 ? "teal" : "yellow"}
+										/>
+									</>
+								);
+							})()}
 						</Stack>
 					))}
 				</div>

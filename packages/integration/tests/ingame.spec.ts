@@ -1070,6 +1070,91 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 		});
 });
 
+test("returns explicit violation when constructing at unowned system", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "fleet-rules-host@example.com",
+		name: "Fleet Rules Host",
+	});
+	const { id: rivalId } = await api.seed("user", {
+		email: "fleet-rules-rival@example.com",
+		name: "Fleet Rules Rival",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Fleet Rules Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#f39c12",
+	});
+	await api.seed("player", {
+		gameId,
+		userId: rivalId,
+		color: "#2980b9",
+	});
+
+	const { id: rivalSystemId } = await api.seed("starSystem", {
+		gameId,
+		ownerId: rivalId,
+		name: "Rival Bastion",
+		position: { x: 0, y: 0 },
+		discoverySlots: 0,
+		discoveryProgress: "0",
+		industry: 5,
+	});
+
+	const { id: shipDesignId } = await api.seed("shipDesign", {
+		gameId,
+		ownerId: hostId,
+		name: "Rules Scout",
+		description: "Rules validation scout",
+		decommissioned: false,
+	});
+
+	await api.login(hostId);
+
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
+		},
+	});
+	const startPayload = await startResponse.json();
+	expect(startPayload.errors).toBeUndefined();
+
+	const constructResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Construct($input: ConstructTaskForceInput!) { constructTaskForce(input: $input) { id } }",
+			variables: {
+				input: {
+					starSystemId: rivalSystemId,
+					shipDesignId,
+					name: "Illicit Fleet",
+				},
+			},
+		},
+	});
+	const constructPayload = await constructResponse.json();
+
+	expect(constructPayload.data).toBeNull();
+	expect(constructPayload.errors).toEqual(
+		expect.arrayContaining([
+			expect.objectContaining({
+				extensions: expect.objectContaining({
+					code: "INVALID_CONSTRUCTION_ORDER",
+					violation: "ORIGIN_NOT_OWNED",
+				}),
+			}),
+		]),
+	);
+});
+
 test("denies unauthorized fleet mutation and keeps hidden movement details private", async ({
 	page,
 	api,

@@ -15,6 +15,8 @@ export async function tickTaskForceConstruction(
 	const allTaskForces = await tx
 		.select({
 			id: taskForces.id,
+			name: taskForces.name,
+			ownerId: taskForces.ownerId,
 			gameId: taskForces.gameId,
 			constructionStarSystemId: taskForces.constructionStarSystemId,
 			constructionDone: taskForces.constructionDone,
@@ -83,6 +85,18 @@ export async function tickTaskForceConstruction(
 				);
 
 			if (taskForce.constructionStarSystemId) {
+				ctx.addTaskForceConstructionChange?.({
+					taskForceId: taskForce.id,
+					taskForceName: taskForce.name,
+					ownerId: taskForce.ownerId,
+					starSystemId: taskForce.constructionStarSystemId,
+					previousDone: done,
+					newDone: nextDone,
+					total,
+					perTick: industryApplied,
+					completed: nextDone >= total,
+				});
+
 				ctx.postMessage({
 					type: "taskForceCommision:progress",
 					id: taskForce.id,

@@ -74,6 +74,172 @@ describe("task force construction and movement rules", () => {
 		);
 	});
 
+	it("rejects constructTaskForce when origin system is not owned", async () => {
+		const ctx = {
+			userId: "user-1",
+			throwWithoutClaim: vi.fn(),
+			hasVision: vi.fn().mockResolvedValue(true),
+			denyAccess: vi.fn(denyAccess),
+			drizzle: {
+				query: {
+					starSystems: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "ss-1",
+							gameId: "game-1",
+							ownerId: "user-2",
+							position: { x: 0, y: 0 },
+						}),
+					},
+					players: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "player-1",
+							gameId: "game-1",
+							userId: "user-1",
+						}),
+					},
+				},
+			},
+		};
+
+		await expect(
+			callConstructTaskForce(
+				{},
+				{
+					input: {
+						starSystemId: "ss-1",
+						shipDesignId: "sd-1",
+						name: "New Fleet",
+					},
+				},
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError("You can only construct fleets at owned systems", {
+				extensions: {
+					code: "INVALID_CONSTRUCTION_ORDER",
+					violation: "ORIGIN_NOT_OWNED",
+				},
+			}),
+		);
+	});
+
+	it("rejects constructTaskForce when ship design is unavailable", async () => {
+		const ctx = {
+			userId: "user-1",
+			throwWithoutClaim: vi.fn(),
+			hasVision: vi.fn().mockResolvedValue(true),
+			denyAccess: vi.fn(denyAccess),
+			drizzle: {
+				query: {
+					starSystems: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "ss-1",
+							gameId: "game-1",
+							ownerId: "user-1",
+							position: { x: 0, y: 0 },
+							industry: 1,
+						}),
+					},
+					players: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "player-1",
+							gameId: "game-1",
+							userId: "user-1",
+						}),
+					},
+					shipDesigns: {
+						findFirst: vi.fn().mockResolvedValue(null),
+					},
+				},
+			},
+		};
+
+		await expect(
+			callConstructTaskForce(
+				{},
+				{
+					input: {
+						starSystemId: "ss-1",
+						shipDesignId: "sd-1",
+						name: "New Fleet",
+					},
+				},
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError("Ship design is not available", {
+				extensions: {
+					code: "INVALID_CONSTRUCTION_ORDER",
+					violation: "SHIP_DESIGN_UNAVAILABLE",
+				},
+			}),
+		);
+	});
+
+	it("rejects constructTaskForce when fleet name already exists", async () => {
+		const ctx = {
+			userId: "user-1",
+			throwWithoutClaim: vi.fn(),
+			hasVision: vi.fn().mockResolvedValue(true),
+			denyAccess: vi.fn(denyAccess),
+			drizzle: {
+				query: {
+					starSystems: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "ss-1",
+							gameId: "game-1",
+							ownerId: "user-1",
+							position: { x: 0, y: 0 },
+							industry: 1,
+						}),
+					},
+					players: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "player-1",
+							gameId: "game-1",
+							userId: "user-1",
+						}),
+					},
+					shipDesigns: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "sd-1",
+							gameId: "game-1",
+							ownerId: "user-1",
+							decommissioned: false,
+						}),
+					},
+					taskForces: {
+						findFirst: vi.fn().mockResolvedValue({
+							id: "tf-1",
+							name: "Alpha Fleet",
+						}),
+					},
+				},
+			},
+		};
+
+		await expect(
+			callConstructTaskForce(
+				{},
+				{
+					input: {
+						starSystemId: "ss-1",
+						shipDesignId: "sd-1",
+						name: "Alpha Fleet",
+					},
+				},
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError("Task force name already exists", {
+				extensions: { code: "DUPLICATE_TASK_FORCE_NAME" },
+			}),
+		);
+	});
+
 	it("accepts long-distance move orders for queued tick resolution", async () => {
 		const returning = vi.fn().mockResolvedValue([
 			{

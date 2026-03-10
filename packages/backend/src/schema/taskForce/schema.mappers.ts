@@ -8,6 +8,9 @@ export type TaskForceMapper = {
 	orders: TaskForceOrderMapper[] | null;
 	combatDeck: string[] | null;
 	movementVector: VectorMapper | null;
+	constructionDone: string | null;
+	constructionTotal: string | null;
+	constructionPerTick: string | null;
 	isVisible: boolean;
 	lastUpdate: Date | null;
 	ownerId: string | null;

@@ -8,6 +8,7 @@ import {
 	players,
 	sql,
 	starSystems,
+	type TurnReportTaskForceConstructionChange,
 	taskForces,
 	turnReports,
 	visibility,
@@ -43,6 +44,9 @@ export type Context = {
 	addIndustrialProjectCompletion?: (
 		change: IndustrialProjectCompletionChange,
 	) => void;
+	addTaskForceConstructionChange?: (
+		change: TurnReportTaskForceConstructionChange,
+	) => void;
 };
 
 export async function tick() {
@@ -51,6 +55,8 @@ export async function tick() {
 	const miningChanges: MiningTurnChange[] = [];
 	const industryChanges: IndustryTurnChange[] = [];
 	const industrialProjectCompletions: IndustrialProjectCompletionChange[] = [];
+	const taskForceConstructionChanges: TurnReportTaskForceConstructionChange[] =
+		[];
 
 	const ctx: Context = {
 		postMessage: (event) => messages.push(event),
@@ -69,6 +75,8 @@ export async function tick() {
 				.reduce((acc, change) => acc + change.industryUtilized, 0),
 		addIndustrialProjectCompletion: (change) =>
 			industrialProjectCompletions.push(change),
+		addTaskForceConstructionChange: (change) =>
+			taskForceConstructionChanges.push(change),
 	};
 
 	await drizzle.transaction(async (tx) => {
@@ -172,6 +180,9 @@ export async function tick() {
 		const consolidatedIndustrialProjectCompletions =
 			industrialProjectCompletions;
 
+		const consolidatedTaskForceConstructionChanges =
+			taskForceConstructionChanges;
+
 		const reportsToInsert = playersInGame.map((p) => {
 			const visibleSystemIds = new Set(
 				visibleSystemsPerPlayer
@@ -202,6 +213,12 @@ export async function tick() {
 					industrialProjectCompletions:
 						consolidatedIndustrialProjectCompletions.filter((c) =>
 							visibleSystemIds.has(c.starSystemId),
+						),
+					taskForceConstructionChanges:
+						consolidatedTaskForceConstructionChanges.filter(
+							(change) =>
+								change.ownerId === p.userId &&
+								visibleSystemIds.has(change.starSystemId),
 						),
 				},
 			};

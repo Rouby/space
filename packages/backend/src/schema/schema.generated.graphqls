@@ -288,6 +288,9 @@ type Subscription {
 
 type TaskForce implements Positionable {
 	combatDeck: [String!]
+	constructionDone: Float
+	constructionPerTick: Float
+	constructionTotal: Float
 	game: Game!
 	id: ID!
 	isVisible: Boolean!
@@ -359,6 +362,7 @@ type TurnReport {
 	industryChanges: [TurnReportIndustryChange!]!
 	miningChanges: [TurnReportMiningChange!]!
 	populationChanges: [TurnReportPopulationChange!]!
+	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
 	turnNumber: Int!
 }
 
@@ -388,6 +392,16 @@ type TurnReportPopulationChange {
 	population: Population!
 	previousAmount: BigInt!
 	starSystem: StarSystem!
+}
+
+type TurnReportTaskForceConstructionChange {
+	completed: Boolean!
+	newDone: Int!
+	perTick: Int!
+	previousDone: Int!
+	starSystem: StarSystem!
+	taskForce: TaskForce!
+	total: Int!
 }
 
 type UnknownDiscovery {
