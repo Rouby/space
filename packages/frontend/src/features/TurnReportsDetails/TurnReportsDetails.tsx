@@ -1,4 +1,5 @@
 import {
+	Anchor,
 	Card,
 	Divider,
 	Group,
@@ -9,7 +10,7 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { useParams } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "urql";
 import { formatInteger, formatUnit } from "../../format/formatNumber";
@@ -376,27 +377,55 @@ export function TurnReportsDetails() {
 													<Table.Td>
 														<Group gap="xs">
 															<Text fw={500}>{engagement.taskForceAName}</Text>
-															<Text size="xs" c="dimmed">vs</Text>
+															<Text size="xs" c="dimmed">
+																vs
+															</Text>
 															<Text fw={500}>{engagement.taskForceBName}</Text>
+															<Anchor
+																component={Link}
+																to="/games/$id/engagement/$engagementId"
+																params={
+																	{
+																		id: gameId,
+																		engagementId: engagement.engagementId,
+																	} as never
+																}
+																size="xs"
+															>
+																Open
+															</Anchor>
 														</Group>
 													</Table.Td>
 													<Table.Td c="dimmed">
-														({formatInteger(engagement.location.x)}, {formatInteger(engagement.location.y)})
+														({formatInteger(engagement.location.x)},{" "}
+														{formatInteger(engagement.location.y)})
 													</Table.Td>
 													<Table.Td
-														c={engagement.status === "resolved" ? "blue" : "yellow"}
+														c={
+															engagement.status === "resolved"
+																? "blue"
+																: "yellow"
+														}
 													>
-														{engagement.status === "resolved" ? "Resolved" : "Unresolved"}
+														{engagement.status === "resolved"
+															? "Resolved"
+															: "Unresolved"}
 													</Table.Td>
 													<Table.Td>
 														{engagement.status === "resolved" ? (
-															engagement.winnerTaskForceId === engagement.taskForceAId
-																? engagement.taskForceAName
-																: engagement.winnerTaskForceId === engagement.taskForceBId
-																	? engagement.taskForceBName
-																	: "Draw"
+															engagement.winnerTaskForceId ===
+															engagement.taskForceAId ? (
+																engagement.taskForceAName
+															) : engagement.winnerTaskForceId ===
+																engagement.taskForceBId ? (
+																engagement.taskForceBName
+															) : (
+																"Draw"
+															)
 														) : (
-															<Text size="sm" c="dimmed">N/A</Text>
+															<Text size="sm" c="dimmed">
+																N/A
+															</Text>
 														)}
 													</Table.Td>
 												</Table.Tr>

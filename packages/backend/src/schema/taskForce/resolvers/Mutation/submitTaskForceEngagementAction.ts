@@ -2,10 +2,13 @@ import {
 	and,
 	eq,
 	games,
+	inArray,
 	isNull,
 	or,
+	type TurnReportSummary,
 	taskForceEngagements,
 	taskForces,
+	turnReports,
 } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
@@ -21,6 +24,43 @@ import {
 	requireCombatState,
 	resolveCard,
 } from "../combatRuntime.ts";
+
+function updateSummaryEngagementIfPresent({
+	summary,
+	engagementId,
+	winnerTaskForceId,
+}: {
+	summary: TurnReportSummary;
+	engagementId: string;
+	winnerTaskForceId: string | null;
+}): TurnReportSummary {
+	if (!summary.taskForceEngagements?.length) {
+		return summary;
+	}
+
+	let changed = false;
+	const taskForceEngagements = summary.taskForceEngagements.map((item) => {
+		if (item.engagementId !== engagementId) {
+			return item;
+		}
+
+		changed = true;
+		return {
+			...item,
+			status: "resolved" as const,
+			winnerTaskForceId,
+		};
+	});
+
+	if (!changed) {
+		return summary;
+	}
+
+	return {
+		...summary,
+		taskForceEngagements,
+	};
+}
 
 type ParsedSubmission =
 	| { type: "retreat"; submittedCardId: "retreat" }
@@ -346,6 +386,36 @@ export const submitTaskForceEngagementAction: NonNullable<
 				type: "taskForce:destroyed",
 				id: taskForceId,
 			});
+		}
+
+		if (updated.phase === "completed") {
+			const participantOwnerIds = [engagement.ownerIdA, engagement.ownerIdB];
+			const reports = await tx
+				.select({ id: turnReports.id, summary: turnReports.summary })
+				.from(turnReports)
+				.where(
+					and(
+						eq(turnReports.gameId, engagement.gameId),
+						inArray(turnReports.ownerId, participantOwnerIds),
+					),
+				);
+
+			for (const report of reports) {
+				const nextSummary = updateSummaryEngagementIfPresent({
+					summary: report.summary,
+					engagementId: engagement.id,
+					winnerTaskForceId: updated.winnerTaskForceId,
+				});
+
+				if (nextSummary === report.summary) {
+					continue;
+				}
+
+				await tx
+					.update(turnReports)
+					.set({ summary: nextSummary })
+					.where(eq(turnReports.id, report.id));
+			}
 		}
 
 		return { updated, emittedEvents };
