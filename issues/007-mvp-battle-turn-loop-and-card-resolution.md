@@ -1,5 +1,7 @@
 # [MVP-007] Battle Turn Loop and Card Reveal Resolution
 
+DONE
+
 ## Objective
 Implement the battle-internal turn loop where each side plays cards, reveals effects, and resolves buffs/counters per combat round.
 
