@@ -1,4 +1,4 @@
-import { Button, Center, Progress, Stack, Text, Title } from "@mantine/core";
+import { Button, Center, Progress, Stack, Text, } from "@mantine/core";
 import { useQuery, useSubscription } from "urql";
 import { formatNumber } from "../../format/formatNumber";
 import { graphql } from "../../gql";

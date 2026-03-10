@@ -1,7 +1,6 @@
 import {
 	Button,
 	Card,
-	Center,
 	Group,
 	Image,
 	Progress,
@@ -18,7 +17,6 @@ import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import {
 	formatInteger,
-	formatNumber,
 	formatRoundsToRelativeRounds,
 	formatUnit,
 	formatUnitPerRound,

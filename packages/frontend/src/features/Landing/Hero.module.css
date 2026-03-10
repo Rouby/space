@@ -63,10 +63,5 @@
 		height: rem(42px);
 		font-size: var(--mantine-font-size-md);
 		width: 100%;
-
-		&:not(:first-of-type) {
-			margin-top: var(--mantine-spacing-md);
-			margin-left: 0;
-		}
 	}
 }

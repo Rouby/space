@@ -46,12 +46,10 @@ function expandDeckFromDraft(
 }
 
 export function DeckConfigurationPanel({
-	id,    // starSystemId
-	gameId,
+	id, // starSystemId
 	taskForceId,
 }: {
 	id: string;
-	gameId: string;
 	taskForceId: string;
 }) {
 	const [{ data }] = useQuery({
@@ -102,13 +100,14 @@ export function DeckConfigurationPanel({
 
 	const taskForce = starSystem?.taskForces?.find((tf) => tf.id === taskForceId);
 
-	const [deckDraft, setDeckDraft] = useState<
-		Record<(typeof ALLOWED_CARD_IDS)[number], number> | null
-	>(null);
+	const [deckDraft, setDeckDraft] = useState<Record<
+		(typeof ALLOWED_CARD_IDS)[number],
+		number
+	> | null>(null);
 	const [deckError, setDeckError] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (taskForce && !deckDraft) {
+		if (taskForce?.combatDeck && !deckDraft) {
 			setDeckDraft(buildDeckDraft(taskForce.combatDeck));
 		}
 	}, [taskForce?.combatDeck, deckDraft]);
@@ -140,9 +139,7 @@ export function DeckConfigurationPanel({
 						value={draft[cardId] ?? 0}
 						onChange={(value) => {
 							const numericValue =
-								typeof value === "number" && Number.isFinite(value)
-									? value
-									: 0;
+								typeof value === "number" && Number.isFinite(value) ? value : 0;
 
 							setDeckDraft((current) => ({
 								...(current ?? buildDeckDraft(taskForce.combatDeck)),

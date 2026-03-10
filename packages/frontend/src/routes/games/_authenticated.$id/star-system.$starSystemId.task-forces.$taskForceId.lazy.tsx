@@ -1,7 +1,7 @@
+import { Title } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { DetailsDrawer } from "../../../components/DetailsDrawer/DetailsDrawer";
 import { DeckConfigurationPanel } from "../../../features/StarSystemDetails/DeckConfigurationPanel";
-import { Title } from "@mantine/core";
 
 export const Route = createLazyFileRoute(
 	"/games/_authenticated/$id/star-system/$starSystemId/task-forces/$taskForceId",
@@ -26,11 +26,7 @@ function DeckConfigurationRoute() {
 			<Title order={3} mb="md">
 				Deck Configuration
 			</Title>
-			<DeckConfigurationPanel
-				id={starSystemId}
-				gameId={id}
-				taskForceId={taskForceId}
-			/>
+			<DeckConfigurationPanel id={starSystemId} taskForceId={taskForceId} />
 		</DetailsDrawer>
 	);
 }
