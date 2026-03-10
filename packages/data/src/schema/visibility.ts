@@ -1,4 +1,4 @@
-import { isNotNull, sql } from "drizzle-orm";
+import { isNotNull, isNull, sql } from "drizzle-orm";
 import { customType, pgView } from "drizzle-orm/pg-core";
 import { starSystems } from "./starSystems.ts";
 import { taskForces } from "./taskForces.ts";
@@ -30,6 +30,7 @@ export const visibility = pgView("visibility").as((qb) =>
 				.as("circle"),
 		})
 		.from(taskForces)
+		.where(isNull(taskForces.deletedAt))
 		.groupBy(taskForces.id, taskForces.ownerId, taskForces.gameId)
 		.unionAll(
 			qb

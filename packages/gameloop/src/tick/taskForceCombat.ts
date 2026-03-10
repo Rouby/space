@@ -1,4 +1,10 @@
-import { eq, taskForceEngagements, taskForces } from "@space/data/schema";
+import {
+	and,
+	eq,
+	isNull,
+	taskForceEngagements,
+	taskForces,
+} from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
@@ -231,7 +237,7 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 			combatDeck: taskForces.combatDeck,
 		})
 		.from(taskForces)
-		.where(eq(taskForces.gameId, gameId));
+		.where(and(eq(taskForces.gameId, gameId), isNull(taskForces.deletedAt)));
 
 	const candidates: Array<{ leftId: string; rightId: string }> = [];
 
@@ -340,6 +346,38 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 				startedAtTurn: ctx.turn,
 			})
 			.returning({ id: taskForceEngagements.id });
+
+		await tx
+			.update(taskForces)
+			.set({
+				position: engagementPosition,
+				movementVector: null,
+				orders: [],
+			})
+			.where(eq(taskForces.id, left.id));
+
+		await tx
+			.update(taskForces)
+			.set({
+				position: engagementPosition,
+				movementVector: null,
+				orders: [],
+			})
+			.where(eq(taskForces.id, right.id));
+
+		ctx.postMessage({
+			type: "taskForce:position",
+			id: left.id,
+			position: engagementPosition,
+			movementVector: null,
+		});
+
+		ctx.postMessage({
+			type: "taskForce:position",
+			id: right.id,
+			position: engagementPosition,
+			movementVector: null,
+		});
 
 		ctx.postMessage({
 			type: "taskForceEngagement:started",

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, eq, taskForces } from "@space/data/schema";
+import { and, eq, isNull, taskForces } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "./../../../types.generated.js";
@@ -10,7 +10,11 @@ export const orderTaskForce: NonNullable<
 	context.throwWithoutClaim("urn:space:claim");
 
 	const taskForce = await ctx.drizzle.query.taskForces.findFirst({
-		where: and(eq(taskForces.id, id), eq(taskForces.ownerId, context.userId)),
+		where: and(
+			eq(taskForces.id, id),
+			eq(taskForces.ownerId, context.userId),
+			isNull(taskForces.deletedAt),
+		),
 	});
 
 	if (!taskForce) {
@@ -77,7 +81,13 @@ export const orderTaskForce: NonNullable<
 		.set({
 			orders: [...queuedOrders, ...newOrders],
 		})
-		.where(and(eq(taskForces.id, id), eq(taskForces.ownerId, context.userId)))
+		.where(
+			and(
+				eq(taskForces.id, id),
+				eq(taskForces.ownerId, context.userId),
+				isNull(taskForces.deletedAt),
+			),
+		)
 		.returning();
 
 	if (!updated) {

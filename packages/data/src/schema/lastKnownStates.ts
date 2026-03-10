@@ -1,12 +1,18 @@
 import {
 	type AnyColumn,
-	type GetColumnData,
 	and,
 	eq,
 	exists,
+	type GetColumnData,
 	sql,
 } from "drizzle-orm";
-import { index, jsonb, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	jsonb,
+	pgTable,
+	timestamp,
+	uniqueIndex,
+	uuid,
+} from "drizzle-orm/pg-core";
 import type { getDrizzle } from "../index.ts";
 import { games } from "./games.ts";
 import { users } from "./users.ts";
@@ -25,7 +31,7 @@ export const lastKnownStates = pgTable(
 		state: jsonb().notNull().$type<LastKnownState>(),
 		lastUpdate: timestamp().notNull(),
 	},
-	(table) => [index().on(table.userId, table.gameId, table.subjectId)],
+	(table) => [uniqueIndex().on(table.userId, table.gameId, table.subjectId)],
 );
 
 export type LastKnownState = LastKnownStarSystemState | LastKnownTaskForceState;

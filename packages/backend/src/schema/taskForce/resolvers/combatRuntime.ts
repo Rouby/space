@@ -29,8 +29,6 @@ export type RoundLogEntry = {
 	targetHpAfter: number;
 };
 
-export const MAX_ROUNDS = 3;
-
 const CARD_POOL: readonly CardId[] = [
 	"laser_burst",
 	"target_lock",
@@ -101,7 +99,7 @@ export function draw(state: CombatState, amount: number) {
 }
 
 export function consumeCardFromHand(state: CombatState, cardId: CardId) {
-	const index = state.hand.findIndex((card) => card === cardId);
+	const index = state.hand.indexOf(cardId);
 	if (index < 0) {
 		throw createGraphQLError("Card was not in hand", {
 			extensions: {

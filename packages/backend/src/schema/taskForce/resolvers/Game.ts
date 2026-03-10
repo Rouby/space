@@ -71,6 +71,7 @@ export const Game: Pick<
 			.where(
 				and(
 					eq(taskForces.gameId, parent.id),
+					isNull(taskForces.deletedAt),
 					or(visibilityExists, isNotNull(lastKnownStates.state)),
 				),
 			)

@@ -1,4 +1,4 @@
-import { and, eq, taskForces } from "@space/data/schema";
+import { and, eq, isNull, taskForces } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "../../../types.generated.js";
@@ -78,6 +78,7 @@ export const configureTaskForceCombatDeck: NonNullable<
 		where: and(
 			eq(taskForces.id, input.taskForceId),
 			eq(taskForces.ownerId, context.userId),
+			isNull(taskForces.deletedAt),
 		),
 	});
 
@@ -99,6 +100,7 @@ export const configureTaskForceCombatDeck: NonNullable<
 			and(
 				eq(taskForces.id, taskForce.id),
 				eq(taskForces.ownerId, context.userId),
+				isNull(taskForces.deletedAt),
 			),
 		)
 		.returning();

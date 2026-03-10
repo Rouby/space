@@ -1,4 +1,4 @@
-import { and, eq, taskForces } from "@space/data/schema";
+import { and, eq, isNull, taskForces } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
@@ -51,7 +51,7 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 			orders: taskForces.orders,
 		})
 		.from(taskForces)
-		.where(eq(taskForces.gameId, gameId));
+		.where(and(eq(taskForces.gameId, gameId), isNull(taskForces.deletedAt)));
 
 	for (const taskForce of allTaskForces) {
 		const constructionDone = Number(taskForce.constructionDone ?? "0");
@@ -76,7 +76,11 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 				.update(taskForces)
 				.set({ orders: remainingOrders })
 				.where(
-					and(eq(taskForces.id, taskForce.id), eq(taskForces.gameId, gameId)),
+					and(
+						eq(taskForces.id, taskForce.id),
+						eq(taskForces.gameId, gameId),
+						isNull(taskForces.deletedAt),
+					),
 				);
 			continue;
 		}
@@ -91,9 +95,9 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 		const nextPosition = isArrivingThisTick
 			? firstOrder.destination
 			: {
-				x: taskForce.position.x + movementVector.x * moveScale,
-				y: taskForce.position.y + movementVector.y * moveScale,
-			};
+					x: taskForce.position.x + movementVector.x * moveScale,
+					y: taskForce.position.y + movementVector.y * moveScale,
+				};
 		const resolvedMovementVector = {
 			x: nextPosition.x - taskForce.position.x,
 			y: nextPosition.y - taskForce.position.y,
@@ -107,7 +111,11 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 				orders: isArrivingThisTick ? remainingOrders : taskForce.orders,
 			})
 			.where(
-				and(eq(taskForces.id, taskForce.id), eq(taskForces.gameId, gameId)),
+				and(
+					eq(taskForces.id, taskForce.id),
+					eq(taskForces.gameId, gameId),
+					isNull(taskForces.deletedAt),
+				),
 			)
 			.returning({
 				id: taskForces.id,

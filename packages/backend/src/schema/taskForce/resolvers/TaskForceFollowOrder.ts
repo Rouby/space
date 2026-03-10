@@ -3,6 +3,7 @@ import {
 	eq,
 	getLastKnownHelper,
 	isNotNull,
+	isNull,
 	lastKnownStates,
 	or,
 	sql,
@@ -69,6 +70,7 @@ export const TaskForceFollowOrder: TaskForceFollowOrderResolvers = {
 			.where(
 				and(
 					eq(taskForces.gameId, parent.id),
+					isNull(taskForces.deletedAt),
 					or(visibilityExists, isNotNull(lastKnownStates.state)),
 				),
 			)

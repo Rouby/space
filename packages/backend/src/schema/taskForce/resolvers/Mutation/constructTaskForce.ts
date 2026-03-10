@@ -1,6 +1,7 @@
 import {
 	and,
 	eq,
+	isNull,
 	players,
 	shipComponentResourceCosts,
 	shipComponents,
@@ -84,6 +85,7 @@ export const constructTaskForce: NonNullable<
 			eq(taskForces.gameId, originSystem.gameId),
 			eq(taskForces.ownerId, context.userId),
 			eq(taskForces.name, input.name),
+			isNull(taskForces.deletedAt),
 		),
 	});
 

@@ -2,6 +2,7 @@ import {
 	and,
 	eq,
 	exists,
+	isNull,
 	sql,
 	starSystems,
 	taskForces,
@@ -25,6 +26,7 @@ export const trackGalaxy: NonNullable<SubscriptionResolvers["trackGalaxy"]> = {
 			.where(
 				and(
 					eq(taskForces.gameId, gameId),
+					isNull(taskForces.deletedAt),
 					exists(
 						ctx.drizzle
 							.select({ circle: visibility.circle })

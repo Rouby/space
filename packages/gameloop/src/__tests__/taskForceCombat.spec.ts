@@ -42,7 +42,8 @@ type MockTaskForce = {
 function createTx() {
 	const deleteWhere = vi.fn().mockResolvedValue([]);
 	const del = vi.fn().mockReturnValue({ where: deleteWhere });
-	const insertValues = vi.fn().mockResolvedValue([]);
+	const insertReturning = vi.fn().mockResolvedValue([{ id: "eng-1" }]);
+	const insertValues = vi.fn().mockReturnValue({ returning: insertReturning });
 	const insert = vi.fn().mockReturnValue({ values: insertValues });
 	const updateWhere = vi.fn().mockResolvedValue([]);
 	const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
@@ -75,6 +76,7 @@ function createTx() {
 		},
 		deleteWhere,
 		insertValues,
+		insertReturning,
 		updateWhere,
 	};
 }
@@ -82,7 +84,8 @@ function createTx() {
 function createTxWithTaskForces(mockTaskForces: MockTaskForce[]) {
 	const deleteWhere = vi.fn().mockResolvedValue([]);
 	const del = vi.fn().mockReturnValue({ where: deleteWhere });
-	const insertValues = vi.fn().mockResolvedValue([]);
+	const insertReturning = vi.fn().mockResolvedValue([{ id: "eng-1" }]);
+	const insertValues = vi.fn().mockReturnValue({ returning: insertReturning });
 	const insert = vi.fn().mockReturnValue({ values: insertValues });
 	const updateWhere = vi.fn().mockResolvedValue([]);
 	const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
@@ -99,13 +102,15 @@ function createTxWithTaskForces(mockTaskForces: MockTaskForce[]) {
 			update,
 		},
 		insertValues,
+		insertReturning,
 	};
 }
 
 function createTxWithDecks(leftDeck: string[], rightDeck: string[]) {
 	const deleteWhere = vi.fn().mockResolvedValue([]);
 	const del = vi.fn().mockReturnValue({ where: deleteWhere });
-	const insertValues = vi.fn().mockResolvedValue([]);
+	const insertReturning = vi.fn().mockResolvedValue([{ id: "eng-1" }]);
+	const insertValues = vi.fn().mockReturnValue({ returning: insertReturning });
 	const insert = vi.fn().mockReturnValue({ values: insertValues });
 	const updateWhere = vi.fn().mockResolvedValue([]);
 	const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
@@ -138,6 +143,7 @@ function createTxWithDecks(leftDeck: string[], rightDeck: string[]) {
 		},
 		deleteWhere,
 		insertValues,
+		insertReturning,
 		updateWhere,
 	};
 }
@@ -159,8 +165,10 @@ describe("tickTaskForceCombat", () => {
 			postMessage: (event: unknown) => events.push(event as never),
 		});
 
-		expect(events[0]?.type).toBe("taskForceEngagement:started");
-		expect(events.at(-1)?.type).toBe("taskForceEngagement:started");
+		const started = events.filter(
+			(event) => event.type === "taskForceEngagement:started",
+		);
+		expect(started).toHaveLength(1);
 
 		const fired = events.filter(
 			(event) => event.type === "taskForceEngagement:weaponFired",

@@ -1,4 +1,4 @@
-import { and, eq, starSystems, taskForces } from "@space/data/schema";
+import { and, eq, isNull, starSystems, taskForces } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
@@ -23,7 +23,7 @@ export async function tickTaskForceConstruction(
 			constructionTotal: taskForces.constructionTotal,
 		})
 		.from(taskForces)
-		.where(eq(taskForces.gameId, gameId));
+		.where(and(eq(taskForces.gameId, gameId), isNull(taskForces.deletedAt)));
 
 	const systemsWithIndustry = await tx
 		.select({
@@ -81,6 +81,7 @@ export async function tickTaskForceConstruction(
 					and(
 						eq(taskForces.id, taskForce.id),
 						eq(taskForces.gameId, taskForce.gameId),
+						isNull(taskForces.deletedAt),
 					),
 				);
 

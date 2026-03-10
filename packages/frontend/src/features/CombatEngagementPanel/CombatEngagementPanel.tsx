@@ -43,6 +43,9 @@ export function CombatEngagementPanel({
 						owner {
 							id
 							name
+							user {
+								id
+							}
 						}
 					}
 					taskForceB {
@@ -51,6 +54,9 @@ export function CombatEngagementPanel({
 						owner {
 							id
 							name
+							user {
+								id
+							}
 						}
 					}
 					participantA {
@@ -124,14 +130,25 @@ export function CombatEngagementPanel({
 			return null;
 		}
 
-		if (engagement.taskForceA.owner?.id.endsWith(me.id)) {
+		if (engagement.taskForceA.owner?.user.id === me.id) {
 			return engagement.participantA;
 		}
-		if (engagement.taskForceB.owner?.id.endsWith(me.id)) {
+		if (engagement.taskForceB.owner?.user.id === me.id) {
 			return engagement.participantB;
 		}
 		return null;
 	}, [engagement, me?.id]);
+
+	const taskForceNameById = useMemo(() => {
+		if (!engagement) {
+			return new Map<string, string>();
+		}
+
+		return new Map([
+			[engagement.taskForceA.id, engagement.taskForceA.name],
+			[engagement.taskForceB.id, engagement.taskForceB.name],
+		]);
+	}, [engagement]);
 
 	if (fetching && !engagement) {
 		return <Text>Loading engagement...</Text>;
@@ -240,8 +257,9 @@ export function CombatEngagementPanel({
 					>
 						<Text size="sm">
 							R{entry.round}: {CARD_LABELS[entry.cardId] ?? entry.cardId} by{" "}
-							{entry.attackerTaskForceId.slice(0, 8)} ({entry.effectType},{" "}
-							{entry.resolvedValue})
+							{taskForceNameById.get(entry.attackerTaskForceId) ??
+								entry.attackerTaskForceId}{" "}
+							({entry.effectType}, {entry.resolvedValue})
 						</Text>
 					</Card>
 				))}
@@ -249,7 +267,11 @@ export function CombatEngagementPanel({
 
 			{engagement.phase === "completed" && (
 				<Alert color="green" title="Combat resolved">
-					Winner: {engagement.winnerTaskForceId ?? "Draw"}
+					Winner:{" "}
+					{engagement.winnerTaskForceId
+						? (taskForceNameById.get(engagement.winnerTaskForceId) ??
+							engagement.winnerTaskForceId)
+						: "Draw"}
 				</Alert>
 			)}
 		</Stack>

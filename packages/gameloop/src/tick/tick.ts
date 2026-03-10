@@ -4,6 +4,7 @@ import {
 	eq,
 	games,
 	isNotNull,
+	isNull,
 	lastKnownStates,
 	players,
 	sql,
@@ -268,6 +269,7 @@ export async function tick() {
 					and(
 						eq(players.gameId, sql.raw(`'${gameId}'`)),
 						isNotNull(taskForces.id),
+						isNull(taskForces.deletedAt),
 					),
 				)
 				.leftJoin(
@@ -337,7 +339,13 @@ export async function tick() {
 					})
 					.from(players)
 					.fullJoin(taskForces, eq(players.gameId, taskForces.gameId))
-					.where(eq(players.gameId, gameId))
+					.where(
+						and(
+							eq(players.gameId, gameId),
+							isNotNull(taskForces.id),
+							isNull(taskForces.deletedAt),
+						),
+					)
 					.leftJoin(
 						visibility,
 						and(

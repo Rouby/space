@@ -3,6 +3,7 @@ import {
 	eq,
 	getLastKnownHelper,
 	isNotNull,
+	isNull,
 	lastKnownStates,
 	or,
 	sql,
@@ -68,6 +69,7 @@ export const StarSystem: Pick<
 			.where(
 				and(
 					eq(taskForces.gameId, parent.gameId),
+					isNull(taskForces.deletedAt),
 					sql`${taskForces.position} <-> point(${parent.position.x}, ${parent.position.y}) < 10`,
 					or(visibilityExists, isNotNull(lastKnownStates.state)),
 				),

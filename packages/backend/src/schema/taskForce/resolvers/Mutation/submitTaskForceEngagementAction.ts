@@ -15,7 +15,6 @@ import type { MutationResolvers } from "../../../types.generated.js";
 import {
 	consumeCardFromHand,
 	draw,
-	MAX_ROUNDS,
 	parseCardId,
 	type RoundLogEntry,
 	requireCombatState,
@@ -97,6 +96,7 @@ export const submitTaskForceEngagementAction: NonNullable<
 		let nextPhase = engagement.phase;
 		let nextResolvedAtTurn: number | null = engagement.resolvedAtTurn;
 		let nextWinnerTaskForceId = engagement.winnerTaskForceId;
+		const taskForcesToDestroy = new Set<string>();
 
 		const emittedEvents: GameEvent[] = [
 			{
@@ -136,10 +136,6 @@ export const submitTaskForceEngagementAction: NonNullable<
 						];
 
 			for (const action of resolutionOrder) {
-				if (action.attacker.hp <= 0 || action.target.hp <= 0) {
-					continue;
-				}
-
 				const entry = resolveCard({
 					attacker: action.attacker,
 					target: action.target,
@@ -165,10 +161,7 @@ export const submitTaskForceEngagementAction: NonNullable<
 			nextSubmittedCardIdA = null;
 			nextSubmittedCardIdB = null;
 
-			const combatResolved =
-				stateA.hp <= 0 ||
-				stateB.hp <= 0 ||
-				engagement.currentRound >= MAX_ROUNDS;
+			const combatResolved = stateA.hp <= 0 || stateB.hp <= 0;
 
 			emittedEvents.push({
 				type: "taskForceEngagement:roundResolved",
@@ -195,23 +188,11 @@ export const submitTaskForceEngagementAction: NonNullable<
 				});
 
 				if (stateA.hp <= 0) {
-					await tx
-						.delete(taskForces)
-						.where(eq(taskForces.id, stateA.taskForceId));
-					emittedEvents.push({
-						type: "taskForce:destroyed",
-						id: stateA.taskForceId,
-					});
+					taskForcesToDestroy.add(stateA.taskForceId);
 				}
 
 				if (stateB.hp <= 0) {
-					await tx
-						.delete(taskForces)
-						.where(eq(taskForces.id, stateB.taskForceId));
-					emittedEvents.push({
-						type: "taskForce:destroyed",
-						id: stateB.taskForceId,
-					});
+					taskForcesToDestroy.add(stateB.taskForceId);
 				}
 			} else {
 				draw(stateA, 1);
@@ -250,6 +231,19 @@ export const submitTaskForceEngagementAction: NonNullable<
 					code: "ROUND_ALREADY_SUBMITTED",
 					round: engagement.currentRound,
 				},
+			});
+		}
+
+		for (const taskForceId of taskForcesToDestroy) {
+			await tx
+				.update(taskForces)
+				.set({ deletedAt: new Date() })
+				.where(
+					and(eq(taskForces.id, taskForceId), isNull(taskForces.deletedAt)),
+				);
+			emittedEvents.push({
+				type: "taskForce:destroyed",
+				id: taskForceId,
 			});
 		}
 

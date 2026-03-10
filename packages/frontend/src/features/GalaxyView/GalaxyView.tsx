@@ -37,6 +37,9 @@ query Galaxy($id: ID!) {
 				id
 				name
 				color
+				user {
+					id
+				}
 			}
 			isVisible
 			lastUpdate
@@ -52,6 +55,9 @@ query Galaxy($id: ID!) {
 				id
 				name
 				color
+				user {
+					id
+				}
 			}
 			orders {
 				__typename
@@ -282,10 +288,10 @@ query Galaxy($id: ID!) {
 					<Viewport
 						initialViewbox={[
 							...(data?.game.starSystems
-								.filter((s) => s.owner?.id.endsWith(me?.id ?? ""))
+								.filter((s) => s.owner?.user.id === me?.id)
 								.map((s) => s.position) ?? []),
 							...(data?.game.taskForces
-								.filter((s) => s.owner?.id.endsWith(me?.id ?? ""))
+								.filter((s) => s.owner?.user.id === me?.id)
 								.map((s) => s.position) ?? []),
 						].reduce(
 							(acc, pos) => {
@@ -398,6 +404,29 @@ query Galaxy($id: ID!) {
 								) ?? []),
 							]}
 						/>
+						{data?.game.activeTaskForceEngagements.map((engagement) => (
+							<graphics
+								key={`engagement-${engagement.id}`}
+								draw={(g) => {
+									g.clear();
+									g.setStrokeStyle({
+										color: 0xff6b35,
+										alpha: 0.95,
+										width: 3,
+									});
+									g.circle(engagement.position.x, engagement.position.y, 24);
+									g.stroke();
+
+									g.setStrokeStyle({
+										color: 0xffb347,
+										alpha: 0.9,
+										width: 2,
+									});
+									g.circle(engagement.position.x, engagement.position.y, 34);
+									g.stroke();
+								}}
+							/>
+						))}
 						{data?.game.starSystems.map((starSystem) => (
 							<StarSystem
 								key={starSystem.id}
