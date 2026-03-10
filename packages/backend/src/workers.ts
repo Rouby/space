@@ -40,6 +40,15 @@ export function fromGameEvents(gameId: string) {
 	return from(subject);
 }
 
+export function emitGameEvent(gameId: string, event: GameEvent) {
+	const subject = eventsPerGame.get(gameId) ?? new Subject<GameEvent>();
+	if (!eventsPerGame.has(gameId)) {
+		eventsPerGame.set(gameId, subject);
+	}
+
+	subject.next(event);
+}
+
 export function notifyWorker(gameId: string, event: unknown) {
 	workerPerGame.get(gameId)?.postMessage({ type: "notify", event });
 }

@@ -1,4 +1,11 @@
-import { eq, games as gamesTable, inArray, players } from "@space/data/schema";
+import {
+	eq,
+	games as gamesTable,
+	inArray,
+	isNull,
+	or,
+	players,
+} from "@space/data/schema";
 import type { Context } from "../../../../context.js";
 import type { QueryResolvers } from "./../../../types.generated.js";
 export const games: NonNullable<QueryResolvers["games"]> = async (
@@ -14,14 +21,13 @@ export const games: NonNullable<QueryResolvers["games"]> = async (
 		where: eq(players.userId, context.userId),
 	});
 
-	if (memberships.length === 0) {
-		return [];
-	}
-
 	return ctx.drizzle.query.games.findMany({
-		where: inArray(
-			gamesTable.id,
-			memberships.map((membership) => membership.gameId),
+		where: or(
+			inArray(
+				gamesTable.id,
+				memberships.map((membership) => membership.gameId),
+			),
+			isNull(gamesTable.startedAt),
 		),
 	});
 };

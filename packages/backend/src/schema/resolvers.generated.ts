@@ -5,6 +5,7 @@ import    { game as Query_game } from './game/resolvers/Query/game.js';
 import    { games as Query_games } from './game/resolvers/Query/games.js';
 import    { me as Query_me } from './user/resolvers/Query/me.js';
 import    { starSystem as Query_starSystem } from './starSystem/resolvers/Query/starSystem.js';
+import    { taskForceEngagement as Query_taskForceEngagement } from './taskForce/resolvers/Query/taskForceEngagement.js';
 import    { configureTaskForceCombatDeck as Mutation_configureTaskForceCombatDeck } from './taskForce/resolvers/Mutation/configureTaskForceCombatDeck.js';
 import    { constructTaskForce as Mutation_constructTaskForce } from './taskForce/resolvers/Mutation/constructTaskForce.js';
 import    { createGame as Mutation_createGame } from './game/resolvers/Mutation/createGame.js';
@@ -20,21 +21,23 @@ import    { registerWithPassword as Mutation_registerWithPassword } from './user
 import    { setDevelopmentStance as Mutation_setDevelopmentStance } from './starSystem/resolvers/Mutation/setDevelopmentStance.js';
 import    { startColonization as Mutation_startColonization } from './starSystem/resolvers/Mutation/startColonization.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
+import    { submitTaskForceEngagementAction as Mutation_submitTaskForceEngagementAction } from './taskForce/resolvers/Mutation/submitTaskForceEngagementAction.js';
 import    { updateGameSettings as Mutation_updateGameSettings } from './game/resolvers/Mutation/updateGameSettings.js';
 import    { updatePlayer as Mutation_updatePlayer } from './game/resolvers/Mutation/updatePlayer.js';
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
 import    { trackGame as Subscription_trackGame } from './game/resolvers/Subscription/trackGame.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
+import    { trackTaskForceEngagement as Subscription_trackTaskForceEngagement } from './taskForce/resolvers/Subscription/trackTaskForceEngagement.js';
 import    { DevelopmentStanceProjection } from './starSystem/resolvers/DevelopmentStanceProjection.js';
 import    { Dilemma } from './dilemma/resolvers/Dilemma.js';
 import    { DilemmaChoice } from './dilemma/resolvers/DilemmaChoice.js';
+import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
 import    { Game as dilemma_Game } from './dilemma/resolvers/Game.js';
 import    { Game as resource_Game } from './resource/resolvers/Game.js';
 import    { Game as shipComponent_Game } from './shipComponent/resolvers/Game.js';
 import    { Game as shipDesign_Game } from './shipDesign/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
-import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
 import    { IndustrialProject } from './starSystem/resolvers/IndustrialProject.js';
 import    { NewTurnCalculatedEvent } from './game/resolvers/NewTurnCalculatedEvent.js';
 import    { Player as game_Player } from './game/resolvers/Player.js';
@@ -58,6 +61,9 @@ import    { StarSystemColonization } from './starSystem/resolvers/StarSystemColo
 import    { StarSystemUpdateEvent } from './base/resolvers/StarSystemUpdateEvent.js';
 import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
 import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColonizeOrder.js';
+import    { TaskForceEngagement } from './taskForce/resolvers/TaskForceEngagement.js';
+import    { TaskForceEngagementParticipantState } from './taskForce/resolvers/TaskForceEngagementParticipantState.js';
+import    { TaskForceEngagementRoundLogEntry } from './taskForce/resolvers/TaskForceEngagementRoundLogEntry.js';
 import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOrder.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TurnEndedEvent } from './game/resolvers/TurnEndedEvent.js';
@@ -79,13 +85,13 @@ import    { TrackGameEvent } from './game/resolvers/TrackGameEvent.js';
 import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.js';
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
-      Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
-      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setDevelopmentStance: Mutation_setDevelopmentStance,startColonization: Mutation_startColonization,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
-      Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem },
+      Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement },
+      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setDevelopmentStance: Mutation_setDevelopmentStance,startColonization: Mutation_startColonization,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
       DevelopmentStanceProjection: DevelopmentStanceProjection,
 Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,
-Game: { ...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
+Game: { ...taskForce_Game,...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game },
 IndustrialProject: IndustrialProject,
 NewTurnCalculatedEvent: NewTurnCalculatedEvent,
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
@@ -105,6 +111,9 @@ StarSystemColonization: StarSystemColonization,
 StarSystemUpdateEvent: StarSystemUpdateEvent,
 TaskForce: TaskForce,
 TaskForceColonizeOrder: TaskForceColonizeOrder,
+TaskForceEngagement: TaskForceEngagement,
+TaskForceEngagementParticipantState: TaskForceEngagementParticipantState,
+TaskForceEngagementRoundLogEntry: TaskForceEngagementRoundLogEntry,
 TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TurnEndedEvent: TurnEndedEvent,

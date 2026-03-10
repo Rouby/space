@@ -10,6 +10,8 @@ export type GameEvent =
 	| TaskForceEngagementTaskForceLeft
 	| TaskForceEngagementPhaseProgress
 	| TaskForceEngagementChangePhase
+	| TaskForceEngagementRoundSubmitted
+	| TaskForceEngagementRoundResolved
 	| TaskForceEngagementWeaponFired
 	| TaskForceEngagementEnded
 	| StarSystemAppeared
@@ -89,6 +91,19 @@ interface TaskForceEngagementChangePhase {
 	type: "taskForceEngagement:changePhase";
 	id: string;
 	phase: "locating" | "engagement" | "resolution";
+}
+
+interface TaskForceEngagementRoundSubmitted {
+	type: "taskForceEngagement:roundSubmitted";
+	id: string;
+	round: number;
+	taskForceId: string;
+}
+
+interface TaskForceEngagementRoundResolved {
+	type: "taskForceEngagement:roundResolved";
+	id: string;
+	round: number;
 }
 
 interface TaskForceEngagementWeaponFired {

@@ -143,7 +143,7 @@ function createTxWithDecks(leftDeck: string[], rightDeck: string[]) {
 }
 
 describe("tickTaskForceCombat", () => {
-	it("emits deterministic card combat lifecycle and per-round card effects", async () => {
+	it("emits deterministic engagement start events without in-tick card resolution", async () => {
 		const { tx } = createTx();
 		const events: Array<{
 			type: string;
@@ -160,20 +160,12 @@ describe("tickTaskForceCombat", () => {
 		});
 
 		expect(events[0]?.type).toBe("taskForceEngagement:started");
-		expect(events.at(-1)?.type).toBe("taskForceEngagement:ended");
+		expect(events.at(-1)?.type).toBe("taskForceEngagement:started");
 
 		const fired = events.filter(
 			(event) => event.type === "taskForceEngagement:weaponFired",
 		);
-		expect(fired).toHaveLength(6);
-		expect(fired.map((event) => event.weaponComponentId)).toEqual([
-			"target_lock",
-			"shield_pulse",
-			"emergency_repairs",
-			"emergency_repairs",
-			"laser_burst",
-			"laser_burst",
-		]);
+		expect(fired).toHaveLength(0);
 	});
 
 	it("produces equivalent event streams for equivalent inputs", async () => {

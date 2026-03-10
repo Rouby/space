@@ -10,11 +10,6 @@ type CardId =
 	| "evasive_maneuver"
 	| "overcharge_barrage";
 
-type CombatRuleViolationCode =
-	| "CARD_PLAY_LIMIT_EXCEEDED"
-	| "CARD_NOT_IN_HAND"
-	| "COMBAT_STATE_INVALID";
-
 const CARD_POOL: readonly CardId[] = [
 	"laser_burst",
 	"target_lock",
@@ -27,7 +22,6 @@ const CARD_POOL: readonly CardId[] = [
 const DECK_SIZE = 12;
 const MAX_DUPLICATES = 2;
 const STARTING_HAND = 3;
-const MAX_ROUNDS = 3;
 const STARTING_HP = 6;
 const EPSILON = 1e-9;
 const NEAR_MISS_RADIUS = 25;
@@ -47,18 +41,14 @@ type CombatState = {
 };
 
 class CombatRuleViolation extends Error {
-	public readonly code: CombatRuleViolationCode;
-	public readonly details: Record<string, unknown>;
+	public readonly code: "COMBAT_STATE_INVALID";
 
-	constructor(
-		code: CombatRuleViolationCode,
-		message: string,
-		details: Record<string, unknown>,
-	) {
-		super(message);
+	constructor(taskForceId: string, deckLength: number) {
+		super(
+			`Task force has invalid combat deck state: ${taskForceId} (${deckLength})`,
+		);
 		this.name = "CombatRuleViolation";
-		this.code = code;
-		this.details = details;
+		this.code = "COMBAT_STATE_INVALID";
 	}
 }
 
@@ -91,11 +81,7 @@ function assertValidDeck(deck: string[], taskForceId: string): CardId[] {
 		return [...deck];
 	}
 
-	throw new CombatRuleViolation(
-		"COMBAT_STATE_INVALID",
-		"Task force has invalid combat deck state",
-		{ taskForceId, deckLength: deck.length },
-	);
+	throw new CombatRuleViolation(taskForceId, deck.length);
 }
 
 function draw(state: CombatState, amount: number) {
@@ -105,97 +91,6 @@ function draw(state: CombatState, amount: number) {
 			state.hand.push(card);
 		}
 	}
-}
-
-function drawCardFromHand(state: CombatState) {
-	if (state.hand.length === 0) {
-		return null;
-	}
-
-	const card = state.hand.shift();
-	if (!card) {
-		throw new CombatRuleViolation("CARD_NOT_IN_HAND", "Card was not in hand", {
-			taskForceId: state.taskForceId,
-		});
-	}
-
-	return card;
-}
-
-function resolveCard({
-	attacker,
-	target,
-	cardId,
-	round,
-	engagementId,
-	ctx,
-}: {
-	attacker: CombatState;
-	target: CombatState;
-	cardId: CardId;
-	round: number;
-	engagementId: string;
-	ctx: Context;
-}) {
-	let resolvedValue = 0;
-
-	switch (cardId) {
-		case "laser_burst": {
-			const raw = 2 + attacker.nextDamageBonus;
-			attacker.nextDamageBonus = 0;
-			const reduction = target.nextDamageReduction;
-			target.nextDamageReduction = 0;
-			resolvedValue = Math.max(0, raw - reduction);
-			target.hp = Math.max(0, target.hp - resolvedValue);
-			break;
-		}
-		case "overcharge_barrage": {
-			const raw = 3 + attacker.nextDamageBonus;
-			attacker.nextDamageBonus = 0;
-			const reduction = target.nextDamageReduction;
-			target.nextDamageReduction = 0;
-			resolvedValue = Math.max(0, raw - reduction);
-			target.hp = Math.max(0, target.hp - resolvedValue);
-			break;
-		}
-		case "target_lock": {
-			attacker.nextDamageBonus += 1;
-			resolvedValue = 1;
-			break;
-		}
-		case "shield_pulse":
-		case "evasive_maneuver": {
-			attacker.nextDamageReduction += 1;
-			resolvedValue = 1;
-			break;
-		}
-		case "emergency_repairs": {
-			const before = attacker.hp;
-			attacker.hp = Math.min(attacker.maxHp, attacker.hp + 1);
-			resolvedValue = attacker.hp - before;
-			break;
-		}
-	}
-
-	ctx.postMessage({
-		type: "taskForceEngagement:weaponFired",
-		id: engagementId,
-		attackerShipId: attacker.taskForceId,
-		targetShipId: target.taskForceId,
-		weaponComponentId: cardId,
-		weaponComponentPosition: 0,
-		damage: resolvedValue,
-		round,
-		effectType:
-			cardId === "laser_burst" || cardId === "overcharge_barrage"
-				? "damage"
-				: cardId === "target_lock" ||
-						cardId === "shield_pulse" ||
-						cardId === "evasive_maneuver"
-					? "buff"
-					: "special",
-		resolvedValue,
-	});
 }
 
 function distanceSquared(a: Point, b: Point) {
@@ -401,30 +296,10 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 		engagedTaskForces.add(left.id);
 		engagedTaskForces.add(right.id);
 
-		const engagementId = `${ctx.turn}:${left.id}:${right.id}`;
 		const engagementPosition = {
 			x: (left.position.x + right.position.x) / 2,
 			y: (left.position.y + right.position.y) / 2,
 		};
-
-		await tx.insert(taskForceEngagements).values({
-			id: engagementId,
-			gameId,
-			taskForceIdA: left.id,
-			taskForceIdB: right.id,
-			ownerIdA: left.ownerId,
-			ownerIdB: right.ownerId,
-			position: engagementPosition,
-			startedAtTurn: ctx.turn,
-		});
-
-		ctx.postMessage({
-			type: "taskForceEngagement:started",
-			id: engagementId,
-			taskForceIdA: left.id,
-			taskForceIdB: right.id,
-			position: engagementPosition,
-		});
 
 		const sideA: CombatState = {
 			taskForceId: left.id,
@@ -448,75 +323,30 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 		draw(sideA, STARTING_HAND);
 		draw(sideB, STARTING_HAND);
 
-		for (let round = 1; round <= MAX_ROUNDS; round += 1) {
-			const playsThisRound = new Map<string, number>();
-			const sequence =
-				sideA.taskForceId.localeCompare(sideB.taskForceId) <= 0
-					? [
-							{ attacker: sideA, target: sideB },
-							{ attacker: sideB, target: sideA },
-						]
-					: [
-							{ attacker: sideB, target: sideA },
-							{ attacker: sideA, target: sideB },
-						];
-
-			for (const pair of sequence) {
-				if (pair.attacker.hp <= 0 || pair.target.hp <= 0) {
-					continue;
-				}
-
-				const playCount = playsThisRound.get(pair.attacker.taskForceId) ?? 0;
-				if (playCount >= 1) {
-					throw new CombatRuleViolation(
-						"CARD_PLAY_LIMIT_EXCEEDED",
-						"Task force attempted to play more than one card in a round",
-						{ taskForceId: pair.attacker.taskForceId, round },
-					);
-				}
-
-				const card = drawCardFromHand(pair.attacker);
-				if (!card) {
-					continue;
-				}
-
-				playsThisRound.set(pair.attacker.taskForceId, playCount + 1);
-				resolveCard({
-					attacker: pair.attacker,
-					target: pair.target,
-					cardId: card,
-					round,
-					engagementId,
-					ctx,
-				});
-			}
-
-			if (sideA.hp <= 0 || sideB.hp <= 0) {
-				break;
-			}
-
-			draw(sideA, 1);
-			draw(sideB, 1);
-		}
+		const [{ id: engagementId }] = await tx
+			.insert(taskForceEngagements)
+			.values({
+				gameId,
+				taskForceIdA: left.id,
+				taskForceIdB: right.id,
+				ownerIdA: left.ownerId,
+				ownerIdB: right.ownerId,
+				position: engagementPosition,
+				phase: "awaiting_submissions",
+				currentRound: 1,
+				stateA: sideA,
+				stateB: sideB,
+				roundLog: [],
+				startedAtTurn: ctx.turn,
+			})
+			.returning({ id: taskForceEngagements.id });
 
 		ctx.postMessage({
-			type: "taskForceEngagement:ended",
+			type: "taskForceEngagement:started",
 			id: engagementId,
+			taskForceIdA: left.id,
+			taskForceIdB: right.id,
+			position: engagementPosition,
 		});
-
-		await tx
-			.update(taskForceEngagements)
-			.set({ resolvedAtTurn: ctx.turn })
-			.where(eq(taskForceEngagements.id, engagementId));
-
-		if (sideA.hp <= 0) {
-			await tx.delete(taskForces).where(eq(taskForces.id, sideA.taskForceId));
-			ctx.postMessage({ type: "taskForce:destroyed", id: sideA.taskForceId });
-		}
-
-		if (sideB.hp <= 0) {
-			await tx.delete(taskForces).where(eq(taskForces.id, sideB.taskForceId));
-			ctx.postMessage({ type: "taskForce:destroyed", id: sideB.taskForceId });
-		}
 	}
 }

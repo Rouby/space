@@ -25,6 +25,44 @@ interface TaskForceOrder {
 	id: ID!
 }
 
+type TaskForceEngagementParticipantState {
+	taskForceId: ID!
+	hp: Int!
+	maxHp: Int!
+	hand: [String!]!
+	deckRemaining: Int!
+	nextDamageBonus: Int!
+	nextDamageReduction: Int!
+	submittedCardId: String
+}
+
+type TaskForceEngagementRoundLogEntry {
+	round: Int!
+	attackerTaskForceId: ID!
+	targetTaskForceId: ID!
+	cardId: String!
+	effectType: String!
+	resolvedValue: Int!
+	attackerHpAfter: Int!
+	targetHpAfter: Int!
+}
+
+type TaskForceEngagement implements Positionable {
+	id: ID!
+	position: Vector!
+	game: Game!
+	taskForceA: TaskForce!
+	taskForceB: TaskForce!
+	phase: String!
+	currentRound: Int!
+	participantA: TaskForceEngagementParticipantState!
+	participantB: TaskForceEngagementParticipantState!
+	roundLog: [TaskForceEngagementRoundLogEntry!]!
+	startedAtTurn: Int!
+	resolvedAtTurn: Int
+	winnerTaskForceId: ID
+}
+
 type TaskForceMoveOrder implements TaskForceOrder {
 	id: ID!
 	destination: Vector!
@@ -41,6 +79,7 @@ type TaskForceColonizeOrder implements TaskForceOrder {
 
 extend type Game {
 	taskForces: [TaskForce!]!
+	activeTaskForceEngagements: [TaskForceEngagement!]!
 }
 
 extend type StarSystem {
@@ -72,6 +111,15 @@ input ConfigureTaskForceCombatDeckInput {
 	cardIds: [String!]!
 }
 
+input SubmitTaskForceEngagementActionInput {
+	engagementId: ID!
+	cardId: String!
+}
+
+extend type Query {
+	taskForceEngagement(id: ID!): TaskForceEngagement
+}
+
 type Mutation {
 	orderTaskForce(
 		id: ID!
@@ -82,4 +130,11 @@ type Mutation {
 	configureTaskForceCombatDeck(
 		input: ConfigureTaskForceCombatDeckInput!
 	): TaskForce!
+	submitTaskForceEngagementAction(
+		input: SubmitTaskForceEngagementActionInput!
+	): TaskForceEngagement!
+}
+
+extend type Subscription {
+	trackTaskForceEngagement(engagementId: ID!): TaskForceEngagement!
 }

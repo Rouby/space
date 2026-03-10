@@ -45,6 +45,7 @@ type DilemmaChoice {
 union Discovery = ResourceDiscovery | UnknownDiscovery
 
 type Game {
+	activeTaskForceEngagements: [TaskForceEngagement!]!
 	autoEndTurnAfterHoursInactive: Int
 	autoEndTurnEveryHours: Int
 	dilemmas: [Dilemma!]!
@@ -111,6 +112,9 @@ type Mutation {
 	): StarSystem!
 	startColonization(starSystemId: ID!): StarSystem!
 	startGame(id: ID!): Game!
+	submitTaskForceEngagementAction(
+		input: SubmitTaskForceEngagementActionInput!
+	): TaskForceEngagement!
 	updateGameSettings(gameId: ID!, input: UpdateGameSettingsInput!): Game!
 	updatePlayer(gameId: ID!, input: UpdatePlayerInput!): Player!
 }
@@ -159,6 +163,7 @@ type Query {
 	games: [Game!]!
 	me: User
 	starSystem(id: ID!): StarSystem!
+	taskForceEngagement(id: ID!): TaskForceEngagement
 }
 
 union Reference = Dilemma | StarSystem
@@ -280,10 +285,16 @@ type StarSystemUpdateEvent {
 	subject: StarSystem!
 }
 
+input SubmitTaskForceEngagementActionInput {
+	cardId: String!
+	engagementId: ID!
+}
+
 type Subscription {
 	trackGalaxy(gameId: ID!): TrackGalaxyEvent!
 	trackGame(gameId: ID!): TrackGameEvent!
 	trackStarSystem(starSystemId: ID!): TrackStarSystemEvent!
+	trackTaskForceEngagement(engagementId: ID!): TaskForceEngagement!
 }
 
 type TaskForce implements Positionable {
@@ -305,6 +316,44 @@ type TaskForce implements Positionable {
 
 type TaskForceColonizeOrder implements TaskForceOrder {
 	id: ID!
+}
+
+type TaskForceEngagement implements Positionable {
+	currentRound: Int!
+	game: Game!
+	id: ID!
+	participantA: TaskForceEngagementParticipantState!
+	participantB: TaskForceEngagementParticipantState!
+	phase: String!
+	position: Vector!
+	resolvedAtTurn: Int
+	roundLog: [TaskForceEngagementRoundLogEntry!]!
+	startedAtTurn: Int!
+	taskForceA: TaskForce!
+	taskForceB: TaskForce!
+	winnerTaskForceId: ID
+}
+
+type TaskForceEngagementParticipantState {
+	deckRemaining: Int!
+	hand: [String!]!
+	hp: Int!
+	maxHp: Int!
+	nextDamageBonus: Int!
+	nextDamageReduction: Int!
+	submittedCardId: String
+	taskForceId: ID!
+}
+
+type TaskForceEngagementRoundLogEntry {
+	attackerHpAfter: Int!
+	attackerTaskForceId: ID!
+	cardId: String!
+	effectType: String!
+	resolvedValue: Int!
+	round: Int!
+	targetHpAfter: Int!
+	targetTaskForceId: ID!
 }
 
 type TaskForceFollowOrder implements TaskForceOrder {

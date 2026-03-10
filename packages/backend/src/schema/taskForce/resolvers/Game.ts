@@ -3,13 +3,18 @@ import {
 	eq,
 	getLastKnownHelper,
 	isNotNull,
+	isNull,
 	lastKnownStates,
 	or,
 	sql,
+	taskForceEngagements,
 	taskForces,
 } from "@space/data/schema";
 import type { GameResolvers } from "./../../types.generated.js";
-export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
+export const Game: Pick<
+	GameResolvers,
+	"activeTaskForceEngagements" | "taskForces" | "__isTypeOf"
+> = {
 	/* Implement Game resolver logic here */
 	taskForces: async (parent, _arg, ctx) => {
 		const {
@@ -74,6 +79,17 @@ export const Game: Pick<GameResolvers, "taskForces" | "__isTypeOf"> = {
 				and(
 					eq(lastKnownStates.gameId, parent.id),
 					eq(lastKnownStates.subjectId, taskForces.id),
+				),
+			);
+	},
+	activeTaskForceEngagements: async (parent, _arg, ctx) => {
+		return ctx.drizzle
+			.select()
+			.from(taskForceEngagements)
+			.where(
+				and(
+					eq(taskForceEngagements.gameId, parent.id),
+					isNull(taskForceEngagements.resolvedAtTurn),
 				),
 			);
 	},

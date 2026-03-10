@@ -5,7 +5,7 @@ import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper, StarSystem
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
 import { ShipDesignMapper } from './shipDesign/schema.mappers.js';
-import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper } from './taskForce/schema.mappers.js';
+import { TaskForceMapper, TaskForceColonizeOrderMapper, TaskForceEngagementMapper, TaskForceEngagementParticipantStateMapper, TaskForceEngagementRoundLogEntryMapper, TaskForceFollowOrderMapper, TaskForceMoveOrderMapper, TaskForceOrderMapper } from './taskForce/schema.mappers.js';
 import { Context } from '../context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
@@ -75,6 +75,7 @@ export type Discovery = ResourceDiscovery | UnknownDiscovery;
 
 export type Game = {
   __typename?: 'Game';
+  activeTaskForceEngagements: Array<TaskForceEngagement>;
   autoEndTurnAfterHoursInactive?: Maybe<Scalars['Int']['output']>;
   autoEndTurnEveryHours?: Maybe<Scalars['Int']['output']>;
   dilemmas: Array<Dilemma>;
@@ -135,6 +136,7 @@ export type Mutation = {
   setDevelopmentStance: StarSystem;
   startColonization: StarSystem;
   startGame: Game;
+  submitTaskForceEngagementAction: TaskForceEngagement;
   updateGameSettings: Game;
   updatePlayer: Player;
 };
@@ -220,6 +222,11 @@ export type MutationstartGameArgs = {
 };
 
 
+export type MutationsubmitTaskForceEngagementActionArgs = {
+  input: SubmitTaskForceEngagementActionInput;
+};
+
+
 export type MutationupdateGameSettingsArgs = {
   gameId: Scalars['ID']['input'];
   input: UpdateGameSettingsInput;
@@ -282,6 +289,7 @@ export type Query = {
   games: Array<Game>;
   me?: Maybe<User>;
   starSystem: StarSystem;
+  taskForceEngagement?: Maybe<TaskForceEngagement>;
 };
 
 
@@ -296,6 +304,11 @@ export type QuerygameArgs = {
 
 
 export type QuerystarSystemArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerytaskForceEngagementArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -428,11 +441,17 @@ export type StarSystemUpdateEvent = {
   subject: StarSystem;
 };
 
+export type SubmitTaskForceEngagementActionInput = {
+  cardId: Scalars['String']['input'];
+  engagementId: Scalars['ID']['input'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   trackGalaxy: TrackGalaxyEvent;
   trackGame: TrackGameEvent;
   trackStarSystem: TrackStarSystemEvent;
+  trackTaskForceEngagement: TaskForceEngagement;
 };
 
 
@@ -448,6 +467,11 @@ export type SubscriptiontrackGameArgs = {
 
 export type SubscriptiontrackStarSystemArgs = {
   starSystemId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptiontrackTaskForceEngagementArgs = {
+  engagementId: Scalars['ID']['input'];
 };
 
 export type TaskForce = Positionable & {
@@ -471,6 +495,47 @@ export type TaskForce = Positionable & {
 export type TaskForceColonizeOrder = TaskForceOrder & {
   __typename?: 'TaskForceColonizeOrder';
   id: Scalars['ID']['output'];
+};
+
+export type TaskForceEngagement = Positionable & {
+  __typename?: 'TaskForceEngagement';
+  currentRound: Scalars['Int']['output'];
+  game: Game;
+  id: Scalars['ID']['output'];
+  participantA: TaskForceEngagementParticipantState;
+  participantB: TaskForceEngagementParticipantState;
+  phase: Scalars['String']['output'];
+  position: Scalars['Vector']['output'];
+  resolvedAtTurn?: Maybe<Scalars['Int']['output']>;
+  roundLog: Array<TaskForceEngagementRoundLogEntry>;
+  startedAtTurn: Scalars['Int']['output'];
+  taskForceA: TaskForce;
+  taskForceB: TaskForce;
+  winnerTaskForceId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type TaskForceEngagementParticipantState = {
+  __typename?: 'TaskForceEngagementParticipantState';
+  deckRemaining: Scalars['Int']['output'];
+  hand: Array<Scalars['String']['output']>;
+  hp: Scalars['Int']['output'];
+  maxHp: Scalars['Int']['output'];
+  nextDamageBonus: Scalars['Int']['output'];
+  nextDamageReduction: Scalars['Int']['output'];
+  submittedCardId?: Maybe<Scalars['String']['output']>;
+  taskForceId: Scalars['ID']['output'];
+};
+
+export type TaskForceEngagementRoundLogEntry = {
+  __typename?: 'TaskForceEngagementRoundLogEntry';
+  attackerHpAfter: Scalars['Int']['output'];
+  attackerTaskForceId: Scalars['ID']['output'];
+  cardId: Scalars['String']['output'];
+  effectType: Scalars['String']['output'];
+  resolvedValue: Scalars['Int']['output'];
+  round: Scalars['Int']['output'];
+  targetHpAfter: Scalars['Int']['output'];
+  targetTaskForceId: Scalars['ID']['output'];
 };
 
 export type TaskForceFollowOrder = TaskForceOrder & {
@@ -679,7 +744,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  Positionable: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } );
+  Positionable: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } ) | ( TaskForceEngagementMapper & { __typename: 'TaskForceEngagement' } );
   TaskForceOrder: ( TaskForceColonizeOrderMapper & { __typename: 'TaskForceColonizeOrder' } ) | ( TaskForceFollowOrderMapper & { __typename: 'TaskForceFollowOrder' } ) | ( TaskForceMoveOrderMapper & { __typename: 'TaskForceMoveOrder' } );
 };
 
@@ -724,9 +789,13 @@ export type ResolversTypes = {
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
   StarSystemColonization: ResolverTypeWrapper<StarSystemColonizationMapper>;
   StarSystemUpdateEvent: ResolverTypeWrapper<Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversTypes['StarSystem'] }>;
+  SubmitTaskForceEngagementActionInput: SubmitTaskForceEngagementActionInput;
   Subscription: ResolverTypeWrapper<{}>;
   TaskForce: ResolverTypeWrapper<TaskForceMapper>;
   TaskForceColonizeOrder: ResolverTypeWrapper<TaskForceColonizeOrderMapper>;
+  TaskForceEngagement: ResolverTypeWrapper<TaskForceEngagementMapper>;
+  TaskForceEngagementParticipantState: ResolverTypeWrapper<TaskForceEngagementParticipantStateMapper>;
+  TaskForceEngagementRoundLogEntry: ResolverTypeWrapper<TaskForceEngagementRoundLogEntryMapper>;
   TaskForceFollowOrder: ResolverTypeWrapper<TaskForceFollowOrderMapper>;
   TaskForceFollowOrderInput: TaskForceFollowOrderInput;
   TaskForceMoveOrder: ResolverTypeWrapper<TaskForceMoveOrderMapper>;
@@ -791,9 +860,13 @@ export type ResolversParentTypes = {
   StarSystem: StarSystemMapper;
   StarSystemColonization: StarSystemColonizationMapper;
   StarSystemUpdateEvent: Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversParentTypes['StarSystem'] };
+  SubmitTaskForceEngagementActionInput: SubmitTaskForceEngagementActionInput;
   Subscription: {};
   TaskForce: TaskForceMapper;
   TaskForceColonizeOrder: TaskForceColonizeOrderMapper;
+  TaskForceEngagement: TaskForceEngagementMapper;
+  TaskForceEngagementParticipantState: TaskForceEngagementParticipantStateMapper;
+  TaskForceEngagementRoundLogEntry: TaskForceEngagementRoundLogEntryMapper;
   TaskForceFollowOrder: TaskForceFollowOrderMapper;
   TaskForceFollowOrderInput: TaskForceFollowOrderInput;
   TaskForceMoveOrder: TaskForceMoveOrderMapper;
@@ -858,6 +931,7 @@ export type DiscoveryResolvers<ContextType = Context, ParentType extends Resolve
 };
 
 export type GameResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
+  activeTaskForceEngagements?: Resolver<Array<ResolversTypes['TaskForceEngagement']>, ParentType, ContextType>;
   autoEndTurnAfterHoursInactive?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   autoEndTurnEveryHours?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   dilemmas?: Resolver<Array<ResolversTypes['Dilemma']>, ParentType, ContextType>;
@@ -910,6 +984,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
   startColonization?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationstartColonizationArgs, 'starSystemId'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
+  submitTaskForceEngagementAction?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType, RequireFields<MutationsubmitTaskForceEngagementActionArgs, 'input'>>;
   updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
   updatePlayer?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationupdatePlayerArgs, 'gameId' | 'input'>>;
 };
@@ -938,7 +1013,7 @@ export type PopulationResolvers<ContextType = Context, ParentType extends Resolv
 };
 
 export type PositionableResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Positionable'] = ResolversParentTypes['Positionable']> = {
-  __resolveType?: TypeResolveFn<'StarSystem' | 'TaskForce', ParentType, ContextType>;
+  __resolveType?: TypeResolveFn<'StarSystem' | 'TaskForce' | 'TaskForceEngagement', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
 };
@@ -965,6 +1040,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   games?: Resolver<Array<ResolversTypes['Game']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<QuerystarSystemArgs, 'id'>>;
+  taskForceEngagement?: Resolver<Maybe<ResolversTypes['TaskForceEngagement']>, ParentType, ContextType, RequireFields<QuerytaskForceEngagementArgs, 'id'>>;
 };
 
 export type ReferenceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Reference'] = ResolversParentTypes['Reference']> = {
@@ -1091,6 +1167,7 @@ export type SubscriptionResolvers<ContextType = Context, ParentType extends Reso
   trackGalaxy?: SubscriptionResolver<ResolversTypes['TrackGalaxyEvent'], "trackGalaxy", ParentType, ContextType, RequireFields<SubscriptiontrackGalaxyArgs, 'gameId'>>;
   trackGame?: SubscriptionResolver<ResolversTypes['TrackGameEvent'], "trackGame", ParentType, ContextType, RequireFields<SubscriptiontrackGameArgs, 'gameId'>>;
   trackStarSystem?: SubscriptionResolver<ResolversTypes['TrackStarSystemEvent'], "trackStarSystem", ParentType, ContextType, RequireFields<SubscriptiontrackStarSystemArgs, 'starSystemId'>>;
+  trackTaskForceEngagement?: SubscriptionResolver<ResolversTypes['TaskForceEngagement'], "trackTaskForceEngagement", ParentType, ContextType, RequireFields<SubscriptiontrackTaskForceEngagementArgs, 'engagementId'>>;
 };
 
 export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
@@ -1113,6 +1190,47 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
 
 export type TaskForceColonizeOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceColonizeOrder'] = ResolversParentTypes['TaskForceColonizeOrder']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TaskForceEngagementResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagement'] = ResolversParentTypes['TaskForceEngagement']> = {
+  currentRound?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  game?: Resolver<ResolversTypes['Game'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  participantA?: Resolver<ResolversTypes['TaskForceEngagementParticipantState'], ParentType, ContextType>;
+  participantB?: Resolver<ResolversTypes['TaskForceEngagementParticipantState'], ParentType, ContextType>;
+  phase?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  resolvedAtTurn?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  roundLog?: Resolver<Array<ResolversTypes['TaskForceEngagementRoundLogEntry']>, ParentType, ContextType>;
+  startedAtTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  taskForceA?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
+  taskForceB?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
+  winnerTaskForceId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TaskForceEngagementParticipantStateResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementParticipantState'] = ResolversParentTypes['TaskForceEngagementParticipantState']> = {
+  deckRemaining?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  hand?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  hp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  maxHp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  nextDamageBonus?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  nextDamageReduction?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  submittedCardId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  taskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TaskForceEngagementRoundLogEntryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementRoundLogEntry'] = ResolversParentTypes['TaskForceEngagementRoundLogEntry']> = {
+  attackerHpAfter?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  attackerTaskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  cardId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  effectType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  resolvedValue?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  round?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  targetHpAfter?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  targetTaskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1259,6 +1377,9 @@ export type Resolvers<ContextType = Context> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;
   TaskForceColonizeOrder?: TaskForceColonizeOrderResolvers<ContextType>;
+  TaskForceEngagement?: TaskForceEngagementResolvers<ContextType>;
+  TaskForceEngagementParticipantState?: TaskForceEngagementParticipantStateResolvers<ContextType>;
+  TaskForceEngagementRoundLogEntry?: TaskForceEngagementRoundLogEntryResolvers<ContextType>;
   TaskForceFollowOrder?: TaskForceFollowOrderResolvers<ContextType>;
   TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;

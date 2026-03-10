@@ -34,6 +34,7 @@ export async function setupStartingConditions(tx: Transaction, ctx: Context) {
 				.set({
 					ownerId: player.userId,
 					discoverySlots: 5,
+					industry: 1,
 				})
 				.where(eq(starSystems.id, generatedSystems[playerStar].id));
 

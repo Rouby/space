@@ -65,6 +65,18 @@ query Galaxy($id: ID!) {
 			lastUpdate
 			sensorRange
 		}
+		activeTaskForceEngagements {
+			id
+			phase
+			currentRound
+			position
+			taskForceA {
+				id
+			}
+			taskForceB {
+				id
+			}
+		}
 		dilemmas {
 			id
 			title
@@ -237,6 +249,13 @@ query Galaxy($id: ID!) {
 	const selectedTaskForceDetails = selectedTaskForce
 		? data?.game.taskForces.find(
 				(taskForce) => taskForce.id === selectedTaskForce,
+			)
+		: undefined;
+	const selectedTaskForceEngagement = selectedTaskForce
+		? data?.game.activeTaskForceEngagements.find(
+				(engagement) =>
+					engagement.taskForceA.id === selectedTaskForce ||
+					engagement.taskForceB.id === selectedTaskForce,
 			)
 		: undefined;
 	const selectedTaskForceIsUnderConstruction =
@@ -558,6 +577,22 @@ query Galaxy($id: ID!) {
 									}}
 								>
 									{menuContext?.shift ? "Queue " : ""}Follow task force
+								</Menu.Item>
+							)}
+
+							{selectedTaskForceEngagement && (
+								<Menu.Item
+									onClick={() => {
+										navigate({
+											from: "/games/$id",
+											to: "engagement/$engagementId",
+											params: {
+												engagementId: selectedTaskForceEngagement.id,
+											},
+										});
+									}}
+								>
+									Open active engagement
 								</Menu.Item>
 							)}
 						</>

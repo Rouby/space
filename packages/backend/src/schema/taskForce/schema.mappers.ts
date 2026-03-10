@@ -65,3 +65,45 @@ export type TaskForceColonizeOrderMapper = Extract<
 	TaskForceOrderMapper,
 	{ type: "colonize" }
 >;
+
+export type TaskForceEngagementParticipantStateMapper = {
+	taskForceId: string;
+	hp: number;
+	maxHp: number;
+	hand: string[];
+	deckRemaining: number;
+	nextDamageBonus: number;
+	nextDamageReduction: number;
+	submittedCardId: string | null;
+};
+
+export type TaskForceEngagementRoundLogEntryMapper = {
+	round: number;
+	attackerTaskForceId: string;
+	targetTaskForceId: string;
+	cardId: string;
+	effectType: string;
+	resolvedValue: number;
+	attackerHpAfter: number;
+	targetHpAfter: number;
+};
+
+export type TaskForceEngagementMapper = {
+	id: string;
+	gameId: string;
+	taskForceIdA: string;
+	taskForceIdB: string;
+	ownerIdA: string;
+	ownerIdB: string;
+	position: VectorMapper;
+	phase: string;
+	currentRound: number;
+	stateA: unknown;
+	stateB: unknown;
+	submittedCardIdA: string | null;
+	submittedCardIdB: string | null;
+	roundLog: unknown;
+	startedAtTurn: number;
+	resolvedAtTurn: number | null;
+	winnerTaskForceId: string | null;
+};

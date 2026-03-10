@@ -1,7 +1,8 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
 	index,
 	integer,
+	json,
 	pgTable,
 	point,
 	timestamp,
@@ -15,7 +16,7 @@ import { users } from "./users.ts";
 export const taskForceEngagements = pgTable(
 	"taskForceEngagements",
 	{
-		id: varchar({ length: 256 }).primaryKey(),
+		id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
 		gameId: uuid()
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
@@ -32,6 +33,46 @@ export const taskForceEngagements = pgTable(
 			.notNull()
 			.references(() => users.id, { onDelete: "restrict" }),
 		position: point({ mode: "xy" }).notNull(),
+		phase: varchar({ length: 64 }).notNull().default("awaiting_submissions"),
+		currentRound: integer().notNull().default(1),
+		stateA: json().$type<{
+			taskForceId: string;
+			hp: number;
+			maxHp: number;
+			hand: string[];
+			deck: string[];
+			nextDamageBonus: number;
+			nextDamageReduction: number;
+		} | null>(),
+		stateB: json().$type<{
+			taskForceId: string;
+			hp: number;
+			maxHp: number;
+			hand: string[];
+			deck: string[];
+			nextDamageBonus: number;
+			nextDamageReduction: number;
+		} | null>(),
+		submittedCardIdA: varchar({ length: 64 }),
+		submittedCardIdB: varchar({ length: 64 }),
+		roundLog: json()
+			.notNull()
+			.$type<
+				{
+					round: number;
+					attackerTaskForceId: string;
+					targetTaskForceId: string;
+					cardId: string;
+					effectType: "damage" | "buff" | "special";
+					resolvedValue: number;
+					attackerHpAfter: number;
+					targetHpAfter: number;
+				}[]
+			>()
+			.default([]),
+		winnerTaskForceId: uuid().references(() => taskForces.id, {
+			onDelete: "set null",
+		}),
 		startedAtTurn: integer().notNull(),
 		resolvedAtTurn: integer(),
 		createdAt: timestamp().notNull().defaultNow(),
