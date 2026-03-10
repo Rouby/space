@@ -1,27 +1,11 @@
-import {
-	Alert,
-	Badge,
-	Button,
-	Card,
-	Group,
-	SimpleGrid,
-	Stack,
-	Text,
-	Title,
-} from "@mantine/core";
+import { Alert, Badge, Group, Stack, Text, Title } from "@mantine/core";
 import { useMemo } from "react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
-
-const CARD_LABELS: Record<string, string> = {
-	laser_burst: "Laser Burst",
-	target_lock: "Target Lock",
-	emergency_repairs: "Emergency Repairs",
-	shield_pulse: "Shield Pulse",
-	evasive_maneuver: "Evasive Maneuver",
-	overcharge_barrage: "Overcharge Barrage",
-};
+import { CombatTaskForceSummary } from "./CombatTaskForceSummary";
+import { CombatPlayerHand } from "./CombatPlayerHand";
+import { CombatTimeline } from "./CombatTimeline";
 
 export function CombatEngagementPanel({
 	engagementId,
@@ -173,7 +157,13 @@ export function CombatEngagementPanel({
 	const canSubmit =
 		engagement.phase === "awaiting_submissions" &&
 		!ownParticipant.submittedCardId;
-	const cardRenderCounts = new Map<string, number>();
+
+	const handleSubmit = async (cardId: string) => {
+		await submitAction({
+			input: { engagementId: engagement.id, cardId },
+		});
+		reexecuteQuery({ requestPolicy: "network-only" });
+	};
 
 	return (
 		<Stack gap="md">
@@ -185,85 +175,15 @@ export function CombatEngagementPanel({
 				</Group>
 			</Group>
 
-			<SimpleGrid cols={{ base: 1, md: 2 }}>
-				<Card withBorder>
-					<Stack gap={4}>
-						<Text fw={700}>{engagement.taskForceA.name}</Text>
-						<Text size="sm">
-							HP {engagement.participantA.hp}/{engagement.participantA.maxHp}
-						</Text>
-						<Text size="xs" c="dimmed">
-							Deck remaining: {engagement.participantA.deckRemaining}
-						</Text>
-					</Stack>
-				</Card>
-				<Card withBorder>
-					<Stack gap={4}>
-						<Text fw={700}>{engagement.taskForceB.name}</Text>
-						<Text size="sm">
-							HP {engagement.participantB.hp}/{engagement.participantB.maxHp}
-						</Text>
-						<Text size="xs" c="dimmed">
-							Deck remaining: {engagement.participantB.deckRemaining}
-						</Text>
-					</Stack>
-				</Card>
-			</SimpleGrid>
+			<CombatTaskForceSummary engagement={engagement} />
 
-			<Stack gap="xs">
-				<Text fw={600}>Your hand</Text>
-				<SimpleGrid cols={{ base: 1, sm: 2, md: 3 }}>
-					{ownParticipant.hand.map((cardId) => {
-						const occurrence = (cardRenderCounts.get(cardId) ?? 0) + 1;
-						cardRenderCounts.set(cardId, occurrence);
+			<CombatPlayerHand 
+				ownParticipant={ownParticipant} 
+				canSubmit={canSubmit} 
+				onSubmit={handleSubmit} 
+			/>
 
-						return (
-							<Button
-								key={`${cardId}-${occurrence}`}
-								variant="light"
-								disabled={!canSubmit}
-								onClick={async () => {
-									await submitAction({
-										input: { engagementId: engagement.id, cardId },
-									});
-									reexecuteQuery({ requestPolicy: "network-only" });
-								}}
-							>
-								{CARD_LABELS[cardId] ?? cardId}
-							</Button>
-						);
-					})}
-				</SimpleGrid>
-				{ownParticipant.submittedCardId && (
-					<Text size="sm" c="dimmed">
-						Submitted:{" "}
-						{CARD_LABELS[ownParticipant.submittedCardId] ??
-							ownParticipant.submittedCardId}
-					</Text>
-				)}
-			</Stack>
-
-			<Stack gap="xs">
-				<Text fw={600}>Battle log</Text>
-				{engagement.roundLog.length === 0 && (
-					<Text size="sm" c="dimmed">
-						No resolved actions yet.
-					</Text>
-				)}
-				{engagement.roundLog.map((entry, index) => (
-					<Card
-						key={`${entry.round}-${entry.attackerTaskForceId}-${entry.cardId}-${index}`}
-						withBorder
-					>
-						<Text size="sm">
-							R{entry.round}: {CARD_LABELS[entry.cardId] ?? entry.cardId} by{" "}
-							{taskForceNameById.get(entry.attackerTaskForceId) ??
-								entry.attackerTaskForceId}{" "}
-							({entry.effectType}, {entry.resolvedValue})
-						</Text>
-					</Card>
-				))}
-			</Stack>
+			<CombatTimeline engagement={engagement} />
 
 			{engagement.phase === "completed" && (
 				<Alert color="green" title="Combat resolved">
