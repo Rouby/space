@@ -2,11 +2,13 @@ import { relations, sql } from "drizzle-orm";
 import {
 	bigint,
 	decimal,
+	index,
 	integer,
 	pgTable,
 	point,
 	primaryKey,
 	timestamp,
+	uniqueIndex,
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -32,10 +34,56 @@ export const starSystems = pgTable("starSystems", {
 export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({
 	game: one(games, { fields: [starSystems.gameId], references: [games.id] }),
 	owner: one(users, { fields: [starSystems.ownerId], references: [users.id] }),
+	developmentStances: many(starSystemDevelopmentStances),
 	resourceDiscoveries: many(starSystemResourceDiscoveries),
 	resourceDepots: many(starSystemResourceDepots),
 	populations: many(starSystemPopulations),
 }));
+
+export const starSystemDevelopmentStances = pgTable(
+	"starSystemDevelopmentStances",
+	{
+		id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+		gameId: uuid()
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
+		starSystemId: uuid()
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "cascade" }),
+		playerId: uuid()
+			.notNull()
+			.references(() => users.id, { onDelete: "restrict" }),
+		turnNumber: integer().notNull(),
+		stance: varchar({
+			length: 32,
+			enum: ["industrialize", "balance", "grow_population"],
+		}).notNull(),
+		createdAt: timestamp().notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex().on(table.gameId, table.starSystemId, table.turnNumber),
+		index().on(table.gameId, table.turnNumber),
+		index().on(table.playerId, table.turnNumber),
+	],
+);
+
+export const starSystemDevelopmentStancesRelations = relations(
+	starSystemDevelopmentStances,
+	({ one }) => ({
+		game: one(games, {
+			fields: [starSystemDevelopmentStances.gameId],
+			references: [games.id],
+		}),
+		starSystem: one(starSystems, {
+			fields: [starSystemDevelopmentStances.starSystemId],
+			references: [starSystems.id],
+		}),
+		player: one(users, {
+			fields: [starSystemDevelopmentStances.playerId],
+			references: [users.id],
+		}),
+	}),
+);
 
 export const starSystemResourceDiscoveries = pgTable(
 	"starSystemResourceDiscoveries",

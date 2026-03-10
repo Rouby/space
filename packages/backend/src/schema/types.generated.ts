@@ -15,8 +15,8 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Mayb
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 export type EnumResolverSignature<T, AllowedValues = any> = { [key in keyof T]?: AllowedValues };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string | number; }
@@ -38,6 +38,17 @@ export type ConstructTaskForceInput = {
   name: Scalars['String']['input'];
   shipDesignId: Scalars['ID']['input'];
   starSystemId: Scalars['ID']['input'];
+};
+
+export type DevelopmentStance =
+  | 'balance'
+  | 'grow_population'
+  | 'industrialize';
+
+export type DevelopmentStanceProjection = {
+  __typename?: 'DevelopmentStanceProjection';
+  industryDelta: Scalars['Int']['output'];
+  populationDelta: Scalars['BigInt']['output'];
 };
 
 export type Dilemma = {
@@ -99,6 +110,7 @@ export type Mutation = {
   makeDilemmaChoice: Dilemma;
   orderTaskForce: TaskForce;
   registerWithPassword: User;
+  setDevelopmentStance: StarSystem;
   startColonization: StarSystem;
   startGame: Game;
   updateGameSettings: Game;
@@ -161,6 +173,12 @@ export type MutationregisterWithPasswordArgs = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationsetDevelopmentStanceArgs = {
+  stance: DevelopmentStance;
+  starSystemId: Scalars['ID']['input'];
 };
 
 
@@ -349,6 +367,7 @@ export type ShipDesignInput = {
 export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
   colonization?: Maybe<StarSystemColonization>;
+  currentDevelopmentStance?: Maybe<DevelopmentStance>;
   discoveries?: Maybe<Array<Discovery>>;
   discoveryProgress?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
@@ -356,6 +375,7 @@ export type StarSystem = Positionable & {
   isVisible: Scalars['Boolean']['output'];
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
+  nextTurnStanceProjection?: Maybe<DevelopmentStanceProjection>;
   owner?: Maybe<Player>;
   populations?: Maybe<Array<Population>>;
   position: Scalars['Vector']['output'];
@@ -618,11 +638,13 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   ConstructTaskForceInput: ConstructTaskForceInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  DevelopmentStance: ResolverTypeWrapper<'industrialize' | 'balance' | 'grow_population'>;
+  DevelopmentStanceProjection: ResolverTypeWrapper<DevelopmentStanceProjection>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Dilemma: ResolverTypeWrapper<DilemmaMapper>;
   DilemmaChoice: ResolverTypeWrapper<DilemmaChoice>;
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
@@ -681,11 +703,12 @@ export type ResolversParentTypes = {
   ID: Scalars['ID']['output'];
   ConstructTaskForceInput: ConstructTaskForceInput;
   DateTime: Scalars['DateTime']['output'];
+  DevelopmentStanceProjection: DevelopmentStanceProjection;
+  Int: Scalars['Int']['output'];
   Dilemma: DilemmaMapper;
   DilemmaChoice: DilemmaChoice;
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
-  Int: Scalars['Int']['output'];
   Mutation: {};
   Boolean: Scalars['Boolean']['output'];
   NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
@@ -742,6 +765,14 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type DevelopmentStanceResolvers = EnumResolverSignature<{ balance?: any, grow_population?: any, industrialize?: any }, ResolversTypes['DevelopmentStance']>;
+
+export type DevelopmentStanceProjectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DevelopmentStanceProjection'] = ResolversParentTypes['DevelopmentStanceProjection']> = {
+  industryDelta?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  populationDelta?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type DilemmaResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Dilemma'] = ResolversParentTypes['Dilemma']> = {
   causation?: Resolver<Maybe<ResolversTypes['Reference']>, ParentType, ContextType>;
   choices?: Resolver<Array<ResolversTypes['DilemmaChoice']>, ParentType, ContextType>;
@@ -797,6 +828,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   makeDilemmaChoice?: Resolver<ResolversTypes['Dilemma'], ParentType, ContextType, RequireFields<MutationmakeDilemmaChoiceArgs, 'choiceId' | 'dilemmaId'>>;
   orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
+  setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
   startColonization?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationstartColonizationArgs, 'starSystemId'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
   updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
@@ -942,6 +974,7 @@ export type ShipDesignComponentResolvers<ContextType = Context, ParentType exten
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
   colonization?: Resolver<Maybe<ResolversTypes['StarSystemColonization']>, ParentType, ContextType>;
+  currentDevelopmentStance?: Resolver<Maybe<ResolversTypes['DevelopmentStance']>, ParentType, ContextType>;
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
   discoveryProgress?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -949,6 +982,7 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nextTurnStanceProjection?: Resolver<Maybe<ResolversTypes['DevelopmentStanceProjection']>, ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   populations?: Resolver<Maybe<Array<ResolversTypes['Population']>>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
@@ -1090,6 +1124,8 @@ export type WeaponDeliveryTypeResolvers = EnumResolverSignature<{ beam?: any, in
 export type Resolvers<ContextType = Context> = {
   BigInt?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
+  DevelopmentStance?: DevelopmentStanceResolvers;
+  DevelopmentStanceProjection?: DevelopmentStanceProjectionResolvers<ContextType>;
   Dilemma?: DilemmaResolvers<ContextType>;
   DilemmaChoice?: DilemmaChoiceResolvers<ContextType>;
   Discovery?: DiscoveryResolvers<ContextType>;

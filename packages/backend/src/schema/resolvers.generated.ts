@@ -16,6 +16,7 @@ import    { loginWithRefreshToken as Mutation_loginWithRefreshToken } from './us
 import    { makeDilemmaChoice as Mutation_makeDilemmaChoice } from './dilemma/resolvers/Mutation/makeDilemmaChoice.js';
 import    { orderTaskForce as Mutation_orderTaskForce } from './taskForce/resolvers/Mutation/orderTaskForce.js';
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
+import    { setDevelopmentStance as Mutation_setDevelopmentStance } from './starSystem/resolvers/Mutation/setDevelopmentStance.js';
 import    { startColonization as Mutation_startColonization } from './starSystem/resolvers/Mutation/startColonization.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
 import    { updateGameSettings as Mutation_updateGameSettings } from './game/resolvers/Mutation/updateGameSettings.js';
@@ -23,6 +24,7 @@ import    { updatePlayer as Mutation_updatePlayer } from './game/resolvers/Mutat
 import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Subscription/trackGalaxy.js';
 import    { trackGame as Subscription_trackGame } from './game/resolvers/Subscription/trackGame.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
+import    { DevelopmentStanceProjection } from './starSystem/resolvers/DevelopmentStanceProjection.js';
 import    { Dilemma } from './dilemma/resolvers/Dilemma.js';
 import    { DilemmaChoice } from './dilemma/resolvers/DilemmaChoice.js';
 import    { Game as game_Game } from './game/resolvers/Game.js';
@@ -74,9 +76,10 @@ import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.j
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
-      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,startColonization: Mutation_startColonization,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,setDevelopmentStance: Mutation_setDevelopmentStance,startColonization: Mutation_startColonization,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem },
-      Dilemma: Dilemma,
+      DevelopmentStanceProjection: DevelopmentStanceProjection,
+Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,
 Game: { ...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
 NewTurnCalculatedEvent: NewTurnCalculatedEvent,

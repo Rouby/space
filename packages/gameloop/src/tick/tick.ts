@@ -16,16 +16,16 @@ import type { GameEvent } from "../../../backend/src/events.ts";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
 import { tickColonization } from "./colonization.ts";
+import { tickDevelopmentStances } from "./developmentStance.ts";
 import { tickDiscoveries } from "./discoveries.ts";
+import type { MiningTurnChange } from "./starSystemEconomy.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
+import type { PopulationTurnChange } from "./starSystemPopulation.ts";
 import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
 import { tickTaskForceCombat } from "./taskForceCombat.ts";
+import type { IndustryTurnChange } from "./taskForceConstruction.ts";
 import { tickTaskForceConstruction } from "./taskForceConstruction.ts";
 import { tickTaskForceMovement } from "./taskForceMovement.ts";
-
-import type { IndustryTurnChange } from "./taskForceConstruction.ts";
-import type { MiningTurnChange } from "./starSystemEconomy.ts";
-import type { PopulationTurnChange } from "./starSystemPopulation.ts";
 
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
 export type Transaction = FirstArgument<
@@ -77,6 +77,8 @@ export async function tick() {
 
 		await tickStarSystemEconomy(tx, ctx);
 
+		await tickDevelopmentStances(tx, ctx);
+
 		const visibleSystemsPerPlayer = await tx
 			.select({
 				userId: players.userId,
@@ -102,6 +104,56 @@ export async function tick() {
 			.from(players)
 			.where(eq(players.gameId, gameId));
 
+		const consolidatedPopulationChanges = Array.from(
+			populationChanges
+				.reduce((acc, change) => {
+					const current = acc.get(change.starSystemId);
+					if (!current) {
+						acc.set(change.starSystemId, { ...change });
+						return acc;
+					}
+
+					acc.set(change.starSystemId, {
+						starSystemId: change.starSystemId,
+						populationId: change.populationId,
+						previousAmount:
+							current.previousAmount > change.previousAmount
+								? current.previousAmount
+								: change.previousAmount,
+						newAmount:
+							current.newAmount < change.newAmount
+								? current.newAmount
+								: change.newAmount,
+						growth: current.growth + change.growth,
+					});
+					return acc;
+				}, new Map<string, PopulationTurnChange>())
+				.values(),
+		);
+
+		const consolidatedIndustryChanges = Array.from(
+			industryChanges
+				.reduce((acc, change) => {
+					const current = acc.get(change.starSystemId);
+					if (!current) {
+						acc.set(change.starSystemId, { ...change });
+						return acc;
+					}
+
+					acc.set(change.starSystemId, {
+						starSystemId: change.starSystemId,
+						industryUtilized:
+							current.industryUtilized + change.industryUtilized,
+						industryTotal: Math.max(
+							current.industryTotal,
+							change.industryTotal,
+						),
+					});
+					return acc;
+				}, new Map<string, IndustryTurnChange>())
+				.values(),
+		);
+
 		const reportsToInsert = playersInGame.map((p) => {
 			const visibleSystemIds = new Set(
 				visibleSystemsPerPlayer
@@ -114,7 +166,7 @@ export async function tick() {
 				ownerId: p.userId,
 				turnNumber: ctx.turn,
 				summary: {
-					populationChanges: populationChanges
+					populationChanges: consolidatedPopulationChanges
 						.filter((c) => visibleSystemIds.has(c.starSystemId))
 						.map((change) => ({
 							starSystemId: change.starSystemId,
@@ -126,7 +178,7 @@ export async function tick() {
 					miningChanges: miningChanges.filter((c) =>
 						visibleSystemIds.has(c.starSystemId),
 					),
-					industryChanges: industryChanges.filter((c) =>
+					industryChanges: consolidatedIndustryChanges.filter((c) =>
 						visibleSystemIds.has(c.starSystemId),
 					),
 				},

@@ -4,6 +4,7 @@ export type StarSystemMapper = {
 	id: string;
 	name: string;
 	position: VectorMapper;
+	industry?: number | null;
 	isVisible: boolean;
 	lastUpdate: Date | null;
 	ownerId: string | null;

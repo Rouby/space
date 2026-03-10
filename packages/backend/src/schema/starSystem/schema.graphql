@@ -3,6 +3,8 @@ type StarSystem implements Positionable {
 	name: String!
 	position: Vector!
 	owner: Player
+	currentDevelopmentStance: DevelopmentStance
+	nextTurnStanceProjection: DevelopmentStanceProjection
 	colonization: StarSystemColonization
 	sensorRange: Float
 	discoveries: [Discovery!]
@@ -40,6 +42,17 @@ type Population {
 	amount: BigInt!
 }
 
+enum DevelopmentStance {
+	industrialize
+	balance
+	grow_population
+}
+
+type DevelopmentStanceProjection {
+	industryDelta: Int!
+	populationDelta: BigInt!
+}
+
 extend type Game {
 	starSystems: [StarSystem!]!
 }
@@ -50,4 +63,8 @@ type Query {
 
 extend type Mutation {
 	startColonization(starSystemId: ID!): StarSystem!
+	setDevelopmentStance(
+		starSystemId: ID!
+		stance: DevelopmentStance!
+	): StarSystem!
 }

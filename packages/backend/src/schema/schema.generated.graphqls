@@ -13,6 +13,17 @@ input ConstructTaskForceInput {
 
 scalar DateTime
 
+enum DevelopmentStance {
+	balance
+	grow_population
+	industrialize
+}
+
+type DevelopmentStanceProjection {
+	industryDelta: Int!
+	populationDelta: BigInt!
+}
+
 type Dilemma {
 	causation: Reference
 	choices: [DilemmaChoice!]!
@@ -69,6 +80,10 @@ type Mutation {
 		queue: Boolean
 	): TaskForce!
 	registerWithPassword(email: String!, name: String!, password: String!): User!
+	setDevelopmentStance(
+		stance: DevelopmentStance!
+		starSystemId: ID!
+	): StarSystem!
 	startColonization(starSystemId: ID!): StarSystem!
 	startGame(id: ID!): Game!
 	updateGameSettings(gameId: ID!, input: UpdateGameSettingsInput!): Game!
@@ -209,6 +224,7 @@ input ShipDesignInput {
 
 type StarSystem implements Positionable {
 	colonization: StarSystemColonization
+	currentDevelopmentStance: DevelopmentStance
 	discoveries: [Discovery!]
 	discoveryProgress: Float
 	id: ID!
@@ -216,6 +232,7 @@ type StarSystem implements Positionable {
 	isVisible: Boolean!
 	lastUpdate: DateTime
 	name: String!
+	nextTurnStanceProjection: DevelopmentStanceProjection
 	owner: Player
 	populations: [Population!]
 	position: Vector!

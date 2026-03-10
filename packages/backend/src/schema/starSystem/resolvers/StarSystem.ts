@@ -1,8 +1,14 @@
 import {
+	computeDevelopmentStanceProjection,
+	defaultDevelopmentStance,
+} from "@space/data/functions";
+import {
 	and,
 	eq,
+	games,
 	players,
 	starSystemColonizations,
+	starSystemDevelopmentStances,
 	starSystemPopulations,
 	starSystemResourceDiscoveries,
 } from "@space/data/schema";
@@ -10,6 +16,7 @@ import type { StarSystemResolvers } from "./../../types.generated.js";
 export const StarSystem: Pick<
 	StarSystemResolvers,
 	| "colonization"
+	| "currentDevelopmentStance"
 	| "discoveries"
 	| "discoveryProgress"
 	| "id"
@@ -17,6 +24,7 @@ export const StarSystem: Pick<
 	| "isVisible"
 	| "lastUpdate"
 	| "name"
+	| "nextTurnStanceProjection"
 	| "owner"
 	| "populations"
 	| "position"
@@ -87,7 +95,70 @@ export const StarSystem: Pick<
 			})) ?? null
 		);
 	},
-	industry: async (parent: any, _arg, _ctx) => {
+	industry: async (parent, _arg, _ctx) => {
 		return parent.industry;
+	},
+	currentDevelopmentStance: async (parent, _arg, ctx) => {
+		if (!ctx.userId || !parent.ownerId || parent.ownerId !== ctx.userId) {
+			return null;
+		}
+
+		const game = await ctx.drizzle.query.games.findFirst({
+			where: eq(games.id, parent.gameId),
+			columns: { turnNumber: true },
+		});
+
+		if (!game) {
+			return null;
+		}
+
+		const currentStance =
+			await ctx.drizzle.query.starSystemDevelopmentStances.findFirst({
+				where: and(
+					eq(starSystemDevelopmentStances.gameId, parent.gameId),
+					eq(starSystemDevelopmentStances.starSystemId, parent.id),
+					eq(starSystemDevelopmentStances.turnNumber, game.turnNumber),
+				),
+				columns: { stance: true },
+			});
+
+		return currentStance?.stance ?? defaultDevelopmentStance;
+	},
+	nextTurnStanceProjection: async (parent, _arg, ctx) => {
+		if (!ctx.userId || !parent.ownerId || parent.ownerId !== ctx.userId) {
+			return null;
+		}
+
+		const game = await ctx.drizzle.query.games.findFirst({
+			where: eq(games.id, parent.gameId),
+			columns: { turnNumber: true },
+		});
+
+		if (!game) {
+			return null;
+		}
+
+		const currentStance =
+			await ctx.drizzle.query.starSystemDevelopmentStances.findFirst({
+				where: and(
+					eq(starSystemDevelopmentStances.gameId, parent.gameId),
+					eq(starSystemDevelopmentStances.starSystemId, parent.id),
+					eq(starSystemDevelopmentStances.turnNumber, game.turnNumber),
+				),
+				columns: { stance: true },
+			});
+
+		const populations = await ctx.drizzle
+			.select({
+				amount: starSystemPopulations.amount,
+				growthLeftover: starSystemPopulations.growthLeftover,
+			})
+			.from(starSystemPopulations)
+			.where(eq(starSystemPopulations.starSystemId, parent.id));
+
+		return computeDevelopmentStanceProjection(
+			currentStance?.stance ?? defaultDevelopmentStance,
+			populations,
+		);
 	},
 };

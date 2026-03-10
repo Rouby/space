@@ -24,6 +24,7 @@ import {
 	formatUnitPerRound,
 } from "../../format/formatNumber";
 import { graphql } from "../../gql";
+import { DevelopmentStance } from "../../gql/graphql";
 import { coordinateToGrid } from "../GalaxyView/coordinateToGrid";
 import placeholderDiscoveryArt from "./example-discovery.png";
 import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
@@ -42,6 +43,11 @@ export function StarSystemDetails({
 		starSystem(id: $id) {
 			id
 			name
+			currentDevelopmentStance
+			nextTurnStanceProjection {
+				industryDelta
+				populationDelta
+			}
 			owner {
 				id
 				name
@@ -117,6 +123,11 @@ export function StarSystemDetails({
 				subject {
 					id
 					name
+					currentDevelopmentStance
+					nextTurnStanceProjection {
+						industryDelta
+						populationDelta
+					}
 					owner {
 						id
 						name
@@ -189,8 +200,30 @@ export function StarSystemDetails({
 		}`),
 	);
 
+	const [
+		{
+			fetching: setDevelopmentStanceFetching,
+			error: setDevelopmentStanceError,
+		},
+		setDevelopmentStance,
+	] = useMutation(
+		graphql(`mutation SetDevelopmentStance($starSystemId: ID!, $stance: DevelopmentStance!) {
+			setDevelopmentStance(starSystemId: $starSystemId, stance: $stance) {
+				id
+				currentDevelopmentStance
+				nextTurnStanceProjection {
+					industryDelta
+					populationDelta
+				}
+			}
+		}`),
+	);
+
 	const [fleetName, setFleetName] = useState("");
 	const [shipDesignId, setShipDesignId] = useState<string | null>(null);
+	const [developmentStance, setDevelopmentStanceValue] = useState<
+		string | null
+	>(null);
 
 	const shipDesignOptions = useMemo(
 		() =>
@@ -229,6 +262,25 @@ export function StarSystemDetails({
 		constructTaskForceState.error?.graphQLErrors[0]?.message ??
 		constructTaskForceState.error?.message;
 
+	const developmentStanceError =
+		setDevelopmentStanceError?.graphQLErrors[0]?.message ??
+		setDevelopmentStanceError?.message;
+
+	const developmentStanceOptions: { value: string; label: string }[] = [
+		{ value: DevelopmentStance.Industrialize, label: "Industrialize" },
+		{ value: DevelopmentStance.Balance, label: "Balance" },
+		{ value: DevelopmentStance.GrowPopulation, label: "Grow Population" },
+	];
+
+	useEffect(() => {
+		if (!starSystem?.currentDevelopmentStance) {
+			setDevelopmentStanceValue("balance");
+			return;
+		}
+
+		setDevelopmentStanceValue(starSystem.currentDevelopmentStance);
+	}, [starSystem?.currentDevelopmentStance]);
+
 	const { css } = useStyles();
 
 	return (
@@ -260,7 +312,7 @@ export function StarSystemDetails({
 					<Card>
 						<Text variant="gradient">Industry</Text>
 						<Text>
-							{starSystem?.industry 
+							{starSystem?.industry
 								? `${formatInteger(starSystem.industry)} / turn`
 								: "Our scanners could not pick up information about industrial capabilities."}
 						</Text>
@@ -378,6 +430,60 @@ export function StarSystemDetails({
 				<Text mt="md" variant="gradient">
 					Commission task force
 				</Text>
+				<Text mt="md" variant="gradient">
+					Development stance
+				</Text>
+				<Stack mt="xs" gap="xs">
+					<Select
+						label="Stance"
+						data={developmentStanceOptions}
+						value={developmentStance}
+						onChange={async (nextValue) => {
+							setDevelopmentStanceValue(nextValue);
+							if (!nextValue || !isOwnedByMe) {
+								return;
+							}
+
+							const stance = developmentStanceOptions.find(
+								(option) => option.value === nextValue,
+							)?.value as DevelopmentStance | undefined;
+
+							if (!stance) {
+								return;
+							}
+
+							await setDevelopmentStance({
+								starSystemId: id,
+								stance,
+							});
+						}}
+						disabled={!isOwnedByMe}
+						rightSection={setDevelopmentStanceFetching ? "Saving..." : null}
+					/>
+					{starSystem?.nextTurnStanceProjection && (
+						<Text size="sm" c="dimmed">
+							Projected next turn: industry{" "}
+							{starSystem.nextTurnStanceProjection.industryDelta >= 0
+								? "+"
+								: ""}
+							{starSystem.nextTurnStanceProjection.industryDelta}, population +
+							{formatInteger(
+								starSystem.nextTurnStanceProjection.populationDelta,
+							)}
+							.
+						</Text>
+					)}
+					{!isOwnedByMe && (
+						<Text c="dimmed" size="sm">
+							You can set development stance only in star systems you own.
+						</Text>
+					)}
+					{developmentStanceError && (
+						<Text c="red" size="sm">
+							{developmentStanceError}
+						</Text>
+					)}
+				</Stack>
 				<Stack mt="xs">
 					<TextInput
 						label="Fleet name"
@@ -396,9 +502,10 @@ export function StarSystemDetails({
 					/>
 					{(() => {
 						if (!shipDesignId) return null;
-						const selectedDesign = commissionContext?.game.me?.shipDesigns?.find(
-							(d) => d.id === shipDesignId,
-						);
+						const selectedDesign =
+							commissionContext?.game.me?.shipDesigns?.find(
+								(d) => d.id === shipDesignId,
+							);
 						if (!selectedDesign) return null;
 
 						const cost = selectedDesign.components.reduce(
@@ -406,7 +513,8 @@ export function StarSystemDetails({
 							0,
 						);
 						const industry = starSystem?.industry ?? 1;
-						const turns = industry > 0 ? Math.ceil(cost / industry) : "Infinity";
+						const turns =
+							industry > 0 ? Math.ceil(cost / industry) : "Infinity";
 
 						return (
 							<Text size="sm" c="dimmed">
