@@ -111,9 +111,14 @@ input ConfigureTaskForceCombatDeckInput {
 	cardIds: [String!]!
 }
 
+enum SubmitTaskForceEngagementActionType {
+	RETREAT
+}
+
 input SubmitTaskForceEngagementActionInput {
 	engagementId: ID!
-	cardId: String!
+	action: SubmitTaskForceEngagementActionType
+	cardId: String
 }
 
 extend type Query {

@@ -442,9 +442,13 @@ export type StarSystemUpdateEvent = {
 };
 
 export type SubmitTaskForceEngagementActionInput = {
-  cardId: Scalars['String']['input'];
+  action?: InputMaybe<SubmitTaskForceEngagementActionType>;
+  cardId?: InputMaybe<Scalars['String']['input']>;
   engagementId: Scalars['ID']['input'];
 };
+
+export type SubmitTaskForceEngagementActionType =
+  | 'RETREAT';
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -593,6 +597,7 @@ export type TurnReport = {
   miningChanges: Array<TurnReportMiningChange>;
   populationChanges: Array<TurnReportPopulationChange>;
   taskForceConstructionChanges: Array<TurnReportTaskForceConstructionChange>;
+  taskForceEngagements: Array<TurnReportTaskForceEngagement>;
   turnNumber: Scalars['Int']['output'];
 };
 
@@ -637,6 +642,18 @@ export type TurnReportTaskForceConstructionChange = {
   starSystem: StarSystem;
   taskForce: TaskForce;
   total: Scalars['Int']['output'];
+};
+
+export type TurnReportTaskForceEngagement = {
+  __typename?: 'TurnReportTaskForceEngagement';
+  engagementId: Scalars['ID']['output'];
+  location: Scalars['Vector']['output'];
+  status: Scalars['String']['output'];
+  taskForceAId: Scalars['ID']['output'];
+  taskForceAName: Scalars['String']['output'];
+  taskForceBId: Scalars['ID']['output'];
+  taskForceBName: Scalars['String']['output'];
+  winnerTaskForceId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type UnknownDiscovery = {
@@ -790,6 +807,7 @@ export type ResolversTypes = {
   StarSystemColonization: ResolverTypeWrapper<StarSystemColonizationMapper>;
   StarSystemUpdateEvent: ResolverTypeWrapper<Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversTypes['StarSystem'] }>;
   SubmitTaskForceEngagementActionInput: SubmitTaskForceEngagementActionInput;
+  SubmitTaskForceEngagementActionType: ResolverTypeWrapper<'RETREAT'>;
   Subscription: ResolverTypeWrapper<{}>;
   TaskForce: ResolverTypeWrapper<TaskForceMapper>;
   TaskForceColonizeOrder: ResolverTypeWrapper<TaskForceColonizeOrderMapper>;
@@ -813,6 +831,7 @@ export type ResolversTypes = {
   TurnReportMiningChange: ResolverTypeWrapper<TurnReportMiningChangeMapper>;
   TurnReportPopulationChange: ResolverTypeWrapper<TurnReportPopulationChangeMapper>;
   TurnReportTaskForceConstructionChange: ResolverTypeWrapper<TurnReportTaskForceConstructionChangeMapper>;
+  TurnReportTaskForceEngagement: ResolverTypeWrapper<TurnReportTaskForceEngagement>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
   UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
@@ -883,6 +902,7 @@ export type ResolversParentTypes = {
   TurnReportMiningChange: TurnReportMiningChangeMapper;
   TurnReportPopulationChange: TurnReportPopulationChangeMapper;
   TurnReportTaskForceConstructionChange: TurnReportTaskForceConstructionChangeMapper;
+  TurnReportTaskForceEngagement: TurnReportTaskForceEngagement;
   UnknownDiscovery: UnknownDiscovery;
   UpdateGameSettingsInput: UpdateGameSettingsInput;
   UpdatePlayerInput: UpdatePlayerInput;
@@ -1163,6 +1183,8 @@ export type StarSystemUpdateEventResolvers<ContextType = Context, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type SubmitTaskForceEngagementActionTypeResolvers = EnumResolverSignature<{ RETREAT?: any }, ResolversTypes['SubmitTaskForceEngagementActionType']>;
+
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   trackGalaxy?: SubscriptionResolver<ResolversTypes['TrackGalaxyEvent'], "trackGalaxy", ParentType, ContextType, RequireFields<SubscriptiontrackGalaxyArgs, 'gameId'>>;
   trackGame?: SubscriptionResolver<ResolversTypes['TrackGameEvent'], "trackGame", ParentType, ContextType, RequireFields<SubscriptiontrackGameArgs, 'gameId'>>;
@@ -1278,6 +1300,7 @@ export type TurnReportResolvers<ContextType = Context, ParentType extends Resolv
   miningChanges?: Resolver<Array<ResolversTypes['TurnReportMiningChange']>, ParentType, ContextType>;
   populationChanges?: Resolver<Array<ResolversTypes['TurnReportPopulationChange']>, ParentType, ContextType>;
   taskForceConstructionChanges?: Resolver<Array<ResolversTypes['TurnReportTaskForceConstructionChange']>, ParentType, ContextType>;
+  taskForceEngagements?: Resolver<Array<ResolversTypes['TurnReportTaskForceEngagement']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1322,6 +1345,18 @@ export type TurnReportTaskForceConstructionChangeResolvers<ContextType = Context
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   taskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TurnReportTaskForceEngagementResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportTaskForceEngagement'] = ResolversParentTypes['TurnReportTaskForceEngagement']> = {
+  engagementId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  taskForceAId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  taskForceAName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  taskForceBId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  taskForceBName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  winnerTaskForceId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1374,6 +1409,7 @@ export type Resolvers<ContextType = Context> = {
   StarSystem?: StarSystemResolvers<ContextType>;
   StarSystemColonization?: StarSystemColonizationResolvers<ContextType>;
   StarSystemUpdateEvent?: StarSystemUpdateEventResolvers<ContextType>;
+  SubmitTaskForceEngagementActionType?: SubmitTaskForceEngagementActionTypeResolvers;
   Subscription?: SubscriptionResolvers<ContextType>;
   TaskForce?: TaskForceResolvers<ContextType>;
   TaskForceColonizeOrder?: TaskForceColonizeOrderResolvers<ContextType>;
@@ -1394,6 +1430,7 @@ export type Resolvers<ContextType = Context> = {
   TurnReportMiningChange?: TurnReportMiningChangeResolvers<ContextType>;
   TurnReportPopulationChange?: TurnReportPopulationChangeResolvers<ContextType>;
   TurnReportTaskForceConstructionChange?: TurnReportTaskForceConstructionChangeResolvers<ContextType>;
+  TurnReportTaskForceEngagement?: TurnReportTaskForceEngagementResolvers<ContextType>;
   UnknownDiscovery?: UnknownDiscoveryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   Vector?: GraphQLScalarType;

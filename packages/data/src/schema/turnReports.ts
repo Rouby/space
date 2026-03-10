@@ -50,12 +50,24 @@ export type TurnReportMiningChange = {
 	depotQuantity: number;
 };
 
+export type TurnReportTaskForceEngagement = {
+	engagementId: string;
+	status: "unresolved" | "resolved";
+	taskForceAId: string;
+	taskForceBId: string;
+	taskForceAName: string;
+	taskForceBName: string;
+	winnerTaskForceId: string | null;
+	location: { x: number; y: number };
+};
+
 export type TurnReportSummary = {
 	populationChanges: TurnReportPopulationChange[];
 	miningChanges: TurnReportMiningChange[];
 	industryChanges: TurnReportIndustryChange[];
 	industrialProjectCompletions: TurnReportIndustrialProjectCompletion[];
 	taskForceConstructionChanges: TurnReportTaskForceConstructionChange[];
+	taskForceEngagements: TurnReportTaskForceEngagement[];
 };
 
 export const turnReports = pgTable(

@@ -286,8 +286,13 @@ type StarSystemUpdateEvent {
 }
 
 input SubmitTaskForceEngagementActionInput {
-	cardId: String!
+	action: SubmitTaskForceEngagementActionType
+	cardId: String
 	engagementId: ID!
+}
+
+enum SubmitTaskForceEngagementActionType {
+	RETREAT
 }
 
 type Subscription {
@@ -412,6 +417,7 @@ type TurnReport {
 	miningChanges: [TurnReportMiningChange!]!
 	populationChanges: [TurnReportPopulationChange!]!
 	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
+	taskForceEngagements: [TurnReportTaskForceEngagement!]!
 	turnNumber: Int!
 }
 
@@ -451,6 +457,17 @@ type TurnReportTaskForceConstructionChange {
 	starSystem: StarSystem!
 	taskForce: TaskForce!
 	total: Int!
+}
+
+type TurnReportTaskForceEngagement {
+	engagementId: ID!
+	location: Vector!
+	status: String!
+	taskForceAId: ID!
+	taskForceAName: String!
+	taskForceBId: ID!
+	taskForceBName: String!
+	winnerTaskForceId: ID
 }
 
 type UnknownDiscovery {

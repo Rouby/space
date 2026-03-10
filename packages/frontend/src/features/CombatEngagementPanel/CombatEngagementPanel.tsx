@@ -3,8 +3,9 @@ import { useMemo } from "react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
-import { CombatTaskForceSummary } from "./CombatTaskForceSummary";
+import type { SubmitTaskForceEngagementActionType } from "../../gql/graphql";
 import { CombatPlayerHand } from "./CombatPlayerHand";
+import { CombatTaskForceSummary } from "./CombatTaskForceSummary";
 import { CombatTimeline } from "./CombatTimeline";
 
 export function CombatEngagementPanel({
@@ -158,9 +159,12 @@ export function CombatEngagementPanel({
 		engagement.phase === "awaiting_submissions" &&
 		!ownParticipant.submittedCardId;
 
-	const handleSubmit = async (cardId: string) => {
+	const handleSubmit = async (input: {
+		cardId?: string;
+		action?: SubmitTaskForceEngagementActionType;
+	}) => {
 		await submitAction({
-			input: { engagementId: engagement.id, cardId },
+			input: { engagementId: engagement.id, ...input },
 		});
 		reexecuteQuery({ requestPolicy: "network-only" });
 	};
@@ -177,10 +181,10 @@ export function CombatEngagementPanel({
 
 			<CombatTaskForceSummary engagement={engagement} />
 
-			<CombatPlayerHand 
-				ownParticipant={ownParticipant} 
-				canSubmit={canSubmit} 
-				onSubmit={handleSubmit} 
+			<CombatPlayerHand
+				ownParticipant={ownParticipant}
+				canSubmit={canSubmit}
+				onSubmit={handleSubmit}
 			/>
 
 			<CombatTimeline engagement={engagement} />

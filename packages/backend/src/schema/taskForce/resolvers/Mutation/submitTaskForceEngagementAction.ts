@@ -13,6 +13,7 @@ import type { GameEvent } from "../../../../events.js";
 import { emitGameEvent } from "../../../../workers.ts";
 import type { MutationResolvers } from "../../../types.generated.js";
 import {
+	type CardId,
 	consumeCardFromHand,
 	draw,
 	parseCardId,
@@ -20,6 +21,90 @@ import {
 	requireCombatState,
 	resolveCard,
 } from "../combatRuntime.ts";
+
+type ParsedSubmission =
+	| { type: "retreat"; submittedCardId: "retreat" }
+	| { type: "card"; submittedCardId: Exclude<CardId, "retreat"> };
+
+function parseSubmissionInput(input: {
+	action?: string | null;
+	cardId?: string | null;
+}): ParsedSubmission {
+	const hasAction = input.action !== null && input.action !== undefined;
+	const hasCardId = input.cardId !== null && input.cardId !== undefined;
+
+	if (hasAction === hasCardId) {
+		throw createGraphQLError("Provide exactly one of action or cardId", {
+			extensions: { code: "BAD_USER_INPUT" },
+		});
+	}
+
+	if (hasAction) {
+		if (input.action !== "RETREAT") {
+			throw createGraphQLError("Action is not allowed", {
+				extensions: {
+					code: "BAD_USER_INPUT",
+					action: input.action,
+				},
+			});
+		}
+
+		return { type: "retreat", submittedCardId: "retreat" };
+	}
+
+	return {
+		type: "card",
+		submittedCardId: parseCardId(
+			input.cardId as Exclude<typeof input.cardId, null | undefined>,
+		) as Exclude<CardId, "retreat">,
+	};
+}
+
+function resolveWinnerTaskForceId({
+	stateA,
+	stateB,
+	submittedCardIdA,
+	submittedCardIdB,
+}: {
+	stateA: { taskForceId: string; hp: number };
+	stateB: { taskForceId: string; hp: number };
+	submittedCardIdA: CardId;
+	submittedCardIdB: CardId;
+}): string | null {
+	if (stateA.hp <= 0 && stateB.hp <= 0) {
+		return null;
+	}
+
+	if (stateA.hp <= 0) {
+		return stateB.taskForceId;
+	}
+
+	if (stateB.hp <= 0) {
+		return stateA.taskForceId;
+	}
+
+	if (submittedCardIdA === "retreat" && submittedCardIdB === "retreat") {
+		return null;
+	}
+
+	if (submittedCardIdA === "retreat") {
+		return stateB.taskForceId;
+	}
+
+	if (submittedCardIdB === "retreat") {
+		return stateA.taskForceId;
+	}
+
+	if (stateA.hp > stateB.hp) {
+		return stateA.taskForceId;
+	}
+
+	if (stateB.hp > stateA.hp) {
+		return stateB.taskForceId;
+	}
+
+	return null;
+}
 
 export const submitTaskForceEngagementAction: NonNullable<
 	MutationResolvers["submitTaskForceEngagementAction"]
@@ -62,7 +147,8 @@ export const submitTaskForceEngagementAction: NonNullable<
 			});
 		}
 
-		const submittedCardId = parseCardId(input.cardId);
+		const submission = parseSubmissionInput(input);
+		const submittedCardId = submission.submittedCardId;
 		const stateA = requireCombatState(engagement.stateA);
 		const stateB = requireCombatState(engagement.stateB);
 		const roundLog = (
@@ -84,7 +170,9 @@ export const submitTaskForceEngagementAction: NonNullable<
 			});
 		}
 
-		consumeCardFromHand(ownState, submittedCardId);
+		if (submission.type === "card") {
+			consumeCardFromHand(ownState, submission.submittedCardId);
+		}
 
 		let nextSubmittedCardIdA = submitterIsA
 			? submittedCardId
@@ -108,30 +196,33 @@ export const submitTaskForceEngagementAction: NonNullable<
 		];
 
 		if (nextSubmittedCardIdA && nextSubmittedCardIdB) {
+			const submittedCardIdA = parseCardId(nextSubmittedCardIdA);
+			const submittedCardIdB = parseCardId(nextSubmittedCardIdB);
+
 			const resolutionOrder =
 				stateA.taskForceId.localeCompare(stateB.taskForceId) <= 0
 					? [
 							{
 								attacker: stateA,
 								target: stateB,
-								cardId: parseCardId(nextSubmittedCardIdA),
+								cardId: submittedCardIdA,
 							},
 							{
 								attacker: stateB,
 								target: stateA,
-								cardId: parseCardId(nextSubmittedCardIdB),
+								cardId: submittedCardIdB,
 							},
 						]
 					: [
 							{
 								attacker: stateB,
 								target: stateA,
-								cardId: parseCardId(nextSubmittedCardIdB),
+								cardId: submittedCardIdB,
 							},
 							{
 								attacker: stateA,
 								target: stateB,
-								cardId: parseCardId(nextSubmittedCardIdA),
+								cardId: submittedCardIdA,
 							},
 						];
 
@@ -158,10 +249,11 @@ export const submitTaskForceEngagementAction: NonNullable<
 				});
 			}
 
-			nextSubmittedCardIdA = null;
-			nextSubmittedCardIdB = null;
-
-			const combatResolved = stateA.hp <= 0 || stateB.hp <= 0;
+			const combatResolved =
+				stateA.hp <= 0 ||
+				stateB.hp <= 0 ||
+				nextSubmittedCardIdA === "retreat" ||
+				nextSubmittedCardIdB === "retreat";
 
 			emittedEvents.push({
 				type: "taskForceEngagement:roundResolved",
@@ -176,11 +268,16 @@ export const submitTaskForceEngagementAction: NonNullable<
 					.from(games)
 					.where(eq(games.id, engagement.gameId));
 				nextResolvedAtTurn = game?.turnNumber ?? engagement.startedAtTurn;
-				if (stateA.hp > stateB.hp) {
-					nextWinnerTaskForceId = stateA.taskForceId;
-				} else if (stateB.hp > stateA.hp) {
-					nextWinnerTaskForceId = stateB.taskForceId;
-				}
+
+				nextWinnerTaskForceId = resolveWinnerTaskForceId({
+					stateA,
+					stateB,
+					submittedCardIdA,
+					submittedCardIdB,
+				});
+
+				nextSubmittedCardIdA = null;
+				nextSubmittedCardIdB = null;
 
 				emittedEvents.push({
 					type: "taskForceEngagement:ended",

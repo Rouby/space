@@ -13,6 +13,8 @@ import {
 	taskForces,
 	turnReports,
 	visibility,
+	taskForceEngagements,
+	or,
 } from "@space/data/schema";
 import type { GameEvent } from "../../../backend/src/events.ts";
 import { gameId } from "../config.ts";
@@ -184,6 +186,49 @@ export async function tick() {
 		const consolidatedTaskForceConstructionChanges =
 			taskForceConstructionChanges;
 
+		const activeAndResolvedEngagements = await tx
+			.select({
+				id: taskForceEngagements.id,
+				phase: taskForceEngagements.phase,
+				ownerIdA: taskForceEngagements.ownerIdA,
+				ownerIdB: taskForceEngagements.ownerIdB,
+				taskForceIdA: taskForceEngagements.taskForceIdA,
+				taskForceIdB: taskForceEngagements.taskForceIdB,
+				winnerTaskForceId: taskForceEngagements.winnerTaskForceId,
+				position: taskForceEngagements.position,
+				resolvedAtTurn: taskForceEngagements.resolvedAtTurn,
+			})
+			.from(taskForceEngagements)
+			.where(
+				and(
+					eq(taskForceEngagements.gameId, gameId),
+					sql`${taskForceEngagements.startedAtTurn} <= ${ctx.turn}`,
+					or(
+						isNull(taskForceEngagements.resolvedAtTurn),
+						eq(taskForceEngagements.resolvedAtTurn, ctx.turn),
+					),
+				),
+			);
+
+		const allGameTaskForces = await tx
+			.select({ id: taskForces.id, name: taskForces.name })
+			.from(taskForces)
+			.where(eq(taskForces.gameId, gameId));
+		const taskForceNames = new Map(allGameTaskForces.map((tf) => [tf.id, tf.name]));
+
+		const engagementChanges = activeAndResolvedEngagements.map((e) => ({
+			engagementId: e.id,
+			status: e.resolvedAtTurn === ctx.turn ? ("resolved" as const) : ("unresolved" as const),
+			taskForceAId: e.taskForceIdA,
+			taskForceBId: e.taskForceIdB,
+			taskForceAName: taskForceNames.get(e.taskForceIdA) ?? "Unknown",
+			taskForceBName: taskForceNames.get(e.taskForceIdB) ?? "Unknown",
+			winnerTaskForceId: e.winnerTaskForceId,
+			location: e.position,
+			ownerIdA: e.ownerIdA,
+			ownerIdB: e.ownerIdB,
+		}));
+
 		const reportsToInsert = playersInGame.map((p) => {
 			const visibleSystemIds = new Set(
 				visibleSystemsPerPlayer
@@ -221,6 +266,12 @@ export async function tick() {
 								change.ownerId === p.userId &&
 								visibleSystemIds.has(change.starSystemId),
 						),
+					taskForceEngagements: engagementChanges
+						.filter(
+							(change) =>
+								change.ownerIdA === p.userId || change.ownerIdB === p.userId,
+						)
+						.map(({ ownerIdA, ownerIdB, ...rest }) => rest),
 				},
 			};
 		});

@@ -25,6 +25,18 @@ type TurnReport {
 	industryChanges: [TurnReportIndustryChange!]!
 	industrialProjectCompletions: [TurnReportIndustrialProjectCompletion!]!
 	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
+	taskForceEngagements: [TurnReportTaskForceEngagement!]!
+}
+
+type TurnReportTaskForceEngagement {
+	engagementId: ID!
+	status: String!
+	taskForceAId: ID!
+	taskForceBId: ID!
+	taskForceAName: String!
+	taskForceBName: String!
+	winnerTaskForceId: ID
+	location: Vector!
 }
 
 type TurnReportPopulationChange {

@@ -8,7 +8,10 @@ import {
 	Text,
 } from "@mantine/core";
 import { useState } from "react";
-import type { CombatEngagementPanelQuery } from "../../gql/graphql";
+import {
+	type CombatEngagementPanelQuery,
+	SubmitTaskForceEngagementActionType,
+} from "../../gql/graphql";
 import { CARD_DESCRIPTIONS, CARD_LABELS } from "./utils";
 
 type ParticipantType = NonNullable<
@@ -22,7 +25,10 @@ export function CombatPlayerHand({
 }: {
 	ownParticipant: ParticipantType;
 	canSubmit: boolean;
-	onSubmit: (cardId: string) => Promise<void>;
+	onSubmit: (input: {
+		cardId?: string;
+		action?: SubmitTaskForceEngagementActionType;
+	}) => Promise<void>;
 }) {
 	const [submittingCardId, setSubmittingCardId] = useState<string | null>(null);
 	const cardRenderCounts = new Map<string, number>();
@@ -48,7 +54,7 @@ export function CombatPlayerHand({
 								if (isDisabled || isSubmittingThis) return;
 								setSubmittingCardId(cardId);
 								try {
-									await onSubmit(cardId);
+									await onSubmit({ cardId });
 								} finally {
 									setSubmittingCardId(null);
 								}
@@ -166,11 +172,54 @@ export function CombatPlayerHand({
 					);
 				})}
 			</SimpleGrid>
+
+			<Box mt="md">
+				<Box
+					component="button"
+					onClick={async () => {
+						if (!canSubmit || submittingCardId) return;
+						setSubmittingCardId("retreat");
+						try {
+							await onSubmit({
+								action: SubmitTaskForceEngagementActionType.Retreat,
+							});
+						} finally {
+							setSubmittingCardId(null);
+						}
+					}}
+					style={{
+						cursor: !canSubmit ? "not-allowed" : "pointer",
+						opacity: !canSubmit ? 0.6 : 1,
+						width: "100%",
+						padding: "12px",
+						border: "1px solid #ff4d4d",
+						background: "rgba(255, 77, 77, 0.1)",
+						color: "#ff4d4d",
+						fontWeight: "bold",
+						borderRadius: "8px",
+						textAlign: "center",
+						transition: "all 0.2s ease",
+					}}
+					onMouseEnter={(e) => {
+						if (canSubmit)
+							e.currentTarget.style.background = "rgba(255, 77, 77, 0.2)";
+					}}
+					onMouseLeave={(e) => {
+						if (canSubmit)
+							e.currentTarget.style.background = "rgba(255, 77, 77, 0.1)";
+					}}
+				>
+					RETREAT
+				</Box>
+			</Box>
+
 			{ownParticipant.submittedCardId && (
 				<Text size="sm" c="dimmed">
 					Submitted:{" "}
-					{CARD_LABELS[ownParticipant.submittedCardId] ??
-						ownParticipant.submittedCardId}
+					{ownParticipant.submittedCardId === "retreat"
+						? "Retreat"
+						: (CARD_LABELS[ownParticipant.submittedCardId] ??
+							ownParticipant.submittedCardId)}
 				</Text>
 			)}
 		</Stack>

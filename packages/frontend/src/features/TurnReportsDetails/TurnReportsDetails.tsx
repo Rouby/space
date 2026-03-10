@@ -83,6 +83,16 @@ export function TurnReportsDetails() {
 							perTick
 							completed
 						}
+						taskForceEngagements {
+							engagementId
+							status
+							taskForceAId
+							taskForceBId
+							taskForceAName
+							taskForceBName
+							winnerTaskForceId
+							location
+						}
 					}
 				}
 			}
@@ -337,6 +347,60 @@ export function TurnReportsDetails() {
 													);
 												},
 											)}
+										</Table.Tbody>
+									</Table>
+								)}
+
+								<Divider my="xs" />
+
+								<Text size="sm" fw={500}>
+									Task Force Engagements
+								</Text>
+								{report.taskForceEngagements.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No task force engagements active or resolved this turn.
+									</Text>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Engagement</Table.Th>
+												<Table.Th>Location</Table.Th>
+												<Table.Th>Status</Table.Th>
+												<Table.Th>Winner</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.taskForceEngagements.map((engagement) => (
+												<Table.Tr key={engagement.engagementId}>
+													<Table.Td>
+														<Group gap="xs">
+															<Text fw={500}>{engagement.taskForceAName}</Text>
+															<Text size="xs" c="dimmed">vs</Text>
+															<Text fw={500}>{engagement.taskForceBName}</Text>
+														</Group>
+													</Table.Td>
+													<Table.Td c="dimmed">
+														({formatInteger(engagement.location.x)}, {formatInteger(engagement.location.y)})
+													</Table.Td>
+													<Table.Td
+														c={engagement.status === "resolved" ? "blue" : "yellow"}
+													>
+														{engagement.status === "resolved" ? "Resolved" : "Unresolved"}
+													</Table.Td>
+													<Table.Td>
+														{engagement.status === "resolved" ? (
+															engagement.winnerTaskForceId === engagement.taskForceAId
+																? engagement.taskForceAName
+																: engagement.winnerTaskForceId === engagement.taskForceBId
+																	? engagement.taskForceBName
+																	: "Draw"
+														) : (
+															<Text size="sm" c="dimmed">N/A</Text>
+														)}
+													</Table.Td>
+												</Table.Tr>
+											))}
 										</Table.Tbody>
 									</Table>
 								)}

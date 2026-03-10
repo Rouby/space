@@ -25,4 +25,7 @@ export const TurnReport: TurnReportResolvers = {
 	turnNumber: async (parent, _arg, _ctx) => {
 		return parent.turnNumber;
 	},
+	taskForceEngagements: async (parent, _arg, _ctx) => {
+		return parent.summary.taskForceEngagements || [];
+	},
 };

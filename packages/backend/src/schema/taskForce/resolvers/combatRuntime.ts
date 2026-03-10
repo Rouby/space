@@ -6,7 +6,8 @@ export type CardId =
 	| "emergency_repairs"
 	| "shield_pulse"
 	| "evasive_maneuver"
-	| "overcharge_barrage";
+	| "overcharge_barrage"
+	| "retreat";
 
 export type CombatState = {
 	taskForceId: string;
@@ -44,6 +45,9 @@ function isCardId(value: string): value is CardId {
 }
 
 export function parseCardId(value: string): CardId {
+	if (value === "retreat") {
+		return "retreat";
+	}
 	if (!isCardId(value)) {
 		throw createGraphQLError("Card is not allowed in MVP deck", {
 			extensions: {
@@ -148,6 +152,12 @@ export function resolveCard({
 	let effectType: "damage" | "buff" | "special" = "special";
 
 	switch (cardId) {
+		case "retreat": {
+			// Retreat doesn't do anything in terms of damage or buffs, but we want to log it as a special action
+			resolvedValue = 0;
+			effectType = "special";
+			break;
+		}
 		case "laser_burst": {
 			const raw = 2 + attacker.nextDamageBonus;
 			attacker.nextDamageBonus = 0;
