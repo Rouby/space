@@ -54,6 +54,7 @@ describe("setDevelopmentStance mutation", () => {
 				{},
 				{ starSystemId: "ss-1", stance: "industrialize" },
 				ctx as never,
+				{} as never,
 			),
 		).rejects.toMatchObject(
 			createGraphQLError(
@@ -106,6 +107,7 @@ describe("setDevelopmentStance mutation", () => {
 			{},
 			{ starSystemId: "ss-1", stance: "grow_population" },
 			ctx as never,
+			{} as never,
 		);
 
 		expect(values).toHaveBeenCalledWith(
@@ -157,6 +159,7 @@ describe("setDevelopmentStance mutation", () => {
 				{},
 				{ starSystemId: "ss-1", stance: "balance" },
 				ctx as never,
+				{} as never,
 			),
 		).rejects.toMatchObject(
 			createGraphQLError("Game has not started yet", {

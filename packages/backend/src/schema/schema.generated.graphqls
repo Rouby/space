@@ -62,6 +62,27 @@ type Game {
 	turnReports(limit: Int = 20): [TurnReport!]!
 }
 
+type IndustrialProject {
+	completedAtTurn: Int
+	completionIndustryBonus: Int!
+	etaTurns: Int!
+	id: ID!
+	industryPerTurn: Int!
+	projectType: IndustrialProjectType!
+	queuePosition: Int!
+	queuedAtTurn: Int!
+	startedAtTurn: Int
+	turnsRemaining: Int!
+	workDone: Int!
+	workRequired: Int!
+}
+
+enum IndustrialProjectType {
+	automation_hub
+	factory_expansion
+	orbital_foundry
+}
+
 type Mutation {
 	configureTaskForceCombatDeck(
 		input: ConfigureTaskForceCombatDeckInput!
@@ -79,6 +100,10 @@ type Mutation {
 		orders: [TaskForceOrderInput!]!
 		queue: Boolean
 	): TaskForce!
+	queueIndustrialProject(
+		projectType: IndustrialProjectType!
+		starSystemId: ID!
+	): StarSystem!
 	registerWithPassword(email: String!, name: String!, password: String!): User!
 	setDevelopmentStance(
 		stance: DevelopmentStance!
@@ -224,10 +249,12 @@ input ShipDesignInput {
 
 type StarSystem implements Positionable {
 	colonization: StarSystemColonization
+	completedIndustrialProjects: [IndustrialProject!]!
 	currentDevelopmentStance: DevelopmentStance
 	discoveries: [Discovery!]
 	discoveryProgress: Float
 	id: ID!
+	industrialProjects: [IndustrialProject!]!
 	industry: Int
 	isVisible: Boolean!
 	lastUpdate: DateTime
@@ -328,10 +355,17 @@ type TurnEndedEvent {
 type TurnReport {
 	createdAt: DateTime!
 	id: ID!
+	industrialProjectCompletions: [TurnReportIndustrialProjectCompletion!]!
 	industryChanges: [TurnReportIndustryChange!]!
 	miningChanges: [TurnReportMiningChange!]!
 	populationChanges: [TurnReportPopulationChange!]!
 	turnNumber: Int!
+}
+
+type TurnReportIndustrialProjectCompletion {
+	industryBonus: Int!
+	projectType: IndustrialProjectType!
+	starSystem: StarSystem!
 }
 
 type TurnReportIndustryChange {

@@ -3,6 +3,8 @@ type StarSystem implements Positionable {
 	name: String!
 	position: Vector!
 	owner: Player
+	industrialProjects: [IndustrialProject!]!
+	completedIndustrialProjects: [IndustrialProject!]!
 	currentDevelopmentStance: DevelopmentStance
 	nextTurnStanceProjection: DevelopmentStanceProjection
 	colonization: StarSystemColonization
@@ -53,6 +55,27 @@ type DevelopmentStanceProjection {
 	populationDelta: BigInt!
 }
 
+enum IndustrialProjectType {
+	factory_expansion
+	automation_hub
+	orbital_foundry
+}
+
+type IndustrialProject {
+	id: ID!
+	projectType: IndustrialProjectType!
+	industryPerTurn: Int!
+	workRequired: Int!
+	workDone: Int!
+	completionIndustryBonus: Int!
+	queuePosition: Int!
+	queuedAtTurn: Int!
+	startedAtTurn: Int
+	completedAtTurn: Int
+	turnsRemaining: Int!
+	etaTurns: Int!
+}
+
 extend type Game {
 	starSystems: [StarSystem!]!
 }
@@ -66,5 +89,9 @@ extend type Mutation {
 	setDevelopmentStance(
 		starSystemId: ID!
 		stance: DevelopmentStance!
+	): StarSystem!
+	queueIndustrialProject(
+		starSystemId: ID!
+		projectType: IndustrialProjectType!
 	): StarSystem!
 }

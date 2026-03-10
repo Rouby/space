@@ -16,6 +16,14 @@ import { games } from "./games.ts";
 import { resources } from "./resources.ts";
 import { users } from "./users.ts";
 
+export const industrialProjectTypes = [
+	"factory_expansion",
+	"automation_hub",
+	"orbital_foundry",
+] as const;
+
+export type IndustrialProjectType = (typeof industrialProjectTypes)[number];
+
 export const starSystems = pgTable("starSystems", {
 	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
 	gameId: uuid()
@@ -35,10 +43,63 @@ export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({
 	game: one(games, { fields: [starSystems.gameId], references: [games.id] }),
 	owner: one(users, { fields: [starSystems.ownerId], references: [users.id] }),
 	developmentStances: many(starSystemDevelopmentStances),
+	industrialProjects: many(starSystemIndustrialProjects),
 	resourceDiscoveries: many(starSystemResourceDiscoveries),
 	resourceDepots: many(starSystemResourceDepots),
 	populations: many(starSystemPopulations),
 }));
+
+export const starSystemIndustrialProjects = pgTable(
+	"starSystemIndustrialProjects",
+	{
+		id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+		gameId: uuid()
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
+		starSystemId: uuid()
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "cascade" }),
+		playerId: uuid()
+			.notNull()
+			.references(() => users.id, { onDelete: "restrict" }),
+		projectType: varchar({
+			length: 64,
+			enum: industrialProjectTypes,
+		}).notNull(),
+		industryPerTurn: integer().notNull(),
+		workRequired: integer().notNull(),
+		workDone: integer().notNull().default(0),
+		completionIndustryBonus: integer().notNull(),
+		queuePosition: integer().notNull(),
+		queuedAtTurn: integer().notNull(),
+		startedAtTurn: integer(),
+		completedAtTurn: integer(),
+		createdAt: timestamp().notNull().defaultNow(),
+	},
+	(table) => [
+		index().on(table.gameId, table.starSystemId, table.queuePosition),
+		index().on(table.gameId, table.starSystemId, table.completedAtTurn),
+		index().on(table.playerId, table.queuedAtTurn),
+	],
+);
+
+export const starSystemIndustrialProjectsRelations = relations(
+	starSystemIndustrialProjects,
+	({ one }) => ({
+		game: one(games, {
+			fields: [starSystemIndustrialProjects.gameId],
+			references: [games.id],
+		}),
+		starSystem: one(starSystems, {
+			fields: [starSystemIndustrialProjects.starSystemId],
+			references: [starSystems.id],
+		}),
+		player: one(users, {
+			fields: [starSystemIndustrialProjects.playerId],
+			references: [users.id],
+		}),
+	}),
+);
 
 export const starSystemDevelopmentStances = pgTable(
 	"starSystemDevelopmentStances",

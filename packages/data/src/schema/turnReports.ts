@@ -1,6 +1,5 @@
 import { relations, sql } from "drizzle-orm";
 import {
-	foreignKey,
 	index,
 	integer,
 	jsonb,
@@ -8,7 +7,7 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { games, players } from "./games.ts";
+import { games } from "./games.ts";
 import { users } from "./users.ts";
 
 export type TurnReportPopulationChange = {
@@ -25,6 +24,12 @@ export type TurnReportIndustryChange = {
 	industryUtilized: number;
 };
 
+export type TurnReportIndustrialProjectCompletion = {
+	starSystemId: string;
+	projectType: string;
+	industryBonus: number;
+};
+
 export type TurnReportMiningChange = {
 	starSystemId: string;
 	resourceId: string;
@@ -37,6 +42,7 @@ export type TurnReportSummary = {
 	populationChanges: TurnReportPopulationChange[];
 	miningChanges: TurnReportMiningChange[];
 	industryChanges: TurnReportIndustryChange[];
+	industrialProjectCompletions: TurnReportIndustrialProjectCompletion[];
 };
 
 export const turnReports = pgTable(
@@ -46,7 +52,9 @@ export const turnReports = pgTable(
 		gameId: uuid()
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
-		ownerId: uuid().notNull().references(() => users.id, { onDelete: "restrict" }),
+		ownerId: uuid()
+			.notNull()
+			.references(() => users.id, { onDelete: "restrict" }),
 		turnNumber: integer().notNull(),
 		summary: jsonb().$type<TurnReportSummary>().notNull(),
 		createdAt: timestamp().notNull().defaultNow(),

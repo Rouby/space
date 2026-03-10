@@ -15,6 +15,7 @@ import    { loginWithPassword as Mutation_loginWithPassword } from './user/resol
 import    { loginWithRefreshToken as Mutation_loginWithRefreshToken } from './user/resolvers/Mutation/loginWithRefreshToken.js';
 import    { makeDilemmaChoice as Mutation_makeDilemmaChoice } from './dilemma/resolvers/Mutation/makeDilemmaChoice.js';
 import    { orderTaskForce as Mutation_orderTaskForce } from './taskForce/resolvers/Mutation/orderTaskForce.js';
+import    { queueIndustrialProject as Mutation_queueIndustrialProject } from './starSystem/resolvers/Mutation/queueIndustrialProject.js';
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
 import    { setDevelopmentStance as Mutation_setDevelopmentStance } from './starSystem/resolvers/Mutation/setDevelopmentStance.js';
 import    { startColonization as Mutation_startColonization } from './starSystem/resolvers/Mutation/startColonization.js';
@@ -34,6 +35,7 @@ import    { Game as shipComponent_Game } from './shipComponent/resolvers/Game.js
 import    { Game as shipDesign_Game } from './shipDesign/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
 import    { Game as taskForce_Game } from './taskForce/resolvers/Game.js';
+import    { IndustrialProject } from './starSystem/resolvers/IndustrialProject.js';
 import    { NewTurnCalculatedEvent } from './game/resolvers/NewTurnCalculatedEvent.js';
 import    { Player as game_Player } from './game/resolvers/Player.js';
 import    { Player as resource_Player } from './resource/resolvers/Player.js';
@@ -60,6 +62,7 @@ import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOr
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TurnEndedEvent } from './game/resolvers/TurnEndedEvent.js';
 import    { TurnReport } from './game/resolvers/TurnReport.js';
+import    { TurnReportIndustrialProjectCompletion } from './game/resolvers/TurnReportIndustrialProjectCompletion.js';
 import    { TurnReportIndustryChange } from './game/resolvers/TurnReportIndustryChange.js';
 import    { TurnReportMiningChange } from './game/resolvers/TurnReportMiningChange.js';
 import    { TurnReportPopulationChange } from './game/resolvers/TurnReportPopulationChange.js';
@@ -76,12 +79,13 @@ import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.j
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem },
-      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,registerWithPassword: Mutation_registerWithPassword,setDevelopmentStance: Mutation_setDevelopmentStance,startColonization: Mutation_startColonization,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setDevelopmentStance: Mutation_setDevelopmentStance,startColonization: Mutation_startColonization,startGame: Mutation_startGame,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem },
       DevelopmentStanceProjection: DevelopmentStanceProjection,
 Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,
 Game: { ...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game,...taskForce_Game },
+IndustrialProject: IndustrialProject,
 NewTurnCalculatedEvent: NewTurnCalculatedEvent,
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
 Population: Population,
@@ -104,6 +108,7 @@ TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TurnEndedEvent: TurnEndedEvent,
 TurnReport: TurnReport,
+TurnReportIndustrialProjectCompletion: TurnReportIndustrialProjectCompletion,
 TurnReportIndustryChange: TurnReportIndustryChange,
 TurnReportMiningChange: TurnReportMiningChange,
 TurnReportPopulationChange: TurnReportPopulationChange,

@@ -8,7 +8,10 @@ export type IndustryTurnChange = {
 	industryUtilized: number;
 };
 
-export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): Promise<void> {
+export async function tickTaskForceConstruction(
+	tx: Transaction,
+	ctx: Context,
+): Promise<void> {
 	const allTaskForces = await tx
 		.select({
 			id: taskForces.id,
@@ -30,7 +33,10 @@ export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): 
 
 	for (const system of systemsWithIndustry) {
 		const forcesInSystem = allTaskForces.filter(
-			(tf) => tf.constructionStarSystemId === system.id && Number(tf.constructionTotal ?? "0") > Number(tf.constructionDone ?? "0")
+			(tf) =>
+				tf.constructionStarSystemId === system.id &&
+				Number(tf.constructionTotal ?? "0") >
+					Number(tf.constructionDone ?? "0"),
 		);
 
 		if (forcesInSystem.length === 0) {
@@ -42,7 +48,7 @@ export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): 
 			continue;
 		}
 
-		let availableIndustry = system.industry;
+		const availableIndustry = system.industry;
 		let utilizedIndustry = 0;
 
 		const perShip = Math.floor(availableIndustry / forcesInSystem.length);
@@ -51,7 +57,7 @@ export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): 
 		for (const taskForce of forcesInSystem) {
 			const done = Number(taskForce.constructionDone ?? "0");
 			const total = Number(taskForce.constructionTotal ?? "0");
-			
+
 			let industryApplied = perShip + (remainder > 0 ? 1 : 0);
 			if (remainder > 0) remainder--;
 
@@ -76,14 +82,16 @@ export async function tickTaskForceConstruction(tx: Transaction, ctx: Context): 
 					),
 				);
 
-			ctx.postMessage({
-				type: "taskForceCommision:progress",
-				id: taskForce.id,
-				starSystemId: taskForce.constructionStarSystemId!,
-				constructionDone: nextDone,
-				constructionTotal: total,
-				constructionPerTick: industryApplied,
-			});
+			if (taskForce.constructionStarSystemId) {
+				ctx.postMessage({
+					type: "taskForceCommision:progress",
+					id: taskForce.id,
+					starSystemId: taskForce.constructionStarSystemId,
+					constructionDone: nextDone,
+					constructionTotal: total,
+					constructionPerTick: industryApplied,
+				});
+			}
 		}
 
 		ctx.addIndustryChange({

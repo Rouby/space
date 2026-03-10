@@ -136,12 +136,46 @@ export const trackStarSystem: NonNullable<
 			}),
 		);
 
+		const industrialProjectProgressUpdates = ctx.fromGameEvents(ss.gameId).pipe(
+			filter((event) => event.type === "starSystem:industrialProjectProgress"),
+			filter((event) => event.starSystemId === starSystemId),
+			map((_event) => ({
+				__typename: "StarSystemUpdateEvent" as const,
+				subject: {
+					__typename: "StarSystem" as const,
+					...ss,
+				},
+			})),
+		);
+
+		const industrialProjectCompletedUpdates = ctx
+			.fromGameEvents(ss.gameId)
+			.pipe(
+				filter(
+					(event) => event.type === "starSystem:industrialProjectCompleted",
+				),
+				filter((event) => event.starSystemId === starSystemId),
+				map((event) => ({
+					__typename: "StarSystemUpdateEvent" as const,
+					subject: {
+						__typename: "StarSystem" as const,
+						...ss,
+						industry: event.newIndustryTotal,
+					},
+				})),
+				tap((event) => {
+					ss.industry = event.subject.industry;
+				}),
+			);
+
 		return toAsyncIterable(
 			merge(
 				thresholdDiscoveryEvents,
 				thresholdPopulationChangeEvents,
 				colonizationUpdates,
 				ownerChangedUpdates,
+				industrialProjectProgressUpdates,
+				industrialProjectCompletedUpdates,
 				commisionUpdates,
 			).pipe(
 				mergeMap(async (event) => {

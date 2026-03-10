@@ -21,6 +21,7 @@ export const client = createClient({
 			keys: {
 				ResourceCost: () => null,
 				StarSystemColonization: () => null,
+				TurnReportIndustrialProjectCompletion: () => null,
 				TurnReportMiningChange: () => null,
 				TurnReportPopulationChange: () => null,
 			},

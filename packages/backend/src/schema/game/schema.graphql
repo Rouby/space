@@ -23,6 +23,7 @@ type TurnReport {
 	populationChanges: [TurnReportPopulationChange!]!
 	miningChanges: [TurnReportMiningChange!]!
 	industryChanges: [TurnReportIndustryChange!]!
+	industrialProjectCompletions: [TurnReportIndustrialProjectCompletion!]!
 }
 
 type TurnReportPopulationChange {
@@ -45,6 +46,12 @@ type TurnReportMiningChange {
 	mined: Float!
 	remainingDeposits: Float!
 	depotQuantity: Float!
+}
+
+type TurnReportIndustrialProjectCompletion {
+	starSystem: StarSystem!
+	projectType: IndustrialProjectType!
+	industryBonus: Int!
 }
 
 type Player {

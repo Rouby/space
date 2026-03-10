@@ -1,3 +1,4 @@
+import type { MutationResolvers } from "./../../../types.generated.js";
 import {
 	developmentStances,
 	parseDevelopmentStance,
@@ -14,7 +15,9 @@ import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { DevelopmentStance } from "../../../types.generated.ts";
 
-export const setDevelopmentStance = async (
+export const setDevelopmentStance: NonNullable<
+	MutationResolvers["setDevelopmentStance"]
+> = async (
 	_parent: unknown,
 	{ starSystemId, stance }: { starSystemId: string; stance: DevelopmentStance },
 	ctx: Context,

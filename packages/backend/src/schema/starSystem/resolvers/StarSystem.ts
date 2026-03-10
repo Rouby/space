@@ -9,17 +9,41 @@ import {
 	players,
 	starSystemColonizations,
 	starSystemDevelopmentStances,
+	starSystemIndustrialProjects,
 	starSystemPopulations,
 	starSystemResourceDiscoveries,
 } from "@space/data/schema";
+import { desc } from "drizzle-orm";
 import type { StarSystemResolvers } from "./../../types.generated.js";
+
+function withProjectEta<
+	T extends { workRequired: number; workDone: number; industryPerTurn: number },
+>(projects: T[]) {
+	let cumulativeTurns = 0;
+
+	return projects.map((project) => {
+		const workLeft = Math.max(project.workRequired - project.workDone, 0);
+		const turnsRemaining = Math.ceil(
+			workLeft / Math.max(project.industryPerTurn, 1),
+		);
+		cumulativeTurns += turnsRemaining;
+
+		return {
+			...project,
+			turnsRemaining,
+			etaTurns: cumulativeTurns,
+		};
+	});
+}
 export const StarSystem: Pick<
 	StarSystemResolvers,
 	| "colonization"
+	| "completedIndustrialProjects"
 	| "currentDevelopmentStance"
 	| "discoveries"
 	| "discoveryProgress"
 	| "id"
+	| "industrialProjects"
 	| "industry"
 	| "isVisible"
 	| "lastUpdate"
@@ -97,6 +121,53 @@ export const StarSystem: Pick<
 	},
 	industry: async (parent, _arg, _ctx) => {
 		return parent.industry;
+	},
+	industrialProjects: async (parent, _arg, ctx) => {
+		if (parent.industry === null) {
+			return [];
+		}
+
+		const projects =
+			await ctx.drizzle.query.starSystemIndustrialProjects.findMany({
+				where: and(
+					eq(starSystemIndustrialProjects.starSystemId, parent.id),
+					eq(starSystemIndustrialProjects.gameId, parent.gameId),
+				),
+				orderBy: [starSystemIndustrialProjects.queuePosition],
+			});
+
+		const activeProjects = projects.filter(
+			(project) => project.completedAtTurn === null,
+		);
+		return withProjectEta(activeProjects);
+	},
+	completedIndustrialProjects: async (parent, _arg, ctx) => {
+		if (parent.industry === null) {
+			return [];
+		}
+
+		const completedProjects =
+			await ctx.drizzle.query.starSystemIndustrialProjects.findMany({
+				where: and(
+					eq(starSystemIndustrialProjects.starSystemId, parent.id),
+					eq(starSystemIndustrialProjects.gameId, parent.gameId),
+				),
+				orderBy: [
+					desc(starSystemIndustrialProjects.completedAtTurn),
+					desc(starSystemIndustrialProjects.queuePosition),
+				],
+				limit: 5,
+			});
+
+		const finished = completedProjects.filter(
+			(project) => project.completedAtTurn !== null,
+		);
+
+		return finished.map((project) => ({
+			...project,
+			turnsRemaining: 0,
+			etaTurns: 0,
+		}));
 	},
 	currentDevelopmentStance: async (parent, _arg, ctx) => {
 		if (!ctx.userId || !parent.ownerId || parent.ownerId !== ctx.userId) {

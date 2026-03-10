@@ -1,6 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
-import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper } from './game/schema.mappers.js';
+import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper } from './game/schema.mappers.js';
 import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper, StarSystemColonizationMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
@@ -97,6 +97,27 @@ export type GameturnReportsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type IndustrialProject = {
+  __typename?: 'IndustrialProject';
+  completedAtTurn?: Maybe<Scalars['Int']['output']>;
+  completionIndustryBonus: Scalars['Int']['output'];
+  etaTurns: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  industryPerTurn: Scalars['Int']['output'];
+  projectType: IndustrialProjectType;
+  queuePosition: Scalars['Int']['output'];
+  queuedAtTurn: Scalars['Int']['output'];
+  startedAtTurn?: Maybe<Scalars['Int']['output']>;
+  turnsRemaining: Scalars['Int']['output'];
+  workDone: Scalars['Int']['output'];
+  workRequired: Scalars['Int']['output'];
+};
+
+export type IndustrialProjectType =
+  | 'automation_hub'
+  | 'factory_expansion'
+  | 'orbital_foundry';
+
 export type Mutation = {
   __typename?: 'Mutation';
   configureTaskForceCombatDeck: TaskForce;
@@ -109,6 +130,7 @@ export type Mutation = {
   loginWithRefreshToken: User;
   makeDilemmaChoice: Dilemma;
   orderTaskForce: TaskForce;
+  queueIndustrialProject: StarSystem;
   registerWithPassword: User;
   setDevelopmentStance: StarSystem;
   startColonization: StarSystem;
@@ -166,6 +188,12 @@ export type MutationorderTaskForceArgs = {
   id: Scalars['ID']['input'];
   orders: Array<TaskForceOrderInput>;
   queue?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationqueueIndustrialProjectArgs = {
+  projectType: IndustrialProjectType;
+  starSystemId: Scalars['ID']['input'];
 };
 
 
@@ -367,10 +395,12 @@ export type ShipDesignInput = {
 export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
   colonization?: Maybe<StarSystemColonization>;
+  completedIndustrialProjects: Array<IndustrialProject>;
   currentDevelopmentStance?: Maybe<DevelopmentStance>;
   discoveries?: Maybe<Array<Discovery>>;
   discoveryProgress?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
+  industrialProjects: Array<IndustrialProject>;
   industry?: Maybe<Scalars['Int']['output']>;
   isVisible: Scalars['Boolean']['output'];
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
@@ -490,10 +520,18 @@ export type TurnReport = {
   __typename?: 'TurnReport';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  industrialProjectCompletions: Array<TurnReportIndustrialProjectCompletion>;
   industryChanges: Array<TurnReportIndustryChange>;
   miningChanges: Array<TurnReportMiningChange>;
   populationChanges: Array<TurnReportPopulationChange>;
   turnNumber: Scalars['Int']['output'];
+};
+
+export type TurnReportIndustrialProjectCompletion = {
+  __typename?: 'TurnReportIndustrialProjectCompletion';
+  industryBonus: Scalars['Int']['output'];
+  projectType: IndustrialProjectType;
+  starSystem: StarSystem;
 };
 
 export type TurnReportIndustryChange = {
@@ -645,6 +683,8 @@ export type ResolversTypes = {
   DilemmaChoice: ResolverTypeWrapper<DilemmaChoice>;
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
+  IndustrialProject: ResolverTypeWrapper<Omit<IndustrialProject, 'projectType'> & { projectType: ResolversTypes['IndustrialProjectType'] }>;
+  IndustrialProjectType: ResolverTypeWrapper<'factory_expansion' | 'automation_hub' | 'orbital_foundry'>;
   Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
@@ -684,6 +724,7 @@ export type ResolversTypes = {
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   TurnEndedEvent: ResolverTypeWrapper<Omit<TurnEndedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   TurnReport: ResolverTypeWrapper<TurnReportMapper>;
+  TurnReportIndustrialProjectCompletion: ResolverTypeWrapper<TurnReportIndustrialProjectCompletionMapper>;
   TurnReportIndustryChange: ResolverTypeWrapper<TurnReportIndustryChangeMapper>;
   TurnReportMiningChange: ResolverTypeWrapper<TurnReportMiningChangeMapper>;
   TurnReportPopulationChange: ResolverTypeWrapper<TurnReportPopulationChangeMapper>;
@@ -709,6 +750,7 @@ export type ResolversParentTypes = {
   DilemmaChoice: DilemmaChoice;
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
+  IndustrialProject: IndustrialProject;
   Mutation: {};
   Boolean: Scalars['Boolean']['output'];
   NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
@@ -747,6 +789,7 @@ export type ResolversParentTypes = {
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   TurnEndedEvent: Omit<TurnEndedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   TurnReport: TurnReportMapper;
+  TurnReportIndustrialProjectCompletion: TurnReportIndustrialProjectCompletionMapper;
   TurnReportIndustryChange: TurnReportIndustryChangeMapper;
   TurnReportMiningChange: TurnReportMiningChangeMapper;
   TurnReportPopulationChange: TurnReportPopulationChangeMapper;
@@ -816,6 +859,24 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type IndustrialProjectResolvers<ContextType = Context, ParentType extends ResolversParentTypes['IndustrialProject'] = ResolversParentTypes['IndustrialProject']> = {
+  completedAtTurn?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  completionIndustryBonus?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  etaTurns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  industryPerTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  projectType?: Resolver<ResolversTypes['IndustrialProjectType'], ParentType, ContextType>;
+  queuePosition?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  queuedAtTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  startedAtTurn?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  turnsRemaining?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  workDone?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  workRequired?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_hub?: any, factory_expansion?: any, orbital_foundry?: any }, ResolversTypes['IndustrialProjectType']>;
+
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   configureTaskForceCombatDeck?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconfigureTaskForceCombatDeckArgs, 'input'>>;
   constructTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconstructTaskForceArgs, 'input'>>;
@@ -827,6 +888,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   loginWithRefreshToken?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   makeDilemmaChoice?: Resolver<ResolversTypes['Dilemma'], ParentType, ContextType, RequireFields<MutationmakeDilemmaChoiceArgs, 'choiceId' | 'dilemmaId'>>;
   orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
+  queueIndustrialProject?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationqueueIndustrialProjectArgs, 'projectType' | 'starSystemId'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
   startColonization?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationstartColonizationArgs, 'starSystemId'>>;
@@ -974,10 +1036,12 @@ export type ShipDesignComponentResolvers<ContextType = Context, ParentType exten
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
   colonization?: Resolver<Maybe<ResolversTypes['StarSystemColonization']>, ParentType, ContextType>;
+  completedIndustrialProjects?: Resolver<Array<ResolversTypes['IndustrialProject']>, ParentType, ContextType>;
   currentDevelopmentStance?: Resolver<Maybe<ResolversTypes['DevelopmentStance']>, ParentType, ContextType>;
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
   discoveryProgress?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  industrialProjects?: Resolver<Array<ResolversTypes['IndustrialProject']>, ParentType, ContextType>;
   industry?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -1071,10 +1135,18 @@ export type TurnEndedEventResolvers<ContextType = Context, ParentType extends Re
 export type TurnReportResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReport'] = ResolversParentTypes['TurnReport']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  industrialProjectCompletions?: Resolver<Array<ResolversTypes['TurnReportIndustrialProjectCompletion']>, ParentType, ContextType>;
   industryChanges?: Resolver<Array<ResolversTypes['TurnReportIndustryChange']>, ParentType, ContextType>;
   miningChanges?: Resolver<Array<ResolversTypes['TurnReportMiningChange']>, ParentType, ContextType>;
   populationChanges?: Resolver<Array<ResolversTypes['TurnReportPopulationChange']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TurnReportIndustrialProjectCompletionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportIndustrialProjectCompletion'] = ResolversParentTypes['TurnReportIndustrialProjectCompletion']> = {
+  industryBonus?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  projectType?: Resolver<ResolversTypes['IndustrialProjectType'], ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1130,6 +1202,8 @@ export type Resolvers<ContextType = Context> = {
   DilemmaChoice?: DilemmaChoiceResolvers<ContextType>;
   Discovery?: DiscoveryResolvers<ContextType>;
   Game?: GameResolvers<ContextType>;
+  IndustrialProject?: IndustrialProjectResolvers<ContextType>;
+  IndustrialProjectType?: IndustrialProjectTypeResolvers;
   Mutation?: MutationResolvers<ContextType>;
   NewTurnCalculatedEvent?: NewTurnCalculatedEventResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
@@ -1162,6 +1236,7 @@ export type Resolvers<ContextType = Context> = {
   TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;
   TurnEndedEvent?: TurnEndedEventResolvers<ContextType>;
   TurnReport?: TurnReportResolvers<ContextType>;
+  TurnReportIndustrialProjectCompletion?: TurnReportIndustrialProjectCompletionResolvers<ContextType>;
   TurnReportIndustryChange?: TurnReportIndustryChangeResolvers<ContextType>;
   TurnReportMiningChange?: TurnReportMiningChangeResolvers<ContextType>;
   TurnReportPopulationChange?: TurnReportPopulationChangeResolvers<ContextType>;

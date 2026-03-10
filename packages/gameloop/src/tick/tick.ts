@@ -18,6 +18,8 @@ import { drizzle } from "../db.ts";
 import { tickColonization } from "./colonization.ts";
 import { tickDevelopmentStances } from "./developmentStance.ts";
 import { tickDiscoveries } from "./discoveries.ts";
+import type { IndustrialProjectCompletionChange } from "./industrialProjects.ts";
+import { tickIndustrialProjects } from "./industrialProjects.ts";
 import type { MiningTurnChange } from "./starSystemEconomy.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import type { PopulationTurnChange } from "./starSystemPopulation.ts";
@@ -37,6 +39,10 @@ export type Context = {
 	addPopulationChange: (change: PopulationTurnChange) => void;
 	addMiningChange: (change: MiningTurnChange) => void;
 	addIndustryChange: (change: IndustryTurnChange) => void;
+	getIndustryUtilized?: (starSystemId: string) => number;
+	addIndustrialProjectCompletion?: (
+		change: IndustrialProjectCompletionChange,
+	) => void;
 };
 
 export async function tick() {
@@ -44,6 +50,7 @@ export async function tick() {
 	const populationChanges: PopulationTurnChange[] = [];
 	const miningChanges: MiningTurnChange[] = [];
 	const industryChanges: IndustryTurnChange[] = [];
+	const industrialProjectCompletions: IndustrialProjectCompletionChange[] = [];
 
 	const ctx: Context = {
 		postMessage: (event) => messages.push(event),
@@ -56,6 +63,12 @@ export async function tick() {
 		addPopulationChange: (change) => populationChanges.push(change),
 		addMiningChange: (change) => miningChanges.push(change),
 		addIndustryChange: (change) => industryChanges.push(change),
+		getIndustryUtilized: (starSystemId) =>
+			industryChanges
+				.filter((change) => change.starSystemId === starSystemId)
+				.reduce((acc, change) => acc + change.industryUtilized, 0),
+		addIndustrialProjectCompletion: (change) =>
+			industrialProjectCompletions.push(change),
 	};
 
 	await drizzle.transaction(async (tx) => {
@@ -68,6 +81,8 @@ export async function tick() {
 		await tickColonization(tx, ctx);
 
 		await tickTaskForceConstruction(tx, ctx);
+
+		await tickIndustrialProjects(tx, ctx);
 
 		await tickTaskForceMovement(tx, ctx);
 
@@ -154,6 +169,9 @@ export async function tick() {
 				.values(),
 		);
 
+		const consolidatedIndustrialProjectCompletions =
+			industrialProjectCompletions;
+
 		const reportsToInsert = playersInGame.map((p) => {
 			const visibleSystemIds = new Set(
 				visibleSystemsPerPlayer
@@ -181,6 +199,10 @@ export async function tick() {
 					industryChanges: consolidatedIndustryChanges.filter((c) =>
 						visibleSystemIds.has(c.starSystemId),
 					),
+					industrialProjectCompletions:
+						consolidatedIndustrialProjectCompletions.filter((c) =>
+							visibleSystemIds.has(c.starSystemId),
+						),
 				},
 			};
 		});

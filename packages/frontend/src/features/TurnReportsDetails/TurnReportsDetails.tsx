@@ -60,6 +60,14 @@ export function TurnReportsDetails() {
 							industryTotal
 							industryUtilized
 						}
+						industrialProjectCompletions {
+							starSystem {
+								id
+								name
+							}
+							projectType
+							industryBonus
+						}
 					}
 				}
 			}
@@ -69,6 +77,12 @@ export function TurnReportsDetails() {
 
 	const reports = data?.game.turnReports ?? [];
 	const [activePage, setActivePage] = useState(1);
+
+	const formatProjectType = (projectType: string) =>
+		projectType
+			.split("_")
+			.map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+			.join(" ");
 
 	// Ensure the active page isn't out of bounds if the reports change
 	const validPage = reports.length > 0 ? Math.min(activePage, reports.length) : 1;
@@ -80,7 +94,7 @@ export function TurnReportsDetails() {
 				<div>
 					<Title order={3}>Turn Reports</Title>
 					<Text size="sm" c="dimmed">
-						Detailed end-of-turn summaries for population and mining changes.
+						Detailed end-of-turn summaries for population, mining, industry, and completed industrial projects.
 					</Text>
 				</div>
 				{reports.length > 1 && (
@@ -203,6 +217,38 @@ export function TurnReportsDetails() {
 											</Table.Tbody>
 										</Table>
 									)}
+
+										<Divider my="xs" />
+
+										<Text size="sm" fw={500}>
+											Industrial Projects Completed
+										</Text>
+										{report.industrialProjectCompletions.length === 0 ? (
+											<Text size="sm" c="dimmed">
+												No industrial projects completed this turn.
+											</Text>
+										) : (
+											<Table striped withTableBorder withColumnBorders>
+												<Table.Thead>
+													<Table.Tr>
+														<Table.Th>Star System</Table.Th>
+														<Table.Th>Project</Table.Th>
+														<Table.Th>Added Industry</Table.Th>
+													</Table.Tr>
+												</Table.Thead>
+												<Table.Tbody>
+													{report.industrialProjectCompletions.map((completion, idx) => (
+														<Table.Tr
+															key={`${completion.starSystem.id}:${completion.projectType}:${idx}`}
+														>
+															<Table.Td>{completion.starSystem.name}</Table.Td>
+															<Table.Td>{formatProjectType(completion.projectType)}</Table.Td>
+															<Table.Td c="green">+{formatInteger(completion.industryBonus)}</Table.Td>
+														</Table.Tr>
+													))}
+												</Table.Tbody>
+											</Table>
+										)}
 								</Stack>
 							</Card>
 					</Stack>

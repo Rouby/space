@@ -18,6 +18,8 @@ export type GameEvent =
 	| StarSystemDiscoveryProgress
 	| StarSystemColonizationProgress
 	| StarSystemOwnerChanged
+	| StarSystemIndustrialProjectProgress
+	| StarSystemIndustrialProjectCompleted
 	| TaskForceCommisionProgress;
 
 interface TurnEnded {
@@ -142,6 +144,23 @@ interface StarSystemOwnerChanged {
 	type: "starSystem:ownerChanged";
 	id: string;
 	ownerId: string;
+}
+
+interface StarSystemIndustrialProjectProgress {
+	type: "starSystem:industrialProjectProgress";
+	id: string;
+	starSystemId: string;
+	workDone: number;
+	workRequired: number;
+}
+
+interface StarSystemIndustrialProjectCompleted {
+	type: "starSystem:industrialProjectCompleted";
+	id: string;
+	starSystemId: string;
+	projectType: string;
+	industryBonus: number;
+	newIndustryTotal: number;
 }
 
 interface TaskForceCommisionProgress {
