@@ -194,9 +194,9 @@ export function IndustrialProjectsPanel({
 						.sort((a, b) => a.queuePosition - b.queuePosition)
 						.map((project) => (
 							<Text key={project.id} size="sm" c="dimmed">
-								{formatProjectType(project.projectType)}: {project.turnsRemaining}{" "}
-								turns remaining (ETA {project.etaTurns}), +
-								{project.completionIndustryBonus} industry.
+								{formatProjectType(project.projectType)}:{" "}
+								{project.turnsRemaining} turns remaining (ETA {project.etaTurns}
+								), +{project.completionIndustryBonus} industry.
 							</Text>
 						))}
 				</Stack>

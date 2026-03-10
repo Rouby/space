@@ -114,13 +114,13 @@ export function CombatTimeline({ engagement }: { engagement: EngagementType }) {
 															key={`a-${roundEntry.round}-${index}`}
 															gap="xs"
 														>
-															<Badge 
-																size="md" 
-																variant="outline" 
+															<Badge
+																size="md"
+																variant="outline"
 																color="cyan"
 																leftSection={
-																	<Avatar 
-																		src={`/images/cards/${entry.cardId}.png`} 
+																	<Avatar
+																		src={`/images/cards/${entry.cardId}.png`}
 																		alt={entry.cardId}
 																		size={16}
 																		radius="xl"
@@ -168,13 +168,13 @@ export function CombatTimeline({ engagement }: { engagement: EngagementType }) {
 															key={`b-${roundEntry.round}-${index}`}
 															gap="xs"
 														>
-															<Badge 
-																size="md" 
-																variant="outline" 
+															<Badge
+																size="md"
+																variant="outline"
 																color="orange"
 																leftSection={
-																	<Avatar 
-																		src={`/images/cards/${entry.cardId}.png`} 
+																	<Avatar
+																		src={`/images/cards/${entry.cardId}.png`}
 																		alt={entry.cardId}
 																		size={16}
 																		radius="xl"

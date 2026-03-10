@@ -26,6 +26,8 @@ type TurnReport {
 	industrialProjectCompletions: [TurnReportIndustrialProjectCompletion!]!
 	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
 	taskForceEngagements: [TurnReportTaskForceEngagement!]!
+	colonizationPressureChanges: [TurnReportColonizationPressureChange!]!
+	colonizationCompleted: [TurnReportColonizationCompleted!]!
 }
 
 type TurnReportTaskForceEngagement {
@@ -37,6 +39,19 @@ type TurnReportTaskForceEngagement {
 	taskForceBName: String!
 	winnerTaskForceId: ID
 	location: Vector!
+}
+
+type TurnReportColonizationPressureChange {
+	starSystem: StarSystem!
+	pressureAdded: String!
+	accumulatedPressure: String!
+	pressureThreshold: String!
+}
+
+type TurnReportColonizationCompleted {
+	starSystem: StarSystem!
+	accumulatedPressure: String!
+	pressureThreshold: String!
 }
 
 type TurnReportPopulationChange {

@@ -1,7 +1,7 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
-import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
-import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper, StarSystemColonizationMapper } from './starSystem/schema.mappers.js';
+import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportColonizationCompletedMapper, TurnReportColonizationPressureChangeMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
+import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
 import { ShipDesignMapper } from './shipDesign/schema.mappers.js';
@@ -134,7 +134,6 @@ export type Mutation = {
   queueIndustrialProject: StarSystem;
   registerWithPassword: User;
   setDevelopmentStance: StarSystem;
-  startColonization: StarSystem;
   startGame: Game;
   submitTaskForceEngagementAction: TaskForceEngagement;
   updateGameSettings: Game;
@@ -208,11 +207,6 @@ export type MutationregisterWithPasswordArgs = {
 
 export type MutationsetDevelopmentStanceArgs = {
   stance: DevelopmentStance;
-  starSystemId: Scalars['ID']['input'];
-};
-
-
-export type MutationstartColonizationArgs = {
   starSystemId: Scalars['ID']['input'];
 };
 
@@ -407,7 +401,7 @@ export type ShipDesignInput = {
 
 export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
-  colonization?: Maybe<StarSystemColonization>;
+  colonization?: Maybe<StarSystemColonizationPressure>;
   completedIndustrialProjects: Array<IndustrialProject>;
   currentDevelopmentStance?: Maybe<DevelopmentStance>;
   discoveries?: Maybe<Array<Discovery>>;
@@ -426,14 +420,13 @@ export type StarSystem = Positionable & {
   taskForces: Array<TaskForce>;
 };
 
-export type StarSystemColonization = {
-  __typename?: 'StarSystemColonization';
-  dueTurn: Scalars['Int']['output'];
-  originStarSystem: StarSystem;
+export type StarSystemColonizationPressure = {
+  __typename?: 'StarSystemColonizationPressure';
+  accumulated: Scalars['Float']['output'];
+  etaTurns: Scalars['Int']['output'];
   player: Player;
-  startedAtTurn: Scalars['Int']['output'];
-  turnsRemaining: Scalars['Int']['output'];
-  turnsRequired: Scalars['Int']['output'];
+  pressurePerTurn: Scalars['Float']['output'];
+  threshold: Scalars['Float']['output'];
 };
 
 export type StarSystemUpdateEvent = {
@@ -590,6 +583,8 @@ export type TurnEndedEvent = {
 
 export type TurnReport = {
   __typename?: 'TurnReport';
+  colonizationCompleted: Array<TurnReportColonizationCompleted>;
+  colonizationPressureChanges: Array<TurnReportColonizationPressureChange>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   industrialProjectCompletions: Array<TurnReportIndustrialProjectCompletion>;
@@ -599,6 +594,21 @@ export type TurnReport = {
   taskForceConstructionChanges: Array<TurnReportTaskForceConstructionChange>;
   taskForceEngagements: Array<TurnReportTaskForceEngagement>;
   turnNumber: Scalars['Int']['output'];
+};
+
+export type TurnReportColonizationCompleted = {
+  __typename?: 'TurnReportColonizationCompleted';
+  accumulatedPressure: Scalars['String']['output'];
+  pressureThreshold: Scalars['String']['output'];
+  starSystem: StarSystem;
+};
+
+export type TurnReportColonizationPressureChange = {
+  __typename?: 'TurnReportColonizationPressureChange';
+  accumulatedPressure: Scalars['String']['output'];
+  pressureAdded: Scalars['String']['output'];
+  pressureThreshold: Scalars['String']['output'];
+  starSystem: StarSystem;
 };
 
 export type TurnReportIndustrialProjectCompletion = {
@@ -804,7 +814,7 @@ export type ResolversTypes = {
   ShipDesignComponentInput: ShipDesignComponentInput;
   ShipDesignInput: ShipDesignInput;
   StarSystem: ResolverTypeWrapper<StarSystemMapper>;
-  StarSystemColonization: ResolverTypeWrapper<StarSystemColonizationMapper>;
+  StarSystemColonizationPressure: ResolverTypeWrapper<Omit<StarSystemColonizationPressure, 'player'> & { player: ResolversTypes['Player'] }>;
   StarSystemUpdateEvent: ResolverTypeWrapper<Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversTypes['StarSystem'] }>;
   SubmitTaskForceEngagementActionInput: SubmitTaskForceEngagementActionInput;
   SubmitTaskForceEngagementActionType: ResolverTypeWrapper<'RETREAT'>;
@@ -826,6 +836,8 @@ export type ResolversTypes = {
   TrackStarSystemEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackStarSystemEvent']>;
   TurnEndedEvent: ResolverTypeWrapper<Omit<TurnEndedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   TurnReport: ResolverTypeWrapper<TurnReportMapper>;
+  TurnReportColonizationCompleted: ResolverTypeWrapper<TurnReportColonizationCompletedMapper>;
+  TurnReportColonizationPressureChange: ResolverTypeWrapper<TurnReportColonizationPressureChangeMapper>;
   TurnReportIndustrialProjectCompletion: ResolverTypeWrapper<TurnReportIndustrialProjectCompletionMapper>;
   TurnReportIndustryChange: ResolverTypeWrapper<TurnReportIndustryChangeMapper>;
   TurnReportMiningChange: ResolverTypeWrapper<TurnReportMiningChangeMapper>;
@@ -877,7 +889,7 @@ export type ResolversParentTypes = {
   ShipDesignComponentInput: ShipDesignComponentInput;
   ShipDesignInput: ShipDesignInput;
   StarSystem: StarSystemMapper;
-  StarSystemColonization: StarSystemColonizationMapper;
+  StarSystemColonizationPressure: Omit<StarSystemColonizationPressure, 'player'> & { player: ResolversParentTypes['Player'] };
   StarSystemUpdateEvent: Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversParentTypes['StarSystem'] };
   SubmitTaskForceEngagementActionInput: SubmitTaskForceEngagementActionInput;
   Subscription: {};
@@ -897,6 +909,8 @@ export type ResolversParentTypes = {
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
   TurnEndedEvent: Omit<TurnEndedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   TurnReport: TurnReportMapper;
+  TurnReportColonizationCompleted: TurnReportColonizationCompletedMapper;
+  TurnReportColonizationPressureChange: TurnReportColonizationPressureChangeMapper;
   TurnReportIndustrialProjectCompletion: TurnReportIndustrialProjectCompletionMapper;
   TurnReportIndustryChange: TurnReportIndustryChangeMapper;
   TurnReportMiningChange: TurnReportMiningChangeMapper;
@@ -1002,7 +1016,6 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   queueIndustrialProject?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationqueueIndustrialProjectArgs, 'projectType' | 'starSystemId'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
-  startColonization?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationstartColonizationArgs, 'starSystemId'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
   submitTaskForceEngagementAction?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType, RequireFields<MutationsubmitTaskForceEngagementActionArgs, 'input'>>;
   updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
@@ -1148,7 +1161,7 @@ export type ShipDesignComponentResolvers<ContextType = Context, ParentType exten
 };
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
-  colonization?: Resolver<Maybe<ResolversTypes['StarSystemColonization']>, ParentType, ContextType>;
+  colonization?: Resolver<Maybe<ResolversTypes['StarSystemColonizationPressure']>, ParentType, ContextType>;
   completedIndustrialProjects?: Resolver<Array<ResolversTypes['IndustrialProject']>, ParentType, ContextType>;
   currentDevelopmentStance?: Resolver<Maybe<ResolversTypes['DevelopmentStance']>, ParentType, ContextType>;
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
@@ -1168,13 +1181,12 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type StarSystemColonizationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystemColonization'] = ResolversParentTypes['StarSystemColonization']> = {
-  dueTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  originStarSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
+export type StarSystemColonizationPressureResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystemColonizationPressure'] = ResolversParentTypes['StarSystemColonizationPressure']> = {
+  accumulated?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  etaTurns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   player?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
-  startedAtTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  turnsRemaining?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  turnsRequired?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pressurePerTurn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  threshold?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1293,6 +1305,8 @@ export type TurnEndedEventResolvers<ContextType = Context, ParentType extends Re
 };
 
 export type TurnReportResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReport'] = ResolversParentTypes['TurnReport']> = {
+  colonizationCompleted?: Resolver<Array<ResolversTypes['TurnReportColonizationCompleted']>, ParentType, ContextType>;
+  colonizationPressureChanges?: Resolver<Array<ResolversTypes['TurnReportColonizationPressureChange']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   industrialProjectCompletions?: Resolver<Array<ResolversTypes['TurnReportIndustrialProjectCompletion']>, ParentType, ContextType>;
@@ -1302,6 +1316,21 @@ export type TurnReportResolvers<ContextType = Context, ParentType extends Resolv
   taskForceConstructionChanges?: Resolver<Array<ResolversTypes['TurnReportTaskForceConstructionChange']>, ParentType, ContextType>;
   taskForceEngagements?: Resolver<Array<ResolversTypes['TurnReportTaskForceEngagement']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TurnReportColonizationCompletedResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportColonizationCompleted'] = ResolversParentTypes['TurnReportColonizationCompleted']> = {
+  accumulatedPressure?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pressureThreshold?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TurnReportColonizationPressureChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportColonizationPressureChange'] = ResolversParentTypes['TurnReportColonizationPressureChange']> = {
+  accumulatedPressure?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pressureAdded?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pressureThreshold?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1407,7 +1436,7 @@ export type Resolvers<ContextType = Context> = {
   ShipDesign?: ShipDesignResolvers<ContextType>;
   ShipDesignComponent?: ShipDesignComponentResolvers<ContextType>;
   StarSystem?: StarSystemResolvers<ContextType>;
-  StarSystemColonization?: StarSystemColonizationResolvers<ContextType>;
+  StarSystemColonizationPressure?: StarSystemColonizationPressureResolvers<ContextType>;
   StarSystemUpdateEvent?: StarSystemUpdateEventResolvers<ContextType>;
   SubmitTaskForceEngagementActionType?: SubmitTaskForceEngagementActionTypeResolvers;
   Subscription?: SubscriptionResolvers<ContextType>;
@@ -1425,6 +1454,8 @@ export type Resolvers<ContextType = Context> = {
   TrackStarSystemEvent?: TrackStarSystemEventResolvers<ContextType>;
   TurnEndedEvent?: TurnEndedEventResolvers<ContextType>;
   TurnReport?: TurnReportResolvers<ContextType>;
+  TurnReportColonizationCompleted?: TurnReportColonizationCompletedResolvers<ContextType>;
+  TurnReportColonizationPressureChange?: TurnReportColonizationPressureChangeResolvers<ContextType>;
   TurnReportIndustrialProjectCompletion?: TurnReportIndustrialProjectCompletionResolvers<ContextType>;
   TurnReportIndustryChange?: TurnReportIndustryChangeResolvers<ContextType>;
   TurnReportMiningChange?: TurnReportMiningChangeResolvers<ContextType>;

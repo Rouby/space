@@ -52,7 +52,10 @@ export function StarSystemDetails({
 					name
 				}
 				colonization {
-					turnsRemaining
+					accumulated
+					threshold
+					pressurePerTurn
+					etaTurns
 					player {
 						id
 						name
@@ -117,11 +120,14 @@ export function StarSystemDetails({
 							name
 						}
 						colonization {
-							turnsRemaining
 							player {
 								id
 								name
 							}
+							accumulated
+							threshold
+							pressurePerTurn
+							etaTurns
 						}
 						position
 						taskForces {
@@ -154,21 +160,6 @@ export function StarSystemDetails({
 		}`),
 		variables: { id },
 	});
-
-	const [startColonizationState, startColonization] = useMutation(
-		graphql(`mutation StartColonization($starSystemId: ID!) {
-			startColonization(starSystemId: $starSystemId) {
-				id
-				colonization {
-					turnsRemaining
-					player {
-						id
-						name
-					}
-				}
-			}
-		}`),
-	);
 
 	const [
 		{
@@ -334,29 +325,53 @@ export function StarSystemDetails({
 			<Card mb="md">
 				<Stack gap="md">
 					<Text variant="gradient">Management</Text>
-					
-					{starSystem && !starSystem.owner && !starSystem.colonization && (
-						<Button
-							loading={startColonizationState.fetching}
-							onClick={() => {
-								startColonization({ starSystemId: id });
-							}}
-						>
-							Start colonization
-						</Button>
-					)}
 
-					{starSystem?.colonization && (
-						<Text mt="sm">
-							Colonization in progress by {starSystem.colonization.player.name} ({" "}
-							{starSystem.colonization.turnsRemaining} turns remaining)
-						</Text>
+					{starSystem?.colonization ? (
+						<Stack gap="xs">
+							<Text mt="sm">
+								Colonization in progress by{" "}
+								{starSystem.colonization.player.name}
+							</Text>
+							<Group justify="space-between">
+								<Text size="sm">Progress</Text>
+								<Text size="sm" c="dimmed">
+									{formatInteger(starSystem.colonization.accumulated)} /{" "}
+									{formatInteger(starSystem.colonization.threshold)}
+								</Text>
+							</Group>
+							<Progress
+								value={
+									(starSystem.colonization.accumulated /
+										starSystem.colonization.threshold) *
+									100
+								}
+								color={
+									starSystem.colonization.player.id === currentPlayerId
+										? "blue"
+										: "red"
+								}
+							/>
+							<Text size="xs" c="dimmed">
+								+{formatInteger(starSystem.colonization.pressurePerTurn)} per
+								turn • ETA: {starSystem.colonization.etaTurns} turns
+							</Text>
+						</Stack>
+					) : (
+						starSystem &&
+						!starSystem.owner && (
+							<Text size="sm" c="dimmed">
+								Uninhabited system. Generate colonization pressure from nearby
+								inhabited systems to colonize.
+							</Text>
+						)
 					)}
 
 					{isOwnedByMe && (
 						<>
 							<Stack gap="sm">
-								<Text fw={500} size="sm">Development Stance</Text>
+								<Text fw={500} size="sm">
+									Development Stance
+								</Text>
 								<Group align="center">
 									<SegmentedControl
 										value={developmentStance ?? "Balance"}
@@ -364,28 +379,44 @@ export function StarSystemDetails({
 											setDevelopmentStanceValue(nextValue);
 											if (!nextValue || !isOwnedByMe) return;
 
-											const stance = Object.values(DevelopmentStance).find(s => s === nextValue);
+											const stance = Object.values(DevelopmentStance).find(
+												(s) => s === nextValue,
+											);
 											if (!stance) return;
 
 											await setDevelopmentStance({ starSystemId: id, stance });
 										}}
 										disabled={!isOwnedByMe || setDevelopmentStanceFetching}
 										data={[
-											{ value: DevelopmentStance.Industrialize, label: "Industrialize" },
+											{
+												value: DevelopmentStance.Industrialize,
+												label: "Industrialize",
+											},
 											{ value: DevelopmentStance.Balance, label: "Balance" },
-											{ value: DevelopmentStance.GrowPopulation, label: "Grow Population" },
+											{
+												value: DevelopmentStance.GrowPopulation,
+												label: "Grow Population",
+											},
 										]}
 									/>
 									{starSystem?.nextTurnStanceProjection && (
 										<Text size="sm" c="dimmed">
-											{starSystem.nextTurnStanceProjection.industryDelta >= 0 ? "+" : ""}
-											{starSystem.nextTurnStanceProjection.industryDelta} Industry / +
-											{formatInteger(starSystem.nextTurnStanceProjection.populationDelta)} Pop
+											{starSystem.nextTurnStanceProjection.industryDelta >= 0
+												? "+"
+												: ""}
+											{starSystem.nextTurnStanceProjection.industryDelta}{" "}
+											Industry / +
+											{formatInteger(
+												starSystem.nextTurnStanceProjection.populationDelta,
+											)}{" "}
+											Pop
 										</Text>
 									)}
 								</Group>
 								{developmentStanceError && (
-									<Text c="red" size="sm">{developmentStanceError}</Text>
+									<Text c="red" size="sm">
+										{developmentStanceError}
+									</Text>
 								)}
 							</Stack>
 

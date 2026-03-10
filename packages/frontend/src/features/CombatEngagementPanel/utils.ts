@@ -13,7 +13,8 @@ export const CARD_DESCRIPTIONS: Record<string, string> = {
 	emergency_repairs: "Restore a portion of your ship's hull integrity.",
 	shield_pulse: "Generate a temporary energy barrier to absorb incoming fire.",
 	evasive_maneuver: "Increase your dodge chance against the next enemy attack.",
-	overcharge_barrage: "Unload all weapons for massive damage, but leaves you vulnerable.",
+	overcharge_barrage:
+		"Unload all weapons for massive damage, but leaves you vulnerable.",
 };
 
 export function getActionColor(entry: {

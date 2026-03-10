@@ -34,16 +34,18 @@ export function StarSystem({
 		(graphics: Graphics) => {
 			graphics.clear();
 			const baseColor = new Color(color);
-			
+
 			// Outer glow layers
 			for (let i = 4; i >= 1; i--) {
 				graphics.setFillStyle({ color: baseColor.toHex(), alpha: 0.15 });
 				graphics.circle(0, 0, 8 + i * 4);
 				graphics.fill();
 			}
-			
+
 			// Bright core
-			graphics.setFillStyle({ color: isVisible ? "#ffffff" : baseColor.toHex() });
+			graphics.setFillStyle({
+				color: isVisible ? "#ffffff" : baseColor.toHex(),
+			});
 			graphics.circle(0, 0, 8);
 			graphics.fill();
 		},

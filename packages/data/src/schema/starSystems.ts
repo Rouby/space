@@ -218,8 +218,8 @@ export const starSystemPopulationsRelations = relations(
 	}),
 );
 
-export const starSystemColonizations = pgTable(
-	"starSystemColonizations",
+export const starSystemColonizationPressures = pgTable(
+	"starSystemColonizationPressures",
 	{
 		starSystemId: uuid()
 			.notNull()
@@ -227,37 +227,32 @@ export const starSystemColonizations = pgTable(
 		gameId: uuid()
 			.notNull()
 			.references(() => games.id, { onDelete: "cascade" }),
-		playerId: uuid()
+		ownerId: uuid()
 			.notNull()
 			.references(() => users.id, { onDelete: "restrict" }),
-		originStarSystemId: uuid()
+		accumulatedPressure: decimal({ precision: 20, scale: 6 })
 			.notNull()
-			.references(() => starSystems.id, { onDelete: "restrict" }),
-		turnsRequired: integer().notNull(),
-		startedAtTurn: integer().notNull(),
-		dueTurn: integer().notNull(),
-		startedAt: timestamp().notNull().defaultNow(),
+			.default("0"),
+		pressurePerTurn: decimal({ precision: 20, scale: 6 })
+			.notNull()
+			.default("0"),
 	},
-	(table) => [primaryKey({ columns: [table.starSystemId] })],
+	(table) => [primaryKey({ columns: [table.starSystemId, table.ownerId] })],
 );
 
-export const starSystemColonizationsRelations = relations(
-	starSystemColonizations,
+export const starSystemColonizationPressuresRelations = relations(
+	starSystemColonizationPressures,
 	({ one }) => ({
 		starSystem: one(starSystems, {
-			fields: [starSystemColonizations.starSystemId],
-			references: [starSystems.id],
-		}),
-		originStarSystem: one(starSystems, {
-			fields: [starSystemColonizations.originStarSystemId],
+			fields: [starSystemColonizationPressures.starSystemId],
 			references: [starSystems.id],
 		}),
 		game: one(games, {
-			fields: [starSystemColonizations.gameId],
+			fields: [starSystemColonizationPressures.gameId],
 			references: [games.id],
 		}),
-		player: one(users, {
-			fields: [starSystemColonizations.playerId],
+		owner: one(users, {
+			fields: [starSystemColonizationPressures.ownerId],
 			references: [users.id],
 		}),
 	}),

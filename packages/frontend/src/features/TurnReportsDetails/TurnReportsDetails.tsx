@@ -94,6 +94,23 @@ export function TurnReportsDetails() {
 							winnerTaskForceId
 							location
 						}
+						colonizationPressureChanges {
+							starSystem {
+								id
+								name
+							}
+							pressureAdded
+							accumulatedPressure
+							pressureThreshold
+						}
+						colonizationCompleted {
+							starSystem {
+								id
+								name
+							}
+							accumulatedPressure
+							pressureThreshold
+						}
 					}
 				}
 			}

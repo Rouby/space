@@ -484,7 +484,7 @@ test("redacts star-system details for authorized players without visibility", as
 	expect(payload.data?.starSystem?.discoveryProgress).toBeNull();
 });
 
-test("starts colonization as in-progress with distance-based remaining turns", async ({
+test("accumulates colonization pressure passively and projects ETA", async ({
 	page,
 	api,
 }) => {
@@ -503,12 +503,20 @@ test("starts colonization as in-progress with distance-based remaining turns", a
 		color: "#123456",
 	});
 
-	await api.seed("starSystem", {
+	const { id: originId } = await api.seed("starSystem", {
 		gameId,
 		ownerId: playerId,
 		name: "Origin",
 		position: { x: 0, y: 0 },
 	});
+	
+	// Add 5B population to get exactly 5 outflow points
+	await api.seed("starSystemPopulation", {
+		starSystemId: originId,
+		allegianceToPlayerId: playerId,
+		amount: 5_000_000_000n,
+	});
+	
 	const { id: targetId } = await api.seed("starSystem", {
 		gameId,
 		ownerId: null,
@@ -518,26 +526,60 @@ test("starts colonization as in-progress with distance-based remaining turns", a
 
 	await api.login(playerId);
 
-	const startResponse = await page.request.post("/graphql", {
+	const startGameResponse = await page.request.post("/graphql", {
 		data: {
-			query:
-				"mutation StartColonization($starSystemId: ID!) { startColonization(starSystemId: $starSystemId) { id colonization { turnsRemaining turnsRequired player { id } } } }",
-			variables: { starSystemId: targetId },
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
 		},
 	});
-	const startPayload = await startResponse.json();
-
+	const startPayload = await startGameResponse.json();
 	expect(startPayload.errors).toBeUndefined();
-	expect(startPayload.data?.startColonization?.id).toBe(targetId);
-	expect(
-		startPayload.data?.startColonization?.colonization?.player?.id,
-	).toContain(playerId);
-	expect(startPayload.data?.startColonization?.colonization?.turnsRequired).toBe(
-		4,
-	);
-	expect(
-		startPayload.data?.startColonization?.colonization?.turnsRemaining,
-	).toBe(4);
+
+	const endTurnResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const endTurnPayload = await endTurnResponse.json();
+	expect(endTurnPayload.errors).toBeUndefined();
+
+	await expect
+		.poll(
+			async () => {
+				const progressResponse = await page.request.post("/graphql", {
+					data: {
+						query:
+							"query ColonizationProgress($starSystemId: ID!) { starSystem(id: $starSystemId) { id colonization { accumulated pressurePerTurn threshold etaTurns player { id user { id } } } } }",
+						variables: { starSystemId: targetId },
+					},
+				});
+				const progressPayload = await progressResponse.json();
+				
+				const colonization = progressPayload.data?.starSystem?.colonization;
+
+				return {
+					errors: progressPayload.errors,
+					id: progressPayload.data?.starSystem?.id,
+					playerId: colonization?.player?.user?.id,
+					accumulated: colonization?.accumulated,
+					pressurePerTurn: colonization?.pressurePerTurn,
+					threshold: colonization?.threshold,
+					etaTurns: colonization?.etaTurns,
+				};
+			},
+			{ timeout: 20000 },
+		)
+		.toMatchObject({
+			errors: undefined,
+			id: targetId,
+			playerId,
+			accumulated: 5,
+			pressurePerTurn: 5,
+			threshold: 20,
+			etaTurns: 3,
+		});
 });
 
 test("supports idempotent join requests and shows joined participation state", async ({

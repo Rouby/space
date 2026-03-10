@@ -19,7 +19,6 @@ import    { orderTaskForce as Mutation_orderTaskForce } from './taskForce/resolv
 import    { queueIndustrialProject as Mutation_queueIndustrialProject } from './starSystem/resolvers/Mutation/queueIndustrialProject.js';
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
 import    { setDevelopmentStance as Mutation_setDevelopmentStance } from './starSystem/resolvers/Mutation/setDevelopmentStance.js';
-import    { startColonization as Mutation_startColonization } from './starSystem/resolvers/Mutation/startColonization.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
 import    { submitTaskForceEngagementAction as Mutation_submitTaskForceEngagementAction } from './taskForce/resolvers/Mutation/submitTaskForceEngagementAction.js';
 import    { updateGameSettings as Mutation_updateGameSettings } from './game/resolvers/Mutation/updateGameSettings.js';
@@ -57,7 +56,7 @@ import    { ShipDesign } from './shipDesign/resolvers/ShipDesign.js';
 import    { ShipDesignComponent } from './shipDesign/resolvers/ShipDesignComponent.js';
 import    { StarSystem as starSystem_StarSystem } from './starSystem/resolvers/StarSystem.js';
 import    { StarSystem as taskForce_StarSystem } from './taskForce/resolvers/StarSystem.js';
-import    { StarSystemColonization } from './starSystem/resolvers/StarSystemColonization.js';
+import    { StarSystemColonizationPressure } from './starSystem/resolvers/StarSystemColonizationPressure.js';
 import    { StarSystemUpdateEvent } from './base/resolvers/StarSystemUpdateEvent.js';
 import    { TaskForce } from './taskForce/resolvers/TaskForce.js';
 import    { TaskForceColonizeOrder } from './taskForce/resolvers/TaskForceColonizeOrder.js';
@@ -68,6 +67,8 @@ import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOr
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
 import    { TurnEndedEvent } from './game/resolvers/TurnEndedEvent.js';
 import    { TurnReport } from './game/resolvers/TurnReport.js';
+import    { TurnReportColonizationCompleted } from './game/resolvers/TurnReportColonizationCompleted.js';
+import    { TurnReportColonizationPressureChange } from './game/resolvers/TurnReportColonizationPressureChange.js';
 import    { TurnReportIndustrialProjectCompletion } from './game/resolvers/TurnReportIndustrialProjectCompletion.js';
 import    { TurnReportIndustryChange } from './game/resolvers/TurnReportIndustryChange.js';
 import    { TurnReportMiningChange } from './game/resolvers/TurnReportMiningChange.js';
@@ -87,7 +88,7 @@ import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.j
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement },
-      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setDevelopmentStance: Mutation_setDevelopmentStance,startColonization: Mutation_startColonization,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setDevelopmentStance: Mutation_setDevelopmentStance,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
       DevelopmentStanceProjection: DevelopmentStanceProjection,
 Dilemma: Dilemma,
@@ -108,7 +109,7 @@ ShipComponentEffectivenessAgainst: ShipComponentEffectivenessAgainst,
 ShipDesign: ShipDesign,
 ShipDesignComponent: ShipDesignComponent,
 StarSystem: { ...starSystem_StarSystem,...taskForce_StarSystem },
-StarSystemColonization: StarSystemColonization,
+StarSystemColonizationPressure: StarSystemColonizationPressure,
 StarSystemUpdateEvent: StarSystemUpdateEvent,
 TaskForce: TaskForce,
 TaskForceColonizeOrder: TaskForceColonizeOrder,
@@ -119,6 +120,8 @@ TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
 TurnEndedEvent: TurnEndedEvent,
 TurnReport: TurnReport,
+TurnReportColonizationCompleted: TurnReportColonizationCompleted,
+TurnReportColonizationPressureChange: TurnReportColonizationPressureChange,
 TurnReportIndustrialProjectCompletion: TurnReportIndustrialProjectCompletion,
 TurnReportIndustryChange: TurnReportIndustryChange,
 TurnReportMiningChange: TurnReportMiningChange,

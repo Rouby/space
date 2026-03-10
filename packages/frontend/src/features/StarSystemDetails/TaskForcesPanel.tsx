@@ -1,4 +1,4 @@
-import { Button, Center, Progress, Stack, Text, } from "@mantine/core";
+import { Button, Center, Progress, Stack, Text } from "@mantine/core";
 import { useQuery, useSubscription } from "urql";
 import { formatNumber } from "../../format/formatNumber";
 import { graphql } from "../../gql";
@@ -192,7 +192,11 @@ export function TaskForcesPanel({
 								onClick={() =>
 									navigate({
 										to: "/games/$id/star-system/$starSystemId/task-forces/$taskForceId",
-										params: { id: gameId, starSystemId: id, taskForceId: tf.id },
+										params: {
+											id: gameId,
+											starSystemId: id,
+											taskForceId: tf.id,
+										},
 									})
 								}
 								size="xs"

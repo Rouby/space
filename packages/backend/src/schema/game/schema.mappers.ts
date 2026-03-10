@@ -8,6 +8,8 @@ import type {
 	TurnReportTaskForceConstructionChange,
 	turnReports,
 	users,
+	TurnReportColonizationPressureChange,
+	TurnReportColonizationCompleted,
 } from "@space/data/schema";
 
 export type GameMapper = typeof games.$inferSelect;
@@ -22,3 +24,7 @@ export type TurnReportIndustrialProjectCompletionMapper =
 	TurnReportIndustrialProjectCompletion;
 export type TurnReportTaskForceConstructionChangeMapper =
 	TurnReportTaskForceConstructionChange;
+export type TurnReportColonizationPressureChangeMapper =
+	TurnReportColonizationPressureChange;
+export type TurnReportColonizationCompletedMapper =
+	TurnReportColonizationCompleted;

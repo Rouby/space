@@ -7,11 +7,12 @@ import {
 	eq,
 	games,
 	players,
-	starSystemColonizations,
+	starSystemColonizationPressures,
 	starSystemDevelopmentStances,
 	starSystemIndustrialProjects,
 	starSystemPopulations,
 	starSystemResourceDiscoveries,
+	starSystems,
 } from "@space/data/schema";
 import { desc } from "drizzle-orm";
 import type { StarSystemResolvers } from "./../../types.generated.js";
@@ -116,11 +117,66 @@ export const StarSystem: Pick<
 			: +_parent.discoveryProgress;
 	},
 	colonization: async (parent, _arg, ctx) => {
-		return (
-			(await ctx.drizzle.query.starSystemColonizations.findFirst({
-				where: eq(starSystemColonizations.starSystemId, parent.id),
-			})) ?? null
-		);
+		const pressures =
+			await ctx.drizzle.query.starSystemColonizationPressures.findMany({
+				where: eq(starSystemColonizationPressures.starSystemId, parent.id),
+			});
+
+		if (pressures.length === 0) return null;
+
+		// For the UI, we might want to show the highest pressure or the one belonging to the viewing player.
+		// Since we want to expose this to the player who's accumulating it, let's find if the current user has pressure.
+		const myPressure = pressures.find((p) => p.ownerId === ctx.userId);
+
+		if (!myPressure) return null; // Or return highest if we want public visibility
+
+		const accumulated = Number(myPressure.accumulatedPressure);
+		const pressurePerTurn = Number(myPressure.pressurePerTurn);
+
+		const ownerSystems = await ctx.drizzle.query.starSystems.findMany({
+			where: and(
+				eq(starSystems.ownerId, myPressure.ownerId),
+				eq(starSystems.gameId, myPressure.gameId),
+			),
+			columns: { position: true },
+		});
+
+		let minDistance = Number.MAX_VALUE;
+		for (const sys of ownerSystems) {
+			const dist = Math.sqrt(
+				(sys.position.x - parent.position.x) ** 2 +
+					(sys.position.y - parent.position.y) ** 2,
+			);
+			if (dist < minDistance) {
+				minDistance = dist;
+			}
+		}
+
+		const threshold =
+			minDistance === Number.MAX_VALUE ? 10 : 10 + minDistance / 50;
+
+		const turnsRemaining =
+			pressurePerTurn > 0
+				? Math.ceil(Math.max(0, threshold - accumulated) / pressurePerTurn)
+				: 999;
+
+		const owner = await ctx.drizzle.query.players.findFirst({
+			where: and(
+				eq(players.userId, myPressure.ownerId),
+				eq(players.gameId, myPressure.gameId),
+			),
+			with: { user: true },
+		});
+
+		if (!owner) return null;
+
+		return {
+			player: owner,
+			accumulated,
+			threshold,
+			pressurePerTurn,
+			etaTurns: turnsRemaining,
+		};
 	},
 	industry: async (parent, _arg, _ctx) => {
 		return parent.industry;

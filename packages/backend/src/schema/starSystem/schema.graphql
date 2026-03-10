@@ -7,7 +7,7 @@ type StarSystem implements Positionable {
 	completedIndustrialProjects: [IndustrialProject!]!
 	currentDevelopmentStance: DevelopmentStance
 	nextTurnStanceProjection: DevelopmentStanceProjection
-	colonization: StarSystemColonization
+	colonization: StarSystemColonizationPressure
 	sensorRange: Float
 	discoveries: [Discovery!]
 	discoveryProgress: Float
@@ -17,13 +17,12 @@ type StarSystem implements Positionable {
 	lastUpdate: DateTime
 }
 
-type StarSystemColonization {
+type StarSystemColonizationPressure {
 	player: Player!
-	originStarSystem: StarSystem!
-	turnsRequired: Int!
-	startedAtTurn: Int!
-	dueTurn: Int!
-	turnsRemaining: Int!
+	accumulated: Float!
+	threshold: Float!
+	pressurePerTurn: Float!
+	etaTurns: Int!
 }
 
 union Discovery = ResourceDiscovery | UnknownDiscovery
@@ -85,7 +84,6 @@ type Query {
 }
 
 extend type Mutation {
-	startColonization(starSystemId: ID!): StarSystem!
 	setDevelopmentStance(
 		starSystemId: ID!
 		stance: DevelopmentStance!

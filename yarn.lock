@@ -3834,7 +3834,7 @@ __metadata:
   resolution: "@space/data@workspace:packages/data"
   dependencies:
     "@types/pg": "npm:8.15.5"
-    drizzle-kit: "npm:0.31.4"
+    drizzle-kit: "npm:0.31.9"
     drizzle-orm: "npm:0.44.4"
     pg: "npm:8.16.3"
     typescript: "npm:5.9.2"
@@ -6732,9 +6732,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"drizzle-kit@npm:0.31.4":
-  version: 0.31.4
-  resolution: "drizzle-kit@npm:0.31.4"
+"drizzle-kit@npm:0.31.9":
+  version: 0.31.9
+  resolution: "drizzle-kit@npm:0.31.9"
   dependencies:
     "@drizzle-team/brocli": "npm:^0.10.2"
     "@esbuild-kit/esm-loader": "npm:^2.5.5"
@@ -6742,7 +6742,7 @@ __metadata:
     esbuild-register: "npm:^3.5.0"
   bin:
     drizzle-kit: bin.cjs
-  checksum: 10c0/5e345cb28b4b8f329ce5f851e47418ac2ee8189aecec85f566f7a6c309f3392613519a39c559618599bd1e63fb99f114b9d9d82fb9e411f1702425678f34d2c2
+  checksum: 10c0/96f670c7781ff4b867ed6ddd04a7be07e587a37c6a9f7bb8a3b755487113421ee609334ff069e66eb541b6f9d4b4a1595f3cdfabdcc7354579215b18ad059177
   languageName: node
   linkType: hard
 

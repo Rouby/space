@@ -15,6 +15,8 @@ import {
 	visibility,
 	taskForceEngagements,
 	or,
+	type TurnReportColonizationCompleted,
+	type TurnReportColonizationPressureChange,
 } from "@space/data/schema";
 import type { GameEvent } from "../../../backend/src/events.ts";
 import { gameId } from "../config.ts";
@@ -50,6 +52,10 @@ export type Context = {
 	addTaskForceConstructionChange?: (
 		change: TurnReportTaskForceConstructionChange,
 	) => void;
+	addColonizationPressureChange?: (
+		change: TurnReportColonizationPressureChange,
+	) => void;
+	addColonizationCompleted?: (change: TurnReportColonizationCompleted) => void;
 };
 
 export async function tick() {
@@ -60,6 +66,9 @@ export async function tick() {
 	const industrialProjectCompletions: IndustrialProjectCompletionChange[] = [];
 	const taskForceConstructionChanges: TurnReportTaskForceConstructionChange[] =
 		[];
+	const colonizationPressureChanges: TurnReportColonizationPressureChange[] =
+		[];
+	const colonizationCompleted: TurnReportColonizationCompleted[] = [];
 
 	const ctx: Context = {
 		postMessage: (event) => messages.push(event),
@@ -80,6 +89,9 @@ export async function tick() {
 			industrialProjectCompletions.push(change),
 		addTaskForceConstructionChange: (change) =>
 			taskForceConstructionChanges.push(change),
+		addColonizationPressureChange: (change) =>
+			colonizationPressureChanges.push(change),
+		addColonizationCompleted: (change) => colonizationCompleted.push(change),
 	};
 
 	await drizzle.transaction(async (tx) => {
@@ -214,11 +226,16 @@ export async function tick() {
 			.select({ id: taskForces.id, name: taskForces.name })
 			.from(taskForces)
 			.where(eq(taskForces.gameId, gameId));
-		const taskForceNames = new Map(allGameTaskForces.map((tf) => [tf.id, tf.name]));
+		const taskForceNames = new Map(
+			allGameTaskForces.map((tf) => [tf.id, tf.name]),
+		);
 
 		const engagementChanges = activeAndResolvedEngagements.map((e) => ({
 			engagementId: e.id,
-			status: e.resolvedAtTurn === ctx.turn ? ("resolved" as const) : ("unresolved" as const),
+			status:
+				e.resolvedAtTurn === ctx.turn
+					? ("resolved" as const)
+					: ("unresolved" as const),
 			taskForceAId: e.taskForceIdA,
 			taskForceBId: e.taskForceIdB,
 			taskForceAName: taskForceNames.get(e.taskForceIdA) ?? "Unknown",
@@ -272,6 +289,12 @@ export async function tick() {
 								change.ownerIdA === p.userId || change.ownerIdB === p.userId,
 						)
 						.map(({ ownerIdA, ownerIdB, ...rest }) => rest),
+					colonizationPressureChanges: colonizationPressureChanges.filter((c) =>
+						visibleSystemIds.has(c.starSystemId),
+					),
+					colonizationCompleted: colonizationCompleted.filter((c) =>
+						visibleSystemIds.has(c.starSystemId),
+					),
 				},
 			};
 		});

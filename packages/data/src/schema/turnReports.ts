@@ -61,6 +61,19 @@ export type TurnReportTaskForceEngagement = {
 	location: { x: number; y: number };
 };
 
+export type TurnReportColonizationPressureChange = {
+	starSystemId: string;
+	pressureAdded: string;
+	accumulatedPressure: string;
+	pressureThreshold: string;
+};
+
+export type TurnReportColonizationCompleted = {
+	starSystemId: string;
+	accumulatedPressure: string;
+	pressureThreshold: string;
+};
+
 export type TurnReportSummary = {
 	populationChanges: TurnReportPopulationChange[];
 	miningChanges: TurnReportMiningChange[];
@@ -68,6 +81,8 @@ export type TurnReportSummary = {
 	industrialProjectCompletions: TurnReportIndustrialProjectCompletion[];
 	taskForceConstructionChanges: TurnReportTaskForceConstructionChange[];
 	taskForceEngagements: TurnReportTaskForceEngagement[];
+	colonizationPressureChanges?: TurnReportColonizationPressureChange[];
+	colonizationCompleted?: TurnReportColonizationCompleted[];
 };
 
 export const turnReports = pgTable(

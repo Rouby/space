@@ -9,6 +9,7 @@ import {
 	shipDesignComponents,
 	shipDesigns,
 	starSystemResourceDepots,
+	starSystemPopulations,
 	starSystems,
 	taskForces,
 	users,
@@ -27,6 +28,10 @@ type Types = {
 	starSystemResourceDepot: [
 		typeof starSystemResourceDepots.$inferInsert,
 		typeof starSystemResourceDepots.$inferSelect,
+	];
+	starSystemPopulation: [
+		typeof starSystemPopulations.$inferInsert,
+		typeof starSystemPopulations.$inferSelect,
 	];
 	shipComponent: [
 		typeof shipComponents.$inferInsert,
@@ -51,6 +56,7 @@ const Tables = {
 	game: games,
 	player: players,
 	starSystem: starSystems,
+	starSystemPopulation: starSystemPopulations,
 	resource: resources,
 	starSystemResourceDepot: starSystemResourceDepots,
 	shipComponent: shipComponents,

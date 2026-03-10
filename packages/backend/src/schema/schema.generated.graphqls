@@ -110,7 +110,6 @@ type Mutation {
 		stance: DevelopmentStance!
 		starSystemId: ID!
 	): StarSystem!
-	startColonization(starSystemId: ID!): StarSystem!
 	startGame(id: ID!): Game!
 	submitTaskForceEngagementAction(
 		input: SubmitTaskForceEngagementActionInput!
@@ -253,7 +252,7 @@ input ShipDesignInput {
 }
 
 type StarSystem implements Positionable {
-	colonization: StarSystemColonization
+	colonization: StarSystemColonizationPressure
 	completedIndustrialProjects: [IndustrialProject!]!
 	currentDevelopmentStance: DevelopmentStance
 	discoveries: [Discovery!]
@@ -272,13 +271,12 @@ type StarSystem implements Positionable {
 	taskForces: [TaskForce!]!
 }
 
-type StarSystemColonization {
-	dueTurn: Int!
-	originStarSystem: StarSystem!
+type StarSystemColonizationPressure {
+	accumulated: Float!
+	etaTurns: Int!
 	player: Player!
-	startedAtTurn: Int!
-	turnsRemaining: Int!
-	turnsRequired: Int!
+	pressurePerTurn: Float!
+	threshold: Float!
 }
 
 type StarSystemUpdateEvent {
@@ -410,6 +408,8 @@ type TurnEndedEvent {
 }
 
 type TurnReport {
+	colonizationCompleted: [TurnReportColonizationCompleted!]!
+	colonizationPressureChanges: [TurnReportColonizationPressureChange!]!
 	createdAt: DateTime!
 	id: ID!
 	industrialProjectCompletions: [TurnReportIndustrialProjectCompletion!]!
@@ -419,6 +419,19 @@ type TurnReport {
 	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
 	taskForceEngagements: [TurnReportTaskForceEngagement!]!
 	turnNumber: Int!
+}
+
+type TurnReportColonizationCompleted {
+	accumulatedPressure: String!
+	pressureThreshold: String!
+	starSystem: StarSystem!
+}
+
+type TurnReportColonizationPressureChange {
+	accumulatedPressure: String!
+	pressureAdded: String!
+	pressureThreshold: String!
+	starSystem: StarSystem!
 }
 
 type TurnReportIndustrialProjectCompletion {

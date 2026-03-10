@@ -28,4 +28,10 @@ export const TurnReport: TurnReportResolvers = {
 	taskForceEngagements: async (parent, _arg, _ctx) => {
 		return parent.summary.taskForceEngagements || [];
 	},
+	colonizationPressureChanges: async (parent, _arg, _ctx) => {
+		return parent.summary.colonizationPressureChanges || [];
+	},
+	colonizationCompleted: async (parent, _arg, _ctx) => {
+		return parent.summary.colonizationCompleted || [];
+	},
 };

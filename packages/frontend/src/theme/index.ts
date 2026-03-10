@@ -29,9 +29,7 @@ export const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
  */
 export const mq = Object.keys(theme.breakpoints).reduce(
 	(acc, mantineSize) => {
-		acc[mantineSize] = `@media (max-width: ${
-			theme.breakpoints[mantineSize]
-		})`;
+		acc[mantineSize] = `@media (max-width: ${theme.breakpoints[mantineSize]})`;
 		return acc;
 	},
 	{} as Record<keyof MantineBreakpointsValues, string>,
