@@ -32,6 +32,7 @@ export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
 					"discoveryProgress",
 				),
 				ownerId: possiblyHidden(starSystems.ownerId).as("ownerId"),
+				industry: possiblyHidden(starSystems.industry).as("industry"),
 
 				isVisible:
 					sql<boolean>`CASE WHEN ${visibilityExists} THEN TRUE ELSE FALSE END`.as(

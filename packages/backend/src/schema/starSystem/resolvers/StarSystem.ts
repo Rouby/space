@@ -102,6 +102,9 @@ export const StarSystem: Pick<
 			.sort((d1, d2) => d1.discoveredAt.getTime() - d2.discoveredAt.getTime());
 	},
 	populations: async (parent, _arg, ctx) => {
+		if (!parent.isVisible) {
+			return null;
+		}
 		return ctx.drizzle
 			.select()
 			.from(starSystemPopulations)

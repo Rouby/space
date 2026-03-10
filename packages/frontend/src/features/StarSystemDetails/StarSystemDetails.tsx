@@ -550,9 +550,9 @@ export function StarSystemDetails({
 					<Card>
 						<Text variant="gradient">Industry</Text>
 						<Text>
-							{starSystem?.industry
-								? `${formatInteger(starSystem.industry)} / turn`
-								: "Our scanners could not pick up information about industrial capabilities."}
+							{starSystem?.industry === null
+								? "Our scanners could not pick up information about industrial capabilities."
+								: `${formatInteger(starSystem?.industry ?? 0)} / turn`}
 						</Text>
 					</Card>
 					<Card>

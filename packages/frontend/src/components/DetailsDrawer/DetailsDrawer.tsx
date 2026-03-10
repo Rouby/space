@@ -6,7 +6,11 @@ export function DetailsDrawer({
 	size,
 	children,
 	onClose,
-}: { size: string; children: React.ReactNode; onClose: () => void }) {
+}: {
+	size: string;
+	children: React.ReactNode;
+	onClose: () => void;
+}) {
 	const [opened, { open, close }] = useDisclosure(false);
 
 	useEffect(() => {
