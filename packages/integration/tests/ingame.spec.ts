@@ -134,6 +134,36 @@ test("configures task force combat deck with MVP validation rules", async ({
 		"DUPLICATE_CARD_LIMIT_EXCEEDED",
 	);
 
+	const disallowedDeckResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id } }",
+			variables: {
+				input: {
+					taskForceId,
+					cardIds: [
+						"laser_burst",
+						"laser_burst",
+						"target_lock",
+						"target_lock",
+						"emergency_repairs",
+						"emergency_repairs",
+						"shield_pulse",
+						"shield_pulse",
+						"evasive_maneuver",
+						"evasive_maneuver",
+						"overcharge_barrage",
+						"forbidden_card",
+					],
+				},
+			},
+		},
+	});
+	const disallowedDeckPayload = await disallowedDeckResponse.json();
+	expect(disallowedDeckPayload.errors?.[0]?.extensions?.code).toBe(
+		"CARD_NOT_ALLOWED",
+	);
+
 	await api.login(intruderId);
 	const unauthorizedDeckResponse = await page.request.post("/graphql", {
 		data: {

@@ -1,5 +1,7 @@
 # [MVP-005] Task Force Deck Construction with Player-Driven Choices
 
+DONE
+
 ## Objective
 Allow each task force to have a configurable combat deck where player-selected cards materially affect battle behavior.
 

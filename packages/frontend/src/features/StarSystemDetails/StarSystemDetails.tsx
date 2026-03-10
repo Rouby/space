@@ -4,6 +4,7 @@ import {
 	Center,
 	Group,
 	Image,
+	NumberInput,
 	Progress,
 	Select,
 	SimpleGrid,
@@ -30,6 +31,48 @@ import { coordinateToGrid } from "../GalaxyView/coordinateToGrid";
 import placeholderDiscoveryArt from "./example-discovery.png";
 import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
 import placeholderStarsystemArt from "./example-starsystem-overview.png";
+
+const ALLOWED_CARD_IDS = [
+	"laser_burst",
+	"target_lock",
+	"emergency_repairs",
+	"shield_pulse",
+	"evasive_maneuver",
+	"overcharge_barrage",
+] as const;
+
+const CARD_LABELS: Record<(typeof ALLOWED_CARD_IDS)[number], string> = {
+	laser_burst: "Laser Burst",
+	target_lock: "Target Lock",
+	emergency_repairs: "Emergency Repairs",
+	shield_pulse: "Shield Pulse",
+	evasive_maneuver: "Evasive Maneuver",
+	overcharge_barrage: "Overcharge Barrage",
+};
+
+const DECK_SIZE = 12;
+
+function buildDeckDraft(cardIds: string[] | null | undefined) {
+	const next = Object.fromEntries(
+		ALLOWED_CARD_IDS.map((cardId) => [cardId, 0]),
+	) as Record<(typeof ALLOWED_CARD_IDS)[number], number>;
+
+	for (const cardId of cardIds ?? []) {
+		if (cardId in next) {
+			next[cardId as (typeof ALLOWED_CARD_IDS)[number]] += 1;
+		}
+	}
+
+	return next;
+}
+
+function expandDeckFromDraft(
+	draft: Record<(typeof ALLOWED_CARD_IDS)[number], number>,
+) {
+	return ALLOWED_CARD_IDS.flatMap((cardId) =>
+		Array.from({ length: draft[cardId] ?? 0 }, () => cardId),
+	);
+}
 
 export function StarSystemDetails({
 	id,
@@ -81,6 +124,7 @@ export function StarSystemDetails({
 			taskForces {
 				id
 				name
+					combatDeck
 				constructionDone
 				constructionTotal
 				constructionPerTick
@@ -181,6 +225,7 @@ export function StarSystemDetails({
 					taskForces {
 						id
 						name
+						combatDeck
 						constructionDone
 						constructionTotal
 						constructionPerTick
@@ -241,6 +286,15 @@ export function StarSystemDetails({
 		}`),
 	);
 
+	const [configureDeckState, configureTaskForceCombatDeck] = useMutation(
+		graphql(`mutation ConfigureTaskForceCombatDeck($input: ConfigureTaskForceCombatDeckInput!) {
+			configureTaskForceCombatDeck(input: $input) {
+				id
+				combatDeck
+			}
+		}`),
+	);
+
 	const [queueIndustrialProjectState, queueIndustrialProject] = useMutation(
 		graphql(`mutation QueueIndustrialProject($starSystemId: ID!, $projectType: IndustrialProjectType!) {
 			queueIndustrialProject(starSystemId: $starSystemId, projectType: $projectType) {
@@ -280,6 +334,10 @@ export function StarSystemDetails({
 		useState<IndustrialProjectType | null>(
 			IndustrialProjectType.FactoryExpansion,
 		);
+	const [deckDrafts, setDeckDrafts] = useState<
+		Record<string, Record<(typeof ALLOWED_CARD_IDS)[number], number>>
+	>({});
+	const [deckErrors, setDeckErrors] = useState<Record<string, string>>({});
 
 	const shipDesignOptions = useMemo(
 		() =>
@@ -414,6 +472,23 @@ export function StarSystemDetails({
 
 		setDevelopmentStanceValue(starSystem.currentDevelopmentStance);
 	}, [starSystem?.currentDevelopmentStance]);
+
+	useEffect(() => {
+		setDeckDrafts((current) => {
+			const next: Record<
+				string,
+				Record<(typeof ALLOWED_CARD_IDS)[number], number>
+			> = { ...current };
+
+			for (const taskForce of starSystem?.taskForces ?? []) {
+				if (!next[taskForce.id]) {
+					next[taskForce.id] = buildDeckDraft(taskForce.combatDeck);
+				}
+			}
+
+			return next;
+		});
+	}, [starSystem?.taskForces]);
 
 	const { css } = useStyles();
 
@@ -577,6 +652,22 @@ export function StarSystemDetails({
 							})}
 						>
 							<Center>{tf.name}</Center>
+							<Text size="xs" c="dimmed" ta="center">
+								Combat deck: {(tf.combatDeck ?? []).length} / {DECK_SIZE} cards
+							</Text>
+							<Text size="xs" c="dimmed">
+								{(tf.combatDeck ?? []).length > 0
+									? (tf.combatDeck ?? [])
+											.map((cardId) =>
+												cardId in CARD_LABELS
+													? CARD_LABELS[
+															cardId as (typeof ALLOWED_CARD_IDS)[number]
+														]
+													: cardId,
+											)
+											.join(", ")
+									: "No deck configured"}
+							</Text>
 							{(() => {
 								const readiness = formatReadiness(
 									tf.constructionDone,
@@ -600,6 +691,133 @@ export function StarSystemDetails({
 									</>
 								);
 							})()}
+							{tf.owner?.id === currentPlayerId && (
+								<Stack gap="xs" mt="xs">
+									<Text size="sm" fw={600}>
+										Configure deck
+									</Text>
+									<SimpleGrid cols={2} spacing="xs">
+										{ALLOWED_CARD_IDS.map((cardId) => (
+											<NumberInput
+												key={`${tf.id}:${cardId}`}
+												label={CARD_LABELS[cardId]}
+												min={0}
+												max={2}
+												allowDecimal={false}
+												value={deckDrafts[tf.id]?.[cardId] ?? 0}
+												onChange={(value) => {
+													const numericValue =
+														typeof value === "number" && Number.isFinite(value)
+															? value
+															: 0;
+
+													setDeckDrafts((current) => ({
+														...current,
+														[tf.id]: {
+															...buildDeckDraft(tf.combatDeck),
+															...(current[tf.id] ?? {}),
+															[cardId]: Math.max(
+																0,
+																Math.min(2, Math.floor(numericValue)),
+															),
+														},
+													}));
+												}}
+											/>
+										))}
+									</SimpleGrid>
+									{(() => {
+										const draft =
+											deckDrafts[tf.id] ?? buildDeckDraft(tf.combatDeck);
+										const cardCount = ALLOWED_CARD_IDS.reduce(
+											(acc, cardId) => acc + (draft[cardId] ?? 0),
+											0,
+										);
+										const canSave = cardCount === DECK_SIZE;
+
+										return (
+											<>
+												<Text size="xs" c={canSave ? "teal" : "yellow"}>
+													Deck size: {cardCount} / {DECK_SIZE}
+												</Text>
+												<Button
+													size="xs"
+													loading={configureDeckState.fetching}
+													disabled={!canSave || configureDeckState.fetching}
+													onClick={async () => {
+														const result = await configureTaskForceCombatDeck({
+															input: {
+																taskForceId: tf.id,
+																cardIds: expandDeckFromDraft(draft),
+															},
+														});
+
+														if (!result.error) {
+															setDeckErrors((current) => {
+																const next = { ...current };
+																delete next[tf.id];
+																return next;
+															});
+															return;
+														}
+
+														const gqlError = result.error.graphQLErrors[0];
+														const code = gqlError?.extensions?.code;
+
+														if (code === "INVALID_DECK_SIZE") {
+															setDeckErrors((current) => ({
+																...current,
+																[tf.id]: "Deck must contain exactly 12 cards.",
+															}));
+															return;
+														}
+
+														if (code === "DUPLICATE_CARD_LIMIT_EXCEEDED") {
+															setDeckErrors((current) => ({
+																...current,
+																[tf.id]:
+																	"Each card can appear at most 2 times.",
+															}));
+															return;
+														}
+
+														if (code === "CARD_NOT_ALLOWED") {
+															setDeckErrors((current) => ({
+																...current,
+																[tf.id]:
+																	"Selected card is not allowed in the MVP pool.",
+															}));
+															return;
+														}
+
+														if (code === "NOT_AUTHORIZED") {
+															setDeckErrors((current) => ({
+																...current,
+																[tf.id]:
+																	"You are not allowed to edit this task force deck.",
+															}));
+															return;
+														}
+
+														setDeckErrors((current) => ({
+															...current,
+															[tf.id]:
+																gqlError?.message ?? result.error?.message,
+														}));
+													}}
+												>
+													Save deck
+												</Button>
+												{deckErrors[tf.id] && (
+													<Text c="red" size="xs">
+														{deckErrors[tf.id]}
+													</Text>
+												)}
+											</>
+										);
+									})()}
+								</Stack>
+							)}
 						</Stack>
 					))}
 				</div>
