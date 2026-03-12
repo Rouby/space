@@ -348,6 +348,268 @@ test("resolves configured combat decks during turn resolution and applies engage
 		});
 });
 
+test("blocks endTurn when unresolved engagements exist", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "blocked-endturn-host@example.com",
+		name: "Blocked EndTurn Host",
+	});
+	const { id: rivalId } = await api.seed("user", {
+		email: "blocked-endturn-rival@example.com",
+		name: "Blocked EndTurn Rival",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Blocked EndTurn Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#111111",
+	});
+	await api.seed("player", {
+		gameId,
+		userId: rivalId,
+		color: "#222222",
+	});
+
+	const { id: taskForceAId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: hostId,
+		name: "Host Vanguard",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+	const { id: taskForceBId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: rivalId,
+		name: "Rival Vanguard",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+
+	await api.login(hostId);
+
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
+		},
+	});
+	const startPayload = await startResponse.json();
+	expect(startPayload.errors).toBeUndefined();
+
+	await api.seed("taskForceEngagement", {
+		gameId,
+		taskForceIdA: taskForceAId,
+		taskForceIdB: taskForceBId,
+		ownerIdA: hostId,
+		ownerIdB: rivalId,
+		position: { x: 0, y: 0 },
+		phase: "awaiting_submissions",
+		currentRound: 1,
+		stateA: {
+			taskForceId: taskForceAId,
+			hp: 10,
+			maxHp: 10,
+			hand: [],
+			deck: [],
+			discard: [],
+			nextDamageBonus: 0,
+			nextDamageReduction: 0,
+		},
+		stateB: {
+			taskForceId: taskForceBId,
+			hp: 10,
+			maxHp: 10,
+			hand: [],
+			deck: [],
+			discard: [],
+			nextDamageBonus: 0,
+			nextDamageReduction: 0,
+		},
+		roundLog: [],
+		startedAtTurn: 0,
+		resolvedAtTurn: null,
+	});
+
+	const endTurnResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const endTurnPayload = await endTurnResponse.json();
+
+	expect(endTurnPayload.data?.endTurn).toBeNull();
+	expect(endTurnPayload.errors?.[0]?.extensions?.code).toBe(
+		"UNRESOLVED_ENGAGEMENTS",
+	);
+	expect(endTurnPayload.errors?.[0]?.extensions?.blockers).toEqual(
+		expect.arrayContaining([
+			expect.objectContaining({ type: "engagement" }),
+		]),
+	);
+});
+
+test("allows endTurn after engagement actions resolve the battle", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "unblocked-endturn-host@example.com",
+		name: "Unblocked EndTurn Host",
+	});
+	const { id: rivalId } = await api.seed("user", {
+		email: "unblocked-endturn-rival@example.com",
+		name: "Unblocked EndTurn Rival",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "Unblocked EndTurn Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#336699",
+	});
+	await api.seed("player", {
+		gameId,
+		userId: rivalId,
+		color: "#996633",
+	});
+
+	const { id: taskForceAId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: hostId,
+		name: "Host Spearhead",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+	const { id: taskForceBId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: rivalId,
+		name: "Rival Spearhead",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+
+	await api.login(hostId);
+
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
+		},
+	});
+	const startPayload = await startResponse.json();
+	expect(startPayload.errors).toBeUndefined();
+
+	const engagement = await api.seed("taskForceEngagement", {
+		gameId,
+		taskForceIdA: taskForceAId,
+		taskForceIdB: taskForceBId,
+		ownerIdA: hostId,
+		ownerIdB: rivalId,
+		position: { x: 0, y: 0 },
+		phase: "awaiting_submissions",
+		currentRound: 1,
+		stateA: {
+			taskForceId: taskForceAId,
+			hp: 10,
+			maxHp: 10,
+			hand: [],
+			deck: [],
+			discard: [],
+			nextDamageBonus: 0,
+			nextDamageReduction: 0,
+		},
+		stateB: {
+			taskForceId: taskForceBId,
+			hp: 10,
+			maxHp: 10,
+			hand: [],
+			deck: [],
+			discard: [],
+			nextDamageBonus: 0,
+			nextDamageReduction: 0,
+		},
+		roundLog: [],
+		startedAtTurn: 0,
+		resolvedAtTurn: null,
+	});
+
+	const blockedResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const blockedPayload = await blockedResponse.json();
+	expect(blockedPayload.errors?.[0]?.extensions?.code).toBe(
+		"UNRESOLVED_ENGAGEMENTS",
+	);
+
+	const submitRetreatAResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation SubmitEngagement($input: SubmitTaskForceEngagementActionInput!) { submitTaskForceEngagementAction(input: $input) { id phase } }",
+			variables: {
+				input: {
+					engagementId: engagement.id,
+					action: "RETREAT",
+				},
+			},
+		},
+	});
+	const submitRetreatAPayload = await submitRetreatAResponse.json();
+	expect(submitRetreatAPayload.errors).toBeUndefined();
+
+	await api.login(rivalId);
+
+	const submitRetreatBResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation SubmitEngagement($input: SubmitTaskForceEngagementActionInput!) { submitTaskForceEngagementAction(input: $input) { id phase resolvedAtTurn } }",
+			variables: {
+				input: {
+					engagementId: engagement.id,
+					action: "RETREAT",
+				},
+			},
+		},
+	});
+	const submitRetreatBPayload = await submitRetreatBResponse.json();
+	expect(submitRetreatBPayload.errors).toBeUndefined();
+	expect(
+		submitRetreatBPayload.data?.submitTaskForceEngagementAction?.phase,
+	).toBe("completed");
+
+	await api.login(hostId);
+
+	const endTurnResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const endTurnPayload = await endTurnResponse.json();
+
+	expect(endTurnPayload.errors).toBeUndefined();
+	expect(endTurnPayload.data?.endTurn?.id).toBe(gameId);
+});
+
 test("denies querying a game for users that are not campaign participants", async ({
 	page,
 	api,

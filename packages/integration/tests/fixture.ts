@@ -8,9 +8,10 @@ import {
 	shipComponents,
 	shipDesignComponents,
 	shipDesigns,
-	starSystemResourceDepots,
 	starSystemPopulations,
+	starSystemResourceDepots,
 	starSystems,
+	taskForceEngagements,
 	taskForces,
 	users,
 } from "@space/data/schema";
@@ -50,6 +51,10 @@ type Types = {
 		typeof shipDesignComponents.$inferSelect,
 	];
 	taskForce: [typeof taskForces.$inferInsert, typeof taskForces.$inferSelect];
+	taskForceEngagement: [
+		typeof taskForceEngagements.$inferInsert,
+		typeof taskForceEngagements.$inferSelect,
+	];
 };
 const Tables = {
 	user: users,
@@ -64,6 +69,7 @@ const Tables = {
 	shipDesign: shipDesigns,
 	shipDesignComponent: shipDesignComponents,
 	taskForce: taskForces,
+	taskForceEngagement: taskForceEngagements,
 };
 
 const secret = new TextEncoder().encode(

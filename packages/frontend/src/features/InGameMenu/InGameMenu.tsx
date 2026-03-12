@@ -1,4 +1,11 @@
-import { Badge, NavLink as MantineNavLink, rem } from "@mantine/core";
+import {
+	Anchor,
+	Badge,
+	NavLink as MantineNavLink,
+	rem,
+	Stack,
+	Text,
+} from "@mantine/core";
 import {
 	type Icon,
 	IconAd,
@@ -8,7 +15,12 @@ import {
 	IconPlayerPlay,
 	IconView360,
 } from "@tabler/icons-react";
-import { createLink, type LinkProps, useParams } from "@tanstack/react-router";
+import {
+	createLink,
+	Link,
+	type LinkProps,
+	useParams,
+} from "@tanstack/react-router";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
@@ -28,6 +40,8 @@ function getEndTurnErrorMessage(
 	switch (code) {
 		case "UNRESOLVED_DILEMMAS":
 			return "Resolve all dilemmas before ending turn";
+		case "UNRESOLVED_ENGAGEMENTS":
+			return "Resolve all active battles before ending turn";
 		case "TURN_ALREADY_ENDED":
 			return "Turn already ended. Waiting for other players";
 		case "NOT_AUTHORIZED":
@@ -214,13 +228,42 @@ function EndTurnButton() {
 				game(id: $gameId) {
 					id
 					turnNumber
+					me {
+						id
+						turnEnded
+					}
 					dilemmas {
 						id
 						choosen
 					}
-					me {
+					activeTaskForceEngagements {
 						id
-						turnEnded
+						phase
+						currentRound
+						participantA {
+							submittedCardId
+						}
+						participantB {
+							submittedCardId
+						}
+						taskForceA {
+							id
+							name
+							owner {
+								user {
+									id
+								}
+							}
+						}
+						taskForceB {
+							id
+							name
+							owner {
+								user {
+									id
+								}
+							}
+						}
 					}
 				}
 			}
@@ -297,50 +340,138 @@ function EndTurnButton() {
 	const hasUnresolvedDilemmas =
 		(data?.game.dilemmas.filter((dilemma) => !dilemma.choosen).length ?? 0) > 0;
 
+	const unresolvedBattleBlockers =
+		data?.game.activeTaskForceEngagements
+			.map((engagement) => {
+				const meId = data.game.me?.id;
+				if (!meId) {
+					return null;
+				}
+
+				const ownSide =
+					engagement.taskForceA.owner?.user.id === meId
+						? "A"
+						: engagement.taskForceB.owner?.user.id === meId
+							? "B"
+							: null;
+
+				if (!ownSide) {
+					return null;
+				}
+
+				const ownTaskForce =
+					ownSide === "A" ? engagement.taskForceA : engagement.taskForceB;
+				const opponentTaskForce =
+					ownSide === "A" ? engagement.taskForceB : engagement.taskForceA;
+				const ownSubmittedCardId =
+					ownSide === "A"
+						? engagement.participantA.submittedCardId
+						: engagement.participantB.submittedCardId;
+
+				const actionRequired =
+					engagement.phase === "awaiting_submissions" && !ownSubmittedCardId;
+
+				return {
+					id: engagement.id,
+					phase: engagement.phase,
+					currentRound: engagement.currentRound,
+					label: `${ownTaskForce.name} vs ${opponentTaskForce.name}`,
+					actionRequired,
+					reason: actionRequired
+						? "Action required: submit a combat card or retreat"
+						: "Battle unresolved: waiting for other participant or resolution",
+				};
+			})
+			.filter((blocker) => blocker !== null) ?? [];
+
+	const unresolvedBattlesCount = unresolvedBattleBlockers.length;
+	const pendingBattleActionCount = unresolvedBattleBlockers.filter(
+		(blocker) => blocker.actionRequired,
+	).length;
+	const hasUnresolvedEngagements = unresolvedBattlesCount > 0;
+
 	const isTurnEnded = Boolean(data?.game.me?.turnEnded) && !hasAdvancedTurn;
 	const hasEndedTurn = isTurnEnded || endTurnRequested;
 	const TurnIcon = hasEndedTurn ? IconHourglass : IconPlayerPlay;
+	const unresolvedBattlesMessage =
+		pendingBattleActionCount > 0
+			? `Complete ${pendingBattleActionCount} pending battle action${pendingBattleActionCount === 1 ? "" : "s"} before ending turn`
+			: `Resolve ${unresolvedBattlesCount} active battle${unresolvedBattlesCount === 1 ? "" : "s"} before ending turn`;
 	const buttonDescription = hasUnresolvedDilemmas
 		? "Resolve all dilemmas before ending turn"
-		: turnEvents.error
-			? getTrackGameErrorMessage(turnEvents.error)
-			: endTurnResult.error
-				? getEndTurnErrorMessage(endTurnResult.error)
-				: newTurnCalculated
-					? "New turn calculated. You can issue orders"
-					: endTurnResult.fetching
-						? "Ending turn..."
-						: hasEndedTurn
-							? "Turn ended. Waiting for other players"
-							: "Ready to end turn";
+		: hasUnresolvedEngagements
+			? unresolvedBattlesMessage
+			: turnEvents.error
+				? getTrackGameErrorMessage(turnEvents.error)
+				: endTurnResult.error
+					? getEndTurnErrorMessage(endTurnResult.error)
+					: newTurnCalculated
+						? "New turn calculated. You can issue orders"
+						: endTurnResult.fetching
+							? "Ending turn..."
+							: hasEndedTurn
+								? "Turn ended. Waiting for other players"
+								: "Ready to end turn";
 
 	return (
-		<MantineNavLink
-			component="button"
-			onClick={async () => {
-				if (hasUnresolvedDilemmas) {
-					return;
-				}
+		<Stack gap="xs">
+			{hasUnresolvedEngagements && (
+				<Stack gap={4}>
+					<Text size="xs" fw={600}>
+						Unresolved Battles ({unresolvedBattlesCount})
+					</Text>
+					{unresolvedBattleBlockers.map((blocker) => (
+						<Stack key={blocker.id} gap={0}>
+							<Anchor
+								component={Link}
+								to="/games/$id/engagement/$engagementId"
+								params={{ id: gameId, engagementId: blocker.id } as never}
+								size="xs"
+							>
+								{blocker.label}
+							</Anchor>
+							<Text size="xs" c="dimmed">
+								Round {blocker.currentRound} • {blocker.reason}
+							</Text>
+						</Stack>
+					))}
+				</Stack>
+			)}
 
-				if (typeof data?.game.turnNumber !== "number") {
-					return;
-				}
+			<MantineNavLink
+				component="button"
+				onClick={async () => {
+					if (hasUnresolvedDilemmas || hasUnresolvedEngagements) {
+						return;
+					}
 
-				setEndTurnRequested(true);
-				const result = await endTurn({
-					expectedTurnNumber: data.game.turnNumber,
-					gameId,
-				});
+					if (typeof data?.game.turnNumber !== "number") {
+						return;
+					}
 
-				if (result.error) {
-					setEndTurnRequested(false);
+					setEndTurnRequested(true);
+					const result = await endTurn({
+						expectedTurnNumber: data.game.turnNumber,
+						gameId,
+					});
+
+					if (result.error) {
+						setEndTurnRequested(false);
+					}
+				}}
+				disabled={
+					hasUnresolvedDilemmas ||
+					hasUnresolvedEngagements ||
+					hasEndedTurn ||
+					endTurnResult.fetching
 				}
-			}}
-			disabled={hasUnresolvedDilemmas || hasEndedTurn || endTurnResult.fetching}
-			label={hasEndedTurn ? "Turn Ended" : "End Turn"}
-			leftSection={<TurnIcon size={20} stroke={1.5} />}
-			rightSection={newTurnCalculated ? <Badge color="green">NEW</Badge> : null}
-			description={buttonDescription}
-		/>
+				label={hasEndedTurn ? "Turn Ended" : "End Turn"}
+				leftSection={<TurnIcon size={20} stroke={1.5} />}
+				rightSection={
+					newTurnCalculated ? <Badge color="green">NEW</Badge> : null
+				}
+				description={buttonDescription}
+			/>
+		</Stack>
 	);
 }
