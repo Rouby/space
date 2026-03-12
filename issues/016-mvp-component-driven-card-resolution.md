@@ -1,5 +1,7 @@
 # [MVP-016] Component-Driven Card Resolution and Battle Subsystems
 
+DONE
+
 ## Objective
 Make combat cards resolve against ship-component-derived battle stats so ship designs materially change combat outcomes.
 

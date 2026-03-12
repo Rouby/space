@@ -338,6 +338,8 @@ export const submitTaskForceEngagementAction: NonNullable<
 				stateB.hand = [];
 				draw(stateA, 3);
 				draw(stateB, 3);
+				stateA.shieldHp = stateA.shieldMaxHp;
+				stateB.shieldHp = stateB.shieldMaxHp;
 				nextCurrentRound = engagement.currentRound + 1;
 				nextPhase = "awaiting_submissions";
 			}

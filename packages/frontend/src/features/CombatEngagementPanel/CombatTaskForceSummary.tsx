@@ -1,4 +1,4 @@
-import { Card, SimpleGrid, Stack, Text, Progress, Group } from "@mantine/core";
+import { Card, Group, Progress, SimpleGrid, Stack, Text } from "@mantine/core";
 import type { CombatEngagementPanelQuery } from "../../gql/graphql";
 
 type EngagementType = NonNullable<
@@ -32,6 +32,11 @@ export function CombatTaskForceSummary({
 					<Text size="sm" ta="center">
 						HP {engagement.participantA.hp} / {engagement.participantA.maxHp}
 					</Text>
+					<Text size="xs" c="dimmed" ta="center">
+						Shield {engagement.participantA.shieldHp} /{" "}
+						{engagement.participantA.shieldMaxHp} | Armor{" "}
+						{engagement.participantA.armorRating}
+					</Text>
 				</Stack>
 			</Card>
 			<Card withBorder>
@@ -53,6 +58,11 @@ export function CombatTaskForceSummary({
 					/>
 					<Text size="sm" ta="center">
 						HP {engagement.participantB.hp} / {engagement.participantB.maxHp}
+					</Text>
+					<Text size="xs" c="dimmed" ta="center">
+						Shield {engagement.participantB.shieldHp} /{" "}
+						{engagement.participantB.shieldMaxHp} | Armor{" "}
+						{engagement.participantB.armorRating}
 					</Text>
 				</Stack>
 			</Card>

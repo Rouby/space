@@ -39,6 +39,12 @@ export const taskForceEngagements = pgTable(
 			taskForceId: string;
 			hp: number;
 			maxHp: number;
+			shieldHp: number;
+			shieldMaxHp: number;
+			armorRating: number;
+			weaponRating: number;
+			thrusterRating: number;
+			sensorRating: number;
 			hand: string[];
 			deck: string[];
 			discard: string[];
@@ -49,6 +55,12 @@ export const taskForceEngagements = pgTable(
 			taskForceId: string;
 			hp: number;
 			maxHp: number;
+			shieldHp: number;
+			shieldMaxHp: number;
+			armorRating: number;
+			weaponRating: number;
+			thrusterRating: number;
+			sensorRating: number;
 			hand: string[];
 			deck: string[];
 			discard: string[];
@@ -67,6 +79,9 @@ export const taskForceEngagements = pgTable(
 					cardId: string;
 					effectType: "damage" | "buff" | "special";
 					resolvedValue: number;
+					shieldDamage: number;
+					armorAbsorbed: number;
+					hullDamage: number;
 					attackerHpAfter: number;
 					targetHpAfter: number;
 				}[]

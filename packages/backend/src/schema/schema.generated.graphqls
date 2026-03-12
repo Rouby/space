@@ -360,23 +360,29 @@ type TaskForceEngagement implements Positionable {
 }
 
 type TaskForceEngagementParticipantState {
+	armorRating: Int!
 	deckRemaining: Int!
 	hand: [String!]!
 	hp: Int!
 	maxHp: Int!
 	nextDamageBonus: Int!
 	nextDamageReduction: Int!
+	shieldHp: Int!
+	shieldMaxHp: Int!
 	submittedCardId: String
 	taskForceId: ID!
 }
 
 type TaskForceEngagementRoundLogEntry {
+	armorAbsorbed: Int!
 	attackerHpAfter: Int!
 	attackerTaskForceId: ID!
 	cardId: String!
 	effectType: String!
+	hullDamage: Int!
 	resolvedValue: Int!
 	round: Int!
+	shieldDamage: Int!
 	targetHpAfter: Int!
 	targetTaskForceId: ID!
 }

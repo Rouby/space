@@ -13,6 +13,12 @@ export type CombatState = {
 	taskForceId: string;
 	hp: number;
 	maxHp: number;
+	shieldHp: number;
+	shieldMaxHp: number;
+	armorRating: number;
+	weaponRating: number;
+	thrusterRating: number;
+	sensorRating: number;
 	hand: CardId[];
 	deck: CardId[];
 	discard: CardId[];
@@ -27,6 +33,9 @@ export type RoundLogEntry = {
 	cardId: CardId;
 	effectType: "damage" | "buff" | "special";
 	resolvedValue: number;
+	shieldDamage: number;
+	armorAbsorbed: number;
+	hullDamage: number;
 	attackerHpAfter: number;
 	targetHpAfter: number;
 };
@@ -87,6 +96,12 @@ export function requireCombatState(value: unknown): CombatState {
 		taskForceId: state.taskForceId,
 		hp: state.hp,
 		maxHp: state.maxHp,
+		shieldHp: Number(state.shieldHp ?? 0),
+		shieldMaxHp: Number(state.shieldMaxHp ?? 0),
+		armorRating: Number(state.armorRating ?? 0),
+		weaponRating: Number(state.weaponRating ?? 0),
+		thrusterRating: Number(state.thrusterRating ?? 0),
+		sensorRating: Number(state.sensorRating ?? 0),
 		hand: state.hand.map(parseCardId),
 		deck: state.deck.map(parseCardId),
 		discard: (state.discard ?? []).map(parseCardId),
@@ -149,7 +164,35 @@ export function resolveCard({
 	round: number;
 }): RoundLogEntry {
 	let resolvedValue = 0;
+	let shieldDamage = 0;
+	let armorAbsorbed = 0;
+	let hullDamage = 0;
 	let effectType: "damage" | "buff" | "special" = "special";
+
+	function applyDamage({
+		rawDamage,
+		ignoreArmor,
+	}: {
+		rawDamage: number;
+		ignoreArmor: boolean;
+	}) {
+		const shielded = Math.min(rawDamage, target.shieldHp);
+		target.shieldHp -= shielded;
+		shieldDamage = shielded;
+
+		const postShield = rawDamage - shielded;
+		const reduction = target.nextDamageReduction;
+		target.nextDamageReduction = 0;
+
+		const armor = ignoreArmor ? 0 : target.armorRating;
+		armorAbsorbed = Math.min(postShield, armor);
+		const reducedByArmor = postShield - armorAbsorbed;
+		hullDamage = Math.max(0, reducedByArmor - reduction);
+
+		resolvedValue = hullDamage;
+		target.hp = Math.max(0, target.hp - hullDamage);
+		effectType = "damage";
+	}
 
 	switch (cardId) {
 		case "retreat": {
@@ -159,35 +202,32 @@ export function resolveCard({
 			break;
 		}
 		case "laser_burst": {
-			const raw = 2 + attacker.nextDamageBonus;
+			const raw = attacker.weaponRating + attacker.nextDamageBonus;
 			attacker.nextDamageBonus = 0;
-			const reduction = target.nextDamageReduction;
-			target.nextDamageReduction = 0;
-			resolvedValue = Math.max(0, raw - reduction);
-			target.hp = Math.max(0, target.hp - resolvedValue);
-			effectType = "damage";
+			applyDamage({ rawDamage: raw, ignoreArmor: false });
 			break;
 		}
 		case "overcharge_barrage": {
-			const raw = 3 + attacker.nextDamageBonus;
+			const raw = attacker.weaponRating + attacker.nextDamageBonus;
 			attacker.nextDamageBonus = 0;
-			const reduction = target.nextDamageReduction;
-			target.nextDamageReduction = 0;
-			resolvedValue = Math.max(0, raw - reduction);
-			target.hp = Math.max(0, target.hp - resolvedValue);
-			effectType = "damage";
+			applyDamage({ rawDamage: raw, ignoreArmor: true });
 			break;
 		}
 		case "target_lock": {
-			attacker.nextDamageBonus += 1;
-			resolvedValue = 1;
+			attacker.nextDamageBonus += attacker.sensorRating;
+			resolvedValue = attacker.sensorRating;
 			effectType = "buff";
 			break;
 		}
-		case "shield_pulse":
 		case "evasive_maneuver": {
-			attacker.nextDamageReduction += 1;
-			resolvedValue = 1;
+			attacker.nextDamageReduction += attacker.thrusterRating;
+			resolvedValue = attacker.thrusterRating;
+			effectType = "buff";
+			break;
+		}
+		case "shield_pulse": {
+			attacker.nextDamageReduction += attacker.shieldMaxHp;
+			resolvedValue = attacker.shieldMaxHp;
 			effectType = "buff";
 			break;
 		}
@@ -207,6 +247,9 @@ export function resolveCard({
 		cardId,
 		effectType,
 		resolvedValue,
+		shieldDamage,
+		armorAbsorbed,
+		hullDamage,
 		attackerHpAfter: attacker.hp,
 		targetHpAfter: target.hp,
 	};

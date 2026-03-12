@@ -132,6 +132,12 @@ export function CombatTimeline({ engagement }: { engagement: EngagementType }) {
 															<Badge size="xs" color={actionColor}>
 																{entry.resolvedValue}
 															</Badge>
+															{entry.effectType === "damage" && (
+																<Text size="xs" c="dimmed">
+																	S:{entry.shieldDamage} A:{entry.armorAbsorbed}{" "}
+																	H:{entry.hullDamage}
+																</Text>
+															)}
 														</Group>
 													);
 												})}
@@ -186,6 +192,12 @@ export function CombatTimeline({ engagement }: { engagement: EngagementType }) {
 															<Badge size="xs" color={actionColor}>
 																{entry.resolvedValue}
 															</Badge>
+															{entry.effectType === "damage" && (
+																<Text size="xs" c="dimmed">
+																	S:{entry.shieldDamage} A:{entry.armorAbsorbed}{" "}
+																	H:{entry.hullDamage}
+																</Text>
+															)}
 														</Group>
 													);
 												})}

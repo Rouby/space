@@ -11,12 +11,23 @@ export type CombatProfile = {
 
 // Minimal subset of component stats needed for profile derivation
 export type ComponentStats = {
+	structuralIntegrity?: string | number | null;
+	armorThickness?: string | number | null;
 	weaponDamage?: string | number | null;
 	shieldStrength?: string | number | null;
 	thruster?: string | number | null;
 	sensorPrecision?: string | number | null;
 	crewCapacity?: string | number | null;
 	crewNeed?: string | number | null;
+};
+
+export type BattleSubsystems = {
+	maxHp: number;
+	shieldMaxHp: number;
+	armorRating: number;
+	weaponRating: number;
+	thrusterRating: number;
+	sensorRating: number;
 };
 
 type ProfileRequirement = keyof CombatProfile;
@@ -47,6 +58,37 @@ export function getRequiredCapabilityLabel(req: ProfileRequirement): string {
 function num(v: string | number | null | undefined): number {
 	if (v == null) return 0;
 	return Number(v);
+}
+
+export function deriveSubsystems(
+	components: ComponentStats[],
+	fallbackHp = 7,
+): BattleSubsystems {
+	let structure = 0;
+	let shield = 0;
+	let armor = 0;
+	let weapon = 0;
+	let thruster = 0;
+	let sensor = 0;
+
+	for (const c of components) {
+		structure += num(c.structuralIntegrity);
+		shield += num(c.shieldStrength);
+		armor += num(c.armorThickness);
+		weapon += num(c.weaponDamage);
+		thruster += num(c.thruster);
+		sensor += num(c.sensorPrecision);
+	}
+
+	const maxHp = Math.floor(structure);
+	return {
+		maxHp: maxHp > 0 ? maxHp : fallbackHp,
+		shieldMaxHp: Math.max(0, Math.floor(shield)),
+		armorRating: Math.max(0, Math.floor(armor)),
+		weaponRating: Math.max(0, Math.floor(weapon)),
+		thrusterRating: Math.max(0, Math.floor(thruster)),
+		sensorRating: Math.max(0, Math.floor(sensor)),
+	};
 }
 
 export function deriveCombatProfile(

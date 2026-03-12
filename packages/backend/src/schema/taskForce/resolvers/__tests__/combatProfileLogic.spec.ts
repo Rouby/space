@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	buildStarterDeck,
 	deriveCombatProfile,
+	deriveSubsystems,
 	eligibleCardIds,
 	isCardEligible,
 } from "../combatProfileLogic.js";
@@ -153,5 +154,60 @@ describe("buildStarterDeck", () => {
 		// All 6 cards eligible: 6×2 = 12, so capped correctly
 		const deck = buildStarterDeck(fullProfile);
 		expect(deck.length).toBeLessThanOrEqual(12);
+	});
+});
+
+describe("deriveSubsystems", () => {
+	it("aggregates component stats with floor(sum) semantics", () => {
+		const subsystems = deriveSubsystems([
+			{
+				structuralIntegrity: "4.9",
+				shieldStrength: "2.2",
+				armorThickness: "1.7",
+				weaponDamage: "3.8",
+				thruster: "5.1",
+				sensorPrecision: "6.9",
+			},
+			{
+				structuralIntegrity: "3.4",
+				shieldStrength: "1.3",
+				armorThickness: "2.6",
+				weaponDamage: "1.1",
+				thruster: "0.9",
+				sensorPrecision: "0.2",
+			},
+		]);
+
+		expect(subsystems).toEqual({
+			maxHp: 8,
+			shieldMaxHp: 3,
+			armorRating: 4,
+			weaponRating: 4,
+			thrusterRating: 6,
+			sensorRating: 7,
+		});
+	});
+
+	it("uses fallback hp when no structural integrity is present", () => {
+		expect(deriveSubsystems([], 7).maxHp).toBe(7);
+		expect(
+			deriveSubsystems([
+				{
+					structuralIntegrity: "0",
+					shieldStrength: null,
+					armorThickness: null,
+					weaponDamage: null,
+					thruster: null,
+					sensorPrecision: null,
+				},
+			]),
+		).toMatchObject({
+			maxHp: 7,
+			shieldMaxHp: 0,
+			armorRating: 0,
+			weaponRating: 0,
+			thrusterRating: 0,
+			sensorRating: 0,
+		});
 	});
 });

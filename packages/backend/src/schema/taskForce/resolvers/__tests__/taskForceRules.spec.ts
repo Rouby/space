@@ -203,16 +203,14 @@ describe("task force construction and movement rules", () => {
 						}),
 					},
 					shipDesigns: {
-						findMany: vi
-							.fn()
-							.mockResolvedValue([
-								{
-									id: "sd-1",
-									gameId: "game-1",
-									ownerId: "user-1",
-									decommissioned: false,
-								},
-							]),
+						findMany: vi.fn().mockResolvedValue([
+							{
+								id: "sd-1",
+								gameId: "game-1",
+								ownerId: "user-1",
+								decommissioned: false,
+							},
+						]),
 					},
 					taskForces: {
 						findFirst: vi.fn().mockResolvedValue({
@@ -679,13 +677,11 @@ describe("task force construction and movement rules", () => {
 			drizzle: {
 				query: {
 					taskForces: {
-						findFirst: vi
-							.fn()
-							.mockResolvedValue({
-								id: "tf-1",
-								ownerId: "user-1",
-								combatDeck: [],
-							}),
+						findFirst: vi.fn().mockResolvedValue({
+							id: "tf-1",
+							ownerId: "user-1",
+							combatDeck: [],
+						}),
 					},
 				},
 				select,
@@ -755,13 +751,11 @@ describe("task force construction and movement rules", () => {
 			drizzle: {
 				query: {
 					taskForces: {
-						findFirst: vi
-							.fn()
-							.mockResolvedValue({
-								id: "tf-1",
-								ownerId: "user-1",
-								combatDeck: [],
-							}),
+						findFirst: vi.fn().mockResolvedValue({
+							id: "tf-1",
+							ownerId: "user-1",
+							combatDeck: [],
+						}),
 					},
 				},
 				select,

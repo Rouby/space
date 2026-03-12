@@ -39,7 +39,28 @@ type MockTaskForce = {
 	combatDeck: string[];
 };
 
-function createTx() {
+type MockComponentRow = {
+	taskForceId: string;
+	structuralIntegrity: string | null;
+	shieldStrength: string | null;
+	armorThickness: string | null;
+	weaponDamage: string | null;
+	thruster: string | null;
+	sensorPrecision: string | null;
+};
+
+function createSelectChain(result: unknown[]) {
+	const where = vi.fn().mockResolvedValue(result);
+	const secondJoin = vi.fn().mockReturnValue({ where });
+	const firstJoin = vi.fn().mockReturnValue({ innerJoin: secondJoin, where });
+	const from = vi.fn().mockReturnValue({ where, innerJoin: firstJoin });
+	return { from };
+}
+
+function createTxWithTaskForcesAndComponents(
+	mockTaskForces: MockTaskForce[],
+	componentRows: MockComponentRow[] = [],
+) {
 	const deleteWhere = vi.fn().mockResolvedValue([]);
 	const del = vi.fn().mockReturnValue({ where: deleteWhere });
 	const insertReturning = vi.fn().mockResolvedValue([{ id: "eng-1" }]);
@@ -48,7 +69,30 @@ function createTx() {
 	const updateWhere = vi.fn().mockResolvedValue([]);
 	const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
 	const update = vi.fn().mockReturnValue({ set: updateSet });
-	const where = vi.fn().mockResolvedValue([
+
+	const taskForceSelect = createSelectChain(mockTaskForces);
+	const componentSelect = createSelectChain(componentRows);
+	const select = vi
+		.fn()
+		.mockReturnValueOnce(taskForceSelect)
+		.mockReturnValue(componentSelect);
+
+	return {
+		tx: {
+			select,
+			delete: del,
+			insert,
+			update,
+		},
+		deleteWhere,
+		insertValues,
+		insertReturning,
+		updateWhere,
+	};
+}
+
+function createTx() {
+	return createTxWithTaskForcesAndComponents([
 		{
 			id: "tf-1",
 			ownerId: "owner-a",
@@ -64,58 +108,14 @@ function createTx() {
 			combatDeck: [...VALID_DECK_B],
 		},
 	]);
-	const from = vi.fn().mockReturnValue({ where });
-	const select = vi.fn().mockReturnValue({ from });
-
-	return {
-		tx: {
-			select,
-			delete: del,
-			insert,
-			update,
-		},
-		deleteWhere,
-		insertValues,
-		insertReturning,
-		updateWhere,
-	};
 }
 
 function createTxWithTaskForces(mockTaskForces: MockTaskForce[]) {
-	const deleteWhere = vi.fn().mockResolvedValue([]);
-	const del = vi.fn().mockReturnValue({ where: deleteWhere });
-	const insertReturning = vi.fn().mockResolvedValue([{ id: "eng-1" }]);
-	const insertValues = vi.fn().mockReturnValue({ returning: insertReturning });
-	const insert = vi.fn().mockReturnValue({ values: insertValues });
-	const updateWhere = vi.fn().mockResolvedValue([]);
-	const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
-	const update = vi.fn().mockReturnValue({ set: updateSet });
-	const where = vi.fn().mockResolvedValue(mockTaskForces);
-	const from = vi.fn().mockReturnValue({ where });
-	const select = vi.fn().mockReturnValue({ from });
-
-	return {
-		tx: {
-			select,
-			delete: del,
-			insert,
-			update,
-		},
-		insertValues,
-		insertReturning,
-	};
+	return createTxWithTaskForcesAndComponents(mockTaskForces);
 }
 
 function createTxWithDecks(leftDeck: string[], rightDeck: string[]) {
-	const deleteWhere = vi.fn().mockResolvedValue([]);
-	const del = vi.fn().mockReturnValue({ where: deleteWhere });
-	const insertReturning = vi.fn().mockResolvedValue([{ id: "eng-1" }]);
-	const insertValues = vi.fn().mockReturnValue({ returning: insertReturning });
-	const insert = vi.fn().mockReturnValue({ values: insertValues });
-	const updateWhere = vi.fn().mockResolvedValue([]);
-	const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
-	const update = vi.fn().mockReturnValue({ set: updateSet });
-	const where = vi.fn().mockResolvedValue([
+	return createTxWithTaskForcesAndComponents([
 		{
 			id: "tf-1",
 			ownerId: "owner-a",
@@ -131,21 +131,6 @@ function createTxWithDecks(leftDeck: string[], rightDeck: string[]) {
 			combatDeck: rightDeck,
 		},
 	]);
-	const from = vi.fn().mockReturnValue({ where });
-	const select = vi.fn().mockReturnValue({ from });
-
-	return {
-		tx: {
-			select,
-			delete: del,
-			insert,
-			update,
-		},
-		deleteWhere,
-		insertValues,
-		insertReturning,
-		updateWhere,
-	};
 }
 
 describe("tickTaskForceCombat", () => {
@@ -401,5 +386,86 @@ describe("tickTaskForceCombat", () => {
 		});
 
 		expect(starts).toEqual([{ taskForceIdA: "tf-1", taskForceIdB: "tf-2" }]);
+	});
+
+	it("seeds subsystem combat state from component-derived archetypes", async () => {
+		const { tx, insertValues } = createTxWithTaskForcesAndComponents(
+			[
+				{
+					id: "tf-1",
+					ownerId: "owner-a",
+					position: { x: 10, y: 0 },
+					movementVector: { x: 10, y: 0 },
+					combatDeck: [...VALID_DECK_A],
+				},
+				{
+					id: "tf-2",
+					ownerId: "owner-b",
+					position: { x: 5, y: 5 },
+					movementVector: { x: 0, y: 10 },
+					combatDeck: [...VALID_DECK_B],
+				},
+			],
+			[
+				{
+					taskForceId: "tf-1",
+					structuralIntegrity: "9",
+					shieldStrength: "3",
+					armorThickness: "4",
+					weaponDamage: "5",
+					thruster: "1",
+					sensorPrecision: "2",
+				},
+				{
+					taskForceId: "tf-2",
+					structuralIntegrity: "6",
+					shieldStrength: "0",
+					armorThickness: "1",
+					weaponDamage: "2",
+					thruster: "4",
+					sensorPrecision: "5",
+				},
+			],
+		);
+
+		await tickTaskForceCombat(tx as never, {
+			addIndustryChange() {},
+			addMiningChange() {},
+			addPopulationChange() {},
+			turn: 12,
+			postMessage: vi.fn(),
+		});
+
+		expect(insertValues).toHaveBeenCalledTimes(1);
+		const [engagementSeed] = insertValues.mock.calls[0] as [
+			{
+				stateA: {
+					hp: number;
+					maxHp: number;
+					shieldHp: number;
+					armorRating: number;
+					weaponRating: number;
+				};
+				stateB: {
+					hp: number;
+					maxHp: number;
+					shieldHp: number;
+					armorRating: number;
+					weaponRating: number;
+				};
+			},
+		];
+
+		expect(engagementSeed.stateA.maxHp).toBe(9);
+		expect(engagementSeed.stateA.hp).toBe(9);
+		expect(engagementSeed.stateA.shieldHp).toBe(3);
+		expect(engagementSeed.stateA.armorRating).toBe(4);
+		expect(engagementSeed.stateA.weaponRating).toBe(5);
+
+		expect(engagementSeed.stateB.maxHp).toBe(6);
+		expect(engagementSeed.stateB.hp).toBe(6);
+		expect(engagementSeed.stateB.shieldHp).toBe(0);
+		expect(engagementSeed.stateB.armorRating).toBe(1);
+		expect(engagementSeed.stateB.weaponRating).toBe(2);
 	});
 });

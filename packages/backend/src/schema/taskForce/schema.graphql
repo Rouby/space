@@ -31,6 +31,9 @@ type TaskForceEngagementParticipantState {
 	taskForceId: ID!
 	hp: Int!
 	maxHp: Int!
+	shieldHp: Int!
+	shieldMaxHp: Int!
+	armorRating: Int!
 	hand: [String!]!
 	deckRemaining: Int!
 	nextDamageBonus: Int!
@@ -45,6 +48,9 @@ type TaskForceEngagementRoundLogEntry {
 	cardId: String!
 	effectType: String!
 	resolvedValue: Int!
+	shieldDamage: Int!
+	armorAbsorbed: Int!
+	hullDamage: Int!
 	attackerHpAfter: Int!
 	targetHpAfter: Int!
 }

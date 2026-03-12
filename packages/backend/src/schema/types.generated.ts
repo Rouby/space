@@ -538,24 +538,30 @@ export type TaskForceEngagement = Positionable & {
 
 export type TaskForceEngagementParticipantState = {
   __typename?: 'TaskForceEngagementParticipantState';
+  armorRating: Scalars['Int']['output'];
   deckRemaining: Scalars['Int']['output'];
   hand: Array<Scalars['String']['output']>;
   hp: Scalars['Int']['output'];
   maxHp: Scalars['Int']['output'];
   nextDamageBonus: Scalars['Int']['output'];
   nextDamageReduction: Scalars['Int']['output'];
+  shieldHp: Scalars['Int']['output'];
+  shieldMaxHp: Scalars['Int']['output'];
   submittedCardId?: Maybe<Scalars['String']['output']>;
   taskForceId: Scalars['ID']['output'];
 };
 
 export type TaskForceEngagementRoundLogEntry = {
   __typename?: 'TaskForceEngagementRoundLogEntry';
+  armorAbsorbed: Scalars['Int']['output'];
   attackerHpAfter: Scalars['Int']['output'];
   attackerTaskForceId: Scalars['ID']['output'];
   cardId: Scalars['String']['output'];
   effectType: Scalars['String']['output'];
+  hullDamage: Scalars['Int']['output'];
   resolvedValue: Scalars['Int']['output'];
   round: Scalars['Int']['output'];
+  shieldDamage: Scalars['Int']['output'];
   targetHpAfter: Scalars['Int']['output'];
   targetTaskForceId: Scalars['ID']['output'];
 };
@@ -1290,24 +1296,30 @@ export type TaskForceEngagementResolvers<ContextType = Context, ParentType exten
 };
 
 export type TaskForceEngagementParticipantStateResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementParticipantState'] = ResolversParentTypes['TaskForceEngagementParticipantState']> = {
+  armorRating?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   deckRemaining?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   hand?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   hp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   maxHp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   nextDamageBonus?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   nextDamageReduction?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  shieldHp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  shieldMaxHp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   submittedCardId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   taskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TaskForceEngagementRoundLogEntryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementRoundLogEntry'] = ResolversParentTypes['TaskForceEngagementRoundLogEntry']> = {
+  armorAbsorbed?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   attackerHpAfter?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   attackerTaskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   cardId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   effectType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  hullDamage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   resolvedValue?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   round?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  shieldDamage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   targetHpAfter?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   targetTaskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

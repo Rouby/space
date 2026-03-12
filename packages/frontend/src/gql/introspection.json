@@ -2957,6 +2957,17 @@
         "name": "TaskForceEngagementParticipantState",
         "fields": [
           {
+            "name": "armorRating",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "deckRemaining",
             "type": {
               "kind": "NON_NULL",
@@ -3029,6 +3040,28 @@
             "args": []
           },
           {
+            "name": "shieldHp",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "shieldMaxHp",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "submittedCardId",
             "type": {
               "kind": "SCALAR",
@@ -3054,6 +3087,17 @@
         "kind": "OBJECT",
         "name": "TaskForceEngagementRoundLogEntry",
         "fields": [
+          {
+            "name": "armorAbsorbed",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
           {
             "name": "attackerHpAfter",
             "type": {
@@ -3099,6 +3143,17 @@
             "args": []
           },
           {
+            "name": "hullDamage",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "resolvedValue",
             "type": {
               "kind": "NON_NULL",
@@ -3111,6 +3166,17 @@
           },
           {
             "name": "round",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "shieldDamage",
             "type": {
               "kind": "NON_NULL",
               "ofType": {

@@ -70,6 +70,9 @@ export type TaskForceEngagementParticipantStateMapper = {
 	taskForceId: string;
 	hp: number;
 	maxHp: number;
+	shieldHp: number;
+	shieldMaxHp: number;
+	armorRating: number;
 	hand: string[];
 	deckRemaining: number;
 	nextDamageBonus: number;
@@ -84,6 +87,9 @@ export type TaskForceEngagementRoundLogEntryMapper = {
 	cardId: string;
 	effectType: string;
 	resolvedValue: number;
+	shieldDamage: number;
+	armorAbsorbed: number;
+	hullDamage: number;
 	attackerHpAfter: number;
 	targetHpAfter: number;
 };

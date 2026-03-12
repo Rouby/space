@@ -48,6 +48,9 @@ export function CombatEngagementPanel({
 						taskForceId
 						hp
 						maxHp
+						shieldHp
+						shieldMaxHp
+						armorRating
 						hand
 						deckRemaining
 						submittedCardId
@@ -56,6 +59,9 @@ export function CombatEngagementPanel({
 						taskForceId
 						hp
 						maxHp
+						shieldHp
+						shieldMaxHp
+						armorRating
 						hand
 						deckRemaining
 						submittedCardId
@@ -67,6 +73,9 @@ export function CombatEngagementPanel({
 						cardId
 						effectType
 						resolvedValue
+						shieldDamage
+						armorAbsorbed
+						hullDamage
 						attackerHpAfter
 						targetHpAfter
 					}

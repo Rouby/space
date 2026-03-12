@@ -1,8 +1,12 @@
 import {
 	and,
 	eq,
+	inArray,
 	isNull,
+	shipComponents,
+	shipDesignComponents,
 	taskForceEngagements,
+	taskForceShipDesigns,
 	taskForces,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
@@ -40,11 +44,35 @@ type CombatState = {
 	taskForceId: string;
 	hp: number;
 	maxHp: number;
+	shieldHp: number;
+	shieldMaxHp: number;
+	armorRating: number;
+	weaponRating: number;
+	thrusterRating: number;
+	sensorRating: number;
 	hand: CardId[];
 	deck: CardId[];
 	discard: CardId[];
 	nextDamageBonus: number;
 	nextDamageReduction: number;
+};
+
+type ComponentStats = {
+	structuralIntegrity: string | null;
+	shieldStrength: string | null;
+	armorThickness: string | null;
+	weaponDamage: string | null;
+	thruster: string | null;
+	sensorPrecision: string | null;
+};
+
+type BattleSubsystems = {
+	maxHp: number;
+	shieldMaxHp: number;
+	armorRating: number;
+	weaponRating: number;
+	thrusterRating: number;
+	sensorRating: number;
 };
 
 class CombatRuleViolation extends Error {
@@ -116,6 +144,41 @@ function draw(state: CombatState, amount: number) {
 			state.hand.push(card);
 		}
 	}
+}
+
+function num(v: string | null | undefined): number {
+	if (v == null) return 0;
+	return Number(v);
+}
+
+function deriveSubsystemsFromComponents(
+	components: ComponentStats[],
+): BattleSubsystems {
+	let structure = 0;
+	let shield = 0;
+	let armor = 0;
+	let weapon = 0;
+	let thruster = 0;
+	let sensor = 0;
+
+	for (const c of components) {
+		structure += num(c.structuralIntegrity);
+		shield += num(c.shieldStrength);
+		armor += num(c.armorThickness);
+		weapon += num(c.weaponDamage);
+		thruster += num(c.thruster);
+		sensor += num(c.sensorPrecision);
+	}
+
+	const maxHp = Math.floor(structure);
+	return {
+		maxHp: maxHp > 0 ? maxHp : STARTING_HP,
+		shieldMaxHp: Math.max(0, Math.floor(shield)),
+		armorRating: Math.max(0, Math.floor(armor)),
+		weaponRating: Math.max(0, Math.floor(weapon)),
+		thrusterRating: Math.max(0, Math.floor(thruster)),
+		sensorRating: Math.max(0, Math.floor(sensor)),
+	};
 }
 
 function distanceSquared(a: Point, b: Point) {
@@ -259,6 +322,47 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 		.where(and(eq(taskForces.gameId, gameId), isNull(taskForces.deletedAt)));
 
 	const candidates: Array<{ leftId: string; rightId: string }> = [];
+	const allTaskForceIds = allTaskForces.map((taskForce) => taskForce.id);
+	const componentRows =
+		allTaskForceIds.length === 0
+			? []
+			: await tx
+					.select({
+						taskForceId: taskForceShipDesigns.taskForceId,
+						structuralIntegrity: shipComponents.structuralIntegrity,
+						shieldStrength: shipComponents.shieldStrength,
+						armorThickness: shipComponents.armorThickness,
+						weaponDamage: shipComponents.weaponDamage,
+						thruster: shipComponents.thruster,
+						sensorPrecision: shipComponents.sensorPrecision,
+					})
+					.from(taskForceShipDesigns)
+					.innerJoin(
+						shipDesignComponents,
+						eq(
+							shipDesignComponents.shipDesignId,
+							taskForceShipDesigns.shipDesignId,
+						),
+					)
+					.innerJoin(
+						shipComponents,
+						eq(shipComponents.id, shipDesignComponents.shipComponentId),
+					)
+					.where(inArray(taskForceShipDesigns.taskForceId, allTaskForceIds));
+
+	const componentStatsByTaskForce = new Map<string, ComponentStats[]>();
+	for (const row of componentRows) {
+		const components = componentStatsByTaskForce.get(row.taskForceId) ?? [];
+		components.push({
+			structuralIntegrity: row.structuralIntegrity,
+			shieldStrength: row.shieldStrength,
+			armorThickness: row.armorThickness,
+			weaponDamage: row.weaponDamage,
+			thruster: row.thruster,
+			sensorPrecision: row.sensorPrecision,
+		});
+		componentStatsByTaskForce.set(row.taskForceId, components);
+	}
 
 	for (let i = 0; i + 1 < allTaskForces.length; i += 1) {
 		const left = allTaskForces[i];
@@ -326,10 +430,23 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 			y: (left.position.y + right.position.y) / 2,
 		};
 
+		const leftSubsystems = deriveSubsystemsFromComponents(
+			componentStatsByTaskForce.get(left.id) ?? [],
+		);
+		const rightSubsystems = deriveSubsystemsFromComponents(
+			componentStatsByTaskForce.get(right.id) ?? [],
+		);
+
 		const sideA: CombatState = {
 			taskForceId: left.id,
-			hp: STARTING_HP,
-			maxHp: STARTING_HP,
+			hp: leftSubsystems.maxHp,
+			maxHp: leftSubsystems.maxHp,
+			shieldHp: leftSubsystems.shieldMaxHp,
+			shieldMaxHp: leftSubsystems.shieldMaxHp,
+			armorRating: leftSubsystems.armorRating,
+			weaponRating: leftSubsystems.weaponRating,
+			thrusterRating: leftSubsystems.thrusterRating,
+			sensorRating: leftSubsystems.sensorRating,
 			hand: [],
 			deck: shuffle(assertValidDeck(left.combatDeck ?? [], left.id)),
 			discard: [],
@@ -338,8 +455,14 @@ export async function tickTaskForceCombat(tx: Transaction, ctx: Context) {
 		};
 		const sideB: CombatState = {
 			taskForceId: right.id,
-			hp: STARTING_HP,
-			maxHp: STARTING_HP,
+			hp: rightSubsystems.maxHp,
+			maxHp: rightSubsystems.maxHp,
+			shieldHp: rightSubsystems.shieldMaxHp,
+			shieldMaxHp: rightSubsystems.shieldMaxHp,
+			armorRating: rightSubsystems.armorRating,
+			weaponRating: rightSubsystems.weaponRating,
+			thrusterRating: rightSubsystems.thrusterRating,
+			sensorRating: rightSubsystems.sensorRating,
 			hand: [],
 			deck: shuffle(assertValidDeck(right.combatDeck ?? [], right.id)),
 			discard: [],
