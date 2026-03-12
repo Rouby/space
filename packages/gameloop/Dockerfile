@@ -1,7 +1,7 @@
-FROM node:22-alpine as base
+FROM node:24-alpine AS base
 
 
-FROM base as build
+FROM base AS build
 
 WORKDIR /space
 
@@ -18,14 +18,14 @@ ADD ./packages/gameloop/src ./packages/gameloop/src
 ADD ./packages/data/src ./packages/data/src
 ADD ./packages/ai/src ./packages/ai/src
 
-FROM node:22-alpine
+FROM node:24-alpine
 
 WORKDIR /space
 
-ENV NODE_ENV production
-ENV TZ "Europe/Berlin"
-ENV NODE_OPTIONS --enable-source-maps
-ENV NODE_NO_WARNINGS 1
+ENV NODE_ENV=production
+ENV TZ="Europe/Berlin"
+ENV NODE_OPTIONS="--enable-source-maps"
+ENV NODE_NO_WARNINGS=1
 
 COPY --from=build /space/node_modules /space/node_modules
 COPY --from=build /space/packages /space/packages
