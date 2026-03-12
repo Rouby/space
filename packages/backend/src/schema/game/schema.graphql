@@ -21,6 +21,7 @@ type TurnReport {
 	turnNumber: Int!
 	createdAt: DateTime!
 	populationChanges: [TurnReportPopulationChange!]!
+	populationMigrations: [TurnReportPopulationMigration!]!
 	miningChanges: [TurnReportMiningChange!]!
 	industryChanges: [TurnReportIndustryChange!]!
 	industrialProjectCompletions: [TurnReportIndustrialProjectCompletion!]!
@@ -28,6 +29,13 @@ type TurnReport {
 	taskForceEngagements: [TurnReportTaskForceEngagement!]!
 	colonizationPressureChanges: [TurnReportColonizationPressureChange!]!
 	colonizationCompleted: [TurnReportColonizationCompleted!]!
+}
+
+type TurnReportPopulationMigration {
+	sourceStarSystem: StarSystem!
+	destinationStarSystem: StarSystem!
+	allegiancePlayer: User!
+	amount: BigInt!
 }
 
 type TurnReportTaskForceEngagement {

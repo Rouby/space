@@ -3512,6 +3512,24 @@
             "args": []
           },
           {
+            "name": "populationMigrations",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "TurnReportPopulationMigration",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
             "name": "taskForceConstructionChanges",
             "type": {
               "kind": "NON_NULL",
@@ -3851,6 +3869,60 @@
           },
           {
             "name": "starSystem",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TurnReportPopulationMigration",
+        "fields": [
+          {
+            "name": "allegiancePlayer",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "User",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "amount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "destinationStarSystem",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "sourceStarSystem",
             "type": {
               "kind": "NON_NULL",
               "ofType": {

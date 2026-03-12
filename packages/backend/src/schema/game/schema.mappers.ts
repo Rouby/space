@@ -1,15 +1,16 @@
 import type {
 	games,
 	players,
+	TurnReportColonizationCompleted,
+	TurnReportColonizationPressureChange,
 	TurnReportIndustrialProjectCompletion,
 	TurnReportIndustryChange,
 	TurnReportMiningChange,
 	TurnReportPopulationChange,
+	TurnReportPopulationMigration,
 	TurnReportTaskForceConstructionChange,
 	turnReports,
 	users,
-	TurnReportColonizationPressureChange,
-	TurnReportColonizationCompleted,
 } from "@space/data/schema";
 
 export type GameMapper = typeof games.$inferSelect;
@@ -28,3 +29,4 @@ export type TurnReportColonizationPressureChangeMapper =
 	TurnReportColonizationPressureChange;
 export type TurnReportColonizationCompletedMapper =
 	TurnReportColonizationCompleted;
+export type TurnReportPopulationMigrationMapper = TurnReportPopulationMigration;

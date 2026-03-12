@@ -444,6 +444,7 @@ type TurnReport {
 	industryChanges: [TurnReportIndustryChange!]!
 	miningChanges: [TurnReportMiningChange!]!
 	populationChanges: [TurnReportPopulationChange!]!
+	populationMigrations: [TurnReportPopulationMigration!]!
 	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
 	taskForceEngagements: [TurnReportTaskForceEngagement!]!
 	turnNumber: Int!
@@ -488,6 +489,13 @@ type TurnReportPopulationChange {
 	population: Population!
 	previousAmount: BigInt!
 	starSystem: StarSystem!
+}
+
+type TurnReportPopulationMigration {
+	allegiancePlayer: User!
+	amount: BigInt!
+	destinationStarSystem: StarSystem!
+	sourceStarSystem: StarSystem!
 }
 
 type TurnReportTaskForceConstructionChange {

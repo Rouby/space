@@ -12,6 +12,7 @@ import {
 	starSystems,
 	type TurnReportColonizationCompleted,
 	type TurnReportColonizationPressureChange,
+	type TurnReportPopulationMigration,
 	type TurnReportTaskForceConstructionChange,
 	taskForceEngagements,
 	taskForces,
@@ -26,6 +27,7 @@ import { tickDevelopmentStances } from "./developmentStance.ts";
 import { tickDiscoveries } from "./discoveries.ts";
 import type { IndustrialProjectCompletionChange } from "./industrialProjects.ts";
 import { tickIndustrialProjects } from "./industrialProjects.ts";
+import { tickPopulationMigration } from "./populationMigration.ts";
 import type { MiningTurnChange } from "./starSystemEconomy.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import type { PopulationTurnChange } from "./starSystemPopulation.ts";
@@ -56,6 +58,9 @@ export type Context = {
 		change: TurnReportColonizationPressureChange,
 	) => void;
 	addColonizationCompleted?: (change: TurnReportColonizationCompleted) => void;
+	addPopulationMigrationChange?: (
+		change: TurnReportPopulationMigration,
+	) => void;
 };
 
 export async function tick() {
@@ -69,6 +74,7 @@ export async function tick() {
 	const colonizationPressureChanges: TurnReportColonizationPressureChange[] =
 		[];
 	const colonizationCompleted: TurnReportColonizationCompleted[] = [];
+	const populationMigrations: TurnReportPopulationMigration[] = [];
 
 	const ctx: Context = {
 		postMessage: (event) => messages.push(event),
@@ -92,6 +98,7 @@ export async function tick() {
 		addColonizationPressureChange: (change) =>
 			colonizationPressureChanges.push(change),
 		addColonizationCompleted: (change) => colonizationCompleted.push(change),
+		addPopulationMigrationChange: (change) => populationMigrations.push(change),
 	};
 
 	await drizzle.transaction(async (tx) => {
@@ -110,6 +117,8 @@ export async function tick() {
 		await tickTaskForceMovement(tx, ctx);
 
 		await tickTaskForceCombat(tx, ctx);
+
+		await tickPopulationMigration(tx, ctx);
 
 		await tickStarSystemPopulation(tx, ctx);
 
@@ -289,6 +298,11 @@ export async function tick() {
 								change.ownerIdA === p.userId || change.ownerIdB === p.userId,
 						)
 						.map(({ ownerIdA, ownerIdB, ...rest }) => rest),
+					populationMigrations: populationMigrations.filter(
+						(change) =>
+							visibleSystemIds.has(change.sourceStarSystemId) ||
+							visibleSystemIds.has(change.destinationStarSystemId),
+					),
 					colonizationPressureChanges: colonizationPressureChanges.filter((c) =>
 						visibleSystemIds.has(c.starSystemId),
 					),

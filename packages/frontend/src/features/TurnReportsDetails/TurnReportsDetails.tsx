@@ -40,6 +40,21 @@ export function TurnReportsDetails() {
 							newAmount
 							growth
 						}
+						populationMigrations {
+							sourceStarSystem {
+								id
+								name
+							}
+							destinationStarSystem {
+								id
+								name
+							}
+							allegiancePlayer {
+								id
+								name
+							}
+							amount
+						}
 						miningChanges {
 							starSystem {
 								id
@@ -139,7 +154,7 @@ export function TurnReportsDetails() {
 					<Title order={3}>Turn Reports</Title>
 					<Text size="sm" c="dimmed">
 						Detailed end-of-turn summaries for population, mining, industry,
-						industrial projects, and task force construction.
+						migration, industrial projects, and task force construction.
 					</Text>
 				</div>
 				{reports.length > 1 && (
@@ -197,6 +212,42 @@ export function TurnReportsDetails() {
 														{formatInteger(change.previousAmount)}
 													</Table.Td>
 													<Table.Td>{formatInteger(change.newAmount)}</Table.Td>
+												</Table.Tr>
+											))}
+										</Table.Tbody>
+									</Table>
+								)}
+
+								<Divider my="xs" />
+
+								<Text size="sm" fw={500}>
+									Population Migration
+								</Text>
+								{report.populationMigrations.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No migration changes.
+									</Text>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>From</Table.Th>
+												<Table.Th>To</Table.Th>
+												<Table.Th>Allegiance</Table.Th>
+												<Table.Th>Migrated</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.populationMigrations.map((migration, idx) => (
+												<Table.Tr
+													key={`${migration.sourceStarSystem.id}:${migration.destinationStarSystem.id}:${migration.allegiancePlayer.id}:${idx}`}
+												>
+													<Table.Td>{migration.sourceStarSystem.name}</Table.Td>
+													<Table.Td>
+														{migration.destinationStarSystem.name}
+													</Table.Td>
+													<Table.Td>{migration.allegiancePlayer.name}</Table.Td>
+													<Table.Td>{formatInteger(migration.amount)}</Table.Td>
 												</Table.Tr>
 											))}
 										</Table.Tbody>

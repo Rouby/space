@@ -18,6 +18,13 @@ export type TurnReportPopulationChange = {
 	growth: string;
 };
 
+export type TurnReportPopulationMigration = {
+	sourceStarSystemId: string;
+	destinationStarSystemId: string;
+	allegianceToPlayerId: string;
+	amount: string;
+};
+
 export type TurnReportIndustryChange = {
 	starSystemId: string;
 	industryTotal: number;
@@ -76,6 +83,7 @@ export type TurnReportColonizationCompleted = {
 
 export type TurnReportSummary = {
 	populationChanges: TurnReportPopulationChange[];
+	populationMigrations?: TurnReportPopulationMigration[];
 	miningChanges: TurnReportMiningChange[];
 	industryChanges: TurnReportIndustryChange[];
 	industrialProjectCompletions: TurnReportIndustrialProjectCompletion[];

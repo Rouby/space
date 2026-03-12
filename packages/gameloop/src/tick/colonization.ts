@@ -246,7 +246,10 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 				}> = [];
 
 				let remainingPopulation = initialPopulation;
-				for (const [index, [ownerId, accumulatedPressure]] of contributorEntries.entries()) {
+				for (const [
+					index,
+					[ownerId, accumulatedPressure],
+				] of contributorEntries.entries()) {
 					if (index === contributorEntries.length - 1) {
 						populationRows.push({
 							starSystemId: inflow.targetId,
@@ -257,7 +260,8 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 					}
 
 					const shareFloat =
-						Number(initialPopulation) * (accumulatedPressure / totalAccumulated);
+						Number(initialPopulation) *
+						(accumulatedPressure / totalAccumulated);
 					const share = BigInt(Math.floor(shareFloat));
 					populationRows.push({
 						starSystemId: inflow.targetId,

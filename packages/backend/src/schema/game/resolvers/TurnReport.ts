@@ -4,6 +4,9 @@ export const TurnReport: TurnReportResolvers = {
 	populationChanges: async (parent, _arg, _ctx) => {
 		return parent.summary.populationChanges || [];
 	},
+	populationMigrations: async (parent, _arg, _ctx) => {
+		return parent.summary.populationMigrations || [];
+	},
 	miningChanges: async (parent, _arg, _ctx) => {
 		return parent.summary.miningChanges || [];
 	},
