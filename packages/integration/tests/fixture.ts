@@ -1,5 +1,5 @@
 import { test as base, expect } from "@playwright/test";
-import { getConnection, getDrizzle,  } from "@space/data";
+import { getConnection, getDrizzle } from "@space/data";
 import {
 	games,
 	players,
@@ -120,6 +120,10 @@ export const test = base.extend<{
 					]);
 				},
 			});
+
+			await drizzle.delete(shipDesignComponents);
+			await drizzle.delete(games);
+			await drizzle.delete(users);
 		},
 		{ scope: "test" },
 	],
