@@ -16,8 +16,8 @@ import {
 	deriveCombatProfile,
 	getRequiredCapabilityLabel,
 	isCardEligible,
-} from "../combatProfileLogic.js";
-import type { CardId } from "../combatRuntime.js";
+} from "../combatProfileLogic.ts";
+import type { CardId } from "../combatRuntime.ts";
 
 const ALLOWED_CARD_IDS = [
 	"laser_burst",

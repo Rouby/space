@@ -1,7 +1,7 @@
 import { createGraphQLError } from "graphql-yoga";
 import { Subject } from "rxjs";
 import { describe, expect, it, vi } from "vitest";
-import { trackStarSystem } from "../../../base/resolvers/Subscription/trackStarSystem.js";
+import { trackStarSystem } from "../../../base/resolvers/Subscription/trackStarSystem.ts";
 
 const trackStarSystemSubscribe =
 	typeof trackStarSystem === "function"

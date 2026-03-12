@@ -11,7 +11,7 @@ import {
 } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { TaskForceResolvers } from "./../../types.generated.js";
-import { deriveCombatProfile, eligibleCardIds } from "./combatProfileLogic.js";
+import { deriveCombatProfile, eligibleCardIds } from "./combatProfileLogic.ts";
 export const TaskForce: TaskForceResolvers = {
 	name: (parent) => {
 		return parent.name ?? "Unknown";

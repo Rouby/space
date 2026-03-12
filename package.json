@@ -15,7 +15,7 @@
 	"type": "module",
 	"packageManager": "yarn@4.6.0",
 	"devDependencies": {
-		"@biomejs/biome": "2.2.0",
+		"@biomejs/biome": "2.4.6",
 		"esprima": "4.0.1",
 		"typescript": "5.9.2"
 	},

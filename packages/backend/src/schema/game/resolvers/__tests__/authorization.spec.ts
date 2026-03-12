@@ -1,10 +1,10 @@
 import { createGraphQLError } from "graphql-yoga";
 import { describe, expect, it, vi } from "vitest";
-import { trackStarSystem } from "../../../base/resolvers/Subscription/trackStarSystem.js";
-import { orderTaskForce } from "../../../taskForce/resolvers/Mutation/orderTaskForce.js";
-import { game } from "../Query/game.js";
-import { games } from "../Query/games.js";
-import { trackGame } from "../Subscription/trackGame.js";
+import { trackStarSystem } from "../../../base/resolvers/Subscription/trackStarSystem.ts";
+import { orderTaskForce } from "../../../taskForce/resolvers/Mutation/orderTaskForce.ts";
+import { game } from "../Query/game.ts";
+import { games } from "../Query/games.ts";
+import { trackGame } from "../Subscription/trackGame.ts";
 
 type CallableResolver<TArgs extends unknown[], TResult> =
 	| ((...args: TArgs) => TResult)

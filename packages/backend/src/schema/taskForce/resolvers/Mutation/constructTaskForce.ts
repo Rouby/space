@@ -20,7 +20,7 @@ import type { MutationResolvers } from "../../../types.generated.js";
 import {
 	buildStarterDeck,
 	deriveCombatProfile,
-} from "../combatProfileLogic.js";
+} from "../combatProfileLogic.ts";
 
 export const constructTaskForce: NonNullable<
 	MutationResolvers["constructTaskForce"]

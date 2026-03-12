@@ -1,10 +1,10 @@
 import { createGraphQLError } from "graphql-yoga";
 import { describe, expect, it, vi } from "vitest";
-import { createGame } from "../Mutation/createGame.js";
-import { endTurn } from "../Mutation/endTurn.js";
-import { joinGame } from "../Mutation/joinGame.js";
-import { startGame } from "../Mutation/startGame.js";
-import { updateGameSettings } from "../Mutation/updateGameSettings.js";
+import { createGame } from "../Mutation/createGame.ts";
+import { endTurn } from "../Mutation/endTurn.ts";
+import { joinGame } from "../Mutation/joinGame.ts";
+import { startGame } from "../Mutation/startGame.ts";
+import { updateGameSettings } from "../Mutation/updateGameSettings.ts";
 
 type CallableResolver<TArgs extends unknown[], TResult> =
 	| ((...args: TArgs) => TResult)

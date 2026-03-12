@@ -5,7 +5,7 @@ import {
 	deriveSubsystems,
 	eligibleCardIds,
 	isCardEligible,
-} from "../combatProfileLogic.js";
+} from "../combatProfileLogic.ts";
 
 const emptyProfile = {
 	hasWeapons: false,
