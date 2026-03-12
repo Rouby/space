@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "playwright-test": {
+      "type": "stdio",
+      "command": "yarn",
+      "args": [
+        "workspace",
+        "@space/integration",
+        "playwright",
+        "run-test-mcp-server"
+      ]
+    }
+  },
+  "inputs": []
+}
