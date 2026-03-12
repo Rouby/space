@@ -615,12 +615,7 @@ export function ShipDesigner({
 								)}
 
 								{Array.from({ length: gridRows }).map((_, rowIndex) => (
-									<React.Fragment
-										key={`row-${
-											// biome-ignore lint/suspicious/noArrayIndexKey: just index
-											rowIndex
-										}`}
-									>
+									<React.Fragment key={`row-${rowIndex}`}>
 										{Array.from({ length: gridCols }).map((_, colIndex) => {
 											const cellData = grid[rowIndex][colIndex];
 											const component = data?.game.me?.shipComponents.find(
@@ -629,10 +624,7 @@ export function ShipDesigner({
 
 											return (
 												<GridCell
-													key={`cell-${rowIndex}-${
-														// biome-ignore lint/suspicious/noArrayIndexKey: just index
-														colIndex
-													}`}
+													key={`cell-${rowIndex}-${colIndex}`}
 													row={rowIndex}
 													col={colIndex}
 													component={component}
