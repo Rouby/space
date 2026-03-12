@@ -1,51 +1,47 @@
 {
-	"editor.codeActionsOnSave": {
+  "editor.codeActionsOnSave": {
     "source.action.useSortedKeys.biome": "explicit",
-    "source.fixAll.biome": "explicit",
+    "source.fixAll.biome": "explicit"
   },
-	"search.exclude": {
-		"**/.yarn": true,
-		"**/.pnp.*": true
-	},
-	"typescript.tsdk": ".yarn/sdks/typescript/lib",
-	"typescript.enablePromptUseWorkspaceTsdk": true,
-	"editor.defaultFormatter": "biomejs.biome",
-	"[html]": {
-		"editor.defaultFormatter": "vscode.html-language-features"
-	},
-	"[yaml]": {
-		"editor.defaultFormatter": "redhat.vscode-yaml"
-	},
-	"explorer.fileNesting.enabled": true,
-	"explorer.fileNesting.patterns": {
-		"schema.generated.graphqls": "resolvers.generated.ts, typeDefs.generated.ts, types.generated.ts",
-		"package.json": "yarn.lock, .pnp.cjs, .pnp.loader.mjs, .yarnrc.yml"
-	},
-	"playwright.env": {
-		"NODE_OPTIONS": "-r ./.pnp.cjs"
-	},
-	"[sql]": {
-		"editor.defaultFormatter": "mtxr.sqltools"
-	},
-	"sqltools.connections": [
-		{
-			"previewLimit": 50,
-			"server": "localhost",
-			"port": 5432,
-			"driver": "PostgreSQL",
-			"name": "localhost",
-			"username": "postgres",
-			"password": "password",
-			"database": "postgres"
-		}
-	],
-	"[typescript]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[typescriptreact]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"chat.tools.terminal.autoApprove": {
-		"git rev-parse": true
-	}
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "schema.generated.graphqls": "resolvers.generated.ts, typeDefs.generated.ts, types.generated.ts",
+    "package.json": "yarn.lock, .pnp.cjs, .pnp.loader.mjs, .yarnrc.yml"
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "mtxr.sqltools"
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "localhost",
+      "username": "postgres",
+      "password": "password",
+      "database": "postgres"
+    }
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "chat.tools.terminal.autoApprove": {
+    "git rev-parse": true
+  },
+	"js/ts.tsdk.path": ".yarn/sdks/typescript/lib"
 }

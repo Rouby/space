@@ -1,12 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+import type { GameEvent } from "../../../backend/src/events.ts";
 import { tickColonization } from "../tick/colonization.ts";
-
-type ColonizationEvent = {
-	type: string;
-	id: string;
-	turnsRemaining?: number;
-	ownerId?: string;
-};
 
 describe("tickColonization", () => {
 	it("does nothing if there are no source systems with > 1B population", async () => {
@@ -135,14 +129,14 @@ describe("tickColonization", () => {
 			delete: vi.fn(),
 		};
 
-		const events: ColonizationEvent[] = [];
+		const events: GameEvent[] = [];
 		const ctx = {
 			addIndustryChange() {},
 			addMiningChange() {},
 			addPopulationChange() {},
 			addColonizationPressureChange: vi.fn(),
 			turn: 5,
-			postMessage: (event: ColonizationEvent) => events.push(event),
+			postMessage: (event: GameEvent) => events.push(event),
 		};
 
 		await tickColonization(tx as never, ctx);
@@ -225,14 +219,14 @@ describe("tickColonization", () => {
 			insert: vi.fn().mockReturnValue({ values: vi.fn() }),
 		};
 
-		const events: ColonizationEvent[] = [];
+		const events: GameEvent[] = [];
 		const ctx = {
 			addIndustryChange() {},
 			addMiningChange() {},
 			addPopulationChange() {},
 			addColonizationCompleted: vi.fn(),
 			turn: 6,
-			postMessage: (event: ColonizationEvent) => events.push(event),
+			postMessage: (event: GameEvent) => events.push(event),
 		};
 
 		await tickColonization(tx as never, ctx);

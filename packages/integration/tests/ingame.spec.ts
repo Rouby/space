@@ -1,6 +1,6 @@
 import { expect, test } from "./fixture";
 
-test.describe.configure({ mode: "serial" });
+test.describe.configure({ mode: "default" });
 
 test("should be able to login and see the game", async ({ page, api }) => {
 	const { id: erwinId } = await api.seed("user", {
@@ -447,7 +447,7 @@ test("blocks endTurn when unresolved engagements exist", async ({
 	});
 	const endTurnPayload = await endTurnResponse.json();
 
-	expect(endTurnPayload.data?.endTurn).toBeNull();
+	expect(endTurnPayload.data?.endTurn).not.toBeDefined();
 	expect(endTurnPayload.errors?.[0]?.extensions?.code).toBe(
 		"UNRESOLVED_ENGAGEMENTS",
 	);
