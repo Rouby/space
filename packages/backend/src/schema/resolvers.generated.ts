@@ -28,6 +28,7 @@ import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Sub
 import    { trackGame as Subscription_trackGame } from './game/resolvers/Subscription/trackGame.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
 import    { trackTaskForceEngagement as Subscription_trackTaskForceEngagement } from './taskForce/resolvers/Subscription/trackTaskForceEngagement.js';
+import    { CombatProfile } from './taskForce/resolvers/CombatProfile.js';
 import    { DevelopmentStanceProjection } from './starSystem/resolvers/DevelopmentStanceProjection.js';
 import    { Dilemma } from './dilemma/resolvers/Dilemma.js';
 import    { DilemmaChoice } from './dilemma/resolvers/DilemmaChoice.js';
@@ -91,7 +92,8 @@ import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement },
       Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
-      DevelopmentStanceProjection: DevelopmentStanceProjection,
+      CombatProfile: CombatProfile,
+DevelopmentStanceProjection: DevelopmentStanceProjection,
 Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,
 Game: { ...taskForce_Game,...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game },

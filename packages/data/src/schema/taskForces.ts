@@ -1,14 +1,17 @@
 import { relations, sql } from "drizzle-orm";
 import {
 	decimal,
+	index,
 	json,
 	pgTable,
 	point,
+	primaryKey,
 	timestamp,
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
+import { shipDesigns } from "./shipDesigns.ts";
 import { starSystems } from "./starSystems.ts";
 import { users } from "./users.ts";
 
@@ -43,9 +46,37 @@ export const taskForces = pgTable("taskForces", {
 	deletedAt: timestamp(),
 });
 
-export const taskForcesRelations = relations(taskForces, ({ one }) => ({
+export const taskForcesRelations = relations(taskForces, ({ one, many }) => ({
 	owner: one(users, {
 		fields: [taskForces.ownerId],
 		references: [users.id],
 	}),
+	shipDesigns: many(taskForceShipDesigns),
 }));
+
+export const taskForceShipDesigns = pgTable(
+	"taskForceShipDesigns",
+	{
+		taskForceId: uuid()
+			.notNull()
+			.references(() => taskForces.id, { onDelete: "cascade" }),
+		shipDesignId: uuid()
+			.notNull()
+			.references(() => shipDesigns.id, { onDelete: "restrict" }),
+	},
+	(table) => [primaryKey({ columns: [table.taskForceId, table.shipDesignId] })],
+);
+
+export const taskForceShipDesignsRelations = relations(
+	taskForceShipDesigns,
+	({ one }) => ({
+		taskForce: one(taskForces, {
+			fields: [taskForceShipDesigns.taskForceId],
+			references: [taskForces.id],
+		}),
+		shipDesign: one(shipDesigns, {
+			fields: [taskForceShipDesigns.shipDesignId],
+			references: [shipDesigns.id],
+		}),
+	}),
+);

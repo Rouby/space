@@ -16,12 +16,7 @@ function DeckConfigurationRoute() {
 	return (
 		<DetailsDrawer
 			size="50%"
-			onClose={() =>
-				navigate({
-					to: "/games/$id/star-system/$starSystemId/task-forces",
-					params: { id, starSystemId },
-				})
-			}
+			onClose={() => navigate({ to: "..", params: { id, starSystemId } })}
 		>
 			<Title order={3} mb="md">
 				Deck Configuration

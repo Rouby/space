@@ -1,4 +1,13 @@
-import { Button, NumberInput, SimpleGrid, Stack, Text } from "@mantine/core";
+import {
+	Badge,
+	Button,
+	Group,
+	NumberInput,
+	SimpleGrid,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { graphql } from "../../gql";
@@ -22,6 +31,31 @@ const CARD_LABELS: Record<(typeof ALLOWED_CARD_IDS)[number], string> = {
 	evasive_maneuver: "Evasive Maneuver",
 	overcharge_barrage: "Overcharge Barrage",
 };
+
+// Maps each card to the human-readable capability it requires
+const CARD_REQUIRED_CAPABILITY: Record<
+	(typeof ALLOWED_CARD_IDS)[number],
+	string
+> = {
+	laser_burst: "weapon components",
+	target_lock: "sensor components",
+	emergency_repairs: "crew components",
+	shield_pulse: "shield components",
+	evasive_maneuver: "thruster components",
+	overcharge_barrage: "heavy weapon components (damage ≥ 2)",
+};
+
+const PROFILE_CAPABILITY_LABELS: Array<{
+	key: string;
+	label: string;
+}> = [
+	{ key: "hasWeapons", label: "Weapons" },
+	{ key: "hasHeavyWeapons", label: "Heavy Weapons" },
+	{ key: "hasShields", label: "Shields" },
+	{ key: "hasThrusters", label: "Thrusters" },
+	{ key: "hasSensors", label: "Sensors" },
+	{ key: "hasCrew", label: "Crew" },
+];
 
 function buildDeckDraft(cardIds: string[] | null | undefined) {
 	const next = Object.fromEntries(
@@ -60,6 +94,15 @@ export function DeckConfigurationPanel({
 					id
 					name
 					combatDeck
+					combatProfile {
+						hasWeapons
+						hasHeavyWeapons
+						hasShields
+						hasThrusters
+						hasSensors
+						hasCrew
+						eligibleCardIds
+					}
 				}
 			}
 		}`),
@@ -76,6 +119,15 @@ export function DeckConfigurationPanel({
 							id
 							name
 							combatDeck
+							combatProfile {
+								hasWeapons
+								hasHeavyWeapons
+								hasShields
+								hasThrusters
+								hasSensors
+								hasCrew
+								eligibleCardIds
+							}
 						}
 					}
 				}
@@ -122,33 +174,74 @@ export function DeckConfigurationPanel({
 		0,
 	);
 	const canSave = cardCount === DECK_SIZE;
+	const eligibleCardIds = new Set(
+		taskForce.combatProfile?.eligibleCardIds ?? [],
+	);
 
 	return (
 		<Stack gap="xs" mt="xs">
 			<Text size="sm" fw={600}>
 				Configure deck for {taskForce.name}
 			</Text>
+			{taskForce.combatProfile && (
+				<Group gap="xs" wrap="wrap">
+					{PROFILE_CAPABILITY_LABELS.map(({ key, label }) => {
+						const active =
+							taskForce.combatProfile?.[
+								key as keyof typeof taskForce.combatProfile
+							];
+						return (
+							<Badge
+								key={key}
+								size="xs"
+								color={active ? "teal" : "gray"}
+								variant={active ? "filled" : "outline"}
+							>
+								{label}
+							</Badge>
+						);
+					})}
+				</Group>
+			)}
 			<SimpleGrid cols={2} spacing="xs">
-				{ALLOWED_CARD_IDS.map((cardId) => (
-					<NumberInput
-						key={`${taskForce.id}:${cardId}`}
-						label={CARD_LABELS[cardId]}
-						min={0}
-						max={2}
-						allowDecimal={false}
-						value={draft[cardId] ?? 0}
-						onChange={(value) => {
-							const numericValue =
-								typeof value === "number" && Number.isFinite(value) ? value : 0;
+				{ALLOWED_CARD_IDS.map((cardId) => {
+					const eligible = eligibleCardIds.has(cardId);
+					const input = (
+						<NumberInput
+							key={`${taskForce.id}:${cardId}`}
+							label={CARD_LABELS[cardId]}
+							min={0}
+							max={2}
+							allowDecimal={false}
+							disabled={!eligible}
+							value={eligible ? (draft[cardId] ?? 0) : 0}
+							onChange={(value) => {
+								const numericValue =
+									typeof value === "number" && Number.isFinite(value)
+										? value
+										: 0;
 
-							setDeckDraft((current) => ({
-								...(current ?? buildDeckDraft(taskForce.combatDeck)),
-								[cardId]: Math.max(0, Math.min(2, Math.floor(numericValue))),
-							}));
-							setDeckError(null);
-						}}
-					/>
-				))}
+								setDeckDraft((current) => ({
+									...(current ?? buildDeckDraft(taskForce.combatDeck)),
+									[cardId]: Math.max(0, Math.min(2, Math.floor(numericValue))),
+								}));
+								setDeckError(null);
+							}}
+						/>
+					);
+					if (!eligible) {
+						return (
+							<Tooltip
+								key={`${taskForce.id}:${cardId}:tooltip`}
+								label={`Requires ${CARD_REQUIRED_CAPABILITY[cardId]}`}
+								withinPortal
+							>
+								<div>{input}</div>
+							</Tooltip>
+						);
+					}
+					return input;
+				})}
 			</SimpleGrid>
 			<Text size="xs" c={canSave ? "teal" : "yellow"}>
 				Deck size: {cardCount} / {DECK_SIZE}
@@ -190,6 +283,23 @@ export function DeckConfigurationPanel({
 
 					if (code === "NOT_AUTHORIZED") {
 						setDeckError("You are not allowed to edit this task force deck.");
+						return;
+					}
+
+					if (code === "DECK_PROFILE_REQUIRED") {
+						setDeckError(
+							"No ship designs are assigned to this task force. Assign at least one ship design first.",
+						);
+						return;
+					}
+
+					if (code === "CARD_NOT_ELIGIBLE") {
+						const cardId = gqlError?.extensions?.cardId as string | undefined;
+						setDeckError(
+							cardId
+								? `Card "${CARD_LABELS[cardId as (typeof ALLOWED_CARD_IDS)[number]] ?? cardId}" is not supported by the assigned ship designs.`
+								: "One or more cards are not supported by the assigned ship designs.",
+						);
 						return;
 					}
 

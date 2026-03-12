@@ -19,6 +19,8 @@ type TaskForce implements Positionable {
 	isVisible: Boolean!
 	lastUpdate: DateTime
 	sensorRange: Float
+	shipDesigns: [ShipDesign!]!
+	combatProfile: CombatProfile!
 }
 
 interface TaskForceOrder {
@@ -100,9 +102,19 @@ input TaskForceFollowOrderInput {
 	taskForceId: ID!
 }
 
+type CombatProfile {
+	hasWeapons: Boolean!
+	hasHeavyWeapons: Boolean!
+	hasShields: Boolean!
+	hasThrusters: Boolean!
+	hasSensors: Boolean!
+	hasCrew: Boolean!
+	eligibleCardIds: [String!]!
+}
+
 input ConstructTaskForceInput {
 	starSystemId: ID!
-	shipDesignId: ID!
+	shipDesignIds: [ID!]!
 	name: String!
 }
 

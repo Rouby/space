@@ -209,7 +209,7 @@ export function CommissionTaskForcePanel({
 						const result = await constructTaskForce({
 							input: {
 								starSystemId: id,
-								shipDesignId,
+								shipDesignIds: [shipDesignId],
 								name: fleetName.trim(),
 							},
 						});

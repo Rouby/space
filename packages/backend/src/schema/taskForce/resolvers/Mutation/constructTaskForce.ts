@@ -1,6 +1,7 @@
 import {
 	and,
 	eq,
+	inArray,
 	isNull,
 	players,
 	shipComponentResourceCosts,
@@ -10,12 +11,16 @@ import {
 	sql,
 	starSystemResourceDepots,
 	starSystems,
+	taskForceShipDesigns,
 	taskForces,
 } from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "../../../types.generated.js";
-import { STARTER_COMBAT_DECK } from "./configureTaskForceCombatDeck.ts";
+import {
+	buildStarterDeck,
+	deriveCombatProfile,
+} from "../combatProfileLogic.js";
 
 export const constructTaskForce: NonNullable<
 	MutationResolvers["constructTaskForce"]
@@ -62,22 +67,35 @@ export const constructTaskForce: NonNullable<
 		});
 	}
 
-	const shipDesign = await ctx.drizzle.query.shipDesigns.findFirst({
+	if (!input.shipDesignIds || input.shipDesignIds.length === 0) {
+		throw createGraphQLError("At least one ship design is required", {
+			extensions: {
+				code: "INVALID_CONSTRUCTION_ORDER",
+				violation: "NO_SHIP_DESIGNS",
+			},
+		});
+	}
+
+	const resolvedDesigns = await ctx.drizzle.query.shipDesigns.findMany({
 		where: and(
-			eq(shipDesigns.id, input.shipDesignId),
+			inArray(shipDesigns.id, input.shipDesignIds),
 			eq(shipDesigns.gameId, originSystem.gameId),
 			eq(shipDesigns.ownerId, context.userId),
 		),
 	});
 
-	if (!shipDesign || shipDesign.decommissioned) {
-		throw createGraphQLError("Ship design is not available", {
-			extensions: {
-				code: "INVALID_CONSTRUCTION_ORDER",
-				violation: "SHIP_DESIGN_UNAVAILABLE",
-				shipDesignId: input.shipDesignId,
-			},
-		});
+	// Verify every requested ID was found and is not decommissioned
+	for (const designId of input.shipDesignIds) {
+		const found = resolvedDesigns.find((d) => d.id === designId);
+		if (!found || found.decommissioned) {
+			throw createGraphQLError("Ship design is not available", {
+				extensions: {
+					code: "INVALID_CONSTRUCTION_ORDER",
+					violation: "SHIP_DESIGN_UNAVAILABLE",
+					shipDesignId: designId,
+				},
+			});
+		}
 	}
 
 	const existingName = await ctx.drizzle.query.taskForces.findFirst({
@@ -95,6 +113,7 @@ export const constructTaskForce: NonNullable<
 		});
 	}
 
+	// Aggregate costs across all ship designs
 	const costs = await ctx.drizzle
 		.select({
 			resourceId: shipComponentResourceCosts.resourceId,
@@ -111,7 +130,7 @@ export const constructTaskForce: NonNullable<
 				shipDesignComponents.shipComponentId,
 			),
 		)
-		.where(eq(shipDesignComponents.shipDesignId, shipDesign.id))
+		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds))
 		.groupBy(shipComponentResourceCosts.resourceId);
 
 	const [{ constructionTotal: constructionTotalRaw }] = await ctx.drizzle
@@ -126,7 +145,7 @@ export const constructTaskForce: NonNullable<
 			shipComponents,
 			eq(shipComponents.id, shipDesignComponents.shipComponentId),
 		)
-		.where(eq(shipDesignComponents.shipDesignId, shipDesign.id));
+		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds));
 
 	const constructionTotal = Math.max(1, Number(constructionTotalRaw ?? "0"));
 
@@ -172,6 +191,26 @@ export const constructTaskForce: NonNullable<
 		});
 	}
 
+	// Derive combat profile from all ship design components to build starter deck
+	const allComponents = await ctx.drizzle
+		.select({
+			weaponDamage: shipComponents.weaponDamage,
+			shieldStrength: shipComponents.shieldStrength,
+			thruster: shipComponents.thruster,
+			sensorPrecision: shipComponents.sensorPrecision,
+			crewCapacity: shipComponents.crewCapacity,
+			crewNeed: shipComponents.crewNeed,
+		})
+		.from(shipDesignComponents)
+		.innerJoin(
+			shipComponents,
+			eq(shipComponents.id, shipDesignComponents.shipComponentId),
+		)
+		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds));
+
+	const profile = deriveCombatProfile(allComponents);
+	const starterDeck = buildStarterDeck(profile);
+
 	const [created] = await ctx.drizzle.transaction(async (tx) => {
 		for (const cost of costs) {
 			const updatedDepots = await tx
@@ -201,7 +240,7 @@ export const constructTaskForce: NonNullable<
 			}
 		}
 
-		return tx
+		const [tf] = await tx
 			.insert(taskForces)
 			.values({
 				gameId: originSystem.gameId,
@@ -213,10 +252,20 @@ export const constructTaskForce: NonNullable<
 				constructionDone: "0",
 				constructionTotal: constructionTotal.toString(),
 				constructionPerTick: "0",
-				combatDeck: STARTER_COMBAT_DECK,
+				combatDeck: starterDeck,
 				orders: [],
 			})
 			.returning();
+
+		// Link assigned ship designs via junction table
+		await tx.insert(taskForceShipDesigns).values(
+			input.shipDesignIds.map((shipDesignId) => ({
+				taskForceId: tf.id,
+				shipDesignId,
+			})),
+		);
+
+		return [tf];
 	});
 
 	return { ...created, isVisible: true, lastUpdate: null };

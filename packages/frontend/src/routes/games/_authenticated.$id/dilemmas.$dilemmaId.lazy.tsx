@@ -25,18 +25,17 @@ function RouteComponent() {
 					onChoosen={(nextDilemmaId) => {
 						if (nextDilemmaId) {
 							navigate({
-								to: "/games/$id/dilemmas/$dilemmaId",
+								to: ".",
 								params: {
 									id: gameId,
 									dilemmaId: nextDilemmaId,
 								},
 							});
-							return;
+						} else {
+							navigate({
+								to: "../..",
+							});
 						}
-
-						navigate({
-							to: "../..",
-						});
 					}}
 				/>
 			</DetailsModal>

@@ -1,6 +1,17 @@
-import { and, eq, games, players } from "@space/data/schema";
+import {
+	and,
+	eq,
+	games,
+	inArray,
+	players,
+	shipComponents,
+	shipDesignComponents,
+	shipDesigns,
+	taskForceShipDesigns,
+} from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { TaskForceResolvers } from "./../../types.generated.js";
+import { deriveCombatProfile, eligibleCardIds } from "./combatProfileLogic.js";
 export const TaskForce: TaskForceResolvers = {
 	name: (parent) => {
 		return parent.name ?? "Unknown";
@@ -20,6 +31,48 @@ export const TaskForce: TaskForceResolvers = {
 		parent.constructionPerTick !== undefined
 			? Number(parent.constructionPerTick)
 			: null,
+	shipDesigns: async (parent, _arg, ctx) => {
+		const links = await ctx.drizzle
+			.select({ shipDesignId: taskForceShipDesigns.shipDesignId })
+			.from(taskForceShipDesigns)
+			.where(eq(taskForceShipDesigns.taskForceId, parent.id));
+
+		if (links.length === 0) return [];
+
+		return ctx.drizzle.query.shipDesigns.findMany({
+			where: inArray(
+				shipDesigns.id,
+				links.map((l) => l.shipDesignId),
+			),
+		});
+	},
+	combatProfile: async (parent, _arg, ctx) => {
+		const components = await ctx.drizzle
+			.select({
+				weaponDamage: shipComponents.weaponDamage,
+				shieldStrength: shipComponents.shieldStrength,
+				thruster: shipComponents.thruster,
+				sensorPrecision: shipComponents.sensorPrecision,
+				crewCapacity: shipComponents.crewCapacity,
+				crewNeed: shipComponents.crewNeed,
+			})
+			.from(taskForceShipDesigns)
+			.innerJoin(
+				shipDesignComponents,
+				eq(
+					shipDesignComponents.shipDesignId,
+					taskForceShipDesigns.shipDesignId,
+				),
+			)
+			.innerJoin(
+				shipComponents,
+				eq(shipComponents.id, shipDesignComponents.shipComponentId),
+			)
+			.where(eq(taskForceShipDesigns.taskForceId, parent.id));
+
+		const profile = deriveCombatProfile(components);
+		return { ...profile, eligibleCardIds: eligibleCardIds(profile) };
+	},
 	owner: async (parent, _arg, ctx) => {
 		if (!parent.ownerId) {
 			return null;

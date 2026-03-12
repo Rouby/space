@@ -1,7 +1,23 @@
-import { and, eq, isNull, taskForces } from "@space/data/schema";
+import {
+	and,
+	eq,
+	inArray,
+	isNull,
+	shipComponents,
+	shipDesignComponents,
+	taskForceShipDesigns,
+	taskForces,
+} from "@space/data/schema";
 import { createGraphQLError } from "graphql-yoga";
 import type { Context } from "../../../../context.js";
 import type { MutationResolvers } from "../../../types.generated.js";
+import {
+	CARD_REQUIREMENTS,
+	deriveCombatProfile,
+	getRequiredCapabilityLabel,
+	isCardEligible,
+} from "../combatProfileLogic.js";
+import type { CardId } from "../combatRuntime.js";
 
 const ALLOWED_CARD_IDS = [
 	"laser_burst",
@@ -15,22 +31,7 @@ const ALLOWED_CARD_IDS = [
 const DECK_SIZE = 12;
 const MAX_DUPLICATES = 2;
 
-export const STARTER_COMBAT_DECK: string[] = [
-	"laser_burst",
-	"laser_burst",
-	"target_lock",
-	"target_lock",
-	"emergency_repairs",
-	"emergency_repairs",
-	"shield_pulse",
-	"shield_pulse",
-	"evasive_maneuver",
-	"evasive_maneuver",
-	"overcharge_barrage",
-	"overcharge_barrage",
-];
-
-function validateDeck(cardIds: string[]) {
+function validateDeckStructure(cardIds: string[]) {
 	if (cardIds.length !== DECK_SIZE) {
 		throw createGraphQLError("Combat deck must contain exactly 12 cards", {
 			extensions: {
@@ -91,7 +92,74 @@ export const configureTaskForceCombatDeck: NonNullable<
 		});
 	}
 
-	validateDeck(input.cardIds);
+	// Validate structure first (size, duplicates, allowed pool) before touching DB for profile
+	validateDeckStructure(input.cardIds);
+
+	// Require at least one ship design to be assigned before saving a deck
+	const assignedDesigns = await ctx.drizzle
+		.select({ shipDesignId: taskForceShipDesigns.shipDesignId })
+		.from(taskForceShipDesigns)
+		.where(eq(taskForceShipDesigns.taskForceId, input.taskForceId));
+
+	if (assignedDesigns.length === 0) {
+		throw createGraphQLError(
+			"Task force has no assigned ship designs — assign at least one ship design before configuring a combat deck",
+			{
+				extensions: {
+					code: "DECK_PROFILE_REQUIRED",
+					taskForceId: input.taskForceId,
+				},
+			},
+		);
+	}
+
+	// Derive combat profile from all assigned ship designs' components
+	const allComponents = await ctx.drizzle
+		.select({
+			weaponDamage: shipComponents.weaponDamage,
+			shieldStrength: shipComponents.shieldStrength,
+			thruster: shipComponents.thruster,
+			sensorPrecision: shipComponents.sensorPrecision,
+			crewCapacity: shipComponents.crewCapacity,
+			crewNeed: shipComponents.crewNeed,
+		})
+		.from(taskForceShipDesigns)
+		.innerJoin(
+			shipDesignComponents,
+			eq(shipDesignComponents.shipDesignId, taskForceShipDesigns.shipDesignId),
+		)
+		.innerJoin(
+			shipComponents,
+			eq(shipComponents.id, shipDesignComponents.shipComponentId),
+		)
+		.where(
+			inArray(
+				taskForceShipDesigns.shipDesignId,
+				assignedDesigns.map((d) => d.shipDesignId),
+			),
+		);
+
+	const profile = deriveCombatProfile(allComponents);
+
+	// Validate profile eligibility for every card in the deck (deduplicated)
+	const uniqueCardIds = [...new Set(input.cardIds)] as CardId[];
+	for (const cardId of uniqueCardIds) {
+		const eligibilityResult = isCardEligible(cardId, profile);
+		if (eligibilityResult !== true) {
+			const reqs = CARD_REQUIREMENTS[cardId];
+			const missing = reqs.filter((r) => !profile[r]);
+			throw createGraphQLError(
+				`Card "${cardId}" requires ${missing.map(getRequiredCapabilityLabel).join(" and ")} but the task force does not have it`,
+				{
+					extensions: {
+						code: "CARD_NOT_ELIGIBLE",
+						cardId,
+						requiredCapability: eligibilityResult,
+					},
+				},
+			);
+		}
+	}
 
 	const [updated] = await ctx.drizzle
 		.update(taskForces)

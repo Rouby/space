@@ -60,7 +60,7 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignId: "sd-1",
+						shipDesignIds: ["sd-1"],
 						name: "New Fleet",
 					},
 				},
@@ -107,7 +107,7 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignId: "sd-1",
+						shipDesignIds: ["sd-1"],
 						name: "New Fleet",
 					},
 				},
@@ -149,7 +149,7 @@ describe("task force construction and movement rules", () => {
 						}),
 					},
 					shipDesigns: {
-						findFirst: vi.fn().mockResolvedValue(null),
+						findMany: vi.fn().mockResolvedValue([]),
 					},
 				},
 			},
@@ -161,7 +161,7 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignId: "sd-1",
+						shipDesignIds: ["sd-1"],
 						name: "New Fleet",
 					},
 				},
@@ -203,12 +203,16 @@ describe("task force construction and movement rules", () => {
 						}),
 					},
 					shipDesigns: {
-						findFirst: vi.fn().mockResolvedValue({
-							id: "sd-1",
-							gameId: "game-1",
-							ownerId: "user-1",
-							decommissioned: false,
-						}),
+						findMany: vi
+							.fn()
+							.mockResolvedValue([
+								{
+									id: "sd-1",
+									gameId: "game-1",
+									ownerId: "user-1",
+									decommissioned: false,
+								},
+							]),
 					},
 					taskForces: {
 						findFirst: vi.fn().mockResolvedValue({
@@ -226,7 +230,7 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignId: "sd-1",
+						shipDesignIds: ["sd-1"],
 						name: "Alpha Fleet",
 					},
 				},
@@ -587,6 +591,31 @@ describe("task force construction and movement rules", () => {
 			"overcharge_barrage",
 		];
 
+		// Full-profile component (satisfies all card requirements)
+		const fullProfileComponent = {
+			weaponDamage: "5",
+			shieldStrength: "10",
+			thruster: "3",
+			sensorPrecision: "2",
+			crewCapacity: "5",
+			crewNeed: "2",
+		};
+		const selectWhereDesigns = vi
+			.fn()
+			.mockResolvedValue([{ shipDesignId: "sd-1" }]);
+		const selectWhereComponents = vi
+			.fn()
+			.mockResolvedValue([fullProfileComponent]);
+		const innerJoin2 = vi
+			.fn()
+			.mockReturnValue({ where: selectWhereComponents });
+		const innerJoin1 = vi.fn().mockReturnValue({ innerJoin: innerJoin2 });
+		const selectFrom = vi
+			.fn()
+			.mockReturnValueOnce({ where: selectWhereDesigns })
+			.mockReturnValueOnce({ innerJoin: innerJoin1 });
+		const select = vi.fn().mockReturnValue({ from: selectFrom });
+
 		const ctx = {
 			userId: "user-1",
 			throwWithoutClaim: vi.fn(),
@@ -601,6 +630,7 @@ describe("task force construction and movement rules", () => {
 						}),
 					},
 				},
+				select,
 				update,
 			},
 		};
@@ -620,5 +650,134 @@ describe("task force construction and movement rules", () => {
 		).resolves.toMatchObject({ id: "tf-1" });
 
 		expect(set).toHaveBeenCalledWith({ combatDeck: validDeck });
+	});
+
+	it("rejects deck save when no ship designs are assigned", async () => {
+		const selectWhereDesigns = vi.fn().mockResolvedValue([]);
+		const selectFrom = vi.fn().mockReturnValue({ where: selectWhereDesigns });
+		const select = vi.fn().mockReturnValue({ from: selectFrom });
+
+		const validDeck = [
+			"laser_burst",
+			"laser_burst",
+			"target_lock",
+			"target_lock",
+			"emergency_repairs",
+			"emergency_repairs",
+			"shield_pulse",
+			"shield_pulse",
+			"evasive_maneuver",
+			"evasive_maneuver",
+			"overcharge_barrage",
+			"overcharge_barrage",
+		];
+
+		const ctx = {
+			userId: "user-1",
+			throwWithoutClaim: vi.fn(),
+			denyAccess: vi.fn(denyAccess),
+			drizzle: {
+				query: {
+					taskForces: {
+						findFirst: vi
+							.fn()
+							.mockResolvedValue({
+								id: "tf-1",
+								ownerId: "user-1",
+								combatDeck: [],
+							}),
+					},
+				},
+				select,
+			},
+		};
+
+		await expect(
+			callConfigureTaskForceCombatDeck(
+				{},
+				{ input: { taskForceId: "tf-1", cardIds: validDeck } },
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject(
+			createGraphQLError(
+				"Task force has no assigned ship designs — assign at least one ship design before configuring a combat deck",
+				{ extensions: { code: "DECK_PROFILE_REQUIRED" } },
+			),
+		);
+	});
+
+	it("rejects deck card that requires a capability the ship design lacks", async () => {
+		// No shield component → shield_pulse should be rejected
+		const noShieldComponent = {
+			weaponDamage: "3",
+			shieldStrength: "0",
+			thruster: "2",
+			sensorPrecision: "1",
+			crewCapacity: "4",
+			crewNeed: "1",
+		};
+		const selectWhereDesigns = vi
+			.fn()
+			.mockResolvedValue([{ shipDesignId: "sd-1" }]);
+		const selectWhereComponents = vi
+			.fn()
+			.mockResolvedValue([noShieldComponent]);
+		const innerJoin2 = vi
+			.fn()
+			.mockReturnValue({ where: selectWhereComponents });
+		const innerJoin1 = vi.fn().mockReturnValue({ innerJoin: innerJoin2 });
+		const selectFrom = vi
+			.fn()
+			.mockReturnValueOnce({ where: selectWhereDesigns })
+			.mockReturnValueOnce({ innerJoin: innerJoin1 });
+		const select = vi.fn().mockReturnValue({ from: selectFrom });
+
+		const deckWithShieldPulse = [
+			"laser_burst",
+			"laser_burst",
+			"target_lock",
+			"target_lock",
+			"emergency_repairs",
+			"emergency_repairs",
+			"shield_pulse",
+			"shield_pulse",
+			"evasive_maneuver",
+			"evasive_maneuver",
+			"overcharge_barrage",
+			"overcharge_barrage",
+		];
+
+		const ctx = {
+			userId: "user-1",
+			throwWithoutClaim: vi.fn(),
+			denyAccess: vi.fn(denyAccess),
+			drizzle: {
+				query: {
+					taskForces: {
+						findFirst: vi
+							.fn()
+							.mockResolvedValue({
+								id: "tf-1",
+								ownerId: "user-1",
+								combatDeck: [],
+							}),
+					},
+				},
+				select,
+			},
+		};
+
+		await expect(
+			callConfigureTaskForceCombatDeck(
+				{},
+				{ input: { taskForceId: "tf-1", cardIds: deckWithShieldPulse } },
+				ctx as never,
+				{} as never,
+			),
+		).rejects.toMatchObject({
+			message: expect.stringContaining("shield_pulse"),
+			extensions: { code: "CARD_NOT_ELIGIBLE", cardId: "shield_pulse" },
+		});
 	});
 });

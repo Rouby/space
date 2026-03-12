@@ -33,6 +33,17 @@ export type ColonizationGovernance =
   | 'focus'
   | 'forbid';
 
+export type CombatProfile = {
+  __typename?: 'CombatProfile';
+  eligibleCardIds: Array<Scalars['String']['output']>;
+  hasCrew: Scalars['Boolean']['output'];
+  hasHeavyWeapons: Scalars['Boolean']['output'];
+  hasSensors: Scalars['Boolean']['output'];
+  hasShields: Scalars['Boolean']['output'];
+  hasThrusters: Scalars['Boolean']['output'];
+  hasWeapons: Scalars['Boolean']['output'];
+};
+
 export type ConfigureTaskForceCombatDeckInput = {
   cardIds: Array<Scalars['String']['input']>;
   taskForceId: Scalars['ID']['input'];
@@ -40,7 +51,7 @@ export type ConfigureTaskForceCombatDeckInput = {
 
 export type ConstructTaskForceInput = {
   name: Scalars['String']['input'];
-  shipDesignId: Scalars['ID']['input'];
+  shipDesignIds: Array<Scalars['ID']['input']>;
   starSystemId: Scalars['ID']['input'];
 };
 
@@ -486,6 +497,7 @@ export type SubscriptiontrackTaskForceEngagementArgs = {
 export type TaskForce = Positionable & {
   __typename?: 'TaskForce';
   combatDeck?: Maybe<Array<Scalars['String']['output']>>;
+  combatProfile: CombatProfile;
   constructionDone?: Maybe<Scalars['Float']['output']>;
   constructionPerTick?: Maybe<Scalars['Float']['output']>;
   constructionTotal?: Maybe<Scalars['Float']['output']>;
@@ -499,6 +511,7 @@ export type TaskForce = Positionable & {
   owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
   sensorRange?: Maybe<Scalars['Float']['output']>;
+  shipDesigns: Array<ShipDesign>;
 };
 
 export type TaskForceColonizeOrder = TaskForceOrder & {
@@ -791,8 +804,10 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
   ColonizationGovernance: ResolverTypeWrapper<'focus' | 'forbid'>;
-  ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
+  CombatProfile: ResolverTypeWrapper<CombatProfile>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   ConstructTaskForceInput: ConstructTaskForceInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
@@ -806,7 +821,6 @@ export type ResolversTypes = {
   IndustrialProject: ResolverTypeWrapper<Omit<IndustrialProject, 'projectType'> & { projectType: ResolversTypes['IndustrialProjectType'] }>;
   IndustrialProjectType: ResolverTypeWrapper<'factory_expansion' | 'automation_hub' | 'orbital_foundry'>;
   Mutation: ResolverTypeWrapper<{}>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   Player: ResolverTypeWrapper<PlayerMapper>;
   Population: ResolverTypeWrapper<PopulationMapper>;
@@ -868,8 +882,10 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   BigInt: Scalars['BigInt']['output'];
-  ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
+  CombatProfile: CombatProfile;
   String: Scalars['String']['output'];
+  Boolean: Scalars['Boolean']['output'];
+  ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
   ID: Scalars['ID']['output'];
   ConstructTaskForceInput: ConstructTaskForceInput;
   DateTime: Scalars['DateTime']['output'];
@@ -881,7 +897,6 @@ export type ResolversParentTypes = {
   Game: GameMapper;
   IndustrialProject: IndustrialProject;
   Mutation: {};
-  Boolean: Scalars['Boolean']['output'];
   NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   Player: PlayerMapper;
   Population: PopulationMapper;
@@ -942,6 +957,17 @@ export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type ColonizationGovernanceResolvers = EnumResolverSignature<{ focus?: any, forbid?: any }, ResolversTypes['ColonizationGovernance']>;
+
+export type CombatProfileResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CombatProfile'] = ResolversParentTypes['CombatProfile']> = {
+  eligibleCardIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  hasCrew?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasHeavyWeapons?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasSensors?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasShields?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasThrusters?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasWeapons?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
@@ -1223,6 +1249,7 @@ export type SubscriptionResolvers<ContextType = Context, ParentType extends Reso
 
 export type TaskForceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForce'] = ResolversParentTypes['TaskForce']> = {
   combatDeck?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  combatProfile?: Resolver<ResolversTypes['CombatProfile'], ParentType, ContextType>;
   constructionDone?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   constructionPerTick?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   constructionTotal?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -1236,6 +1263,7 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1427,6 +1455,7 @@ export type WeaponDeliveryTypeResolvers = EnumResolverSignature<{ beam?: any, in
 export type Resolvers<ContextType = Context> = {
   BigInt?: GraphQLScalarType;
   ColonizationGovernance?: ColonizationGovernanceResolvers;
+  CombatProfile?: CombatProfileResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DevelopmentStance?: DevelopmentStanceResolvers;
   DevelopmentStanceProjection?: DevelopmentStanceProjectionResolvers<ContextType>;

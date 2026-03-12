@@ -5,6 +5,16 @@ enum ColonizationGovernance {
 	forbid
 }
 
+type CombatProfile {
+	eligibleCardIds: [String!]!
+	hasCrew: Boolean!
+	hasHeavyWeapons: Boolean!
+	hasSensors: Boolean!
+	hasShields: Boolean!
+	hasThrusters: Boolean!
+	hasWeapons: Boolean!
+}
+
 input ConfigureTaskForceCombatDeckInput {
 	cardIds: [String!]!
 	taskForceId: ID!
@@ -12,7 +22,7 @@ input ConfigureTaskForceCombatDeckInput {
 
 input ConstructTaskForceInput {
 	name: String!
-	shipDesignId: ID!
+	shipDesignIds: [ID!]!
 	starSystemId: ID!
 }
 
@@ -312,6 +322,7 @@ type Subscription {
 
 type TaskForce implements Positionable {
 	combatDeck: [String!]
+	combatProfile: CombatProfile!
 	constructionDone: Float
 	constructionPerTick: Float
 	constructionTotal: Float
@@ -325,6 +336,7 @@ type TaskForce implements Positionable {
 	owner: Player
 	position: Vector!
 	sensorRange: Float
+	shipDesigns: [ShipDesign!]!
 }
 
 type TaskForceColonizeOrder implements TaskForceOrder {
