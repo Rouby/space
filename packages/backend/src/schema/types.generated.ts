@@ -29,6 +29,10 @@ export type Scalars = {
   Vector: { input: {x:number;y:number}; output: {x:number;y:number}; }
 };
 
+export type ColonizationGovernance =
+  | 'focus'
+  | 'forbid';
+
 export type ConfigureTaskForceCombatDeckInput = {
   cardIds: Array<Scalars['String']['input']>;
   taskForceId: Scalars['ID']['input'];
@@ -133,6 +137,7 @@ export type Mutation = {
   orderTaskForce: TaskForce;
   queueIndustrialProject: StarSystem;
   registerWithPassword: User;
+  setColonizationGovernance: StarSystem;
   setDevelopmentStance: StarSystem;
   startGame: Game;
   submitTaskForceEngagementAction: TaskForceEngagement;
@@ -202,6 +207,12 @@ export type MutationregisterWithPasswordArgs = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationsetColonizationGovernanceArgs = {
+  governance?: InputMaybe<ColonizationGovernance>;
+  starSystemId: Scalars['ID']['input'];
 };
 
 
@@ -402,6 +413,7 @@ export type ShipDesignInput = {
 export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
   colonization?: Maybe<StarSystemColonizationPressure>;
+  colonizationGovernance?: Maybe<ColonizationGovernance>;
   completedIndustrialProjects: Array<IndustrialProject>;
   currentDevelopmentStance?: Maybe<DevelopmentStance>;
   discoveries?: Maybe<Array<Discovery>>;
@@ -778,6 +790,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
+  ColonizationGovernance: ResolverTypeWrapper<'focus' | 'forbid'>;
   ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
@@ -928,6 +941,8 @@ export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'BigInt';
 }
 
+export type ColonizationGovernanceResolvers = EnumResolverSignature<{ focus?: any, forbid?: any }, ResolversTypes['ColonizationGovernance']>;
+
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
@@ -1015,6 +1030,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   orderTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationorderTaskForceArgs, 'id' | 'orders'>>;
   queueIndustrialProject?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationqueueIndustrialProjectArgs, 'projectType' | 'starSystemId'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
+  setColonizationGovernance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetColonizationGovernanceArgs, 'starSystemId'>>;
   setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
   submitTaskForceEngagementAction?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType, RequireFields<MutationsubmitTaskForceEngagementActionArgs, 'input'>>;
@@ -1162,6 +1178,7 @@ export type ShipDesignComponentResolvers<ContextType = Context, ParentType exten
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
   colonization?: Resolver<Maybe<ResolversTypes['StarSystemColonizationPressure']>, ParentType, ContextType>;
+  colonizationGovernance?: Resolver<Maybe<ResolversTypes['ColonizationGovernance']>, ParentType, ContextType>;
   completedIndustrialProjects?: Resolver<Array<ResolversTypes['IndustrialProject']>, ParentType, ContextType>;
   currentDevelopmentStance?: Resolver<Maybe<ResolversTypes['DevelopmentStance']>, ParentType, ContextType>;
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
@@ -1409,6 +1426,7 @@ export type WeaponDeliveryTypeResolvers = EnumResolverSignature<{ beam?: any, in
 
 export type Resolvers<ContextType = Context> = {
   BigInt?: GraphQLScalarType;
+  ColonizationGovernance?: ColonizationGovernanceResolvers;
   DateTime?: GraphQLScalarType;
   DevelopmentStance?: DevelopmentStanceResolvers;
   DevelopmentStanceProjection?: DevelopmentStanceProjectionResolvers<ContextType>;

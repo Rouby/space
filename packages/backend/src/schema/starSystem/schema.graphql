@@ -8,6 +8,7 @@ type StarSystem implements Positionable {
 	currentDevelopmentStance: DevelopmentStance
 	nextTurnStanceProjection: DevelopmentStanceProjection
 	colonization: StarSystemColonizationPressure
+	colonizationGovernance: ColonizationGovernance
 	sensorRange: Float
 	discoveries: [Discovery!]
 	discoveryProgress: Float
@@ -49,6 +50,11 @@ enum DevelopmentStance {
 	grow_population
 }
 
+enum ColonizationGovernance {
+	focus
+	forbid
+}
+
 type DevelopmentStanceProjection {
 	industryDelta: Int!
 	populationDelta: BigInt!
@@ -87,6 +93,10 @@ extend type Mutation {
 	setDevelopmentStance(
 		starSystemId: ID!
 		stance: DevelopmentStance!
+	): StarSystem!
+	setColonizationGovernance(
+		starSystemId: ID!
+		governance: ColonizationGovernance
 	): StarSystem!
 	queueIndustrialProject(
 		starSystemId: ID!

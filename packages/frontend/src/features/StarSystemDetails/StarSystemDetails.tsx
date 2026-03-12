@@ -4,13 +4,14 @@ import {
 	Group,
 	Image,
 	Progress,
+	SegmentedControl,
 	SimpleGrid,
 	Stack,
 	Text,
 	Title,
 	Tooltip,
-	SegmentedControl,
 } from "@mantine/core";
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useStyles } from "tss-react";
@@ -22,12 +23,11 @@ import {
 	formatUnitPerRound,
 } from "../../format/formatNumber";
 import { graphql } from "../../gql";
-import { DevelopmentStance } from "../../gql/graphql";
+import { ColonizationGovernance, DevelopmentStance } from "../../gql/graphql";
 import { coordinateToGrid } from "../GalaxyView/coordinateToGrid";
 import placeholderDiscoveryArt from "./example-discovery.png";
 import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
 import placeholderStarsystemArt from "./example-starsystem-overview.png";
-import { useNavigate } from "@tanstack/react-router";
 
 export function StarSystemDetails({
 	id,
@@ -42,6 +42,7 @@ export function StarSystemDetails({
 			starSystem(id: $id) {
 				id
 				name
+				colonizationGovernance
 				currentDevelopmentStance
 				nextTurnStanceProjection {
 					industryDelta
@@ -110,6 +111,7 @@ export function StarSystemDetails({
 					subject {
 						id
 						name
+						colonizationGovernance
 						currentDevelopmentStance
 						nextTurnStanceProjection {
 							industryDelta
@@ -180,9 +182,25 @@ export function StarSystemDetails({
 		}`),
 	);
 
+	const [
+		{
+			fetching: setColonizationGovernanceFetching,
+			error: setColonizationGovernanceError,
+		},
+		setColonizationGovernance,
+	] = useMutation(
+		graphql(`mutation SetColonizationGovernance($starSystemId: ID!, $governance: ColonizationGovernance) {
+			setColonizationGovernance(starSystemId: $starSystemId, governance: $governance) {
+				id
+				colonizationGovernance
+			}
+		}`),
+	);
+
 	const [developmentStance, setDevelopmentStanceValue] = useState<
 		string | null
 	>(null);
+	const [colonizationDirective, setColonizationDirective] = useState("none");
 
 	const starSystem =
 		subscriptionData?.trackStarSystem.__typename === "StarSystemUpdateEvent"
@@ -198,6 +216,9 @@ export function StarSystemDetails({
 	const developmentStanceError =
 		setDevelopmentStanceError?.graphQLErrors[0]?.message ??
 		setDevelopmentStanceError?.message;
+	const colonizationGovernanceError =
+		setColonizationGovernanceError?.graphQLErrors[0]?.message ??
+		setColonizationGovernanceError?.message;
 
 	useEffect(() => {
 		if (!starSystem?.currentDevelopmentStance) {
@@ -207,6 +228,10 @@ export function StarSystemDetails({
 
 		setDevelopmentStanceValue(starSystem.currentDevelopmentStance);
 	}, [starSystem?.currentDevelopmentStance]);
+
+	useEffect(() => {
+		setColonizationDirective(starSystem?.colonizationGovernance ?? "none");
+	}, [starSystem?.colonizationGovernance]);
 
 	const { css } = useStyles();
 
@@ -364,6 +389,49 @@ export function StarSystemDetails({
 								inhabited systems to colonize.
 							</Text>
 						)
+					)}
+
+					{starSystem && !starSystem.owner && currentPlayerId && (
+						<Stack gap="sm">
+							<Text fw={500} size="sm">
+								Colonization Directive
+							</Text>
+							<Text size="sm" c="dimmed">
+								Prioritize this system for passive settlement, or block it from
+								automatic colonization.
+							</Text>
+							<SegmentedControl
+								value={colonizationDirective}
+								onChange={async (nextValue) => {
+									setColonizationDirective(nextValue);
+
+									const governance = Object.values(ColonizationGovernance).find(
+										(value) => value === nextValue,
+									);
+									const result = await setColonizationGovernance({
+										starSystemId: id,
+										governance: governance ?? null,
+									});
+
+									if (result.error) {
+										setColonizationDirective(
+											starSystem.colonizationGovernance ?? "none",
+										);
+									}
+								}}
+								disabled={setColonizationGovernanceFetching}
+								data={[
+									{ value: "none", label: "None" },
+									{ value: "focus", label: "Focus" },
+									{ value: "forbid", label: "Forbid" },
+								]}
+							/>
+							{colonizationGovernanceError && (
+								<Text c="red" size="sm">
+									{colonizationGovernanceError}
+								</Text>
+							)}
+						</Stack>
 					)}
 
 					{isOwnedByMe && (

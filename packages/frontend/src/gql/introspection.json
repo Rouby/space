@@ -938,6 +938,36 @@
             ]
           },
           {
+            "name": "setColonizationGovernance",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "governance",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Any"
+                }
+              },
+              {
+                "name": "starSystemId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
             "name": "setDevelopmentStance",
             "type": {
               "kind": "NON_NULL",
@@ -2078,6 +2108,14 @@
               "kind": "OBJECT",
               "name": "StarSystemColonizationPressure",
               "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "colonizationGovernance",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
             },
             "args": []
           },

@@ -24,6 +24,10 @@ export const industrialProjectTypes = [
 
 export type IndustrialProjectType = (typeof industrialProjectTypes)[number];
 
+export const colonizationGovernances = ["focus", "forbid"] as const;
+
+export type ColonizationGovernance = (typeof colonizationGovernances)[number];
+
 export const starSystems = pgTable("starSystems", {
 	id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
 	gameId: uuid()
@@ -42,6 +46,7 @@ export const starSystems = pgTable("starSystems", {
 export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({
 	game: one(games, { fields: [starSystems.gameId], references: [games.id] }),
 	owner: one(users, { fields: [starSystems.ownerId], references: [users.id] }),
+	colonizationGovernances: many(playerColonizationGovernances),
 	developmentStances: many(starSystemDevelopmentStances),
 	industrialProjects: many(starSystemIndustrialProjects),
 	resourceDiscoveries: many(starSystemResourceDiscoveries),
@@ -254,6 +259,50 @@ export const starSystemColonizationPressuresRelations = relations(
 		owner: one(users, {
 			fields: [starSystemColonizationPressures.ownerId],
 			references: [users.id],
+		}),
+	}),
+);
+
+export const playerColonizationGovernances = pgTable(
+	"playerColonizationGovernances",
+	{
+		gameId: uuid()
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
+		ownerId: uuid()
+			.notNull()
+			.references(() => users.id, { onDelete: "restrict" }),
+		starSystemId: uuid()
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "cascade" }),
+		governance: varchar({
+			length: 16,
+			enum: colonizationGovernances,
+		}).notNull(),
+	},
+	(table) => [
+		primaryKey({
+			columns: [table.gameId, table.ownerId, table.starSystemId],
+		}),
+		index().on(table.gameId, table.ownerId),
+		index().on(table.gameId, table.starSystemId),
+	],
+);
+
+export const playerColonizationGovernancesRelations = relations(
+	playerColonizationGovernances,
+	({ one }) => ({
+		game: one(games, {
+			fields: [playerColonizationGovernances.gameId],
+			references: [games.id],
+		}),
+		owner: one(users, {
+			fields: [playerColonizationGovernances.ownerId],
+			references: [users.id],
+		}),
+		starSystem: one(starSystems, {
+			fields: [playerColonizationGovernances.starSystemId],
+			references: [starSystems.id],
 		}),
 	}),
 );

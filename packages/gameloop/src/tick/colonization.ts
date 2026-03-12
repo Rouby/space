@@ -3,6 +3,7 @@ import {
 	eq,
 	isNotNull,
 	isNull,
+	playerColonizationGovernances,
 	sql,
 	starSystemColonizationPressures,
 	starSystemPopulations,
@@ -12,6 +13,18 @@ import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
 export async function tickColonization(tx: Transaction, ctx: Context) {
+	const governanceRows = await tx
+		.select()
+		.from(playerColonizationGovernances)
+		.where(eq(playerColonizationGovernances.gameId, gameId));
+
+	const governanceByOwnerAndTarget = new Map(
+		governanceRows.map((governance) => [
+			`${governance.ownerId}-${governance.starSystemId}`,
+			governance.governance,
+		]),
+	);
+
 	// 1. Gather all owned systems with their total population.
 	const populatedSystems = await tx
 		.select({
@@ -77,6 +90,10 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 	};
 
 	for (const source of sourceSystems) {
+		if (!source.ownerId) {
+			continue;
+		}
+
 		// Outflow emit calculation
 		const outflowAmount = Number(source.totalPopulation) / 1_000_000_000;
 
@@ -85,9 +102,19 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 		const targetScores = new Map<string, number>();
 
 		for (const target of targetSystems) {
+			const governance = governanceByOwnerAndTarget.get(
+				`${source.ownerId}-${target.id}`,
+			);
+			if (governance === "forbid") {
+				continue;
+			}
+
 			const dist = distance(source.position, target.position);
 			if (dist <= MAX_DISTANCE) {
-				const score = (1 + target.discoverySlots) / Math.max(1, dist ** 2);
+				const scoreMultiplier = governance === "focus" ? 5 : 1;
+				const score =
+					((1 + target.discoverySlots) / Math.max(1, dist ** 2)) *
+					scoreMultiplier;
 				targetScores.set(target.id, score);
 				totalScore += score;
 			}
@@ -108,7 +135,7 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 			} else {
 				pressureInflow.set(key, {
 					targetId,
-					ownerId: source.ownerId!,
+					ownerId: source.ownerId,
 					amount: pressureApplied,
 				});
 			}
@@ -144,7 +171,10 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 		// Determine the nearest owned system for this player to calculate threshold
 		// We can quickly estimate threshold based on minimum distance to an owned system
 		let minDistance = Number.MAX_VALUE;
-		const targetSys = targetSystems.find((t) => t.id === inflow.targetId)!;
+		const targetSys = targetSystems.find((t) => t.id === inflow.targetId);
+		if (!targetSys) {
+			continue;
+		}
 		for (const source of sourceSystems.filter(
 			(s) => s.ownerId === inflow.ownerId,
 		)) {

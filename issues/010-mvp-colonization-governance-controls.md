@@ -1,5 +1,7 @@
 # [MVP-010] Colonization Governance Controls (Focus and Forbid)
 
+DONE
+
 ## Objective
 Give players strategic control over passive colonization by allowing preferred targets and forbidden systems.
 

@@ -1,5 +1,10 @@
 scalar BigInt
 
+enum ColonizationGovernance {
+	focus
+	forbid
+}
+
 input ConfigureTaskForceCombatDeckInput {
 	cardIds: [String!]!
 	taskForceId: ID!
@@ -106,6 +111,10 @@ type Mutation {
 		starSystemId: ID!
 	): StarSystem!
 	registerWithPassword(email: String!, name: String!, password: String!): User!
+	setColonizationGovernance(
+		governance: ColonizationGovernance
+		starSystemId: ID!
+	): StarSystem!
 	setDevelopmentStance(
 		stance: DevelopmentStance!
 		starSystemId: ID!
@@ -253,6 +262,7 @@ input ShipDesignInput {
 
 type StarSystem implements Positionable {
 	colonization: StarSystemColonizationPressure
+	colonizationGovernance: ColonizationGovernance
 	completedIndustrialProjects: [IndustrialProject!]!
 	currentDevelopmentStance: DevelopmentStance
 	discoveries: [Discovery!]

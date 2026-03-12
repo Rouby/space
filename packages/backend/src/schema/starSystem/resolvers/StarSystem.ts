@@ -6,6 +6,7 @@ import {
 	and,
 	eq,
 	games,
+	playerColonizationGovernances,
 	players,
 	starSystemColonizationPressures,
 	starSystemDevelopmentStances,
@@ -39,6 +40,7 @@ function withProjectEta<
 export const StarSystem: Pick<
 	StarSystemResolvers,
 	| "colonization"
+	| "colonizationGovernance"
 	| "completedIndustrialProjects"
 	| "currentDevelopmentStance"
 	| "discoveries"
@@ -177,6 +179,23 @@ export const StarSystem: Pick<
 			pressurePerTurn,
 			etaTurns: turnsRemaining,
 		};
+	},
+	colonizationGovernance: async (parent, _arg, ctx) => {
+		if (!ctx.userId) {
+			return null;
+		}
+
+		const governance =
+			await ctx.drizzle.query.playerColonizationGovernances.findFirst({
+				where: and(
+					eq(playerColonizationGovernances.starSystemId, parent.id),
+					eq(playerColonizationGovernances.gameId, parent.gameId),
+					eq(playerColonizationGovernances.ownerId, ctx.userId),
+				),
+				columns: { governance: true },
+			});
+
+		return governance?.governance ?? null;
 	},
 	industry: async (parent, _arg, _ctx) => {
 		return parent.industry;
