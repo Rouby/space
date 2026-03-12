@@ -5,8 +5,8 @@ import {
 	isNull,
 	sql,
 	starSystemColonizationPressures,
-	starSystems,
 	starSystemPopulations,
+	starSystems,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
@@ -168,6 +168,17 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 					),
 				)
 				.returning({ id: starSystems.id, ownerId: starSystems.ownerId });
+
+			// Initial colonist population based on scientific consensus
+			// (e.g., genetic diversity & minimum viable population for interstellar settlement roughly 10k-50k)
+			const initialPopulation = BigInt(
+				Math.floor(Math.random() * 40000) + 10000,
+			);
+			await tx.insert(starSystemPopulations).values({
+				starSystemId: inflow.targetId,
+				allegianceToPlayerId: inflow.ownerId,
+				amount: initialPopulation,
+			});
 
 			// Delete all pressure records for this system since it's now owned
 			await tx

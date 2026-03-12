@@ -1,5 +1,7 @@
 # [MVP-009] Passive Colonization Simulation and Settler Drift
 
+DONE
+
 ## Objective
 Make colonization a passive process driven by settler drift and opportunity attraction rather than explicit one-click conquest orders.
 

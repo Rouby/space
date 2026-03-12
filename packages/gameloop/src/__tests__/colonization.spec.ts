@@ -194,7 +194,7 @@ describe("tickColonization", () => {
 				.mockReturnValueOnce(selectPressures),
 			update: vi.fn().mockReturnValue({ set: updateSet }),
 			delete: vi.fn().mockReturnValue({ where: vi.fn() }),
-			insert: vi.fn(),
+			insert: vi.fn().mockReturnValue({ values: vi.fn() }),
 		};
 
 		const events: Array<any> = [];
@@ -211,7 +211,7 @@ describe("tickColonization", () => {
 
 		expect(tx.update).toHaveBeenCalled();
 		expect(tx.delete).toHaveBeenCalled();
-		expect(tx.insert).not.toHaveBeenCalled();
+		expect(tx.insert).toHaveBeenCalled();
 		expect(ctx.addColonizationCompleted).toHaveBeenCalled();
 		expect(events).toEqual([
 			{

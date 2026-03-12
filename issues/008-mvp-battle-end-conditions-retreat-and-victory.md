@@ -1,5 +1,7 @@
 # [MVP-008] Battle End Conditions, Retreat, and Victory State
 
+DONE
+
 ## Objective
 Define and enforce battle completion rules: destruction-based win or retreat-based disengagement.
 
