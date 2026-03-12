@@ -156,8 +156,13 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 	const pressuresByTargetAndOwner = new Map(
 		existingPressures.map((p) => [`${p.starSystemId}-${p.ownerId}`, p]),
 	);
+	const colonizedTargetIds = new Set<string>();
 
 	for (const inflow of pressureInflow.values()) {
+		if (colonizedTargetIds.has(inflow.targetId)) {
+			continue;
+		}
+
 		const key = `${inflow.targetId}-${inflow.ownerId}`;
 		let currentAccumulated = 0;
 
@@ -188,6 +193,8 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 
 		if (newAccumulated >= threshold) {
 			// System successfully colonized!
+			colonizedTargetIds.add(inflow.targetId);
+
 			const [updatedStarSystem] = await tx
 				.update(starSystems)
 				.set({ ownerId: inflow.ownerId })
@@ -204,11 +211,64 @@ export async function tickColonization(tx: Transaction, ctx: Context) {
 			const initialPopulation = BigInt(
 				Math.floor(Math.random() * 40000) + 10000,
 			);
-			await tx.insert(starSystemPopulations).values({
-				starSystemId: inflow.targetId,
-				allegianceToPlayerId: inflow.ownerId,
-				amount: initialPopulation,
-			});
+
+			const contributors = new Map<string, number>();
+			for (const pressure of existingPressures) {
+				if (pressure.starSystemId !== inflow.targetId) {
+					continue;
+				}
+
+				const storedPressure = Number(pressure.accumulatedPressure);
+				if (storedPressure > 0) {
+					contributors.set(pressure.ownerId, storedPressure);
+				}
+			}
+
+			// Use post-inflow pressure for the threshold breaker at settlement time.
+			if (newAccumulated > 0) {
+				contributors.set(inflow.ownerId, newAccumulated);
+			}
+
+			const contributorEntries = Array.from(contributors.entries())
+				.filter(([, accumulatedPressure]) => accumulatedPressure > 0)
+				.sort(([ownerA], [ownerB]) => ownerA.localeCompare(ownerB));
+
+			const totalAccumulated = contributorEntries.reduce(
+				(sum, [, accumulatedPressure]) => sum + accumulatedPressure,
+				0,
+			);
+
+			if (contributorEntries.length > 0 && totalAccumulated > 0) {
+				const populationRows: Array<{
+					starSystemId: string;
+					allegianceToPlayerId: string;
+					amount: bigint;
+				}> = [];
+
+				let remainingPopulation = initialPopulation;
+				for (const [index, [ownerId, accumulatedPressure]] of contributorEntries.entries()) {
+					if (index === contributorEntries.length - 1) {
+						populationRows.push({
+							starSystemId: inflow.targetId,
+							allegianceToPlayerId: ownerId,
+							amount: remainingPopulation,
+						});
+						continue;
+					}
+
+					const shareFloat =
+						Number(initialPopulation) * (accumulatedPressure / totalAccumulated);
+					const share = BigInt(Math.floor(shareFloat));
+					populationRows.push({
+						starSystemId: inflow.targetId,
+						allegianceToPlayerId: ownerId,
+						amount: share,
+					});
+					remainingPopulation -= share;
+				}
+
+				await tx.insert(starSystemPopulations).values(populationRows);
+			}
 
 			// Delete all pressure records for this system since it's now owned
 			await tx

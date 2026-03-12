@@ -152,7 +152,7 @@ describe("tickColonization", () => {
 		]);
 	});
 
-	it("changes owner when threshold is met", async () => {
+	it("changes owner when threshold is met and splits contested initial population", async () => {
 		const selectGovernances = {
 			from: vi.fn().mockReturnValue({
 				where: vi.fn().mockResolvedValue([]),
@@ -194,8 +194,14 @@ describe("tickColonization", () => {
 					{
 						starSystemId: "sys-target",
 						ownerId: "player-1",
-						accumulatedPressure: "9.5", // Existing: 9.5 + 2 = 11.5 > 10.2 (threshold met)
+						accumulatedPressure: "8.5", // Existing: 8.5 + 2 = 10.5 > 10.2 (threshold met)
 						pressurePerTurn: "2",
+					},
+					{
+						starSystemId: "sys-target",
+						ownerId: "player-2",
+						accumulatedPressure: "3.5",
+						pressurePerTurn: "1",
 					},
 				]),
 			}),
@@ -207,6 +213,8 @@ describe("tickColonization", () => {
 		const updateWhere = vi.fn().mockReturnValue({ returning: updateReturning });
 		const updateSet = vi.fn().mockReturnValue({ where: updateWhere });
 
+		const insertValues = vi.fn();
+
 		const tx = {
 			select: vi
 				.fn()
@@ -216,7 +224,7 @@ describe("tickColonization", () => {
 				.mockReturnValueOnce(selectPressures),
 			update: vi.fn().mockReturnValue({ set: updateSet }),
 			delete: vi.fn().mockReturnValue({ where: vi.fn() }),
-			insert: vi.fn().mockReturnValue({ values: vi.fn() }),
+			insert: vi.fn().mockReturnValue({ values: insertValues }),
 		};
 
 		const events: GameEvent[] = [];
@@ -229,11 +237,37 @@ describe("tickColonization", () => {
 			postMessage: (event: GameEvent) => events.push(event),
 		};
 
+		const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
+
 		await tickColonization(tx as never, ctx);
+
+		randomSpy.mockRestore();
 
 		expect(tx.update).toHaveBeenCalled();
 		expect(tx.delete).toHaveBeenCalled();
 		expect(tx.insert).toHaveBeenCalled();
+		expect(insertValues).toHaveBeenCalledTimes(1);
+
+		const insertedPopulationRows = insertValues.mock.calls[0]?.[0];
+		expect(Array.isArray(insertedPopulationRows)).toBe(true);
+		expect(insertedPopulationRows).toEqual([
+			{
+				starSystemId: "sys-target",
+				allegianceToPlayerId: "player-1",
+				amount: 7500n,
+			},
+			{
+				starSystemId: "sys-target",
+				allegianceToPlayerId: "player-2",
+				amount: 2500n,
+			},
+		]);
+		expect(
+			(insertedPopulationRows as Array<{ amount: bigint }>).reduce(
+				(sum, row) => sum + row.amount,
+				0n,
+			),
+		).toBe(10000n);
 		expect(ctx.addColonizationCompleted).toHaveBeenCalled();
 		expect(events).toEqual([
 			{
