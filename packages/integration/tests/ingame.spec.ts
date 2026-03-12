@@ -76,6 +76,55 @@ test("configures task force combat deck with MVP validation rules", async ({
 		color: "#ccaa77",
 	});
 
+	const { id: deckComponentId } = await api.seed("shipComponent", {
+		gameId,
+		ownerId: hostId,
+		name: "Deck Core",
+		description: "Enables all MVP combat deck capabilities",
+		layout: "core",
+		supplyNeedPassive: "0",
+		supplyNeedMovement: "0",
+		supplyNeedCombat: "0",
+		powerNeed: "0",
+		crewNeed: "1",
+		constructionCost: "10",
+		supplyCapacity: null,
+		powerGeneration: null,
+		crewCapacity: "1",
+		ftlSpeed: null,
+		zoneOfControl: null,
+		sensorRange: null,
+		structuralIntegrity: "10",
+		thruster: "1",
+		sensorPrecision: "1",
+		armorThickness: null,
+		armorEffectivenessAgainst: null,
+		shieldStrength: "1",
+		shieldEffectivenessAgainst: null,
+		weaponDamage: "2",
+		weaponCooldown: null,
+		weaponRange: null,
+		weaponArmorPenetration: null,
+		weaponShieldPenetration: null,
+		weaponAccuracy: null,
+		weaponDeliveryType: null,
+	});
+
+	const { id: deckShipDesignId } = await api.seed("shipDesign", {
+		gameId,
+		ownerId: hostId,
+		name: "Deck-Capable Design",
+		description: "Supports all deck cards",
+		decommissioned: false,
+	});
+
+	await api.seed("shipDesignComponent", {
+		shipDesignId: deckShipDesignId,
+		shipComponentId: deckComponentId,
+		column: 0,
+		row: 0,
+	});
+
 	const { id: taskForceId } = await api.seed("taskForce", {
 		gameId,
 		ownerId: hostId,
@@ -83,6 +132,11 @@ test("configures task force combat deck with MVP validation rules", async ({
 		position: { x: 0, y: 0 },
 		movementVector: null,
 		orders: [],
+	});
+
+	await api.seed("taskForceShipDesign", {
+		taskForceId,
+		shipDesignId: deckShipDesignId,
 	});
 
 	await api.login(hostId);
@@ -251,6 +305,55 @@ test("resolves configured combat decks during turn resolution and applies engage
 		color: "#8899aa",
 	});
 
+	const { id: battleComponentId } = await api.seed("shipComponent", {
+		gameId,
+		ownerId: hostId,
+		name: "Battle Core",
+		description: "Combat-capable core",
+		layout: "core",
+		supplyNeedPassive: "0",
+		supplyNeedMovement: "0",
+		supplyNeedCombat: "0",
+		powerNeed: "0",
+		crewNeed: "1",
+		constructionCost: "10",
+		supplyCapacity: null,
+		powerGeneration: null,
+		crewCapacity: "1",
+		ftlSpeed: null,
+		zoneOfControl: null,
+		sensorRange: null,
+		structuralIntegrity: "12",
+		thruster: "1",
+		sensorPrecision: "1",
+		armorThickness: null,
+		armorEffectivenessAgainst: null,
+		shieldStrength: "1",
+		shieldEffectivenessAgainst: null,
+		weaponDamage: "2",
+		weaponCooldown: null,
+		weaponRange: null,
+		weaponArmorPenetration: null,
+		weaponShieldPenetration: null,
+		weaponAccuracy: null,
+		weaponDeliveryType: null,
+	});
+
+	const { id: battleShipDesignId } = await api.seed("shipDesign", {
+		gameId,
+		ownerId: hostId,
+		name: "Battle Design",
+		description: "Deck-enabled battle design",
+		decommissioned: false,
+	});
+
+	await api.seed("shipDesignComponent", {
+		shipDesignId: battleShipDesignId,
+		shipComponentId: battleComponentId,
+		column: 0,
+		row: 0,
+	});
+
 	const { id: tfA } = await api.seed("taskForce", {
 		gameId,
 		ownerId: hostId,
@@ -266,6 +369,15 @@ test("resolves configured combat decks during turn resolution and applies engage
 		position: { x: 0, y: 0 },
 		movementVector: null,
 		orders: [],
+	});
+
+	await api.seed("taskForceShipDesign", {
+		taskForceId: tfA,
+		shipDesignId: battleShipDesignId,
+	});
+	await api.seed("taskForceShipDesign", {
+		taskForceId: tfB,
+		shipDesignId: battleShipDesignId,
 	});
 
 	await api.login(hostId);
@@ -1338,7 +1450,7 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 			variables: {
 				input: {
 					starSystemId: originStarSystemId,
-					shipDesignId,
+					shipDesignIds: [shipDesignId],
 					name: "Alpha Fleet",
 				},
 			},
@@ -1468,7 +1580,7 @@ test("returns explicit violation when constructing at unowned system", async ({
 			variables: {
 				input: {
 					starSystemId: rivalSystemId,
-					shipDesignId,
+					shipDesignIds: [shipDesignId],
 					name: "Illicit Fleet",
 				},
 			},
@@ -1678,22 +1790,22 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		supplyNeedMovement: "0",
 		supplyNeedCombat: "0",
 		powerNeed: "0",
-		crewNeed: "0",
+		crewNeed: "1",
 		constructionCost: "10",
 		supplyCapacity: null,
 		powerGeneration: null,
-		crewCapacity: null,
+		crewCapacity: "1",
 		ftlSpeed: null,
 		zoneOfControl: null,
 		sensorRange: null,
 		structuralIntegrity: "8",
-		thruster: null,
-		sensorPrecision: null,
+		thruster: "1",
+		sensorPrecision: "1",
 		armorThickness: null,
 		armorEffectivenessAgainst: null,
-		shieldStrength: null,
+		shieldStrength: "1",
 		shieldEffectivenessAgainst: null,
-		weaponDamage: null,
+		weaponDamage: "2",
 		weaponCooldown: null,
 		weaponRange: null,
 		weaponArmorPenetration: null,
@@ -1737,6 +1849,15 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		position: { x: 100, y: 0 },
 		movementVector: null,
 		orders: [],
+	});
+
+	await api.seed("taskForceShipDesign", {
+		taskForceId: hostBattleTaskForceId,
+		shipDesignId,
+	});
+	await api.seed("taskForceShipDesign", {
+		taskForceId: rivalBattleTaskForceId,
+		shipDesignId,
 	});
 
 	const validDeck = [
@@ -1798,7 +1919,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 			variables: {
 				input: {
 					starSystemId: hostHomeId,
-					shipDesignId,
+					shipDesignIds: [shipDesignId],
 					name: "Builder Fleet",
 				},
 			},

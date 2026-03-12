@@ -8,10 +8,12 @@ import {
 	shipComponents,
 	shipDesignComponents,
 	shipDesigns,
+	sql,
 	starSystemPopulations,
 	starSystemResourceDepots,
 	starSystems,
 	taskForceEngagements,
+	taskForceShipDesigns,
 	taskForces,
 	users,
 } from "@space/data/schema";
@@ -55,6 +57,10 @@ type Types = {
 		typeof taskForceEngagements.$inferInsert,
 		typeof taskForceEngagements.$inferSelect,
 	];
+	taskForceShipDesign: [
+		typeof taskForceShipDesigns.$inferInsert,
+		typeof taskForceShipDesigns.$inferSelect,
+	];
 };
 const Tables = {
 	user: users,
@@ -70,11 +76,18 @@ const Tables = {
 	shipDesignComponent: shipDesignComponents,
 	taskForce: taskForces,
 	taskForceEngagement: taskForceEngagements,
+	taskForceShipDesign: taskForceShipDesigns,
 };
 
 const secret = new TextEncoder().encode(
 	process.env.JWT_SECRET || "electric-kitten",
 );
+
+async function resetIntegrationData(
+	drizzle: ReturnType<typeof getDrizzle>,
+) {
+	await drizzle.execute(sql`TRUNCATE TABLE "games", "users" RESTART IDENTITY CASCADE`);
+}
 
 export const test = base.extend<{
 	api: {
@@ -88,6 +101,8 @@ export const test = base.extend<{
 	api: [
 		async ({ playwright, context }, use) => {
 			const drizzle = getDrizzle(await getConnection());
+
+				await resetIntegrationData(drizzle);
 
 			await use({
 				seed: async (model, data) => {
@@ -121,9 +136,7 @@ export const test = base.extend<{
 				},
 			});
 
-			await drizzle.delete(shipDesignComponents);
-			await drizzle.delete(games);
-			await drizzle.delete(users);
+			await resetIntegrationData(drizzle);
 		},
 		{ scope: "test" },
 	],
