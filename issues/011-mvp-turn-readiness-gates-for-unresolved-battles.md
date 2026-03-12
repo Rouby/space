@@ -1,5 +1,7 @@
 # [MVP-011] Turn Readiness Gate for Unresolved Engagements
 
+DONE
+
 ## Objective
 Prevent end-turn submission when a player still has unresolved mandatory battles or missing battle actions.
 

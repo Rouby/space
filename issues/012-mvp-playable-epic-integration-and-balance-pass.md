@@ -1,5 +1,7 @@
 # [MVP-012] Playable Epic Integration, Balance Pass, and Hardening
 
+DONE
+
 ## Objective
 Deliver a cohesive playable MVP pass by validating end-to-end loop quality and tuning major balance outliers.
 
@@ -27,3 +29,12 @@ Feature-complete does not guarantee playable; this ticket ensures the loop is re
 
 ## Suggested Order
 - Final ticket before release candidate.
+
+## Implementation Notes
+- Deterministic full-loop integration scenario added in `packages/integration/tests/ingame.spec.ts`:
+	- `runs a deterministic multi-turn MVP loop with telemetry checkpoints`
+	- Covers: develop -> build/deck -> move -> battle -> colonization -> end turn
+- Balance pass adjustment applied in `packages/gameloop/src/tick/taskForceCombat.ts`:
+	- Increased combat `STARTING_HP` from 6 to 7 to reduce early burst lethality
+- Release readiness checklist and known-issues list completed in:
+	- `_bmad-output/implementation-artifacts/2-5-playable-epic-integration-balance-and-hardening.md`

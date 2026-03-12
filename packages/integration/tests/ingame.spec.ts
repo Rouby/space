@@ -1586,3 +1586,464 @@ test("denies unauthorized fleet mutation and keeps hidden movement details priva
 		).toBe(false);
 	}
 });
+
+test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", async ({
+	page,
+	api,
+}) => {
+	const { id: hostId } = await api.seed("user", {
+		email: "mvp-loop-host@example.com",
+		name: "MVP Loop Host",
+	});
+	const { id: rivalId } = await api.seed("user", {
+		email: "mvp-loop-rival@example.com",
+		name: "MVP Loop Rival",
+	});
+	const { id: gameId } = await api.seed("game", {
+		name: "MVP Loop Game",
+		hostUserId: hostId,
+	});
+
+	await api.seed("player", {
+		gameId,
+		userId: hostId,
+		color: "#d35400",
+	});
+	await api.seed("player", {
+		gameId,
+		userId: rivalId,
+		color: "#16a085",
+	});
+
+	const { id: hostHomeId } = await api.seed("starSystem", {
+		gameId,
+		ownerId: hostId,
+		name: "Host Prime",
+		position: { x: 0, y: 0 },
+		discoverySlots: 0,
+		discoveryProgress: "0",
+		industry: 3,
+	});
+	await api.seed("starSystemPopulation", {
+		starSystemId: hostHomeId,
+		allegianceToPlayerId: hostId,
+		amount: 12_000_000_000n,
+	});
+
+	const { id: rivalHomeId } = await api.seed("starSystem", {
+		gameId,
+		ownerId: rivalId,
+		name: "Rival Prime",
+		position: { x: 500, y: 0 },
+		discoverySlots: 0,
+		discoveryProgress: "0",
+		industry: 2,
+	});
+	await api.seed("starSystemPopulation", {
+		starSystemId: rivalHomeId,
+		allegianceToPlayerId: rivalId,
+		amount: 500_000_000n,
+	});
+
+	const { id: targetSystemId } = await api.seed("starSystem", {
+		gameId,
+		ownerId: null,
+		name: "Neutral Frontier",
+		position: { x: 50, y: 0 },
+		discoverySlots: 0,
+		discoveryProgress: "0",
+		industry: 1,
+	});
+
+	const { id: resourceId } = await api.seed("resource", {
+		gameId,
+		name: "Alloy",
+		kind: "metal",
+		description: "Construction alloy",
+		discoveryWeight: 1,
+	});
+	await api.seed("starSystemResourceDepot", {
+		starSystemId: hostHomeId,
+		resourceId,
+		quantity: "100",
+	});
+
+	const { id: shipComponentId } = await api.seed("shipComponent", {
+		gameId,
+		ownerId: hostId,
+		name: "MVP Hull",
+		description: "MVP hull",
+		layout: "core",
+		supplyNeedPassive: "0",
+		supplyNeedMovement: "0",
+		supplyNeedCombat: "0",
+		powerNeed: "0",
+		crewNeed: "0",
+		constructionCost: "10",
+		supplyCapacity: null,
+		powerGeneration: null,
+		crewCapacity: null,
+		ftlSpeed: null,
+		zoneOfControl: null,
+		sensorRange: null,
+		structuralIntegrity: "8",
+		thruster: null,
+		sensorPrecision: null,
+		armorThickness: null,
+		armorEffectivenessAgainst: null,
+		shieldStrength: null,
+		shieldEffectivenessAgainst: null,
+		weaponDamage: null,
+		weaponCooldown: null,
+		weaponRange: null,
+		weaponArmorPenetration: null,
+		weaponShieldPenetration: null,
+		weaponAccuracy: null,
+		weaponDeliveryType: null,
+	});
+
+	await api.seed("shipComponentResourceCost", {
+		shipComponentId,
+		resourceId,
+		quantity: "10",
+	});
+
+	const { id: shipDesignId } = await api.seed("shipDesign", {
+		gameId,
+		ownerId: hostId,
+		name: "MVP Scout",
+		description: "MVP scout design",
+		decommissioned: false,
+	});
+	await api.seed("shipDesignComponent", {
+		shipDesignId,
+		shipComponentId,
+		column: 0,
+		row: 0,
+	});
+
+	const { id: hostBattleTaskForceId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: hostId,
+		name: "Host Vanguard",
+		position: { x: 0, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+	const { id: rivalBattleTaskForceId } = await api.seed("taskForce", {
+		gameId,
+		ownerId: rivalId,
+		name: "Rival Vanguard",
+		position: { x: 100, y: 0 },
+		movementVector: null,
+		orders: [],
+	});
+
+	const validDeck = [
+		"laser_burst",
+		"laser_burst",
+		"target_lock",
+		"target_lock",
+		"emergency_repairs",
+		"emergency_repairs",
+		"shield_pulse",
+		"shield_pulse",
+		"evasive_maneuver",
+		"evasive_maneuver",
+		"overcharge_barrage",
+		"overcharge_barrage",
+	];
+
+	await api.login(hostId);
+
+	const startResponse = await page.request.post("/graphql", {
+		data: {
+			query: "mutation Start($id: ID!) { startGame(id: $id) { id } }",
+			variables: { id: gameId },
+		},
+	});
+	const startPayload = await startResponse.json();
+	expect(startPayload.errors).toBeUndefined();
+
+	const setStanceResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation SetStance($starSystemId: ID!, $stance: DevelopmentStance!) { setDevelopmentStance(starSystemId: $starSystemId, stance: $stance) { id } }",
+			variables: {
+				starSystemId: hostHomeId,
+				stance: "grow_population",
+			},
+		},
+	});
+	const setStancePayload = await setStanceResponse.json();
+	expect(setStancePayload.errors).toBeUndefined();
+
+	const queueProjectResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation QueueProject($starSystemId: ID!, $projectType: IndustrialProjectType!) { queueIndustrialProject(starSystemId: $starSystemId, projectType: $projectType) { id } }",
+			variables: {
+				starSystemId: hostHomeId,
+				projectType: "factory_expansion",
+			},
+		},
+	});
+	const queueProjectPayload = await queueProjectResponse.json();
+	expect(queueProjectPayload.errors).toBeUndefined();
+
+	const constructResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Construct($input: ConstructTaskForceInput!) { constructTaskForce(input: $input) { id name } }",
+			variables: {
+				input: {
+					starSystemId: hostHomeId,
+					shipDesignId,
+					name: "Builder Fleet",
+				},
+			},
+		},
+	});
+	const constructPayload = await constructResponse.json();
+	expect(constructPayload.errors).toBeUndefined();
+	expect(constructPayload.data?.constructTaskForce?.id).toBeTruthy();
+
+	const hostDeckResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id combatDeck } }",
+			variables: {
+				input: { taskForceId: hostBattleTaskForceId, cardIds: validDeck },
+			},
+		},
+	});
+	const hostDeckPayload = await hostDeckResponse.json();
+	expect(hostDeckPayload.errors).toBeUndefined();
+
+	await api.login(rivalId);
+
+	const rivalDeckResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation ConfigureDeck($input: ConfigureTaskForceCombatDeckInput!) { configureTaskForceCombatDeck(input: $input) { id combatDeck } }",
+			variables: {
+				input: { taskForceId: rivalBattleTaskForceId, cardIds: validDeck },
+			},
+		},
+	});
+	const rivalDeckPayload = await rivalDeckResponse.json();
+	expect(rivalDeckPayload.errors).toBeUndefined();
+
+	const rivalMoveResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Order($id: ID!, $orders: [TaskForceOrderInput!]!, $queue: Boolean) { orderTaskForce(id: $id, orders: $orders, queue: $queue) { id } }",
+			variables: {
+				id: rivalBattleTaskForceId,
+				queue: false,
+				orders: [{ move: { destination: { x: 50, y: 0 } } }],
+			},
+		},
+	});
+	const rivalMovePayload = await rivalMoveResponse.json();
+	expect(rivalMovePayload.errors).toBeUndefined();
+
+	await api.login(hostId);
+
+	const hostMoveResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Order($id: ID!, $orders: [TaskForceOrderInput!]!, $queue: Boolean) { orderTaskForce(id: $id, orders: $orders, queue: $queue) { id } }",
+			variables: {
+				id: hostBattleTaskForceId,
+				queue: false,
+				orders: [{ move: { destination: { x: 50, y: 0 } } }],
+			},
+		},
+	});
+	const hostMovePayload = await hostMoveResponse.json();
+	expect(hostMovePayload.errors).toBeUndefined();
+
+	const endTurnMutation = {
+		query:
+			"mutation EndTurn($expectedTurnNumber: Int!, $gameId: ID!) { endTurn(gameId: $gameId, expectedTurnNumber: $expectedTurnNumber) { id } }",
+	};
+
+	const resolveOpenDilemmas = async () => {
+		const dilemmasResponse = await page.request.post("/graphql", {
+			data: {
+				query:
+					"query PendingDilemmas($id: ID!) { game(id: $id) { id dilemmas { id choosen choices { id } } } }",
+				variables: { id: gameId },
+			},
+		});
+		const dilemmasPayload = await dilemmasResponse.json();
+		expect(dilemmasPayload.errors).toBeUndefined();
+
+		for (const dilemma of dilemmasPayload.data?.game?.dilemmas ?? []) {
+			if (dilemma.choosen) {
+				continue;
+			}
+
+			const defaultChoiceId = dilemma.choices?.[0]?.id;
+			expect(defaultChoiceId).toBeTruthy();
+
+			const chooseResponse = await page.request.post("/graphql", {
+				data: {
+					query:
+						"mutation ChooseDilemma($dilemmaId: ID!, $choiceId: ID!) { makeDilemmaChoice(dilemmaId: $dilemmaId, choiceId: $choiceId) { id choosen } }",
+					variables: {
+						dilemmaId: dilemma.id,
+						choiceId: defaultChoiceId,
+					},
+				},
+			});
+			const choosePayload = await chooseResponse.json();
+			expect(choosePayload.errors).toBeUndefined();
+		}
+	};
+
+	const hostEndTurn0Response = await page.request.post("/graphql", {
+		data: {
+			...endTurnMutation,
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const hostEndTurn0Payload = await hostEndTurn0Response.json();
+	expect(hostEndTurn0Payload.errors).toBeUndefined();
+
+	await api.login(rivalId);
+
+	const rivalEndTurn0Response = await page.request.post("/graphql", {
+		data: {
+			...endTurnMutation,
+			variables: { expectedTurnNumber: 0, gameId },
+		},
+	});
+	const rivalEndTurn0Payload = await rivalEndTurn0Response.json();
+	expect(rivalEndTurn0Payload.errors).toBeUndefined();
+
+	await api.login(hostId);
+
+	const afterTurn0Query = {
+		query:
+			"query AfterTurn0($gameId: ID!, $targetSystemId: ID!) { game(id: $gameId) { id turnNumber activeTaskForceEngagements { id phase } turnReports(limit: 1) { turnNumber populationChanges { growth } taskForceConstructionChanges { completed } taskForceEngagements { engagementId status } colonizationCompleted { starSystem { id } } } } starSystem(id: $targetSystemId) { id owner { user { id } } } }",
+		variables: { gameId, targetSystemId },
+	};
+
+	await expect
+		.poll(
+			async () => {
+				const response = await page.request.post("/graphql", {
+					data: afterTurn0Query,
+				});
+				const payload = await response.json();
+				const report = payload.data?.game?.turnReports?.[0];
+
+				return {
+					errors: payload.errors,
+					turnNumber: payload.data?.game?.turnNumber,
+					activeEngagements:
+						payload.data?.game?.activeTaskForceEngagements?.length ?? 0,
+					hasPopulationTelemetry:
+						(report?.populationChanges?.length ?? 0) > 0,
+					hasConstructionTelemetry:
+						(report?.taskForceConstructionChanges?.length ?? 0) > 0,
+					hasEngagementTelemetry:
+						(report?.taskForceEngagements?.length ?? 0) > 0,
+					hasColonizationTelemetry:
+						(report?.colonizationCompleted?.length ?? 0) > 0,
+					targetOwnerId:
+						payload.data?.starSystem?.owner?.user?.id ?? null,
+				};
+			},
+			{ timeout: 20000 },
+		)
+		.toMatchObject({
+			errors: undefined,
+			turnNumber: 1,
+			activeEngagements: 1,
+			hasPopulationTelemetry: true,
+			hasConstructionTelemetry: true,
+			hasEngagementTelemetry: true,
+			hasColonizationTelemetry: true,
+			targetOwnerId: hostId,
+		});
+
+	await resolveOpenDilemmas();
+	await api.login(rivalId);
+	await resolveOpenDilemmas();
+	await api.login(hostId);
+
+	const engagementQueryResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"query ActiveEngagement($id: ID!) { game(id: $id) { id activeTaskForceEngagements { id } } }",
+			variables: { id: gameId },
+		},
+	});
+	const engagementQueryPayload = await engagementQueryResponse.json();
+	const activeEngagementId =
+		engagementQueryPayload.data?.game?.activeTaskForceEngagements?.[0]?.id;
+	expect(activeEngagementId).toBeTruthy();
+
+	const hostRetreatResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Submit($input: SubmitTaskForceEngagementActionInput!) { submitTaskForceEngagementAction(input: $input) { id phase } }",
+			variables: {
+				input: { engagementId: activeEngagementId, action: "RETREAT" },
+			},
+		},
+	});
+	const hostRetreatPayload = await hostRetreatResponse.json();
+	expect(hostRetreatPayload.errors).toBeUndefined();
+
+	await api.login(rivalId);
+
+	const rivalRetreatResponse = await page.request.post("/graphql", {
+		data: {
+			query:
+				"mutation Submit($input: SubmitTaskForceEngagementActionInput!) { submitTaskForceEngagementAction(input: $input) { id phase } }",
+			variables: {
+				input: { engagementId: activeEngagementId, action: "RETREAT" },
+			},
+		},
+	});
+	const rivalRetreatPayload = await rivalRetreatResponse.json();
+	expect(rivalRetreatPayload.errors).toBeUndefined();
+	expect(rivalRetreatPayload.data?.submitTaskForceEngagementAction?.phase).toBe(
+		"completed",
+	);
+
+	await api.login(hostId);
+
+	await expect
+		.poll(
+			async () => {
+				const response = await page.request.post("/graphql", {
+					data: {
+						query:
+							"query EngagementCompleted($gameId: ID!, $engagementId: ID!) { game(id: $gameId) { id activeTaskForceEngagements { id } } taskForceEngagement(id: $engagementId) { id phase resolvedAtTurn } }",
+						variables: { gameId, engagementId: activeEngagementId },
+					},
+				});
+				const payload = await response.json();
+
+				return {
+					errors: payload.errors,
+					activeEngagements:
+						payload.data?.game?.activeTaskForceEngagements?.length ?? 0,
+					engagementPhase: payload.data?.taskForceEngagement?.phase,
+					resolvedAtTurn:
+						payload.data?.taskForceEngagement?.resolvedAtTurn ?? null,
+				};
+			},
+			{ timeout: 20000 },
+		)
+		.toMatchObject({
+			errors: undefined,
+			activeEngagements: 0,
+			engagementPhase: "completed",
+		});
+});
