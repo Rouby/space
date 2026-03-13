@@ -325,6 +325,229 @@ const RESOURCE_POOLS: Record<ResourceKind, ResourceTemplate[]> = {
 	],
 };
 
+interface ComponentTemplate {
+	name: string;
+	description: string;
+	layout: string;
+	stats: {
+		supplyNeedPassive: string;
+		supplyNeedMovement: string;
+		supplyNeedCombat: string;
+		powerNeed: string;
+		crewNeed: string;
+		constructionCost: string;
+		supplyCapacity?: string | null;
+		powerGeneration?: string | null;
+		crewCapacity?: string | null;
+		ftlSpeed?: string | null;
+		zoneOfControl?: string | null;
+		sensorRange?: string | null;
+		structuralIntegrity?: string | null;
+		thruster?: string | null;
+		sensorPrecision?: string | null;
+		armorThickness?: string | null;
+		armorEffectivenessAgainst?: {
+			projectile: number | null;
+			beam: number | null;
+			missile: number | null;
+			instant: number | null;
+		} | null;
+		shieldStrength?: string | null;
+		shieldEffectivenessAgainst?: {
+			projectile: number | null;
+			beam: number | null;
+			missile: number | null;
+			instant: number | null;
+		} | null;
+		weaponDamage?: string | null;
+		weaponCooldown?: string | null;
+		weaponRange?: string | null;
+		weaponArmorPenetration?: string | null;
+		weaponShieldPenetration?: string | null;
+		weaponAccuracy?: string | null;
+		weaponDeliveryType?: "missile" | "projectile" | "beam" | "instant" | null;
+	};
+}
+
+const DEFAULT_COMPONENTS: ComponentTemplate[] = [
+	{
+		name: "Light Frame",
+		description:
+			"A minimal structural frame providing basic hull integrity at low cost. Ideal for small craft and expendable designs.",
+		layout: "hull",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "0",
+			powerNeed: "0",
+			crewNeed: "0",
+			constructionCost: "5",
+			structuralIntegrity: "8",
+		},
+	},
+	{
+		name: "Reinforced Bulkhead",
+		description:
+			"Heavy-duty structural plating that significantly increases hull integrity. Requires crew to maintain and power for active stress monitoring.",
+		layout: "hull",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "0",
+			powerNeed: "1",
+			crewNeed: "1",
+			constructionCost: "12",
+			structuralIntegrity: "15",
+		},
+	},
+	{
+		name: "Ion Drive",
+		description:
+			"A reliable ion propulsion system providing both FTL capability and tactical thrust. Consumes supply during movement.",
+		layout: "engine",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "1",
+			supplyNeedCombat: "0",
+			powerNeed: "2",
+			crewNeed: "1",
+			constructionCost: "8",
+			ftlSpeed: "3",
+			thruster: "2",
+		},
+	},
+	{
+		name: "Fusion Core",
+		description:
+			"A compact fusion reactor that generates substantial power and includes integrated supply storage. The backbone of any ship's energy grid.",
+		layout: "reactor",
+		stats: {
+			supplyNeedPassive: "1",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "0",
+			powerNeed: "0",
+			crewNeed: "1",
+			constructionCost: "15",
+			powerGeneration: "10",
+			supplyCapacity: "20",
+		},
+	},
+	{
+		name: "Railgun",
+		description:
+			"An electromagnetic mass driver that hurls metal slugs at extreme velocity. Devastating against armor but less accurate at range.",
+		layout: "weapon",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "1",
+			powerNeed: "2",
+			crewNeed: "1",
+			constructionCost: "10",
+			weaponDamage: "3",
+			weaponDeliveryType: "projectile",
+			weaponAccuracy: "0.7",
+			weaponCooldown: "2",
+		},
+	},
+	{
+		name: "Pulse Laser",
+		description:
+			"A rapid-fire directed energy weapon. Highly accurate with fast cycling, though individual shots deal less damage than kinetic alternatives.",
+		layout: "weapon",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "1",
+			powerNeed: "3",
+			crewNeed: "1",
+			constructionCost: "12",
+			weaponDamage: "2",
+			weaponDeliveryType: "beam",
+			weaponAccuracy: "0.9",
+			weaponCooldown: "1",
+		},
+	},
+	{
+		name: "Composite Plating",
+		description:
+			"Layered armor panels effective against kinetic impacts. Less useful against directed energy and warheads.",
+		layout: "armor",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "0",
+			powerNeed: "0",
+			crewNeed: "0",
+			constructionCost: "8",
+			armorThickness: "4",
+			armorEffectivenessAgainst: {
+				projectile: 0.8,
+				beam: 0.4,
+				missile: 0.6,
+				instant: 0.2,
+			},
+		},
+	},
+	{
+		name: "Deflector Array",
+		description:
+			"An energy shield system that excels at dissipating beam weapons. Requires continuous power but provides regenerating protection.",
+		layout: "shield",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "0",
+			powerNeed: "3",
+			crewNeed: "1",
+			constructionCost: "14",
+			shieldStrength: "5",
+			shieldEffectivenessAgainst: {
+				projectile: 0.4,
+				beam: 0.8,
+				missile: 0.5,
+				instant: 0.3,
+			},
+		},
+	},
+	{
+		name: "Scanner Array",
+		description:
+			"A multi-spectrum sensor suite providing long-range detection and tactical targeting data. Essential for fleet awareness.",
+		layout: "sensor",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "0",
+			powerNeed: "1",
+			crewNeed: "1",
+			constructionCost: "6",
+			sensorRange: "50",
+			sensorPrecision: "3",
+			zoneOfControl: "30",
+		},
+	},
+	{
+		name: "Crew Quarters",
+		description:
+			"Standard living spaces for ship personnel. Provides crew capacity with minimal resource requirements.",
+		layout: "quarters",
+		stats: {
+			supplyNeedPassive: "0",
+			supplyNeedMovement: "0",
+			supplyNeedCombat: "0",
+			powerNeed: "0",
+			crewNeed: "0",
+			constructionCost: "4",
+			crewCapacity: "5",
+		},
+	},
+];
+
+export function getDefaultComponents(): ComponentTemplate[] {
+	return DEFAULT_COMPONENTS;
+}
+
 function randomIndex(max: number) {
 	return Math.floor(Math.random() * max);
 }

@@ -2,6 +2,7 @@ import { latestVersion } from "@space/data/game-migrations";
 import { eq, games, players } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
+import { setupComponents } from "./components.ts";
 import { setupGalaxy } from "./galaxy.ts";
 import { setupResources } from "./resources.ts";
 import { setupStartingConditions } from "./startingConditions.ts";
@@ -25,6 +26,8 @@ export async function setup() {
 
 	await drizzle.transaction(async (tx) => {
 		await setupResources(tx, ctx);
+
+		await setupComponents(tx, ctx);
 
 		await setupGalaxy(tx, ctx);
 
