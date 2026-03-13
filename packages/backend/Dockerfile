@@ -1,7 +1,7 @@
 FROM node:24-alpine AS base
 
 
-FROM base as build
+FROM base AS build
 
 WORKDIR /space
 
