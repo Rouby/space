@@ -7,6 +7,9 @@
 	"exports": {
 		".": {
 			"import": "./src/main.ts"
+		},
+		"./src/randomGameContent": {
+			"import": "./src/randomGameContent.ts"
 		}
 	},
 	"module": "src/main.ts",

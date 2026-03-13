@@ -1,4 +1,65 @@
+import { getDefaultComponents } from "@space/gameloop/src/randomGameContent";
 import { expect, test } from "./fixture";
+
+interface TestApi {
+	seed: (model: any, data: any) => Promise<{ id: string }>;
+}
+
+async function seedDefaultComponents(api: TestApi, gameId: string, ownerId: string) {
+	const templates = getDefaultComponents();
+	const components = new Map<string, string[]>();
+
+	for (const template of templates) {
+		const { id } = await api.seed("shipComponent", {
+			gameId,
+			ownerId,
+			name: template.name,
+			description: template.description,
+			layout: template.layout,
+			...template.stats,
+		});
+
+		const existing = components.get(template.layout) ?? [];
+		existing.push(id);
+		components.set(template.layout, existing);
+	}
+
+	return components;
+}
+
+async function seedRealisticShipDesign(
+	api: TestApi,
+	gameId: string,
+	ownerId: string,
+	components: Map<string, string[]>,
+	designName: string,
+) {
+	const { id: designId } = await api.seed("shipDesign", {
+		gameId,
+		ownerId,
+		name: designName,
+		description: "Test ship design",
+		decommissioned: false,
+	});
+
+	const categoriesToInclude = ["hull", "engine", "reactor", "weapon", "shield", "sensor", "quarters"];
+	let gridPos = 0;
+
+	for (const category of categoriesToInclude) {
+		const ids = components.get(category);
+		if (ids && ids.length > 0) {
+			await api.seed("shipDesignComponent", {
+				shipDesignId: designId,
+				shipComponentId: ids[0],
+				column: gridPos % 4,
+				row: Math.floor(gridPos / 4),
+			});
+			gridPos++;
+		}
+	}
+
+	return designId;
+}
 
 test.describe.configure({ mode: "default" });
 
@@ -76,54 +137,10 @@ test("configures task force combat deck with MVP validation rules", async ({
 		color: "#ccaa77",
 	});
 
-	const { id: deckComponentId } = await api.seed("shipComponent", {
-		gameId,
-		ownerId: hostId,
-		name: "Deck Core",
-		description: "Enables all MVP combat deck capabilities",
-		layout: "core",
-		supplyNeedPassive: "0",
-		supplyNeedMovement: "0",
-		supplyNeedCombat: "0",
-		powerNeed: "0",
-		crewNeed: "1",
-		constructionCost: "10",
-		supplyCapacity: null,
-		powerGeneration: null,
-		crewCapacity: "1",
-		ftlSpeed: null,
-		zoneOfControl: null,
-		sensorRange: null,
-		structuralIntegrity: "10",
-		thruster: "1",
-		sensorPrecision: "1",
-		armorThickness: null,
-		armorEffectivenessAgainst: null,
-		shieldStrength: "1",
-		shieldEffectivenessAgainst: null,
-		weaponDamage: "2",
-		weaponCooldown: null,
-		weaponRange: null,
-		weaponArmorPenetration: null,
-		weaponShieldPenetration: null,
-		weaponAccuracy: null,
-		weaponDeliveryType: null,
-	});
-
-	const { id: deckShipDesignId } = await api.seed("shipDesign", {
-		gameId,
-		ownerId: hostId,
-		name: "Deck-Capable Design",
-		description: "Supports all deck cards",
-		decommissioned: false,
-	});
-
-	await api.seed("shipDesignComponent", {
-		shipDesignId: deckShipDesignId,
-		shipComponentId: deckComponentId,
-		column: 0,
-		row: 0,
-	});
+	const deckComponents = await seedDefaultComponents(api, gameId, hostId);
+	const deckShipDesignId = await seedRealisticShipDesign(
+		api, gameId, hostId, deckComponents, "Deck-Capable Design",
+	);
 
 	const { id: taskForceId } = await api.seed("taskForce", {
 		gameId,
@@ -305,54 +322,10 @@ test("resolves configured combat decks during turn resolution and applies engage
 		color: "#8899aa",
 	});
 
-	const { id: battleComponentId } = await api.seed("shipComponent", {
-		gameId,
-		ownerId: hostId,
-		name: "Battle Core",
-		description: "Combat-capable core",
-		layout: "core",
-		supplyNeedPassive: "0",
-		supplyNeedMovement: "0",
-		supplyNeedCombat: "0",
-		powerNeed: "0",
-		crewNeed: "1",
-		constructionCost: "10",
-		supplyCapacity: null,
-		powerGeneration: null,
-		crewCapacity: "1",
-		ftlSpeed: null,
-		zoneOfControl: null,
-		sensorRange: null,
-		structuralIntegrity: "12",
-		thruster: "1",
-		sensorPrecision: "1",
-		armorThickness: null,
-		armorEffectivenessAgainst: null,
-		shieldStrength: "1",
-		shieldEffectivenessAgainst: null,
-		weaponDamage: "2",
-		weaponCooldown: null,
-		weaponRange: null,
-		weaponArmorPenetration: null,
-		weaponShieldPenetration: null,
-		weaponAccuracy: null,
-		weaponDeliveryType: null,
-	});
-
-	const { id: battleShipDesignId } = await api.seed("shipDesign", {
-		gameId,
-		ownerId: hostId,
-		name: "Battle Design",
-		description: "Deck-enabled battle design",
-		decommissioned: false,
-	});
-
-	await api.seed("shipDesignComponent", {
-		shipDesignId: battleShipDesignId,
-		shipComponentId: battleComponentId,
-		column: 0,
-		row: 0,
-	});
+	const battleComponents = await seedDefaultComponents(api, gameId, hostId);
+	const battleShipDesignId = await seedRealisticShipDesign(
+		api, gameId, hostId, battleComponents, "Battle Design",
+	);
 
 	const { id: tfA } = await api.seed("taskForce", {
 		gameId,

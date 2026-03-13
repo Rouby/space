@@ -3913,6 +3913,7 @@ __metadata:
   dependencies:
     "@playwright/test": "npm:1.54.2"
     "@space/data": "workspace:*"
+    "@space/gameloop": "workspace:*"
     "@types/node": "npm:24.3.0"
     jose: "npm:6.0.12"
     pg: "npm:8.16.3"

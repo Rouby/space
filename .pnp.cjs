@@ -9845,6 +9845,7 @@ const RAW_RUNTIME_STATE =
           ["@space/integration", "workspace:packages/integration"],\
           ["@playwright/test", "npm:1.54.2"],\
           ["@space/data", "workspace:packages/data"],\
+          ["@space/gameloop", "workspace:packages/gameloop"],\
           ["@types/node", "npm:24.3.0"],\
           ["jose", "npm:6.0.12"],\
           ["pg", "virtual:b247d93090cc7ee445bac8d54c0fafab5bdc03b582f06c48317cf10cd2497e05caaa7ce21671e8eb0995a529a5addeca30eeb49fae926013f333d7ea4e81f3e3#npm:8.16.3"]\
