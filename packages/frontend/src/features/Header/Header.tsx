@@ -100,13 +100,19 @@ export function Header() {
 									<Group justify="space-between">
 										<div>
 											<Text fw={500} fz="sm">
-												Get started
+												Ready to command your empire?
 											</Text>
 											<Text size="xs" c="dimmed">
-												Their food sources have decreased, and their numbers
+												Start your campaign today — it's free to play.
 											</Text>
 										</div>
-										<Button variant="default">Get started</Button>
+										<Button
+											variant="default"
+											component={RouterLink}
+											to="/signin"
+										>
+											Get started
+										</Button>
 									</Group>
 								</div>
 							</HoverCard.Dropdown>

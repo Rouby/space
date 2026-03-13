@@ -1,0 +1,83 @@
+.hero {
+	padding-top: calc(var(--mantine-spacing-xl) * 3);
+	padding-bottom: calc(var(--mantine-spacing-xl) * 3);
+	text-align: center;
+	border-bottom: rem(1px) solid
+		light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
+}
+
+.heroTitle {
+	font-size: rem(38px);
+	font-weight: 800;
+	letter-spacing: -1px;
+	font-family:
+		Greycliff CF,
+		sans-serif;
+	margin-bottom: var(--mantine-spacing-md);
+
+	@media (max-width: var(--mantine-breakpoint-sm)) {
+		font-size: rem(26px);
+	}
+}
+
+.cardsSection {
+	padding-top: calc(var(--mantine-spacing-xl) * 2.5);
+	padding-bottom: calc(var(--mantine-spacing-xl) * 2.5);
+}
+
+.card {
+	padding: var(--mantine-spacing-xl);
+	border-radius: var(--mantine-radius-md);
+	border: rem(1px) solid
+		light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+	background: light-dark(
+		var(--mantine-color-white),
+		var(--mantine-color-dark-7)
+	);
+	height: 100%;
+}
+
+.cardTitle {
+	font-size: var(--mantine-font-size-lg);
+	font-weight: 700;
+	margin-top: var(--mantine-spacing-sm);
+	margin-bottom: var(--mantine-spacing-xs);
+}
+
+.stepBadge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: rem(28px);
+	height: rem(28px);
+	border-radius: 50%;
+	background: var(--mantine-color-blue-9);
+	color: var(--mantine-color-white);
+	font-size: var(--mantine-font-size-xs);
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.cta {
+	padding-top: calc(var(--mantine-spacing-xl) * 3);
+	padding-bottom: calc(var(--mantine-spacing-xl) * 3);
+	text-align: center;
+	border-top: rem(1px) solid
+		light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
+}
+
+.imageSection {
+	padding-top: calc(var(--mantine-spacing-xl) * 2);
+	padding-bottom: calc(var(--mantine-spacing-xl) * 2);
+	border-bottom: rem(1px) solid
+		light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
+}
+
+.learnImage {
+	width: 100%;
+	border-radius: var(--mantine-radius-md);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+	display: block;
+	max-height: 380px;
+	object-fit: cover;
+}

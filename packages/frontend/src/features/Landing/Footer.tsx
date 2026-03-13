@@ -1,36 +1,58 @@
-import { ActionIcon, Anchor, Container, Group, rem } from "@mantine/core";
+import { ActionIcon, Anchor, Container, Group, rem, Text } from "@mantine/core";
 import {
-	IconBrandInstagram,
+	IconBrandDiscord,
+	IconBrandGithub,
 	IconBrandTwitter,
-	IconBrandYoutube,
 } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
 import classes from "./Footer.module.css";
 
 const links = [
-	{ link: "#", label: "Contact" },
-	{ link: "#", label: "Privacy" },
-	{ link: "#", label: "Blog" },
-	{ link: "#", label: "Careers" },
+	{ link: "/features", label: "Features", internal: true },
+	{ link: "/learn", label: "Learn", internal: true },
+	{ link: "#", label: "Privacy", internal: false },
+	{ link: "#", label: "Contact", internal: false },
 ];
 
 export function Footer() {
-	const items = links.map((link) => (
-		<Anchor
-			c="dimmed"
-			key={link.label}
-			href={link.link}
-			lh={1}
-			onClick={(event) => event.preventDefault()}
-			size="sm"
-		>
-			{link.label}
-		</Anchor>
-	));
+	const items = links.map((link) =>
+		link.internal ? (
+			<Anchor
+				c="dimmed"
+				key={link.label}
+				component={Link}
+				to={link.link as "/features" | "/learn"}
+				lh={1}
+				size="sm"
+			>
+				{link.label}
+			</Anchor>
+		) : (
+			<Anchor
+				c="dimmed"
+				key={link.label}
+				href={link.link}
+				lh={1}
+				onClick={(event) => event.preventDefault()}
+				size="sm"
+			>
+				{link.label}
+			</Anchor>
+		),
+	);
 
 	return (
 		<div className={classes.footer}>
 			<Container className={classes.inner}>
-				<span>Logo</span>
+				<Text
+					fw={700}
+					size="lg"
+					variant="gradient"
+					gradient={{ from: "blue", to: "cyan" }}
+					component="span"
+				>
+					Space
+				</Text>
 				<Group className={classes.links}>{items}</Group>
 
 				<Group gap="xs" justify="flex-end" wrap="nowrap">
@@ -41,13 +63,13 @@ export function Footer() {
 						/>
 					</ActionIcon>
 					<ActionIcon size="lg" variant="default" radius="xl">
-						<IconBrandYoutube
+						<IconBrandDiscord
 							style={{ width: rem(18), height: rem(18) }}
 							stroke={1.5}
 						/>
 					</ActionIcon>
 					<ActionIcon size="lg" variant="default" radius="xl">
-						<IconBrandInstagram
+						<IconBrandGithub
 							style={{ width: rem(18), height: rem(18) }}
 							stroke={1.5}
 						/>

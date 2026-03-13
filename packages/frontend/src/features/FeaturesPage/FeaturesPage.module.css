@@ -1,0 +1,120 @@
+.hero {
+	position: relative;
+	padding-top: rem(80px);
+	padding-bottom: rem(80px);
+	overflow: hidden;
+}
+
+.heroImageWrapper {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+}
+
+.heroImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 40%;
+	opacity: 0.35;
+}
+
+.heroOverlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		to bottom,
+		rgba(10, 10, 20, 0.3) 0%,
+		rgba(10, 10, 20, 0.65) 60%,
+		rgba(10, 10, 20, 0.95) 100%
+	);
+}
+
+.heroInner {
+	position: relative;
+	z-index: 1;
+	text-align: center;
+}
+
+.heroTitle {
+	font-size: rem(42px);
+	font-weight: 800;
+	letter-spacing: -1px;
+	font-family:
+		Greycliff CF,
+		sans-serif;
+	margin-bottom: var(--mantine-spacing-md);
+
+	@media (max-width: var(--mantine-breakpoint-sm)) {
+		font-size: rem(28px);
+	}
+}
+
+.section {
+	padding-top: calc(var(--mantine-spacing-xl) * 3);
+	padding-bottom: calc(var(--mantine-spacing-xl) * 3);
+	border-bottom: rem(1px) solid
+		light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
+}
+
+.section:last-of-type {
+	border-bottom: none;
+}
+
+.sectionImage {
+	border-radius: var(--mantine-radius-md);
+	overflow: hidden;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.sectionImageImg {
+	width: 100%;
+	height: 260px;
+	object-fit: cover;
+	display: block;
+}
+
+.sectionLabel {
+	font-size: var(--mantine-font-size-xs);
+	font-weight: 700;
+	letter-spacing: rem(2px);
+	text-transform: uppercase;
+	color: var(--mantine-color-blue-4);
+	margin-bottom: var(--mantine-spacing-xs);
+}
+
+.sectionTitle {
+	font-size: rem(32px);
+	font-weight: 800;
+	letter-spacing: -0.5px;
+	font-family:
+		Greycliff CF,
+		sans-serif;
+	margin-bottom: var(--mantine-spacing-md);
+
+	@media (max-width: var(--mantine-breakpoint-sm)) {
+		font-size: rem(24px);
+	}
+}
+
+.bullet {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--mantine-spacing-sm);
+	margin-bottom: var(--mantine-spacing-xs);
+}
+
+.bulletDot {
+	flex-shrink: 0;
+	margin-top: rem(6px);
+	width: rem(6px);
+	height: rem(6px);
+	border-radius: 50%;
+	background: var(--mantine-color-blue-4);
+}
+
+.cta {
+	padding-top: calc(var(--mantine-spacing-xl) * 3);
+	padding-bottom: calc(var(--mantine-spacing-xl) * 3);
+	text-align: center;
+}

@@ -5,23 +5,32 @@ import classes from "./Hero.module.css";
 export function Hero() {
 	return (
 		<div className={classes.wrapper}>
-			<Container size={700} className={classes.inner}>
+			<div className={classes.heroImageWrapper}>
+				<img
+					src="/images/promo/hero.png"
+					alt="A sprawling galaxy with glowing star systems and colorful nebulae"
+					className={classes.heroImage}
+				/>
+				<div className={classes.heroOverlay} />
+			</div>
+			<Container size={800} className={classes.inner}>
 				<Title className={classes.title}>
-					A multiplayer space strategy game of{" "}
+					The async 4X strategy game built for{" "}
 					<Text
 						component="span"
 						variant="gradient"
 						gradient={{ from: "blue", to: "cyan" }}
 						inherit
 					>
-						exploration and conquest
+						long campaigns
 					</Text>
 				</Title>
 
-				<Text className={classes.description} color="dimmed">
-					Build your fleet, explore unknown star systems, and expand your
-					empire. Engage in tactical battles, manage your resources, and compete
-					with other players for dominance in a persistent universe.
+				<Text className={classes.description} c="dimmed">
+					Space is a browser-based multiplayer space strategy game designed for
+					friend groups running campaigns over weeks to months. Build your
+					empire, colonize star systems, command fleets, and face consequential
+					dilemmas — all without the grind that kills most async campaigns.
 				</Text>
 
 				<Group className={classes.controls}>
@@ -33,7 +42,16 @@ export function Hero() {
 						component={Link}
 						to="/signin"
 					>
-						Get started
+						Start your campaign
+					</Button>
+					<Button
+						size="xl"
+						className={classes.control}
+						variant="default"
+						component={Link}
+						to="/learn"
+					>
+						Learn how to play
 					</Button>
 				</Group>
 			</Container>

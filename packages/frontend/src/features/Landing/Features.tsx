@@ -8,27 +8,28 @@ import {
 } from "@mantine/core";
 import type { Icon } from "@tabler/icons-react";
 import {
-	IconCookie,
-	IconGauge,
-	IconLock,
-	IconMessage2,
-	IconUser,
+	IconBulb,
+	IconCards,
+	IconClock,
+	IconPlanet,
+	IconSword,
 } from "@tabler/icons-react";
 import classes from "./Features.module.css";
 
 export function Features() {
 	return (
 		<Container className={classes.wrapper}>
-			<Text>A new universe awaits</Text>
+			<Text>A universe that keeps its promises</Text>
 
 			<Title className={classes.title} order={2}>
-				Explore a galaxy of possibilities
+				Depth without the burnout
 			</Title>
 
 			<Container size={560} p={0}>
 				<Text size="sm" className={classes.description}>
-					This is a game of strategy, cunning, and luck. Explore the galaxy,
-					build your empire, and conquer your enemies.
+					Space is built for experienced strategy players who want campaigns
+					that finish — and stay interesting all the way through. Every system
+					is designed to maintain tension, agency, and comeback potential.
 				</Text>
 			</Container>
 
@@ -48,34 +49,34 @@ export function Features() {
 
 const MOCKDATA = [
 	{
-		title: "Fleet Customization",
+		title: "Async campaign play",
 		description:
-			"Design and build your own ships. Choose from a variety of components to create the ultimate fleet.",
-		icon: IconGauge,
+			"Submit your turns on your own schedule. Campaigns run over weeks with no live play sessions required — designed to fit around real life without losing strategic depth.",
+		icon: IconClock,
 	},
 	{
-		title: "Tactical Combat",
+		title: "Empire building",
 		description:
-			"Engage in strategic turn-based battles. Outsmart your opponents with clever tactics and superior firepower.",
-		icon: IconUser,
+			"Choose a development stance for each star system each turn — industrialize for ship production, foster population growth, or hold a balance. Every choice shapes your strategic identity.",
+		icon: IconPlanet,
 	},
 	{
-		title: "Resource Management",
+		title: "Card-based combat",
 		description:
-			"Explore star systems to find and harvest resources. Manage your economy to fuel your war machine.",
-		icon: IconCookie,
+			"When fleets collide, battles unfold over multiple rounds of simultaneous card reveal. Build a deck that reflects your fleet's strength and outmaneuver your enemies tactically.",
+		icon: IconCards,
 	},
 	{
-		title: "Persistent Universe",
+		title: "Dilemma engine",
 		description:
-			"Play in a persistent world where your actions have lasting consequences. The game continues even when you are offline.",
-		icon: IconLock,
+			"Recurring high-stakes dilemmas force consequential choices that reshape risk, opportunity, and tempo — preventing runaway leaders and keeping all paths viable through endgame.",
+		icon: IconBulb,
 	},
 	{
-		title: "Multiplayer",
+		title: "Exploration & colonization",
 		description:
-			"Compete with other players for control of the galaxy. Form alliances or go it alone.",
-		icon: IconMessage2,
+			"Scout unknown star systems, discover planet features, and expand your empire through colonization. Govern populations and set immigration policy across your growing territory.",
+		icon: IconSword,
 	},
 ];
 
