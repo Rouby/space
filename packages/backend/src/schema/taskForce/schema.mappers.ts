@@ -11,6 +11,7 @@ export type TaskForceMapper = {
 	constructionDone: string | null;
 	constructionTotal: string | null;
 	constructionPerTick: string | null;
+	sensorRange?: string | null;
 	isVisible: boolean;
 	lastUpdate: Date | null;
 	ownerId: string | null;

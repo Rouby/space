@@ -208,6 +208,18 @@ export const constructTaskForce: NonNullable<
 		)
 		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds));
 
+	const [strategicStats] = await ctx.drizzle
+		.select({
+			ftlSpeed: sql<string | null>`min(${shipComponents.ftlSpeed})::text`.as("ftlSpeed"),
+			sensorRange: sql<string | null>`max(${shipComponents.sensorRange})::text`.as("sensorRange"),
+		})
+		.from(shipDesignComponents)
+		.innerJoin(
+			shipComponents,
+			eq(shipComponents.id, shipDesignComponents.shipComponentId),
+		)
+		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds));
+
 	const profile = deriveCombatProfile(allComponents);
 	const starterDeck = buildStarterDeck(profile);
 
@@ -252,6 +264,8 @@ export const constructTaskForce: NonNullable<
 				constructionDone: "0",
 				constructionTotal: constructionTotal.toString(),
 				constructionPerTick: "0",
+				ftlSpeed: strategicStats?.ftlSpeed ?? null,
+				sensorRange: strategicStats?.sensorRange ?? null,
 				combatDeck: starterDeck,
 				orders: [],
 			})

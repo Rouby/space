@@ -16,7 +16,11 @@ export const TaskForce: TaskForceResolvers = {
 	name: (parent) => {
 		return parent.name ?? "Unknown";
 	},
-	sensorRange: () => 250,
+	sensorRange: (parent) => {
+		return parent.sensorRange !== null && parent.sensorRange !== undefined
+			? Number(parent.sensorRange)
+			: 0;
+	},
 	combatDeck: (parent) => parent.combatDeck ?? [],
 	constructionDone: (parent) =>
 		parent.constructionDone !== null && parent.constructionDone !== undefined
