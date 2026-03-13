@@ -8,7 +8,7 @@ type MoveOrder = {
 	destination: { x: number; y: number };
 };
 
-const MOVE_RANGE = 1_000;
+const FTL_SPEED_MULTIPLIER = 100;
 
 function isMoveOrder(order: unknown): order is MoveOrder {
 	if (!order || typeof order !== "object") {
@@ -49,6 +49,7 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 			constructionDone: taskForces.constructionDone,
 			constructionTotal: taskForces.constructionTotal,
 			orders: taskForces.orders,
+			ftlSpeed: taskForces.ftlSpeed,
 		})
 		.from(taskForces)
 		.where(and(eq(taskForces.gameId, gameId), isNull(taskForces.deletedAt)));
@@ -59,6 +60,12 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 		if (constructionTotal > 0 && constructionDone < constructionTotal) {
 			continue;
 		}
+
+		const ftlSpeed = Number(taskForce.ftlSpeed ?? "0");
+		if (ftlSpeed <= 0) {
+			continue;
+		}
+		const moveRange = ftlSpeed * FTL_SPEED_MULTIPLIER;
 
 		const [firstOrder, ...remainingOrders] = taskForce.orders;
 		if (!isMoveOrder(firstOrder)) {
@@ -90,8 +97,8 @@ export async function tickTaskForceMovement(tx: Transaction, ctx: Context) {
 			y: firstOrder.destination.y - taskForce.position.y,
 		};
 		const distance = Math.hypot(movementVector.x, movementVector.y);
-		const isArrivingThisTick = distance <= MOVE_RANGE;
-		const moveScale = distance === 0 ? 0 : Math.min(1, MOVE_RANGE / distance);
+		const isArrivingThisTick = distance <= moveRange;
+		const moveScale = distance === 0 ? 0 : Math.min(1, moveRange / distance);
 		const nextPosition = isArrivingThisTick
 			? firstOrder.destination
 			: {
