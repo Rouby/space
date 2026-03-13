@@ -9,3 +9,11 @@
 .env
 node_modules
 dist
+
+# Perpetuum worktrees
+_perpetuum/worktrees
+
+# Perpetuum
+_perpetuum/state.json
+_perpetuum/logs
+
