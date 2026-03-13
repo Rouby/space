@@ -25,7 +25,7 @@ export const visibility = pgView("visibility").as((qb) =>
 		.select({
 			userId: sql<string>`${taskForces.ownerId}`.as("userId"),
 			gameId: taskForces.gameId,
-			circle: sql`circle(${taskForces.position}, 250)` // TODO: max sensor range
+			circle: sql`circle(${taskForces.position}, COALESCE(${taskForces.sensorRange}, 0))`
 				.mapWith(circle)
 				.as("circle"),
 		})

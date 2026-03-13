@@ -42,6 +42,8 @@ export const taskForces = pgTable("taskForces", {
 	constructionDone: decimal({ precision: 30, scale: 6 }),
 	constructionTotal: decimal({ precision: 30, scale: 6 }),
 	constructionPerTick: decimal({ precision: 30, scale: 6 }),
+	ftlSpeed: decimal({ precision: 30, scale: 6 }),
+	sensorRange: decimal({ precision: 30, scale: 6 }),
 	deletedAt: timestamp(),
 });
 
