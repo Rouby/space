@@ -210,8 +210,12 @@ export const constructTaskForce: NonNullable<
 
 	const [strategicStats] = await ctx.drizzle
 		.select({
-			ftlSpeed: sql<string | null>`min(${shipComponents.ftlSpeed})::text`.as("ftlSpeed"),
-			sensorRange: sql<string | null>`max(${shipComponents.sensorRange})::text`.as("sensorRange"),
+			ftlSpeed: sql<string | null>`min(${shipComponents.ftlSpeed})::text`.as(
+				"ftlSpeed",
+			),
+			sensorRange: sql<
+				string | null
+			>`max(${shipComponents.sensorRange})::text`.as("sensorRange"),
 		})
 		.from(shipDesignComponents)
 		.innerJoin(
