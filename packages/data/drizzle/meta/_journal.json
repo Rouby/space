@@ -134,6 +134,13 @@
       "when": 1773438177961,
       "tag": "0018_noisy_devos",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1773485426153,
+      "tag": "0019_jittery_black_bird",
+      "breakpoints": true
     }
   ]
 }

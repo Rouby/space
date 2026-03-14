@@ -40,7 +40,7 @@ export const shipDesignComponents = pgTable(
 			.references(() => shipDesigns.id, { onDelete: "cascade" }),
 		shipComponentId: uuid()
 			.notNull()
-			.references(() => shipComponents.id, { onDelete: "restrict" }),
+			.references(() => shipComponents.id, { onDelete: "cascade" }),
 		column: integer().notNull(),
 		row: integer().notNull(),
 	},

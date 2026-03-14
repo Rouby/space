@@ -151,12 +151,12 @@ export const test = base.extend<{
 	game: [
 		async ({ api }, use) => {
 			const hostUser = await api.seed("user", {
-				email: `host-${Date.now()}@example.com`,
+				email: `host-${Date.now()}@${Math.random()}@example.com`,
 				name: `Host User ${Date.now()}`,
 			});
 
 			const game = await api.seed("game", {
-				name: `Test Game ${Date.now()}`,
+				name: `Test Game ${Date.now()}@${Math.random()}`,
 				hostUserId: hostUser.id,
 			});
 
@@ -198,6 +198,46 @@ export const test = base.extend<{
 
 			// Cleanup after the test
 			const drizzle = getDrizzle(await getConnection());
+			await drizzle.execute(sql`
+				delete from "shipDesignComponents"
+				where "shipDesignId" in (
+					select "id" from "shipDesigns" where "gameId" = ${game.id}
+				)
+				or "shipComponentId" in (
+					select "id" from "shipComponents" where "gameId" = ${game.id}
+				)
+			`);
+			await drizzle.execute(sql`
+				delete from "shipComponentResourceCosts"
+				where "shipComponentId" in (
+					select "id" from "shipComponents" where "gameId" = ${game.id}
+				)
+			`);
+			await drizzle.execute(sql`
+				delete from "taskForceShipDesigns"
+				where "taskForceId" in (
+					select "id" from "taskForces" where "gameId" = ${game.id}
+				)
+				or "shipDesignId" in (
+					select "id" from "shipDesigns" where "gameId" = ${game.id}
+				)
+			`);
+			await drizzle.execute(sql`
+				delete from "taskForceEngagements"
+				where "gameId" = ${game.id}
+			`);
+			await drizzle.execute(sql`
+				delete from "taskForces"
+				where "gameId" = ${game.id}
+			`);
+			await drizzle.execute(sql`
+				delete from "shipDesigns"
+				where "gameId" = ${game.id}
+			`);
+			await drizzle.execute(sql`
+				delete from "shipComponents"
+				where "gameId" = ${game.id}
+			`);
 			await drizzle
 				.delete(Tables.game)
 				.where(sql`${Tables.game.id} = ${game.id}`);

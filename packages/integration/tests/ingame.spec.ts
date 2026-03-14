@@ -6,17 +6,17 @@ interface TestApi {
 	seed: (model: any, data: any) => Promise<{ id: string }>;
 }
 
-async function seedDefaultComponents(
-	api: TestApi,
-	gameId: string,
-	ownerId: string,
-) {
+interface TestGame {
+	// biome-ignore lint/suspicious/noExplicitAny: test data
+	add: (model: any, data: any) => Promise<{ id: string }>;
+}
+
+async function seedDefaultComponents(game: TestGame, ownerId: string) {
 	const templates = getDefaultComponents();
 	const components = new Map<string, string[]>();
 
 	for (const template of templates) {
-		const { id } = await api.seed("shipComponent", {
-			gameId,
+		const { id } = await game.add("shipComponent", {
 			ownerId,
 			name: template.name,
 			description: template.description,
@@ -34,13 +34,12 @@ async function seedDefaultComponents(
 
 async function seedRealisticShipDesign(
 	api: TestApi,
-	gameId: string,
+	game: TestGame,
 	ownerId: string,
 	components: Map<string, string[]>,
 	designName: string,
 ) {
-	const { id: designId } = await api.seed("shipDesign", {
-		gameId,
+	const { id: designId } = await game.add("shipDesign", {
 		ownerId,
 		name: designName,
 		description: "Test ship design",
@@ -73,8 +72,6 @@ async function seedRealisticShipDesign(
 
 	return designId;
 }
-
-test.describe.configure({ mode: "default" });
 
 test("should be able to login and see the game", async ({
 	page,
@@ -111,41 +108,22 @@ test("should be able to login and see the game", async ({
 test("configures task force combat deck with MVP validation rules", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "deck-host@example.com",
-		name: "Deck Host",
-	});
-	const { id: intruderId } = await api.seed("user", {
-		email: "deck-intruder@example.com",
-		name: "Deck Intruder",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Deck Rules Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: intruderId } = await game.joinPlayer("Deck Intruder");
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#aabbcc",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: intruderId,
-		color: "#ccaa77",
-	});
-
-	const deckComponents = await seedDefaultComponents(api, gameId, hostId);
+	const deckComponents = await seedDefaultComponents(game, hostId);
 	const deckShipDesignId = await seedRealisticShipDesign(
 		api,
-		gameId,
+		game,
 		hostId,
 		deckComponents,
 		"Deck-Capable Design",
 	);
 
-	const { id: taskForceId } = await api.seed("taskForce", {
+	const { id: taskForceId } = await game.add("taskForce", {
 		gameId,
 		ownerId: hostId,
 		name: "Deck Fleet",
@@ -311,32 +289,21 @@ test("configures task force combat deck with MVP validation rules", async ({
 test("resolves configured combat decks during turn resolution and applies engagement outcomes", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "combat-flow-host@example.com",
-		name: "Combat Flow Host",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Combat Flow Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#8899aa",
-	});
-
-	const battleComponents = await seedDefaultComponents(api, gameId, hostId);
+	const battleComponents = await seedDefaultComponents(game, hostId);
 	const battleShipDesignId = await seedRealisticShipDesign(
 		api,
-		gameId,
+		game,
 		hostId,
 		battleComponents,
 		"Battle Design",
 	);
 
-	const { id: tfA } = await api.seed("taskForce", {
+	const { id: tfA } = await game.add("taskForce", {
 		gameId,
 		ownerId: hostId,
 		name: "Aggressor A",
@@ -344,7 +311,7 @@ test("resolves configured combat decks during turn resolution and applies engage
 		movementVector: null,
 		orders: [],
 	});
-	const { id: tfB } = await api.seed("taskForce", {
+	const { id: tfB } = await game.add("taskForce", {
 		gameId,
 		ownerId: hostId,
 		name: "Aggressor B",
@@ -447,32 +414,13 @@ test("resolves configured combat decks during turn resolution and applies engage
 test("blocks endTurn when unresolved engagements exist", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "blocked-endturn-host@example.com",
-		name: "Blocked EndTurn Host",
-	});
-	const { id: rivalId } = await api.seed("user", {
-		email: "blocked-endturn-rival@example.com",
-		name: "Blocked EndTurn Rival",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Blocked EndTurn Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: rivalId } = await game.joinPlayer("Blocked EndTurn Rival");
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#111111",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: rivalId,
-		color: "#222222",
-	});
-
-	const { id: taskForceAId } = await api.seed("taskForce", {
+	const { id: taskForceAId } = await game.add("taskForce", {
 		gameId,
 		ownerId: hostId,
 		name: "Host Vanguard",
@@ -480,7 +428,7 @@ test("blocks endTurn when unresolved engagements exist", async ({
 		movementVector: null,
 		orders: [],
 	});
-	const { id: taskForceBId } = await api.seed("taskForce", {
+	const { id: taskForceBId } = await game.add("taskForce", {
 		gameId,
 		ownerId: rivalId,
 		name: "Rival Vanguard",
@@ -500,7 +448,7 @@ test("blocks endTurn when unresolved engagements exist", async ({
 	const startPayload = await startResponse.json();
 	expect(startPayload.errors).toBeUndefined();
 
-	await api.seed("taskForceEngagement", {
+	await game.add("taskForceEngagement", {
 		gameId,
 		taskForceIdA: taskForceAId,
 		taskForceIdB: taskForceBId,
@@ -567,32 +515,13 @@ test("blocks endTurn when unresolved engagements exist", async ({
 test("allows endTurn after engagement actions resolve the battle", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "unblocked-endturn-host@example.com",
-		name: "Unblocked EndTurn Host",
-	});
-	const { id: rivalId } = await api.seed("user", {
-		email: "unblocked-endturn-rival@example.com",
-		name: "Unblocked EndTurn Rival",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Unblocked EndTurn Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: rivalId } = await game.joinPlayer("Unblocked EndTurn Rival");
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#336699",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: rivalId,
-		color: "#996633",
-	});
-
-	const { id: taskForceAId } = await api.seed("taskForce", {
+	const { id: taskForceAId } = await game.add("taskForce", {
 		gameId,
 		ownerId: hostId,
 		name: "Host Spearhead",
@@ -600,7 +529,7 @@ test("allows endTurn after engagement actions resolve the battle", async ({
 		movementVector: null,
 		orders: [],
 	});
-	const { id: taskForceBId } = await api.seed("taskForce", {
+	const { id: taskForceBId } = await game.add("taskForce", {
 		gameId,
 		ownerId: rivalId,
 		name: "Rival Spearhead",
@@ -620,7 +549,7 @@ test("allows endTurn after engagement actions resolve the battle", async ({
 	const startPayload = await startResponse.json();
 	expect(startPayload.errors).toBeUndefined();
 
-	const engagement = await api.seed("taskForceEngagement", {
+	const engagement = await game.add("taskForceEngagement", {
 		gameId,
 		taskForceIdA: taskForceAId,
 		taskForceIdB: taskForceBId,
@@ -731,25 +660,13 @@ test("allows endTurn after engagement actions resolve the battle", async ({
 test("denies querying a game for users that are not campaign participants", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: ownerId } = await api.seed("user", {
-		email: "owner@example.com",
-		name: "Owner",
-	});
 	const { id: intruderId } = await api.seed("user", {
-		email: "intruder@example.com",
+		email: `intruder-${Date.now()}@example.com`,
 		name: "Intruder",
 	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Private Game",
-		hostUserId: ownerId,
-	});
-	await api.seed("player", {
-		gameId,
-		userId: ownerId,
-		color: "#112233",
-	});
-
+	const { id: gameId } = game.dbo;
 	await api.login(intruderId);
 
 	const response = await page.request.post("/graphql", {
@@ -766,25 +683,15 @@ test("denies querying a game for users that are not campaign participants", asyn
 test("denies querying star-system details for users outside the game", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: ownerId } = await api.seed("user", {
-		email: "owner-2@example.com",
-		name: "Owner 2",
-	});
+	const { id: ownerId } = game.hostUser;
 	const { id: intruderId } = await api.seed("user", {
-		email: "intruder-2@example.com",
-		name: "Intruder 2",
+		email: `intruder-${Date.now()}@example.com`,
+		name: "Intruder",
 	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Fog Of War Game",
-		hostUserId: ownerId,
-	});
-	await api.seed("player", {
-		gameId,
-		userId: ownerId,
-		color: "#abcdef",
-	});
-	const { id: starSystemId } = await api.seed("starSystem", {
+	const { id: gameId } = game.dbo;
+	const { id: starSystemId } = await game.add("starSystem", {
 		gameId,
 		ownerId,
 		name: "Secret System",
@@ -808,38 +715,19 @@ test("denies querying star-system details for users outside the game", async ({
 test("redacts star-system details for authorized players without visibility", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: playerAId } = await api.seed("user", {
-		email: "player-a@example.com",
-		name: "Player A",
-	});
-	const { id: playerBId } = await api.seed("user", {
-		email: "player-b@example.com",
-		name: "Player B",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Visibility Boundary Game",
-		hostUserId: playerAId,
-	});
+	const { id: playerAId } = game.hostUser;
+	const { id: playerBId } = await game.joinPlayer("Player B");
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: playerAId,
-		color: "#aabbcc",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: playerBId,
-		color: "#ccbbaa",
-	});
-
-	await api.seed("starSystem", {
+	await game.add("starSystem", {
 		gameId,
 		ownerId: playerAId,
 		name: "Home A",
 		position: { x: 0, y: 0 },
 	});
-	const { id: hiddenSystemId } = await api.seed("starSystem", {
+	const { id: hiddenSystemId } = await game.add("starSystem", {
 		gameId,
 		ownerId: playerBId,
 		name: "Hidden B",
@@ -867,23 +755,12 @@ test("redacts star-system details for authorized players without visibility", as
 test("accumulates colonization pressure passively and projects ETA", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: playerId } = await api.seed("user", {
-		email: "colonizer@example.com",
-		name: "Colonizer",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Colonization Game",
-		hostUserId: playerId,
-	});
+	const { id: playerId } = game.hostUser;
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: playerId,
-		color: "#123456",
-	});
-
-	const { id: originId } = await api.seed("starSystem", {
+	const { id: originId } = await game.add("starSystem", {
 		gameId,
 		ownerId: playerId,
 		name: "Origin",
@@ -897,7 +774,7 @@ test("accumulates colonization pressure passively and projects ETA", async ({
 		amount: 5_000_000_000n,
 	});
 
-	const { id: targetId } = await api.seed("starSystem", {
+	const { id: targetId } = await game.add("starSystem", {
 		gameId,
 		ownerId: null,
 		name: "Target",
@@ -965,25 +842,13 @@ test("accumulates colonization pressure passively and projects ETA", async ({
 test("supports idempotent join requests and shows joined participation state", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "host@example.com",
-		name: "Host",
-	});
 	const { id: joinerId } = await api.seed("user", {
-		email: "joiner@example.com",
+		email: `joiner-${Date.now()}@example.com`,
 		name: "Joiner",
 	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Join Safety Game",
-		hostUserId: hostId,
-	});
-
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#111111",
-	});
+	const { id: gameId } = game.dbo;
 
 	await api.login(joinerId);
 
@@ -1027,21 +892,10 @@ test("supports idempotent join requests and shows joined participation state", a
 test("rejects invalid host settings combinations with typed error codes", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "host-settings@example.com",
-		name: "Host Settings",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Settings Validation Game",
-		hostUserId: hostId,
-	});
-
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#223344",
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: gameId } = game.dbo;
 
 	await api.login(hostId);
 
@@ -1066,21 +920,10 @@ test("rejects invalid host settings combinations with typed error codes", async 
 test("persists valid host settings updates for lobby visibility", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "host-persist@example.com",
-		name: "Host Persist",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Settings Persist Game",
-		hostUserId: hostId,
-	});
-
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#445566",
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: gameId } = game.dbo;
 
 	await api.login(hostId);
 
@@ -1122,25 +965,13 @@ test("persists valid host settings updates for lobby visibility", async ({
 test("denies start-game operation for non-participants", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "host-start@example.com",
-		name: "Host Start",
-	});
 	const { id: intruderId } = await api.seed("user", {
-		email: "intruder-start@example.com",
+		email: `intruder-start-${Date.now()}@example.com`,
 		name: "Intruder Start",
 	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Start Guardrail Game",
-		hostUserId: hostId,
-	});
-
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#667788",
-	});
+	const { id: gameId } = game.dbo;
 
 	await api.login(intruderId);
 
@@ -1158,30 +989,10 @@ test("denies start-game operation for non-participants", async ({
 test("denies start-game operation for participants that are not host", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "host-member-start@example.com",
-		name: "Host Member Start",
-	});
-	const { id: memberId } = await api.seed("user", {
-		email: "member-start@example.com",
-		name: "Member Start",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Start Host Only Game",
-		hostUserId: hostId,
-	});
-
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#667788",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: memberId,
-		color: "#556677",
-	});
+	const { id: memberId } = await game.joinPlayer("Member Start");
+	const { id: gameId } = game.dbo;
 
 	await api.login(memberId);
 
@@ -1199,30 +1010,10 @@ test("denies start-game operation for participants that are not host", async ({
 test("denies settings updates for participants that are not host", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "host-member-settings@example.com",
-		name: "Host Member Settings",
-	});
-	const { id: memberId } = await api.seed("user", {
-		email: "member-settings@example.com",
-		name: "Member Settings",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Settings Host Only Game",
-		hostUserId: hostId,
-	});
-
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#223344",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: memberId,
-		color: "#334455",
-	});
+	const { id: memberId } = await game.joinPlayer("Member Settings");
+	const { id: gameId } = game.dbo;
 
 	await api.login(memberId);
 
@@ -1247,30 +1038,11 @@ test("denies settings updates for participants that are not host", async ({
 test("resolves a turn after all players end and exposes updated monitoring state", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "host-turn-resolution@example.com",
-		name: "Host Turn Resolution",
-	});
-	const { id: memberId } = await api.seed("user", {
-		email: "member-turn-resolution@example.com",
-		name: "Member Turn Resolution",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Turn Resolution Game",
-		hostUserId: hostId,
-	});
-
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#101010",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: memberId,
-		color: "#202020",
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: memberId } = await game.joinPlayer("Member Turn Resolution");
+	const { id: gameId } = game.dbo;
 
 	await api.login(hostId);
 
@@ -1348,23 +1120,12 @@ test("resolves a turn after all players end and exposes updated monitoring state
 test("constructs a fleet and applies move orders on turn resolution", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "fleet-host@example.com",
-		name: "Fleet Host",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Fleet Movement Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#ff00ff",
-	});
-
-	const { id: originStarSystemId } = await api.seed("starSystem", {
+	const { id: originStarSystemId } = await game.add("starSystem", {
 		gameId,
 		ownerId: hostId,
 		name: "Fleet Origin",
@@ -1374,7 +1135,7 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 		industry: 1,
 	});
 
-	const { id: resourceId } = await api.seed("resource", {
+	const { id: resourceId } = await game.add("resource", {
 		gameId,
 		name: "Construction Metal",
 		kind: "metal",
@@ -1388,7 +1149,7 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 		quantity: "100",
 	});
 
-	const { id: shipComponentId } = await api.seed("shipComponent", {
+	const { id: shipComponentId } = await game.add("shipComponent", {
 		gameId,
 		ownerId: hostId,
 		name: "Hull",
@@ -1428,7 +1189,7 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 		quantity: "10",
 	});
 
-	const { id: shipDesignId } = await api.seed("shipDesign", {
+	const { id: shipDesignId } = await game.add("shipDesign", {
 		gameId,
 		ownerId: hostId,
 		name: "Scout",
@@ -1530,32 +1291,13 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 test("returns explicit violation when constructing at unowned system", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "fleet-rules-host@example.com",
-		name: "Fleet Rules Host",
-	});
-	const { id: rivalId } = await api.seed("user", {
-		email: "fleet-rules-rival@example.com",
-		name: "Fleet Rules Rival",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Fleet Rules Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: rivalId } = await game.joinPlayer("Fleet Rules Rival");
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#f39c12",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: rivalId,
-		color: "#2980b9",
-	});
-
-	const { id: rivalSystemId } = await api.seed("starSystem", {
+	const { id: rivalSystemId } = await game.add("starSystem", {
 		gameId,
 		ownerId: rivalId,
 		name: "Rival Bastion",
@@ -1565,7 +1307,7 @@ test("returns explicit violation when constructing at unowned system", async ({
 		industry: 5,
 	});
 
-	const { id: shipDesignId } = await api.seed("shipDesign", {
+	const { id: shipDesignId } = await game.add("shipDesign", {
 		gameId,
 		ownerId: hostId,
 		name: "Rules Scout",
@@ -1615,32 +1357,13 @@ test("returns explicit violation when constructing at unowned system", async ({
 test("denies unauthorized fleet mutation and keeps hidden movement details private", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "fleet-privacy-host@example.com",
-		name: "Fleet Privacy Host",
-	});
-	const { id: rivalId } = await api.seed("user", {
-		email: "fleet-privacy-rival@example.com",
-		name: "Fleet Privacy Rival",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Fleet Privacy Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: rivalId } = await game.joinPlayer("Fleet Privacy Rival");
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#ff00ff",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: rivalId,
-		color: "#00ffff",
-	});
-
-	await api.seed("starSystem", {
+	await game.add("starSystem", {
 		gameId,
 		ownerId: hostId,
 		name: "Host Origin",
@@ -1649,7 +1372,7 @@ test("denies unauthorized fleet mutation and keeps hidden movement details priva
 		discoveryProgress: "0",
 	});
 
-	await api.seed("starSystem", {
+	await game.add("starSystem", {
 		gameId,
 		ownerId: rivalId,
 		name: "Rival Origin",
@@ -1658,7 +1381,7 @@ test("denies unauthorized fleet mutation and keeps hidden movement details priva
 		discoveryProgress: "0",
 	});
 
-	const { id: taskForceId } = await api.seed("taskForce", {
+	const { id: taskForceId } = await game.add("taskForce", {
 		gameId,
 		ownerId: hostId,
 		name: "Hidden Fleet",
@@ -1713,32 +1436,13 @@ test("denies unauthorized fleet mutation and keeps hidden movement details priva
 test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", async ({
 	page,
 	api,
+	game,
 }) => {
-	const { id: hostId } = await api.seed("user", {
-		email: "mvp-loop-host@example.com",
-		name: "MVP Loop Host",
-	});
-	const { id: rivalId } = await api.seed("user", {
-		email: "mvp-loop-rival@example.com",
-		name: "MVP Loop Rival",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "MVP Loop Game",
-		hostUserId: hostId,
-	});
+	const { id: hostId } = game.hostUser;
+	const { id: rivalId } = await game.joinPlayer("MVP Loop Rival");
+	const { id: gameId } = game.dbo;
 
-	await api.seed("player", {
-		gameId,
-		userId: hostId,
-		color: "#d35400",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: rivalId,
-		color: "#16a085",
-	});
-
-	const { id: hostHomeId } = await api.seed("starSystem", {
+	const { id: hostHomeId } = await game.add("starSystem", {
 		gameId,
 		ownerId: hostId,
 		name: "Host Prime",
@@ -1753,7 +1457,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		amount: 12_000_000_000n,
 	});
 
-	const { id: rivalHomeId } = await api.seed("starSystem", {
+	const { id: rivalHomeId } = await game.add("starSystem", {
 		gameId,
 		ownerId: rivalId,
 		name: "Rival Prime",
@@ -1768,7 +1472,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		amount: 500_000_000n,
 	});
 
-	const { id: targetSystemId } = await api.seed("starSystem", {
+	const { id: targetSystemId } = await game.add("starSystem", {
 		gameId,
 		ownerId: null,
 		name: "Neutral Frontier",
@@ -1778,7 +1482,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		industry: 1,
 	});
 
-	const { id: resourceId } = await api.seed("resource", {
+	const { id: resourceId } = await game.add("resource", {
 		gameId,
 		name: "Alloy",
 		kind: "metal",
@@ -1791,7 +1495,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		quantity: "100",
 	});
 
-	const { id: shipComponentId } = await api.seed("shipComponent", {
+	const { id: shipComponentId } = await game.add("shipComponent", {
 		gameId,
 		ownerId: hostId,
 		name: "MVP Hull",
@@ -1831,7 +1535,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		quantity: "10",
 	});
 
-	const { id: shipDesignId } = await api.seed("shipDesign", {
+	const { id: shipDesignId } = await game.add("shipDesign", {
 		gameId,
 		ownerId: hostId,
 		name: "MVP Scout",
@@ -1845,7 +1549,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		row: 0,
 	});
 
-	const { id: hostBattleTaskForceId } = await api.seed("taskForce", {
+	const { id: hostBattleTaskForceId } = await game.add("taskForce", {
 		gameId,
 		ownerId: hostId,
 		name: "Host Vanguard",
@@ -1854,7 +1558,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		orders: [],
 		ftlSpeed: "10",
 	});
-	const { id: rivalBattleTaskForceId } = await api.seed("taskForce", {
+	const { id: rivalBattleTaskForceId } = await game.add("taskForce", {
 		gameId,
 		ownerId: rivalId,
 		name: "Rival Vanguard",
