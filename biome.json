@@ -12,6 +12,7 @@
 		"enabled": true,
 		"includes": [
 			"**/src/**/*",
+			"**/tests/**/*",
 			"!**/gql/*.ts",
 			"!**/dist/**/*",
 			"!**/*.generated.ts",
@@ -29,6 +30,7 @@
 		},
 		"includes": [
 			"**/src/**/*",
+			"**/tests/**/*",
 			"!**/gql/*.ts",
 			"!**/dist/**/*",
 			"!**/*.generated.ts",

@@ -83,10 +83,10 @@ const secret = new TextEncoder().encode(
 	process.env.JWT_SECRET || "electric-kitten",
 );
 
-async function resetIntegrationData(
-	drizzle: ReturnType<typeof getDrizzle>,
-) {
-	await drizzle.execute(sql`TRUNCATE TABLE "games", "users" RESTART IDENTITY CASCADE`);
+async function resetIntegrationData(drizzle: ReturnType<typeof getDrizzle>) {
+	await drizzle.execute(
+		sql`TRUNCATE TABLE "games", "users" RESTART IDENTITY CASCADE`,
+	);
 }
 
 export const test = base.extend<{
@@ -99,18 +99,21 @@ export const test = base.extend<{
 	};
 }>({
 	api: [
-		async ({ playwright, context }, use) => {
+		async ({ playwright: _, context }, use, _workerInfo) => {
 			const drizzle = getDrizzle(await getConnection());
 
-				await resetIntegrationData(drizzle);
+			await resetIntegrationData(drizzle);
 
 			await use({
 				seed: async (model, data) => {
-					return drizzle
-						.insert(Tables[model])
-						.values(data as any)
-						.returning()
-						.then((rows) => rows[0]);
+					return (
+						drizzle
+							.insert(Tables[model])
+							// biome-ignore lint/suspicious/noExplicitAny: seeding
+							.values(data as any)
+							.returning()
+							.then((rows) => rows[0])
+					);
 				},
 				login: async (userId) => {
 					const expirationTime = new Date(Date.now() + 1000 * 60 * 10);

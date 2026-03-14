@@ -24,7 +24,9 @@ test("landing page renders the core CTA", async ({ page }) => {
 			name: /The async 4X strategy game built for long campaigns/i,
 		}),
 	).toBeVisible();
-	await expect(page.getByRole("link", { name: "Start your campaign" })).toBeVisible();
+	await expect(
+		page.getByRole("link", { name: "Start your campaign" }),
+	).toBeVisible();
 });
 
 test("guest users are redirected to sign in when opening games", async ({

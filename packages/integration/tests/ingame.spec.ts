@@ -2,10 +2,15 @@ import { getDefaultComponents } from "@space/gameloop/src/randomGameContent";
 import { expect, test } from "./fixture";
 
 interface TestApi {
+	// biome-ignore lint/suspicious/noExplicitAny: test data
 	seed: (model: any, data: any) => Promise<{ id: string }>;
 }
 
-async function seedDefaultComponents(api: TestApi, gameId: string, ownerId: string) {
+async function seedDefaultComponents(
+	api: TestApi,
+	gameId: string,
+	ownerId: string,
+) {
 	const templates = getDefaultComponents();
 	const components = new Map<string, string[]>();
 
@@ -42,7 +47,15 @@ async function seedRealisticShipDesign(
 		decommissioned: false,
 	});
 
-	const categoriesToInclude = ["hull", "engine", "reactor", "weapon", "shield", "sensor", "quarters"];
+	const categoriesToInclude = [
+		"hull",
+		"engine",
+		"reactor",
+		"weapon",
+		"shield",
+		"sensor",
+		"quarters",
+	];
 	let gridPos = 0;
 
 	for (const category of categoriesToInclude) {
@@ -104,9 +117,7 @@ test("should be able to login and see the game", async ({ page, api }) => {
 	await page.goto(`/games/${gameId}`);
 
 	await expect(page).toHaveURL(new RegExp(`/games/${gameId}`));
-	await expect(
-		page.getByRole("button", { name: /End Turn/i }),
-	).toBeVisible();
+	await expect(page.getByRole("button", { name: /End Turn/i })).toBeVisible();
 });
 
 test("configures task force combat deck with MVP validation rules", async ({
@@ -139,7 +150,11 @@ test("configures task force combat deck with MVP validation rules", async ({
 
 	const deckComponents = await seedDefaultComponents(api, gameId, hostId);
 	const deckShipDesignId = await seedRealisticShipDesign(
-		api, gameId, hostId, deckComponents, "Deck-Capable Design",
+		api,
+		gameId,
+		hostId,
+		deckComponents,
+		"Deck-Capable Design",
 	);
 
 	const { id: taskForceId } = await api.seed("taskForce", {
@@ -297,10 +312,12 @@ test("configures task force combat deck with MVP validation rules", async ({
 	});
 	const validDeckPayload = await validDeckResponse.json();
 	expect(validDeckPayload.errors).toBeUndefined();
-	expect(validDeckPayload.data?.configureTaskForceCombatDeck?.id).toBe(taskForceId);
-	expect(validDeckPayload.data?.configureTaskForceCombatDeck?.combatDeck).toEqual(
-		validDeck,
+	expect(validDeckPayload.data?.configureTaskForceCombatDeck?.id).toBe(
+		taskForceId,
 	);
+	expect(
+		validDeckPayload.data?.configureTaskForceCombatDeck?.combatDeck,
+	).toEqual(validDeck);
 });
 
 test("resolves configured combat decks during turn resolution and applies engagement outcomes", async ({
@@ -324,7 +341,11 @@ test("resolves configured combat decks during turn resolution and applies engage
 
 	const battleComponents = await seedDefaultComponents(api, gameId, hostId);
 	const battleShipDesignId = await seedRealisticShipDesign(
-		api, gameId, hostId, battleComponents, "Battle Design",
+		api,
+		gameId,
+		hostId,
+		battleComponents,
+		"Battle Design",
 	);
 
 	const { id: tfA } = await api.seed("taskForce", {
@@ -385,7 +406,9 @@ test("resolves configured combat decks during turn resolution and applies engage
 		});
 		const configurePayload = await configureResponse.json();
 		expect(configurePayload.errors).toBeUndefined();
-		expect(configurePayload.data?.configureTaskForceCombatDeck?.id).toBe(taskForceId);
+		expect(configurePayload.data?.configureTaskForceCombatDeck?.id).toBe(
+			taskForceId,
+		);
 	}
 
 	const startResponse = await page.request.post("/graphql", {
@@ -511,8 +534,8 @@ test("blocks endTurn when unresolved engagements exist", async ({
 			sensorRating: 0,
 			shieldHp: 0,
 			shieldMaxHp: 0,
-			thrusterRating:0,
-			weaponRating: 0
+			thrusterRating: 0,
+			weaponRating: 0,
 		},
 		stateB: {
 			taskForceId: taskForceBId,
@@ -527,8 +550,8 @@ test("blocks endTurn when unresolved engagements exist", async ({
 			sensorRating: 0,
 			shieldHp: 0,
 			shieldMaxHp: 0,
-			thrusterRating:0,
-			weaponRating: 0
+			thrusterRating: 0,
+			weaponRating: 0,
 		},
 		roundLog: [],
 		startedAtTurn: 0,
@@ -549,9 +572,7 @@ test("blocks endTurn when unresolved engagements exist", async ({
 		"UNRESOLVED_ENGAGEMENTS",
 	);
 	expect(endTurnPayload.errors?.[0]?.extensions?.blockers).toEqual(
-		expect.arrayContaining([
-			expect.objectContaining({ type: "engagement" }),
-		]),
+		expect.arrayContaining([expect.objectContaining({ type: "engagement" })]),
 	);
 });
 
@@ -633,8 +654,8 @@ test("allows endTurn after engagement actions resolve the battle", async ({
 			sensorRating: 0,
 			shieldHp: 0,
 			shieldMaxHp: 0,
-			thrusterRating:0,
-			weaponRating: 0
+			thrusterRating: 0,
+			weaponRating: 0,
 		},
 		stateB: {
 			taskForceId: taskForceBId,
@@ -649,8 +670,8 @@ test("allows endTurn after engagement actions resolve the battle", async ({
 			sensorRating: 0,
 			shieldHp: 0,
 			shieldMaxHp: 0,
-			thrusterRating:0,
-			weaponRating: 0
+			thrusterRating: 0,
+			weaponRating: 0,
 		},
 		roundLog: [],
 		startedAtTurn: 0,
@@ -880,14 +901,14 @@ test("accumulates colonization pressure passively and projects ETA", async ({
 		name: "Origin",
 		position: { x: 0, y: 0 },
 	});
-	
+
 	// Add 5B population to get exactly 5 outflow points
 	await api.seed("starSystemPopulation", {
 		starSystemId: originId,
 		allegianceToPlayerId: playerId,
 		amount: 5_000_000_000n,
 	});
-	
+
 	const { id: targetId } = await api.seed("starSystem", {
 		gameId,
 		ownerId: null,
@@ -927,7 +948,7 @@ test("accumulates colonization pressure passively and projects ETA", async ({
 					},
 				});
 				const progressPayload = await progressResponse.json();
-				
+
 				const colonization = progressPayload.data?.starSystem?.colonization;
 
 				return {
@@ -990,7 +1011,9 @@ test("supports idempotent join requests and shows joined participation state", a
 	expect(firstPayload.errors).toBeUndefined();
 	expect(firstPayload.data?.joinGame?.id).toBe(gameId);
 
-	const secondJoin = await page.request.post("/graphql", { data: joinMutation });
+	const secondJoin = await page.request.post("/graphql", {
+		data: joinMutation,
+	});
 	const secondPayload = await secondJoin.json();
 
 	expect(secondPayload.errors).toBeUndefined();
@@ -1089,9 +1112,9 @@ test("persists valid host settings updates for lobby visibility", async ({
 	const updatePayload = await updateResponse.json();
 
 	expect(updatePayload.errors).toBeUndefined();
-	expect(updatePayload.data?.updateGameSettings?.autoEndTurnAfterHoursInactive).toBe(
-		8,
-	);
+	expect(
+		updatePayload.data?.updateGameSettings?.autoEndTurnAfterHoursInactive,
+	).toBe(8);
 	expect(updatePayload.data?.updateGameSettings?.autoEndTurnEveryHours).toBe(0);
 
 	const queryResponse = await page.request.post("/graphql", {
@@ -1108,7 +1131,10 @@ test("persists valid host settings updates for lobby visibility", async ({
 	expect(queryPayload.data?.game?.autoEndTurnEveryHours).toBe(0);
 });
 
-test("denies start-game operation for non-participants", async ({ page, api }) => {
+test("denies start-game operation for non-participants", async ({
+	page,
+	api,
+}) => {
 	const { id: hostId } = await api.seed("user", {
 		email: "host-start@example.com",
 		name: "Host Start",
@@ -2065,16 +2091,14 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 					turnNumber: payload.data?.game?.turnNumber,
 					activeEngagements:
 						payload.data?.game?.activeTaskForceEngagements?.length ?? 0,
-					hasPopulationTelemetry:
-						(report?.populationChanges?.length ?? 0) > 0,
+					hasPopulationTelemetry: (report?.populationChanges?.length ?? 0) > 0,
 					hasConstructionTelemetry:
 						(report?.taskForceConstructionChanges?.length ?? 0) > 0,
 					hasEngagementTelemetry:
 						(report?.taskForceEngagements?.length ?? 0) > 0,
 					hasColonizationTelemetry:
 						(report?.colonizationCompleted?.length ?? 0) > 0,
-					targetOwnerId:
-						payload.data?.starSystem?.owner?.user?.id ?? null,
+					targetOwnerId: payload.data?.starSystem?.owner?.user?.id ?? null,
 				};
 			},
 			{ timeout: 20000 },
