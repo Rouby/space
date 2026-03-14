@@ -44,10 +44,6 @@
 		Greycliff CF,
 		sans-serif;
 	margin-bottom: var(--mantine-spacing-md);
-
-	@media (max-width: var(--mantine-breakpoint-sm)) {
-		font-size: rem(28px);
-	}
 }
 
 .section {
@@ -91,10 +87,6 @@
 		Greycliff CF,
 		sans-serif;
 	margin-bottom: var(--mantine-spacing-md);
-
-	@media (max-width: var(--mantine-breakpoint-sm)) {
-		font-size: rem(24px);
-	}
 }
 
 .bullet {

@@ -3,11 +3,6 @@
 	padding-top: rem(120px);
 	padding-bottom: rem(100px);
 	overflow: hidden;
-
-	@media (max-width: var(--mantine-breakpoint-sm)) {
-		padding-top: rem(80px);
-		padding-bottom: rem(60px);
-	}
 }
 
 .heroImageWrapper {
@@ -50,11 +45,6 @@
 	font-family:
 		Greycliff CF,
 		sans-serif;
-
-	@media (max-width: var(--mantine-breakpoint-xs)) {
-		font-size: rem(28px);
-		text-align: left;
-	}
 }
 
 .highlight {
@@ -63,31 +53,16 @@
 
 .description {
 	text-align: center;
-
-	@media (max-width: var(--mantine-breakpoint-xs)) {
-		text-align: left;
-		font-size: var(--mantine-font-size-md);
-	}
 }
 
 .controls {
 	margin-top: var(--mantine-spacing-lg);
 	display: flex;
 	justify-content: center;
-
-	@media (max-width: var(--mantine-breakpoint-xs)) {
-		flex-direction: column;
-	}
 }
 
 .control {
 	&:not(:first-of-type) {
 		margin-left: var(--mantine-spacing-md);
-	}
-
-	@media (max-width: var(--mantine-breakpoint-xs)) {
-		height: rem(42px);
-		font-size: var(--mantine-font-size-md);
-		width: 100%;
 	}
 }
