@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -767,7 +767,10 @@ export type DilemmaDetailsQueryVariables = Exact<{
 }>;
 
 
-export type DilemmaDetailsQuery = { __typename?: 'Query', dilemma: { __typename?: 'Dilemma', id: string, title: string, question: string, description: string, choosen?: string | null, position?: {x:number;y:number} | null, choices: Array<{ __typename?: 'DilemmaChoice', id: string, title: string, description: string }>, correlation?: { __typename?: 'Dilemma', id: string, title: string } | { __typename?: 'StarSystem', id: string, name: string } | null } };
+export type DilemmaDetailsQuery = { __typename?: 'Query', dilemma: { __typename?: 'Dilemma', id: string, title: string, question: string, description: string, choosen?: string | null, position?: {x:number;y:number} | null, choices: Array<{ __typename?: 'DilemmaChoice', id: string, title: string, description: string }>, correlation?:
+      | { __typename?: 'Dilemma', id: string, title: string }
+      | { __typename?: 'StarSystem', id: string, name: string }
+     | null } };
 
 export type MakeDilemmaChoiceMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -782,7 +785,10 @@ export type NextPendingDilemmaQueryVariables = Exact<{
 }>;
 
 
-export type NextPendingDilemmaQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, dilemmas: Array<{ __typename?: 'Dilemma', id: string, choosen?: string | null, causation?: { __typename?: 'Dilemma', id: string } | { __typename?: 'StarSystem' } | null }> } };
+export type NextPendingDilemmaQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, dilemmas: Array<{ __typename?: 'Dilemma', id: string, choosen?: string | null, causation?:
+        | { __typename?: 'Dilemma', id: string }
+        | { __typename?: 'StarSystem' }
+       | null }> } };
 
 export type DilemmasHistoryListQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -796,7 +802,14 @@ export type GalaxyQueryVariables = Exact<{
 }>;
 
 
-export type GalaxyQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, starSystems: Array<{ __typename?: 'StarSystem', id: string, position: {x:number;y:number}, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string, user: { __typename?: 'User', id: string } } | null }>, taskForces: Array<{ __typename?: 'TaskForce', id: string, name: string, position: {x:number;y:number}, constructionDone?: number | null, constructionTotal?: number | null, movementVector?: {x:number;y:number} | null, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string, user: { __typename?: 'User', id: string } } | null, orders?: Array<{ __typename: 'TaskForceColonizeOrder', id: string } | { __typename: 'TaskForceFollowOrder', id: string } | { __typename: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }> | null }>, activeTaskForceEngagements: Array<{ __typename?: 'TaskForceEngagement', id: string, phase: string, currentRound: number, position: {x:number;y:number}, taskForceA: { __typename?: 'TaskForce', id: string }, taskForceB: { __typename?: 'TaskForce', id: string } }>, dilemmas: Array<{ __typename?: 'Dilemma', id: string, title: string, question: string, description: string, choosen?: string | null, position?: {x:number;y:number} | null, choices: Array<{ __typename?: 'DilemmaChoice', id: string, title: string, description: string }>, correlation?: { __typename?: 'Dilemma', id: string, title: string } | { __typename?: 'StarSystem', id: string, position: {x:number;y:number} } | null }> } };
+export type GalaxyQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, starSystems: Array<{ __typename?: 'StarSystem', id: string, position: {x:number;y:number}, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string, user: { __typename?: 'User', id: string } } | null }>, taskForces: Array<{ __typename?: 'TaskForce', id: string, name: string, position: {x:number;y:number}, constructionDone?: number | null, constructionTotal?: number | null, movementVector?: {x:number;y:number} | null, isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string, user: { __typename?: 'User', id: string } } | null, orders?: Array<
+        | { __typename: 'TaskForceColonizeOrder', id: string }
+        | { __typename: 'TaskForceFollowOrder', id: string }
+        | { __typename: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }
+      > | null }>, activeTaskForceEngagements: Array<{ __typename?: 'TaskForceEngagement', id: string, phase: string, currentRound: number, position: {x:number;y:number}, taskForceA: { __typename?: 'TaskForce', id: string }, taskForceB: { __typename?: 'TaskForce', id: string } }>, dilemmas: Array<{ __typename?: 'Dilemma', id: string, title: string, question: string, description: string, choosen?: string | null, position?: {x:number;y:number} | null, choices: Array<{ __typename?: 'DilemmaChoice', id: string, title: string, description: string }>, correlation?:
+        | { __typename?: 'Dilemma', id: string, title: string }
+        | { __typename?: 'StarSystem', id: string, position: {x:number;y:number} }
+       | null }> } };
 
 export type OrderTaskForceMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -805,14 +818,35 @@ export type OrderTaskForceMutationVariables = Exact<{
 }>;
 
 
-export type OrderTaskForceMutation = { __typename?: 'Mutation', orderTaskForce: { __typename?: 'TaskForce', id: string, orders?: Array<{ __typename?: 'TaskForceColonizeOrder', id: string } | { __typename?: 'TaskForceFollowOrder', id: string } | { __typename?: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }> | null } };
+export type OrderTaskForceMutation = { __typename?: 'Mutation', orderTaskForce: { __typename?: 'TaskForce', id: string, orders?: Array<
+      | { __typename?: 'TaskForceColonizeOrder', id: string }
+      | { __typename?: 'TaskForceFollowOrder', id: string }
+      | { __typename?: 'TaskForceMoveOrder', destination: {x:number;y:number}, id: string }
+    > | null } };
 
 export type TrackMapSubscriptionVariables = Exact<{
   gameId: Scalars['ID']['input'];
 }>;
 
 
-export type TrackMapSubscription = { __typename?: 'Subscription', trackGalaxy: { __typename?: 'PositionableApppearsEvent', subject: { __typename: 'StarSystem', isVisible: boolean, lastUpdate?: any | null, id: string, position: {x:number;y:number}, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null } | { __typename: 'TaskForce', isVisible: boolean, lastUpdate?: any | null, movementVector?: {x:number;y:number} | null, sensorRange?: number | null, constructionDone?: number | null, constructionTotal?: number | null, id: string, position: {x:number;y:number} } | { __typename: 'TaskForceEngagement', id: string, position: {x:number;y:number} } } | { __typename?: 'PositionableDisappearsEvent', removed?: boolean | null, subject: { __typename: 'StarSystem', isVisible: boolean, lastUpdate?: any | null, id: string, position: {x:number;y:number} } | { __typename: 'TaskForce', isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, constructionDone?: number | null, constructionTotal?: number | null, id: string, position: {x:number;y:number} } | { __typename: 'TaskForceEngagement', id: string, position: {x:number;y:number} } } | { __typename?: 'PositionableMovesEvent', subject: { __typename: 'StarSystem', id: string, position: {x:number;y:number} } | { __typename: 'TaskForce', movementVector?: {x:number;y:number} | null, id: string, position: {x:number;y:number} } | { __typename: 'TaskForceEngagement', id: string, position: {x:number;y:number} } } | { __typename?: 'StarSystemUpdateEvent', subject: { __typename?: 'StarSystem', id: string, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null } } };
+export type TrackMapSubscription = { __typename?: 'Subscription', trackGalaxy:
+    | { __typename?: 'PositionableApppearsEvent', subject:
+        | { __typename: 'StarSystem', isVisible: boolean, lastUpdate?: any | null, id: string, position: {x:number;y:number}, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null }
+        | { __typename: 'TaskForce', isVisible: boolean, lastUpdate?: any | null, movementVector?: {x:number;y:number} | null, sensorRange?: number | null, constructionDone?: number | null, constructionTotal?: number | null, id: string, position: {x:number;y:number} }
+        | { __typename: 'TaskForceEngagement', id: string, position: {x:number;y:number} }
+       }
+    | { __typename?: 'PositionableDisappearsEvent', removed?: boolean | null, subject:
+        | { __typename: 'StarSystem', isVisible: boolean, lastUpdate?: any | null, id: string, position: {x:number;y:number} }
+        | { __typename: 'TaskForce', isVisible: boolean, lastUpdate?: any | null, sensorRange?: number | null, constructionDone?: number | null, constructionTotal?: number | null, id: string, position: {x:number;y:number} }
+        | { __typename: 'TaskForceEngagement', id: string, position: {x:number;y:number} }
+       }
+    | { __typename?: 'PositionableMovesEvent', subject:
+        | { __typename: 'StarSystem', id: string, position: {x:number;y:number} }
+        | { __typename: 'TaskForce', movementVector?: {x:number;y:number} | null, id: string, position: {x:number;y:number} }
+        | { __typename: 'TaskForceEngagement', id: string, position: {x:number;y:number} }
+       }
+    | { __typename?: 'StarSystemUpdateEvent', subject: { __typename?: 'StarSystem', id: string, sensorRange?: number | null, owner?: { __typename?: 'Player', id: string, name: string, color: string } | null } }
+   };
 
 export type GameLobbyQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -875,7 +909,10 @@ export type CurrentTurnSubscriptionVariables = Exact<{
 }>;
 
 
-export type CurrentTurnSubscription = { __typename?: 'Subscription', trackGame: { __typename: 'NewTurnCalculatedEvent', game: { __typename?: 'Game', id: string, turnNumber: number, players: Array<{ __typename?: 'Player', id: string, turnEnded?: boolean | null }> } } | { __typename: 'TurnEndedEvent' } };
+export type CurrentTurnSubscription = { __typename?: 'Subscription', trackGame:
+    | { __typename: 'NewTurnCalculatedEvent', game: { __typename?: 'Game', id: string, turnNumber: number, players: Array<{ __typename?: 'Player', id: string, turnEnded?: boolean | null }> } }
+    | { __typename: 'TurnEndedEvent' }
+   };
 
 export type EndTurnMutationVariables = Exact<{
   expectedTurnNumber: Scalars['Int']['input'];
@@ -1007,7 +1044,10 @@ export type StarSystemDetailsQueryVariables = Exact<{
 }>;
 
 
-export type StarSystemDetailsQuery = { __typename?: 'Query', starSystem: { __typename?: 'StarSystem', id: string, name: string, colonizationGovernance?: ColonizationGovernance | null, currentDevelopmentStance?: DevelopmentStance | null, position: {x:number;y:number}, industry?: number | null, discoveryProgress?: number | null, nextTurnStanceProjection?: { __typename?: 'DevelopmentStanceProjection', industryDelta: number, populationDelta: number } | null, owner?: { __typename?: 'Player', id: string, name: string } | null, colonization?: { __typename?: 'StarSystemColonizationPressure', accumulated: number, threshold: number, pressurePerTurn: number, etaTurns: number, player: { __typename?: 'Player', id: string, name: string } } | null, taskForces: Array<{ __typename?: 'TaskForce', id: string }>, discoveries?: Array<{ __typename: 'ResourceDiscovery', id: string, remainingDeposits: number, miningRate: number, resource: { __typename?: 'Resource', id: string, name: string } } | { __typename: 'UnknownDiscovery', id: string }> | null, populations?: Array<{ __typename?: 'Population', id: string, amount: number }> | null } };
+export type StarSystemDetailsQuery = { __typename?: 'Query', starSystem: { __typename?: 'StarSystem', id: string, name: string, colonizationGovernance?: ColonizationGovernance | null, currentDevelopmentStance?: DevelopmentStance | null, position: {x:number;y:number}, industry?: number | null, discoveryProgress?: number | null, nextTurnStanceProjection?: { __typename?: 'DevelopmentStanceProjection', industryDelta: number, populationDelta: number } | null, owner?: { __typename?: 'Player', id: string, name: string } | null, colonization?: { __typename?: 'StarSystemColonizationPressure', accumulated: number, threshold: number, pressurePerTurn: number, etaTurns: number, player: { __typename?: 'Player', id: string, name: string } } | null, taskForces: Array<{ __typename?: 'TaskForce', id: string }>, discoveries?: Array<
+      | { __typename: 'ResourceDiscovery', id: string, remainingDeposits: number, miningRate: number, resource: { __typename?: 'Resource', id: string, name: string } }
+      | { __typename: 'UnknownDiscovery', id: string }
+    > | null, populations?: Array<{ __typename?: 'Population', id: string, amount: number }> | null } };
 
 export type StarSystemDetailsContextQueryVariables = Exact<{
   gameId: Scalars['ID']['input'];
@@ -1021,7 +1061,10 @@ export type TrackStarSystemDetailsSubscriptionVariables = Exact<{
 }>;
 
 
-export type TrackStarSystemDetailsSubscription = { __typename?: 'Subscription', trackStarSystem: { __typename?: 'StarSystemUpdateEvent', subject: { __typename?: 'StarSystem', id: string, name: string, colonizationGovernance?: ColonizationGovernance | null, currentDevelopmentStance?: DevelopmentStance | null, position: {x:number;y:number}, industry?: number | null, discoveryProgress?: number | null, nextTurnStanceProjection?: { __typename?: 'DevelopmentStanceProjection', industryDelta: number, populationDelta: number } | null, owner?: { __typename?: 'Player', id: string, name: string } | null, colonization?: { __typename?: 'StarSystemColonizationPressure', accumulated: number, threshold: number, pressurePerTurn: number, etaTurns: number, player: { __typename?: 'Player', id: string, name: string } } | null, taskForces: Array<{ __typename?: 'TaskForce', id: string }>, discoveries?: Array<{ __typename: 'ResourceDiscovery', id: string, remainingDeposits: number, miningRate: number, resource: { __typename?: 'Resource', id: string, name: string } } | { __typename: 'UnknownDiscovery', id: string }> | null, populations?: Array<{ __typename?: 'Population', id: string, amount: number }> | null } } };
+export type TrackStarSystemDetailsSubscription = { __typename?: 'Subscription', trackStarSystem: { __typename?: 'StarSystemUpdateEvent', subject: { __typename?: 'StarSystem', id: string, name: string, colonizationGovernance?: ColonizationGovernance | null, currentDevelopmentStance?: DevelopmentStance | null, position: {x:number;y:number}, industry?: number | null, discoveryProgress?: number | null, nextTurnStanceProjection?: { __typename?: 'DevelopmentStanceProjection', industryDelta: number, populationDelta: number } | null, owner?: { __typename?: 'Player', id: string, name: string } | null, colonization?: { __typename?: 'StarSystemColonizationPressure', accumulated: number, threshold: number, pressurePerTurn: number, etaTurns: number, player: { __typename?: 'Player', id: string, name: string } } | null, taskForces: Array<{ __typename?: 'TaskForce', id: string }>, discoveries?: Array<
+        | { __typename: 'ResourceDiscovery', id: string, remainingDeposits: number, miningRate: number, resource: { __typename?: 'Resource', id: string, name: string } }
+        | { __typename: 'UnknownDiscovery', id: string }
+      > | null, populations?: Array<{ __typename?: 'Population', id: string, amount: number }> | null } } };
 
 export type SetDevelopmentStanceMutationVariables = Exact<{
   starSystemId: Scalars['ID']['input'];
