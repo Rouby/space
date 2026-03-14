@@ -76,36 +76,24 @@ async function seedRealisticShipDesign(
 
 test.describe.configure({ mode: "default" });
 
-test("should be able to login and see the game", async ({ page, api }) => {
-	const { id: erwinId } = await api.seed("user", {
-		email: "erwin@example.com",
-		name: "Erwin Beispiel",
-	});
-	const { id: aliceId } = await api.seed("user", {
-		email: "alice@example.com",
-		name: "Alice Beispiel",
-	});
-	const { id: gameId } = await api.seed("game", {
-		name: "Test Game",
-		hostUserId: erwinId,
-	});
-	await api.seed("player", {
-		gameId,
-		userId: erwinId,
-		color: "#ff0000",
-	});
-	await api.seed("player", {
-		gameId,
-		userId: aliceId,
-		color: "#00ff00",
-	});
-	await api.seed("starSystem", {
+test("should be able to login and see the game", async ({
+	page,
+	api,
+	game,
+}) => {
+	const { id: gameId } = game.dbo;
+
+	const { id: erwinId } = game.hostUser;
+
+	const { id: aliceId } = await game.joinPlayer("Alice");
+
+	await game.add("starSystem", {
 		gameId,
 		ownerId: erwinId,
 		name: "Alpha",
 		position: { x: 0, y: 0 },
 	});
-	await api.seed("starSystem", {
+	await game.add("starSystem", {
 		gameId,
 		ownerId: aliceId,
 		name: "Beta",

@@ -78,16 +78,16 @@ const Tables = {
 	taskForceEngagement: taskForceEngagements,
 	taskForceShipDesign: taskForceShipDesigns,
 };
+type OnlyGameTypes = Pick<
+	Types,
+	{
+		[K in keyof Types]: Types[K][0] extends { gameId: string } ? K : never;
+	}[keyof Types]
+>;
 
 const secret = new TextEncoder().encode(
 	process.env.JWT_SECRET || "electric-kitten",
 );
-
-async function resetIntegrationData(drizzle: ReturnType<typeof getDrizzle>) {
-	await drizzle.execute(
-		sql`TRUNCATE TABLE "games", "users" RESTART IDENTITY CASCADE`,
-	);
-}
 
 export const test = base.extend<{
 	api: {
@@ -97,12 +97,19 @@ export const test = base.extend<{
 		) => Promise<Types[T][1]>;
 		login: (userId: string) => Promise<void>;
 	};
+	game: {
+		dbo: Types["game"][1];
+		hostUser: Types["user"][1];
+		joinPlayer: (name: string) => Promise<Types["user"][1]>;
+		add: <T extends keyof OnlyGameTypes>(
+			model: T,
+			data: OnlyGameTypes[T][0],
+		) => Promise<OnlyGameTypes[T][1]>;
+	};
 }>({
 	api: [
 		async ({ playwright: _, context }, use, _workerInfo) => {
 			const drizzle = getDrizzle(await getConnection());
-
-			await resetIntegrationData(drizzle);
 
 			await use({
 				seed: async (model, data) => {
@@ -138,8 +145,62 @@ export const test = base.extend<{
 					]);
 				},
 			});
+		},
+		{ scope: "test" },
+	],
+	game: [
+		async ({ api }, use) => {
+			const hostUser = await api.seed("user", {
+				email: `host-${Date.now()}@example.com`,
+				name: `Host User ${Date.now()}`,
+			});
 
-			await resetIntegrationData(drizzle);
+			const game = await api.seed("game", {
+				name: `Test Game ${Date.now()}`,
+				hostUserId: hostUser.id,
+			});
+
+			const colors = ["red", "blue", "green", "yellow", "purple", "orange"];
+
+			await api.seed("player", {
+				userId: hostUser.id,
+				gameId: game.id,
+				color: colors.shift(),
+			});
+
+			await use({
+				dbo: game,
+				hostUser,
+				joinPlayer: async (name) => {
+					const user = await api.seed("user", {
+						email: `${name.toLocaleLowerCase()}-${Date.now()}@example.com`,
+						name,
+					});
+
+					await api.seed("player", {
+						userId: user.id,
+						gameId: game.id,
+						color: colors.shift(),
+					});
+
+					return user;
+				},
+				add: async (model, data) => {
+					const result = await api.seed(model, {
+						...data,
+						gameId: game.id,
+						// biome-ignore lint/suspicious/noExplicitAny: data set
+					} as any);
+
+					return result;
+				},
+			});
+
+			// Cleanup after the test
+			const drizzle = getDrizzle(await getConnection());
+			await drizzle
+				.delete(Tables.game)
+				.where(sql`${Tables.game.id} = ${game.id}`);
 		},
 		{ scope: "test" },
 	],

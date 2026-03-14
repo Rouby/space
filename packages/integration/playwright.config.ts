@@ -1,10 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+process.env.DB_CONNECTION_STRING = "postgres://postgres:password@localhost:5432/testing";
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -34,9 +30,6 @@ export default defineConfig({
 		video: "retain-on-failure",
 	},
 
-	globalSetup: "./global-setup.ts",
-	globalTeardown: "./global-teardown.ts",
-
 	/* Configure projects for major browsers */
 	projects: [
 		{
@@ -54,8 +47,7 @@ export default defineConfig({
 			timeout: 120 * 1000,
 			reuseExistingServer: !process.env.CI,
 			env: {
-				DB_CONNECTION_STRING:
-					"postgres://postgres:password@localhost:5432/testing",
+				DB_CONNECTION_STRING: process.env.DB_CONNECTION_STRING,
 			},
 			stdout: !process.env.CI ? "pipe" : "ignore",
 			stderr: "pipe",
