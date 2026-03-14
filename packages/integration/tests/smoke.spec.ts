@@ -21,10 +21,10 @@ test("landing page renders the core CTA", async ({ page }) => {
 
 	await expect(
 		page.getByRole("heading", {
-			name: /A multiplayer space strategy game of exploration and conquest/i,
+			name: /The async 4X strategy game built for long campaigns/i,
 		}),
 	).toBeVisible();
-	await expect(page.getByRole("link", { name: "Get started" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "Start your campaign" })).toBeVisible();
 });
 
 test("guest users are redirected to sign in when opening games", async ({

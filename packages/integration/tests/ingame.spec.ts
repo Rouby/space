@@ -507,6 +507,12 @@ test("blocks endTurn when unresolved engagements exist", async ({
 			discard: [],
 			nextDamageBonus: 0,
 			nextDamageReduction: 0,
+			armorRating: 0,
+			sensorRating: 0,
+			shieldHp: 0,
+			shieldMaxHp: 0,
+			thrusterRating:0,
+			weaponRating: 0
 		},
 		stateB: {
 			taskForceId: taskForceBId,
@@ -517,6 +523,12 @@ test("blocks endTurn when unresolved engagements exist", async ({
 			discard: [],
 			nextDamageBonus: 0,
 			nextDamageReduction: 0,
+			armorRating: 0,
+			sensorRating: 0,
+			shieldHp: 0,
+			shieldMaxHp: 0,
+			thrusterRating:0,
+			weaponRating: 0
 		},
 		roundLog: [],
 		startedAtTurn: 0,
@@ -617,6 +629,12 @@ test("allows endTurn after engagement actions resolve the battle", async ({
 			discard: [],
 			nextDamageBonus: 0,
 			nextDamageReduction: 0,
+			armorRating: 0,
+			sensorRating: 0,
+			shieldHp: 0,
+			shieldMaxHp: 0,
+			thrusterRating:0,
+			weaponRating: 0
 		},
 		stateB: {
 			taskForceId: taskForceBId,
@@ -627,6 +645,12 @@ test("allows endTurn after engagement actions resolve the battle", async ({
 			discard: [],
 			nextDamageBonus: 0,
 			nextDamageReduction: 0,
+			armorRating: 0,
+			sensorRating: 0,
+			shieldHp: 0,
+			shieldMaxHp: 0,
+			thrusterRating:0,
+			weaponRating: 0
 		},
 		roundLog: [],
 		startedAtTurn: 0,
@@ -1768,7 +1792,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		supplyCapacity: null,
 		powerGeneration: null,
 		crewCapacity: "1",
-		ftlSpeed: null,
+		ftlSpeed: "10",
 		zoneOfControl: null,
 		sensorRange: null,
 		structuralIntegrity: "8",
@@ -1814,6 +1838,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		position: { x: 0, y: 0 },
 		movementVector: null,
 		orders: [],
+		ftlSpeed: "10",
 	});
 	const { id: rivalBattleTaskForceId } = await api.seed("taskForce", {
 		gameId,
@@ -1822,6 +1847,7 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 		position: { x: 100, y: 0 },
 		movementVector: null,
 		orders: [],
+		ftlSpeed: "10",
 	});
 
 	await api.seed("taskForceShipDesign", {
