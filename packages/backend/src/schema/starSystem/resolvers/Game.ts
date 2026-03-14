@@ -7,7 +7,7 @@ import {
 	starSystems,
 } from "@space/data/schema";
 import type { GameResolvers } from "./../../types.generated.js";
-export const Game: Pick<GameResolvers, "starSystems" | "__isTypeOf"> = {
+export const Game: Pick<GameResolvers, "starSystems"> = {
 	starSystems: async (parent, _args, ctx) => {
 		const { VisibilityQuery, visibilityExists, possiblyHidden } =
 			getLastKnownHelper({

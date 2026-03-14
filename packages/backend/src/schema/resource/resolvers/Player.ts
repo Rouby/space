@@ -7,7 +7,7 @@ import {
 	starSystems,
 } from "@space/data/schema";
 import type { PlayerResolvers } from "./../../types.generated.js";
-export const Player: Pick<PlayerResolvers, "resources" | "__isTypeOf"> = {
+export const Player: Pick<PlayerResolvers, "resources"> = {
 	/* Implement Player resolver logic here */
 	resources: async (parent, _arg, ctx) => {
 		return ctx.drizzle

@@ -13,7 +13,7 @@ import {
 import type { GameResolvers } from "./../../types.generated.js";
 export const Game: Pick<
 	GameResolvers,
-	"activeTaskForceEngagements" | "taskForces" | "__isTypeOf"
+	"activeTaskForceEngagements" | "taskForces"
 > = {
 	/* Implement Game resolver logic here */
 	taskForces: async (parent, _arg, ctx) => {

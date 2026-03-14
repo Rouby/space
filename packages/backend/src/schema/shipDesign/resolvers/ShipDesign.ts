@@ -1,5 +1,7 @@
 import {
+	and,
 	eq,
+	players,
 	shipComponentResourceCosts,
 	shipComponents,
 	shipDesignComponents,
@@ -53,5 +55,22 @@ export const ShipDesign: ShipDesignResolvers = {
 					},
 				})),
 			);
+	},
+	owner: async (parent, _arg, ctx) => {
+		const owner = await ctx.drizzle.query.players.findFirst({
+			where: and(
+				eq(players.userId, parent.ownerId),
+				eq(players.gameId, parent.gameId),
+			),
+			with: { user: true },
+		});
+
+		if (!owner) {
+			throw new Error(
+				`Owner not found for ship design ${parent.id} with ownerId ${parent.ownerId} and gameId ${parent.gameId}`,
+			);
+		}
+
+		return owner;
 	},
 };

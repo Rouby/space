@@ -741,7 +741,7 @@ export type ResolverTypeWrapper<T> = Promise<T> | T;
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -778,21 +778,21 @@ export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, 
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+export type SubscriptionResolver<TResult, TKey extends string, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> =
   | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
-export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+export type TypeResolveFn<TTypes, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (
   parent: TParent,
   context: TContext,
   info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
-export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = (
   next: NextResolverFn<TResult>,
   parent: TParent,
   args: TArgs,
@@ -800,19 +800,43 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
+
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
-  Discovery: ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } ) | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } );
-  Reference: ( DilemmaMapper & { __typename: 'Dilemma' } ) | ( StarSystemMapper & { __typename: 'StarSystem' } );
-  TrackGalaxyEvent: ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } ) | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } ) | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } ) | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
-  TrackGameEvent: ( Omit<NewTurnCalculatedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'NewTurnCalculatedEvent' } ) | ( Omit<TurnEndedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'TurnEndedEvent' } );
+  Discovery:
+    | ( ResourceDiscoveryMapper & { __typename: 'ResourceDiscovery' } )
+    | ( UnknownDiscovery & { __typename: 'UnknownDiscovery' } )
+  ;
+  Reference:
+    | ( DilemmaMapper & { __typename: 'Dilemma' } )
+    | ( StarSystemMapper & { __typename: 'StarSystem' } )
+  ;
+  TrackGalaxyEvent:
+    | ( Omit<PositionableApppearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableApppearsEvent' } )
+    | ( Omit<PositionableDisappearsEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableDisappearsEvent' } )
+    | ( Omit<PositionableMovesEvent, 'subject'> & { subject: _RefType['Positionable'] } & { __typename: 'PositionableMovesEvent' } )
+    | ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } )
+  ;
+  TrackGameEvent:
+    | ( Omit<NewTurnCalculatedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'NewTurnCalculatedEvent' } )
+    | ( Omit<TurnEndedEvent, 'game'> & { game: _RefType['Game'] } & { __typename: 'TurnEndedEvent' } )
+  ;
   TrackStarSystemEvent: ( Omit<StarSystemUpdateEvent, 'subject'> & { subject: _RefType['StarSystem'] } & { __typename: 'StarSystemUpdateEvent' } );
 };
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  Positionable: ( StarSystemMapper & { __typename: 'StarSystem' } ) | ( TaskForceMapper & { __typename: 'TaskForce' } ) | ( TaskForceEngagementMapper & { __typename: 'TaskForceEngagement' } );
-  TaskForceOrder: ( TaskForceColonizeOrderMapper & { __typename: 'TaskForceColonizeOrder' } ) | ( TaskForceFollowOrderMapper & { __typename: 'TaskForceFollowOrder' } ) | ( TaskForceMoveOrderMapper & { __typename: 'TaskForceMoveOrder' } );
+  Positionable:
+    | ( StarSystemMapper & { __typename: 'StarSystem' } )
+    | ( TaskForceMapper & { __typename: 'TaskForce' } )
+    | ( TaskForceEngagementMapper & { __typename: 'TaskForceEngagement' } )
+  ;
+  TaskForceOrder:
+    | ( TaskForceColonizeOrderMapper & { __typename: 'TaskForceColonizeOrder' } )
+    | ( TaskForceFollowOrderMapper & { __typename: 'TaskForceFollowOrder' } )
+    | ( TaskForceMoveOrderMapper & { __typename: 'TaskForceMoveOrder' } )
+  ;
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -835,7 +859,7 @@ export type ResolversTypes = {
   Game: ResolverTypeWrapper<GameMapper>;
   IndustrialProject: ResolverTypeWrapper<Omit<IndustrialProject, 'projectType'> & { projectType: ResolversTypes['IndustrialProjectType'] }>;
   IndustrialProjectType: ResolverTypeWrapper<'factory_expansion' | 'automation_hub' | 'orbital_foundry'>;
-  Mutation: ResolverTypeWrapper<{}>;
+  Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   Player: ResolverTypeWrapper<PlayerMapper>;
   Population: ResolverTypeWrapper<PopulationMapper>;
@@ -843,7 +867,7 @@ export type ResolversTypes = {
   PositionableApppearsEvent: ResolverTypeWrapper<Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   PositionableDisappearsEvent: ResolverTypeWrapper<Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   PositionableMovesEvent: ResolverTypeWrapper<Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
-  Query: ResolverTypeWrapper<{}>;
+  Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   Reference: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Reference']>;
   Resource: ResolverTypeWrapper<ResourceMapper>;
   ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
@@ -860,7 +884,7 @@ export type ResolversTypes = {
   StarSystemUpdateEvent: ResolverTypeWrapper<Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversTypes['StarSystem'] }>;
   SubmitTaskForceEngagementActionInput: SubmitTaskForceEngagementActionInput;
   SubmitTaskForceEngagementActionType: ResolverTypeWrapper<'RETREAT'>;
-  Subscription: ResolverTypeWrapper<{}>;
+  Subscription: ResolverTypeWrapper<Record<PropertyKey, never>>;
   TaskForce: ResolverTypeWrapper<TaskForceMapper>;
   TaskForceColonizeOrder: ResolverTypeWrapper<TaskForceColonizeOrderMapper>;
   TaskForceEngagement: ResolverTypeWrapper<TaskForceEngagementMapper>;
@@ -912,7 +936,7 @@ export type ResolversParentTypes = {
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
   IndustrialProject: IndustrialProject;
-  Mutation: {};
+  Mutation: Record<PropertyKey, never>;
   NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   Player: PlayerMapper;
   Population: PopulationMapper;
@@ -920,7 +944,7 @@ export type ResolversParentTypes = {
   PositionableApppearsEvent: Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   PositionableDisappearsEvent: Omit<PositionableDisappearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
-  Query: {};
+  Query: Record<PropertyKey, never>;
   Reference: ResolversUnionTypes<ResolversParentTypes>['Reference'];
   Resource: ResourceMapper;
   ResourceCost: ResourceCostMapper;
@@ -936,7 +960,7 @@ export type ResolversParentTypes = {
   StarSystemColonizationPressure: Omit<StarSystemColonizationPressure, 'player'> & { player: ResolversParentTypes['Player'] };
   StarSystemUpdateEvent: Omit<StarSystemUpdateEvent, 'subject'> & { subject: ResolversParentTypes['StarSystem'] };
   SubmitTaskForceEngagementActionInput: SubmitTaskForceEngagementActionInput;
-  Subscription: {};
+  Subscription: Record<PropertyKey, never>;
   TaskForce: TaskForceMapper;
   TaskForceColonizeOrder: TaskForceColonizeOrderMapper;
   TaskForceEngagement: TaskForceEngagementMapper;
@@ -983,7 +1007,6 @@ export type CombatProfileResolvers<ContextType = Context, ParentType extends Res
   hasShields?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasThrusters?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasWeapons?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
@@ -995,7 +1018,6 @@ export type DevelopmentStanceResolvers = EnumResolverSignature<{ balance?: any, 
 export type DevelopmentStanceProjectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DevelopmentStanceProjection'] = ResolversParentTypes['DevelopmentStanceProjection']> = {
   industryDelta?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   populationDelta?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DilemmaResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Dilemma'] = ResolversParentTypes['Dilemma']> = {
@@ -1015,7 +1037,6 @@ export type DilemmaChoiceResolvers<ContextType = Context, ParentType extends Res
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type DiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Discovery'] = ResolversParentTypes['Discovery']> = {
@@ -1039,7 +1060,6 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
   taskForces?: Resolver<Array<ResolversTypes['TaskForce']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   turnReports?: Resolver<Array<ResolversTypes['TurnReport']>, ParentType, ContextType, RequireFields<GameturnReportsArgs, 'limit'>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type IndustrialProjectResolvers<ContextType = Context, ParentType extends ResolversParentTypes['IndustrialProject'] = ResolversParentTypes['IndustrialProject']> = {
@@ -1055,7 +1075,6 @@ export type IndustrialProjectResolvers<ContextType = Context, ParentType extends
   turnsRemaining?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   workDone?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   workRequired?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_hub?: any, factory_expansion?: any, orbital_foundry?: any }, ResolversTypes['IndustrialProjectType']>;
@@ -1095,19 +1114,15 @@ export type PlayerResolvers<ContextType = Context, ParentType extends ResolversP
   shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   turnEnded?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PopulationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Population'] = ResolversParentTypes['Population']> = {
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PositionableResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Positionable'] = ResolversParentTypes['Positionable']> = {
   __resolveType?: TypeResolveFn<'StarSystem' | 'TaskForce' | 'TaskForceEngagement', ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
 };
 
 export type PositionableApppearsEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PositionableApppearsEvent'] = ResolversParentTypes['PositionableApppearsEvent']> = {
@@ -1142,13 +1157,11 @@ export type ReferenceResolvers<ContextType = Context, ParentType extends Resolve
 export type ResourceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ResourceCostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceCost'] = ResolversParentTypes['ResourceCost']> = {
   quantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ResourceDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceDiscovery'] = ResolversParentTypes['ResourceDiscovery']> = {
@@ -1190,7 +1203,6 @@ export type ShipComponentResolvers<ContextType = Context, ParentType extends Res
   weaponRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   weaponShieldPenetration?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   zoneOfControl?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ShipComponentEffectivenessAgainstResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipComponentEffectivenessAgainst'] = ResolversParentTypes['ShipComponentEffectivenessAgainst']> = {
@@ -1198,7 +1210,6 @@ export type ShipComponentEffectivenessAgainstResolvers<ContextType = Context, Pa
   instant?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   missile?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   projectile?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ShipDesignResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesign'] = ResolversParentTypes['ShipDesign']> = {
@@ -1209,14 +1220,12 @@ export type ShipDesignResolvers<ContextType = Context, ParentType extends Resolv
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ShipDesignComponentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesignComponent'] = ResolversParentTypes['ShipDesignComponent']> = {
   component?: Resolver<ResolversTypes['ShipComponent'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
@@ -1247,7 +1256,6 @@ export type StarSystemColonizationPressureResolvers<ContextType = Context, Paren
   player?: Resolver<ResolversTypes['Player'], ParentType, ContextType>;
   pressurePerTurn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   threshold?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type StarSystemUpdateEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystemUpdateEvent'] = ResolversParentTypes['StarSystemUpdateEvent']> = {
@@ -1318,7 +1326,6 @@ export type TaskForceEngagementParticipantStateResolvers<ContextType = Context, 
   shieldMaxHp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   submittedCardId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   taskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TaskForceEngagementRoundLogEntryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceEngagementRoundLogEntry'] = ResolversParentTypes['TaskForceEngagementRoundLogEntry']> = {
@@ -1333,7 +1340,6 @@ export type TaskForceEngagementRoundLogEntryResolvers<ContextType = Context, Par
   shieldDamage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   targetHpAfter?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   targetTaskForceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TaskForceFollowOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceFollowOrder'] = ResolversParentTypes['TaskForceFollowOrder']> = {
@@ -1350,7 +1356,6 @@ export type TaskForceMoveOrderResolvers<ContextType = Context, ParentType extend
 
 export type TaskForceOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceOrder'] = ResolversParentTypes['TaskForceOrder']> = {
   __resolveType?: TypeResolveFn<'TaskForceColonizeOrder' | 'TaskForceFollowOrder' | 'TaskForceMoveOrder', ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
 export type TaskForceShipRoleResolvers = EnumResolverSignature<{ capital?: any, screen?: any, support?: any }, ResolversTypes['TaskForceShipRole']>;
@@ -1385,14 +1390,12 @@ export type TurnReportResolvers<ContextType = Context, ParentType extends Resolv
   taskForceConstructionChanges?: Resolver<Array<ResolversTypes['TurnReportTaskForceConstructionChange']>, ParentType, ContextType>;
   taskForceEngagements?: Resolver<Array<ResolversTypes['TurnReportTaskForceEngagement']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportColonizationCompletedResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportColonizationCompleted'] = ResolversParentTypes['TurnReportColonizationCompleted']> = {
   accumulatedPressure?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pressureThreshold?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportColonizationPressureChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportColonizationPressureChange'] = ResolversParentTypes['TurnReportColonizationPressureChange']> = {
@@ -1400,21 +1403,18 @@ export type TurnReportColonizationPressureChangeResolvers<ContextType = Context,
   pressureAdded?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pressureThreshold?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportIndustrialProjectCompletionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportIndustrialProjectCompletion'] = ResolversParentTypes['TurnReportIndustrialProjectCompletion']> = {
   industryBonus?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   projectType?: Resolver<ResolversTypes['IndustrialProjectType'], ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportIndustryChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportIndustryChange'] = ResolversParentTypes['TurnReportIndustryChange']> = {
   industryTotal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   industryUtilized?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportMiningChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportMiningChange'] = ResolversParentTypes['TurnReportMiningChange']> = {
@@ -1423,7 +1423,6 @@ export type TurnReportMiningChangeResolvers<ContextType = Context, ParentType ex
   remainingDeposits?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportPopulationChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportPopulationChange'] = ResolversParentTypes['TurnReportPopulationChange']> = {
@@ -1432,7 +1431,6 @@ export type TurnReportPopulationChangeResolvers<ContextType = Context, ParentTyp
   population?: Resolver<ResolversTypes['Population'], ParentType, ContextType>;
   previousAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportPopulationMigrationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportPopulationMigration'] = ResolversParentTypes['TurnReportPopulationMigration']> = {
@@ -1440,7 +1438,6 @@ export type TurnReportPopulationMigrationResolvers<ContextType = Context, Parent
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   destinationStarSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   sourceStarSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportTaskForceConstructionChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportTaskForceConstructionChange'] = ResolversParentTypes['TurnReportTaskForceConstructionChange']> = {
@@ -1451,7 +1448,6 @@ export type TurnReportTaskForceConstructionChangeResolvers<ContextType = Context
   starSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   taskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TurnReportTaskForceEngagementResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportTaskForceEngagement'] = ResolversParentTypes['TurnReportTaskForceEngagement']> = {
@@ -1463,7 +1459,6 @@ export type TurnReportTaskForceEngagementResolvers<ContextType = Context, Parent
   taskForceBId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   taskForceBName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   winnerTaskForceId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UnknownDiscoveryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UnknownDiscovery'] = ResolversParentTypes['UnknownDiscovery']> = {
@@ -1475,7 +1470,6 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface VectorScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Vector'], any> {

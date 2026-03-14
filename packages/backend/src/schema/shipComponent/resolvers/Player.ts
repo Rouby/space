@@ -1,6 +1,6 @@
 import { and, eq, shipComponents } from "@space/data/schema";
 import type { PlayerResolvers } from "./../../types.generated.js";
-export const Player: Pick<PlayerResolvers, "shipComponents" | "__isTypeOf"> = {
+export const Player: Pick<PlayerResolvers, "shipComponents"> = {
 	/* Implement Player resolver logic here */
 	shipComponents: async (parent, _arg, ctx) => {
 		return ctx.drizzle

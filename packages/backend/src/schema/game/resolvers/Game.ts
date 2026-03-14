@@ -11,7 +11,6 @@ export const Game: Pick<
 	| "startedAt"
 	| "turnNumber"
 	| "turnReports"
-	| "__isTypeOf"
 > = {
 	players: async (parent, _args, ctx) => {
 		return ctx.drizzle.query.players.findMany({
