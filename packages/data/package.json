@@ -20,7 +20,7 @@
 	},
 	"module": "src/index.ts",
 	"dependencies": {
-		"drizzle-orm": "0.44.7",
+		"drizzle-orm": "0.45.1",
 		"pg": "8.20.0"
 	},
 	"devDependencies": {

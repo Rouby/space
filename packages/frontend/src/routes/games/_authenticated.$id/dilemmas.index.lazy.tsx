@@ -13,7 +13,7 @@ function RouteComponent() {
 
 	return (
 		<>
-			<DetailsDrawer size="70%" onClose={() => navigate({ to: ".." })}>
+			<DetailsDrawer size="70%" onClose={() => navigate({ to: "../../$id" })}>
 				<DilemmasList />
 			</DetailsDrawer>
 
