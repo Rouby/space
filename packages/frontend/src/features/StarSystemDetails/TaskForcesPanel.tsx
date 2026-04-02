@@ -11,6 +11,7 @@ import { useStyles } from "tss-react";
 import { useMutation, useQuery, useSubscription } from "urql";
 import { formatNumber } from "../../format/formatNumber";
 import { graphql } from "../../gql";
+import type { TaskForceMission } from "../../gql/graphql";
 
 const DECK_SIZE = 12;
 
@@ -184,7 +185,7 @@ export function TaskForcesPanel({
 							<Text size="xs" c="dimmed" ta="center">
 								Fleet:{" "}
 								{tf.shipDesigns
-									.map((sd: any) => `${sd.quantity}x ${sd.design.name}`)
+									.map((sd) => `${sd.quantity}x ${sd.design.name}`)
 									.join(", ")}
 							</Text>
 						)}
@@ -205,7 +206,7 @@ export function TaskForcesPanel({
 								onChange={(e) => {
 									assignMission({
 										taskForceId: tf.id,
-										mission: e.currentTarget.value as any,
+										mission: e.currentTarget.value as TaskForceMission,
 									});
 								}}
 							/>
