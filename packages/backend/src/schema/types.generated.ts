@@ -340,8 +340,11 @@ export type Reference = Dilemma | StarSystem;
 
 export type Resource = {
   __typename?: 'Resource';
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  kind: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  statBonuses?: Maybe<Array<ResourceStatBonus>>;
 };
 
 export type ResourceCost = {
@@ -356,6 +359,12 @@ export type ResourceDiscovery = {
   miningRate: Scalars['Float']['output'];
   remainingDeposits: Scalars['Float']['output'];
   resource: Resource;
+};
+
+export type ResourceStatBonus = {
+  __typename?: 'ResourceStatBonus';
+  modifier: Scalars['Float']['output'];
+  stat: Scalars['String']['output'];
 };
 
 export type ShipComponent = {
@@ -881,6 +890,7 @@ export type ResolversTypes = {
   ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
+  ResourceStatBonus: ResolverTypeWrapper<ResourceStatBonus>;
   ShipComponent: ResolverTypeWrapper<ShipComponentMapper>;
   ShipComponentEffectivenessAgainst: ResolverTypeWrapper<ShipComponentEffectivenessAgainst>;
   ShipDesign: ResolverTypeWrapper<ShipDesignMapper>;
@@ -958,6 +968,7 @@ export type ResolversParentTypes = {
   ResourceCost: ResourceCostMapper;
   Float: Scalars['Float']['output'];
   ResourceDiscovery: ResourceDiscoveryMapper;
+  ResourceStatBonus: ResourceStatBonus;
   ShipComponent: ShipComponentMapper;
   ShipComponentEffectivenessAgainst: ShipComponentEffectivenessAgainst;
   ShipDesign: ShipDesignMapper;
@@ -1166,8 +1177,11 @@ export type ReferenceResolvers<ContextType = Context, ParentType extends Resolve
 };
 
 export type ResourceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  statBonuses?: Resolver<Maybe<Array<ResolversTypes['ResourceStatBonus']>>, ParentType, ContextType>;
 };
 
 export type ResourceCostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceCost'] = ResolversParentTypes['ResourceCost']> = {
@@ -1181,6 +1195,11 @@ export type ResourceDiscoveryResolvers<ContextType = Context, ParentType extends
   remainingDeposits?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   resource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ResourceStatBonusResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResourceStatBonus'] = ResolversParentTypes['ResourceStatBonus']> = {
+  modifier?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  stat?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type ShipComponentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipComponent'] = ResolversParentTypes['ShipComponent']> = {
@@ -1515,6 +1534,7 @@ export type Resolvers<ContextType = Context> = {
   Resource?: ResourceResolvers<ContextType>;
   ResourceCost?: ResourceCostResolvers<ContextType>;
   ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;
+  ResourceStatBonus?: ResourceStatBonusResolvers<ContextType>;
   ShipComponent?: ShipComponentResolvers<ContextType>;
   ShipComponentEffectivenessAgainst?: ShipComponentEffectivenessAgainstResolvers<ContextType>;
   ShipDesign?: ShipDesignResolvers<ContextType>;

@@ -15,6 +15,7 @@ export async function setupResources(tx: Transaction, _ctx: Context) {
 			kind: resource.kind,
 			description: resource.description,
 			discoveryWeight: resource.discoveryWeight,
+			statBonuses: resource.statBonuses,
 		})),
 	);
 }

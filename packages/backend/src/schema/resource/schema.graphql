@@ -1,6 +1,14 @@
 type Resource {
 	id: ID!
 	name: String!
+	kind: String!
+	description: String!
+	statBonuses: [ResourceStatBonus!]
+}
+
+type ResourceStatBonus {
+	stat: String!
+	modifier: Float!
 }
 
 type ResourceCost {

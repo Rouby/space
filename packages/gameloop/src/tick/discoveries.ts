@@ -49,9 +49,10 @@ export async function tickDiscoveries(tx: Transaction, ctx: Context) {
 	for (let {
 		id,
 		discoveries,
+		discoveriesMade,
 		discoveryProgress,
 	} of starSystemsWithDiscoveries) {
-		const discoveryProgressChange = 0.00002777778;
+		const discoveryProgressChange = 0.05 / (1 + discoveriesMade);
 
 		if (+discoveryProgress >= 1) {
 			const [resource] = await tx

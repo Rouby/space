@@ -52,6 +52,7 @@ import    { PositionableMovesEvent } from './base/resolvers/PositionableMovesEve
 import    { Resource } from './resource/resolvers/Resource.js';
 import    { ResourceCost } from './resource/resolvers/ResourceCost.js';
 import    { ResourceDiscovery } from './starSystem/resolvers/ResourceDiscovery.js';
+import    { ResourceStatBonus } from './resource/resolvers/ResourceStatBonus.js';
 import    { ShipComponent } from './shipComponent/resolvers/ShipComponent.js';
 import    { ShipComponentEffectivenessAgainst } from './shipComponent/resolvers/ShipComponentEffectivenessAgainst.js';
 import    { ShipDesign } from './shipDesign/resolvers/ShipDesign.js';
@@ -108,6 +109,7 @@ PositionableMovesEvent: PositionableMovesEvent,
 Resource: Resource,
 ResourceCost: ResourceCost,
 ResourceDiscovery: ResourceDiscovery,
+ResourceStatBonus: ResourceStatBonus,
 ShipComponent: ShipComponent,
 ShipComponentEffectivenessAgainst: ShipComponentEffectivenessAgainst,
 ShipDesign: ShipDesign,

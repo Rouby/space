@@ -1,4 +1,5 @@
 import {
+	Badge,
 	Button,
 	Card,
 	Group,
@@ -74,6 +75,12 @@ export function StarSystemDetails({
 						resource {
 							id
 							name
+							kind
+							description
+							statBonuses {
+								stat
+								modifier
+							}
 						}
 						remainingDeposits
 						miningRate
@@ -143,6 +150,12 @@ export function StarSystemDetails({
 								resource {
 									id
 									name
+									kind
+									description
+									statBonuses {
+										stat
+										modifier
+									}
 								}
 								remainingDeposits
 								miningRate
@@ -277,7 +290,8 @@ export function StarSystemDetails({
 							<div
 								className={css({
 									display: "grid",
-									gridTemplateColumns: "repeat(auto-fit, 100px)",
+									gridTemplateColumns: "repeat(auto-fit, 120px)",
+									gap: "8px",
 								})}
 							>
 								{starSystem?.discoveries?.map((discovery) => (
@@ -286,7 +300,10 @@ export function StarSystemDetails({
 											<Tooltip
 												withArrow
 												label={
-													<>
+													<Stack gap={4}>
+														<Text size="xs" fw={600}>
+															{discovery.resource.description}
+														</Text>
 														<div>
 															Mining {formatUnitPerRound(discovery.miningRate)}
 														</div>
@@ -297,19 +314,52 @@ export function StarSystemDetails({
 																	discovery.miningRate,
 															)}
 														</div>
-													</>
+														{discovery.resource.statBonuses?.length ? (
+															<Group gap={4} mt={2}>
+																{discovery.resource.statBonuses.map((bonus) => (
+																	<Badge
+																		key={bonus.stat}
+																		size="xs"
+																		variant="light"
+																		color="teal"
+																	>
+																		+{Math.round(bonus.modifier * 100)}%{" "}
+																		{formatStatName(bonus.stat)}
+																	</Badge>
+																))}
+															</Group>
+														) : null}
+													</Stack>
 												}
 												position="bottom"
 											>
-												<Stack gap={0} align="center">
-													<span>{discovery.resource.name}</span>
+												<Stack gap={2} align="center">
+													<Badge
+														size="xs"
+														variant="dot"
+														color={kindColor(discovery.resource.kind)}
+													>
+														{kindIcon(discovery.resource.kind)}{" "}
+														{discovery.resource.kind}
+													</Badge>
+													<Text size="xs" fw={600}>
+														{discovery.resource.name}
+													</Text>
 													<Image
 														src={placeholderDiscoveryArt}
 														maw={64}
 														mah={64}
 														radius="lg"
 													/>
-													<span>{formatUnit(discovery.remainingDeposits)}</span>
+													<Text size="xs" c="dimmed">
+														{formatUnit(discovery.remainingDeposits)}
+													</Text>
+													{discovery.resource.statBonuses?.map((bonus) => (
+														<Text key={bonus.stat} size="xs" c="teal" fw={500}>
+															+{Math.round(bonus.modifier * 100)}%{" "}
+															{formatStatName(bonus.stat)}
+														</Text>
+													))}
 												</Stack>
 											</Tooltip>
 										) : (
@@ -530,4 +580,46 @@ export function StarSystemDetails({
 			</Card>
 		</>
 	);
+}
+
+const STAT_DISPLAY_NAMES: Record<string, string> = {
+	armorThickness: "Armor",
+	structuralIntegrity: "Hull",
+	weaponDamage: "Dmg",
+	weaponAccuracy: "Accuracy",
+	sensorPrecision: "Sensors",
+	ftlSpeed: "FTL",
+	thruster: "Thrust",
+	powerGeneration: "Power",
+	shieldStrength: "Shields",
+	supplyCapacity: "Supply",
+	crewCapacity: "Crew",
+};
+
+function formatStatName(stat: string): string {
+	return STAT_DISPLAY_NAMES[stat] ?? stat;
+}
+
+const KIND_COLORS: Record<string, string> = {
+	metal: "orange",
+	crystal: "grape",
+	gas: "indigo",
+	liquid: "cyan",
+	biological: "green",
+};
+
+function kindColor(kind: string): string {
+	return KIND_COLORS[kind] ?? "gray";
+}
+
+const KIND_ICONS: Record<string, string> = {
+	metal: "⛏️",
+	crystal: "💎",
+	gas: "☁️",
+	liquid: "💧",
+	biological: "🧬",
+};
+
+function kindIcon(kind: string): string {
+	return KIND_ICONS[kind] ?? "🔬";
 }

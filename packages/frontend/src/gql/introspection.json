@@ -1650,7 +1650,29 @@
         "name": "Resource",
         "fields": [
           {
+            "name": "description",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "kind",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1667,6 +1689,21 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "statBonuses",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "ResourceStatBonus",
+                  "ofType": null
+                }
               }
             },
             "args": []
@@ -1749,6 +1786,35 @@
                 "kind": "OBJECT",
                 "name": "Resource",
                 "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ResourceStatBonus",
+        "fields": [
+          {
+            "name": "modifier",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "stat",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
               }
             },
             "args": []

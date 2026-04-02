@@ -22,6 +22,7 @@ interface ResourceTemplate {
 	name: string;
 	description: string;
 	baseWeight: number;
+	statBonuses: { stat: string; modifier: number }[];
 }
 
 const ORIGIN_DILEMMAS: DilemmaTemplate[] = [
@@ -199,24 +200,34 @@ const RESOURCE_POOLS: Record<ResourceKind, ResourceTemplate[]> = {
 			description:
 				"A layered iron-nickel lattice that resists microfractures under repeated thermal shocks.",
 			baseWeight: 62,
+			statBonuses: [{ stat: "armorThickness", modifier: 0.03 }],
 		},
 		{
 			name: "Kestral Alloy",
 			description:
 				"Dense metallic veins rich in conductive trace elements, prized for reactor housings.",
 			baseWeight: 44,
+			statBonuses: [
+				{ stat: "structuralIntegrity", modifier: 0.06 },
+				{ stat: "armorThickness", modifier: 0.04 },
+			],
 		},
 		{
 			name: "Aurum Shale",
 			description:
 				"Brittle sediment containing recoverable noble metals for high-precision electronics.",
 			baseWeight: 53,
+			statBonuses: [{ stat: "structuralIntegrity", modifier: 0.04 }],
 		},
 		{
 			name: "Obdurite",
 			description:
 				"A dark superhard metal used in armor plates and industrial boring heads.",
 			baseWeight: 35,
+			statBonuses: [
+				{ stat: "armorThickness", modifier: 0.1 },
+				{ stat: "structuralIntegrity", modifier: 0.08 },
+			],
 		},
 	],
 	crystal: [
@@ -225,24 +236,34 @@ const RESOURCE_POOLS: Record<ResourceKind, ResourceTemplate[]> = {
 			description:
 				"Photoreactive crystal clusters that amplify optical signaling and sensor arrays.",
 			baseWeight: 56,
+			statBonuses: [{ stat: "sensorPrecision", modifier: 0.04 }],
 		},
 		{
 			name: "Phase Glass",
 			description:
 				"Metastable crystal sheets that bend radio waves and improve stealth composites.",
 			baseWeight: 30,
+			statBonuses: [
+				{ stat: "weaponAccuracy", modifier: 0.1 },
+				{ stat: "sensorPrecision", modifier: 0.08 },
+			],
 		},
 		{
 			name: "Verdant Prism",
 			description:
 				"Green multifaceted crystals with unusually high energy retention under charge cycles.",
 			baseWeight: 47,
+			statBonuses: [{ stat: "weaponDamage", modifier: 0.05 }],
 		},
 		{
 			name: "Iridescent Spire",
 			description:
 				"Needle-like crystal formations used in precision resonance instruments.",
 			baseWeight: 40,
+			statBonuses: [
+				{ stat: "weaponDamage", modifier: 0.07 },
+				{ stat: "weaponAccuracy", modifier: 0.05 },
+			],
 		},
 	],
 	gas: [
@@ -251,24 +272,34 @@ const RESOURCE_POOLS: Record<ResourceKind, ResourceTemplate[]> = {
 			description:
 				"A light noble gas blend ideal for coolant channels and plasma ignition control.",
 			baseWeight: 61,
+			statBonuses: [{ stat: "powerGeneration", modifier: 0.03 }],
 		},
 		{
 			name: "Noctilume Mist",
 			description:
 				"A faintly luminescent atmospheric gas used in advanced spectrometry.",
 			baseWeight: 36,
+			statBonuses: [
+				{ stat: "ftlSpeed", modifier: 0.09 },
+				{ stat: "thruster", modifier: 0.07 },
+			],
 		},
 		{
 			name: "Sable Methane",
 			description:
 				"Heavy hydrocarbon gas pockets suitable for synthetic fuel refining.",
 			baseWeight: 58,
+			statBonuses: [{ stat: "thruster", modifier: 0.04 }],
 		},
 		{
 			name: "Argent Fume",
 			description:
 				"An ion-rich noble gas haze with strong applications in arc propulsion tuning.",
 			baseWeight: 33,
+			statBonuses: [
+				{ stat: "ftlSpeed", modifier: 0.08 },
+				{ stat: "powerGeneration", modifier: 0.06 },
+			],
 		},
 	],
 	liquid: [
@@ -277,24 +308,34 @@ const RESOURCE_POOLS: Record<ResourceKind, ResourceTemplate[]> = {
 			description:
 				"Supercooled mineral water reservoirs used in life support and cryogenic industry.",
 			baseWeight: 64,
+			statBonuses: [{ stat: "supplyCapacity", modifier: 0.03 }],
 		},
 		{
 			name: "Mercuric Brine",
 			description:
 				"Salty metallic fluid extracted for catalysts and specialized electrochemistry.",
 			baseWeight: 39,
+			statBonuses: [
+				{ stat: "shieldStrength", modifier: 0.08 },
+				{ stat: "supplyCapacity", modifier: 0.06 },
+			],
 		},
 		{
 			name: "Velvet Oil",
 			description:
 				"Dense organic fluid refined into polymers for seals, coatings, and insulation.",
 			baseWeight: 54,
+			statBonuses: [{ stat: "shieldStrength", modifier: 0.04 }],
 		},
 		{
 			name: "Azure Solvent",
 			description:
 				"Reactive liquid medium used to dissolve and separate rare industrial compounds.",
 			baseWeight: 46,
+			statBonuses: [
+				{ stat: "shieldStrength", modifier: 0.06 },
+				{ stat: "supplyCapacity", modifier: 0.05 },
+			],
 		},
 	],
 	biological: [
@@ -303,24 +344,28 @@ const RESOURCE_POOLS: Record<ResourceKind, ResourceTemplate[]> = {
 			description:
 				"Engineered fungal strands cultivated into lightweight structural composites.",
 			baseWeight: 50,
+			statBonuses: [{ stat: "crewCapacity", modifier: 0.04 }],
 		},
 		{
 			name: "Bloom Resin",
 			description:
 				"Plant-derived polymer resin with remarkable adhesive and self-sealing behavior.",
 			baseWeight: 55,
+			statBonuses: [{ stat: "crewCapacity", modifier: 0.03 }],
 		},
 		{
 			name: "Coral Enzyme",
 			description:
 				"Bioactive enzyme complexes harvested for medical and terraforming support processes.",
 			baseWeight: 34,
+			statBonuses: [{ stat: "crewCapacity", modifier: 0.1 }],
 		},
 		{
 			name: "Spore Silk",
 			description:
 				"Protein-rich filament secreted by colony organisms, woven into adaptive textiles.",
 			baseWeight: 43,
+			statBonuses: [{ stat: "crewCapacity", modifier: 0.07 }],
 		},
 	],
 };
@@ -624,6 +669,7 @@ export function generateRandomResources() {
 					1,
 					Math.min(100, resource.baseWeight + randomInt(-8, 8)),
 				),
+				statBonuses: resource.statBonuses,
 			}));
 		})
 		.sort(() => Math.random() - 0.5);

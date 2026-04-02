@@ -195,8 +195,11 @@ type Query {
 union Reference = Dilemma | StarSystem
 
 type Resource {
+	description: String!
 	id: ID!
+	kind: String!
 	name: String!
+	statBonuses: [ResourceStatBonus!]
 }
 
 type ResourceCost {
@@ -209,6 +212,11 @@ type ResourceDiscovery {
 	miningRate: Float!
 	remainingDeposits: Float!
 	resource: Resource!
+}
+
+type ResourceStatBonus {
+	modifier: Float!
+	stat: String!
 }
 
 type ShipComponent {

@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
 	integer,
+	jsonb,
 	pgEnum,
 	pgTable,
 	text,
@@ -26,4 +27,5 @@ export const resources = pgTable("resources", {
 	kind: resourceKind().notNull(),
 	description: text().notNull(),
 	discoveryWeight: integer().notNull(),
+	statBonuses: jsonb().$type<{ stat: string; modifier: number }[] | null>(),
 });
