@@ -106,7 +106,7 @@ Combat card eligibility (`packages/backend/src/schema/taskForce/resolvers/combat
 
 ### Not Included (Future Work)
 
-- **Resource costs** — reserved for unlockable components
+- **Resource costs & Manufacturing Bonuses** — Future components will require resources to build. If a player uses a resource with `statBonuses` (e.g., Crystal with +10% Weapon Damage), those multipliers will be applied to the finished component's stats.
 - **Component tiers / upgrades** — progression system TBD
 - **Component unlocking mechanics** — tech tree or research integration TBD
 
