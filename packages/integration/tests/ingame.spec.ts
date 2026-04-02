@@ -1220,7 +1220,8 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 			variables: {
 				input: {
 					starSystemId: originStarSystemId,
-					shipDesignIds: [shipDesignId],
+					shipDesigns: [{ shipDesignId, quantity: 1 }],
+					mission: "manual",
 					name: "Alpha Fleet",
 				},
 			},
@@ -1331,7 +1332,8 @@ test("returns explicit violation when constructing at unowned system", async ({
 			variables: {
 				input: {
 					starSystemId: rivalSystemId,
-					shipDesignIds: [shipDesignId],
+					shipDesigns: [{ shipDesignId, quantity: 1 }],
+					mission: "manual",
 					name: "Illicit Fleet",
 				},
 			},
@@ -1632,7 +1634,8 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 			variables: {
 				input: {
 					starSystemId: hostHomeId,
-					shipDesignIds: [shipDesignId],
+					shipDesigns: [{ shipDesignId, quantity: 1 }],
+					mission: "manual",
 					name: "Builder Fleet",
 				},
 			},
