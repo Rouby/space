@@ -1,34 +1,12 @@
-import {
-	Badge,
-	Button,
-	Card,
-	Group,
-	Image,
-	Progress,
-	SegmentedControl,
-	SimpleGrid,
-	Stack,
-	Text,
-	Title,
-	Tooltip,
-} from "@mantine/core";
-import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Fragment } from "react/jsx-runtime";
-import { useStyles } from "tss-react";
-import { useMutation, useQuery, useSubscription } from "urql";
-import {
-	formatInteger,
-	formatRoundsToRelativeRounds,
-	formatUnit,
-	formatUnitPerRound,
-} from "../../format/formatNumber";
+import { Card, Image, SimpleGrid, Stack, Text, Title } from "@mantine/core";
+import { useQuery, useSubscription } from "urql";
+import { formatInteger } from "../../format/formatNumber";
 import { graphql } from "../../gql";
-import { ColonizationGovernance, DevelopmentStance } from "../../gql/graphql";
 import { coordinateToGrid } from "../GalaxyView/coordinateToGrid";
-import placeholderDiscoveryArt from "./example-discovery.png";
-import placeholderDiscoveryUnknownArt from "./example-discovery-unknown.png";
 import placeholderStarsystemArt from "./example-starsystem-overview.png";
+import placeholderStarsystemUnknownArt from "./example-starsystem-unknown.png";
+import { StarSystemDiscoveries } from "./StarSystemDiscoveries";
+import { StarSystemManagement } from "./StarSystemManagement";
 
 export function StarSystemDetails({
 	id,
@@ -37,7 +15,6 @@ export function StarSystemDetails({
 	id: string;
 	gameId: string;
 }) {
-	const navigate = useNavigate();
 	const [{ data }] = useQuery({
 		query: graphql(`query StarSystemDetails($id: ID!) {
 			starSystem(id: $id) {
@@ -176,77 +153,12 @@ export function StarSystemDetails({
 		variables: { id },
 	});
 
-	const [
-		{
-			fetching: setDevelopmentStanceFetching,
-			error: setDevelopmentStanceError,
-		},
-		setDevelopmentStance,
-	] = useMutation(
-		graphql(`mutation SetDevelopmentStance($starSystemId: ID!, $stance: DevelopmentStance!) {
-			setDevelopmentStance(starSystemId: $starSystemId, stance: $stance) {
-				id
-				currentDevelopmentStance
-				nextTurnStanceProjection {
-					industryDelta
-					populationDelta
-				}
-			}
-		}`),
-	);
-
-	const [
-		{
-			fetching: setColonizationGovernanceFetching,
-			error: setColonizationGovernanceError,
-		},
-		setColonizationGovernance,
-	] = useMutation(
-		graphql(`mutation SetColonizationGovernance($starSystemId: ID!, $governance: ColonizationGovernance) {
-			setColonizationGovernance(starSystemId: $starSystemId, governance: $governance) {
-				id
-				colonizationGovernance
-			}
-		}`),
-	);
-
-	const [developmentStance, setDevelopmentStanceValue] = useState<
-		string | null
-	>(null);
-	const [colonizationDirective, setColonizationDirective] = useState("none");
-
 	const starSystem =
 		subscriptionData?.trackStarSystem.__typename === "StarSystemUpdateEvent"
 			? subscriptionData.trackStarSystem.subject
 			: data?.starSystem;
 
 	const currentPlayerId = meContext?.game.me?.id ?? null;
-	const isOwnedByMe =
-		!!starSystem?.owner?.id &&
-		!!currentPlayerId &&
-		starSystem.owner.id === currentPlayerId;
-
-	const developmentStanceError =
-		setDevelopmentStanceError?.graphQLErrors[0]?.message ??
-		setDevelopmentStanceError?.message;
-	const colonizationGovernanceError =
-		setColonizationGovernanceError?.graphQLErrors[0]?.message ??
-		setColonizationGovernanceError?.message;
-
-	useEffect(() => {
-		if (!starSystem?.currentDevelopmentStance) {
-			setDevelopmentStanceValue("Balance");
-			return;
-		}
-
-		setDevelopmentStanceValue(starSystem.currentDevelopmentStance);
-	}, [starSystem?.currentDevelopmentStance]);
-
-	useEffect(() => {
-		setColonizationDirective(starSystem?.colonizationGovernance ?? "none");
-	}, [starSystem?.colonizationGovernance]);
-
-	const { css } = useStyles();
 
 	return (
 		<>
@@ -284,342 +196,29 @@ export function StarSystemDetails({
 					</Card>
 					<Card>
 						<Text variant="gradient">Discoveries</Text>
-						{starSystem?.discoveries === null ? (
-							"Our scanners could not pick up information about possible discoveries."
-						) : (
-							<div
-								className={css({
-									display: "grid",
-									gridTemplateColumns: "repeat(auto-fit, 120px)",
-									gap: "8px",
-								})}
-							>
-								{starSystem?.discoveries?.map((discovery) => (
-									<Fragment key={discovery.id}>
-										{discovery.__typename === "ResourceDiscovery" ? (
-											<Tooltip
-												withArrow
-												label={
-													<Stack gap={4}>
-														<Text size="xs" fw={600}>
-															{discovery.resource.description}
-														</Text>
-														<div>
-															Mining {formatUnitPerRound(discovery.miningRate)}
-														</div>
-														<div>
-															Depletes in{" "}
-															{formatRoundsToRelativeRounds(
-																discovery.remainingDeposits /
-																	discovery.miningRate,
-															)}
-														</div>
-														{discovery.resource.statBonuses?.length ? (
-															<Group gap={4} mt={2}>
-																{discovery.resource.statBonuses.map((bonus) => (
-																	<Badge
-																		key={bonus.stat}
-																		size="xs"
-																		variant="light"
-																		color="teal"
-																	>
-																		+{Math.round(bonus.modifier * 100)}%{" "}
-																		{formatStatName(bonus.stat)}
-																	</Badge>
-																))}
-															</Group>
-														) : null}
-													</Stack>
-												}
-												position="bottom"
-											>
-												<Stack gap={2} align="center">
-													<Badge
-														size="xs"
-														variant="dot"
-														color={kindColor(discovery.resource.kind)}
-													>
-														{kindIcon(discovery.resource.kind)}{" "}
-														{discovery.resource.kind}
-													</Badge>
-													<Text size="xs" fw={600}>
-														{discovery.resource.name}
-													</Text>
-													<Image
-														src={placeholderDiscoveryArt}
-														maw={64}
-														mah={64}
-														radius="lg"
-													/>
-													<Text size="xs" c="dimmed">
-														{formatUnit(discovery.remainingDeposits)}
-													</Text>
-													{discovery.resource.statBonuses?.map((bonus) => (
-														<Text key={bonus.stat} size="xs" c="teal" fw={500}>
-															+{Math.round(bonus.modifier * 100)}%{" "}
-															{formatStatName(bonus.stat)}
-														</Text>
-													))}
-												</Stack>
-											</Tooltip>
-										) : (
-											<Stack gap={0} align="center">
-												<span>???</span>
-												<Image
-													src={placeholderDiscoveryUnknownArt}
-													maw={64}
-													mah={64}
-													radius="lg"
-												/>
-												<span>???</span>
-											</Stack>
-										)}
-									</Fragment>
-								))}
-							</div>
-						)}
-						{(starSystem?.discoveryProgress ?? null) !== null && (
-							<Progress.Root size={36} mt="xs">
-								<Progress.Section
-									value={(starSystem?.discoveryProgress ?? 0) * 100}
-									color="cyan"
-								>
-									<Progress.Label>
-										Discovery progress (
-										{Math.floor((starSystem?.discoveryProgress ?? 0) * 100)}
-										%)
-									</Progress.Label>
-								</Progress.Section>
-							</Progress.Root>
-						)}
+						<StarSystemDiscoveries
+							discoveries={starSystem?.discoveries}
+							discoveryProgress={starSystem?.discoveryProgress}
+						/>
 					</Card>
 				</Stack>
-				<Image src={placeholderStarsystemArt} alt="star system" />
+				<Image
+					src={
+						starSystem?.discoveries === null
+							? placeholderStarsystemUnknownArt
+							: placeholderStarsystemArt
+					}
+					alt="star system"
+					radius="md"
+				/>
 			</SimpleGrid>
 
-			<Card mb="md">
-				<Stack gap="md">
-					<Text variant="gradient">Management</Text>
-
-					{starSystem?.colonization ? (
-						<Stack gap="xs">
-							<Text mt="sm">
-								Colonization in progress by{" "}
-								{starSystem.colonization.player.name}
-							</Text>
-							<Group justify="space-between">
-								<Text size="sm">Progress</Text>
-								<Text size="sm" c="dimmed">
-									{formatInteger(starSystem.colonization.accumulated)} /{" "}
-									{formatInteger(starSystem.colonization.threshold)}
-								</Text>
-							</Group>
-							<Progress
-								value={
-									(starSystem.colonization.accumulated /
-										starSystem.colonization.threshold) *
-									100
-								}
-								color={
-									starSystem.colonization.player.id === currentPlayerId
-										? "blue"
-										: "red"
-								}
-							/>
-							<Text size="xs" c="dimmed">
-								+{formatInteger(starSystem.colonization.pressurePerTurn)} per
-								turn • ETA: {starSystem.colonization.etaTurns} turns
-							</Text>
-						</Stack>
-					) : (
-						starSystem &&
-						!starSystem.owner && (
-							<Text size="sm" c="dimmed">
-								Uninhabited system. Generate colonization pressure from nearby
-								inhabited systems to colonize.
-							</Text>
-						)
-					)}
-
-					{starSystem && !starSystem.owner && currentPlayerId && (
-						<Stack gap="sm">
-							<Text fw={500} size="sm">
-								Colonization Directive
-							</Text>
-							<Text size="sm" c="dimmed">
-								Prioritize this system for passive settlement, or block it from
-								automatic colonization.
-							</Text>
-							<SegmentedControl
-								value={colonizationDirective}
-								onChange={async (nextValue) => {
-									setColonizationDirective(nextValue);
-
-									const governance = Object.values(ColonizationGovernance).find(
-										(value) => value === nextValue,
-									);
-									const result = await setColonizationGovernance({
-										starSystemId: id,
-										governance: governance ?? null,
-									});
-
-									if (result.error) {
-										setColonizationDirective(
-											starSystem.colonizationGovernance ?? "none",
-										);
-									}
-								}}
-								disabled={setColonizationGovernanceFetching}
-								data={[
-									{ value: "none", label: "None" },
-									{ value: "focus", label: "Focus" },
-									{ value: "forbid", label: "Forbid" },
-								]}
-							/>
-							{colonizationGovernanceError && (
-								<Text c="red" size="sm">
-									{colonizationGovernanceError}
-								</Text>
-							)}
-						</Stack>
-					)}
-
-					{isOwnedByMe && (
-						<>
-							<Stack gap="sm">
-								<Text fw={500} size="sm">
-									Development Stance
-								</Text>
-								<Group align="center">
-									<SegmentedControl
-										value={developmentStance ?? "Balance"}
-										onChange={async (nextValue) => {
-											setDevelopmentStanceValue(nextValue);
-											if (!nextValue || !isOwnedByMe) return;
-
-											const stance = Object.values(DevelopmentStance).find(
-												(s) => s === nextValue,
-											);
-											if (!stance) return;
-
-											await setDevelopmentStance({ starSystemId: id, stance });
-										}}
-										disabled={!isOwnedByMe || setDevelopmentStanceFetching}
-										data={[
-											{
-												value: DevelopmentStance.Industrialize,
-												label: "Industrialize",
-											},
-											{ value: DevelopmentStance.Balance, label: "Balance" },
-											{
-												value: DevelopmentStance.GrowPopulation,
-												label: "Grow Population",
-											},
-										]}
-									/>
-									{starSystem?.nextTurnStanceProjection && (
-										<Text size="sm" c="dimmed">
-											{starSystem.nextTurnStanceProjection.industryDelta >= 0
-												? "+"
-												: ""}
-											{starSystem.nextTurnStanceProjection.industryDelta}{" "}
-											Industry / +
-											{formatInteger(
-												starSystem.nextTurnStanceProjection.populationDelta,
-											)}{" "}
-											Pop
-										</Text>
-									)}
-								</Group>
-								{developmentStanceError && (
-									<Text c="red" size="sm">
-										{developmentStanceError}
-									</Text>
-								)}
-							</Stack>
-
-							<Group grow>
-								<Button
-									onClick={() =>
-										navigate({
-											to: "/games/$id/star-system/$starSystemId/industrial-projects",
-											params: { id: gameId, starSystemId: id },
-										})
-									}
-									variant="light"
-								>
-									Industrial Projects
-								</Button>
-								<Button
-									onClick={() =>
-										navigate({
-											to: "/games/$id/star-system/$starSystemId/commission-task-force",
-											params: { id: gameId, starSystemId: id },
-										})
-									}
-									variant="light"
-								>
-									Commission Task Force
-								</Button>
-							</Group>
-						</>
-					)}
-
-					<Button
-						onClick={() =>
-							navigate({
-								to: "/games/$id/star-system/$starSystemId/task-forces",
-								params: { id: gameId, starSystemId: id },
-							})
-						}
-						variant="light"
-					>
-						Task Forces ({starSystem?.taskForces?.length ?? 0})
-					</Button>
-				</Stack>
-			</Card>
+			<StarSystemManagement
+				starSystem={starSystem}
+				currentPlayerId={currentPlayerId}
+				gameId={gameId}
+				id={id}
+			/>
 		</>
 	);
-}
-
-const STAT_DISPLAY_NAMES: Record<string, string> = {
-	armorThickness: "Armor",
-	structuralIntegrity: "Hull",
-	weaponDamage: "Dmg",
-	weaponAccuracy: "Accuracy",
-	sensorPrecision: "Sensors",
-	ftlSpeed: "FTL",
-	thruster: "Thrust",
-	powerGeneration: "Power",
-	shieldStrength: "Shields",
-	supplyCapacity: "Supply",
-	crewCapacity: "Crew",
-};
-
-function formatStatName(stat: string): string {
-	return STAT_DISPLAY_NAMES[stat] ?? stat;
-}
-
-const KIND_COLORS: Record<string, string> = {
-	metal: "orange",
-	crystal: "grape",
-	gas: "indigo",
-	liquid: "cyan",
-	biological: "green",
-};
-
-function kindColor(kind: string): string {
-	return KIND_COLORS[kind] ?? "gray";
-}
-
-const KIND_ICONS: Record<string, string> = {
-	metal: "⛏️",
-	crystal: "💎",
-	gas: "☁️",
-	liquid: "💧",
-	biological: "🧬",
-};
-
-function kindIcon(kind: string): string {
-	return KIND_ICONS[kind] ?? "🔬";
 }
