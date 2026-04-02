@@ -64,15 +64,23 @@ enum IndustrialProjectType {
 	factory_expansion
 	automation_hub
 	orbital_foundry
+	deep_core_scanner
+	xenoarchaeology_lab
+	habitation_dome
+	gravity_well_spire
+	fleet_drydock
 }
 
 type IndustrialProject {
 	id: ID!
 	projectType: IndustrialProjectType!
+	category: String!
+	description: String!
 	industryPerTurn: Int!
 	workRequired: Int!
 	workDone: Int!
 	completionIndustryBonus: Int!
+	maintenanceCost: Int!
 	queuePosition: Int!
 	queuedAtTurn: Int!
 	startedAtTurn: Int

@@ -25,6 +25,7 @@ export async function tickStarSystemPopulation(
 	const starSystemsWithPopulations = await tx
 		.select({
 			id: starSystems.id,
+			populationGrowthBonus: starSystems.populationGrowthBonus,
 			populations: sql<
 				{
 					amount: number;
@@ -47,9 +48,9 @@ export async function tickStarSystemPopulation(
 			0n,
 		);
 
-		const growthRatePerRound = getPopulationGrowthRatePerRound(
-			Number(totalAmount),
-		);
+		const baseGrowthRate = getPopulationGrowthRatePerRound(Number(totalAmount));
+		const growthRatePerRound =
+			baseGrowthRate * (1 + Number(starSystem.populationGrowthBonus));
 
 		const totalGrowth = Number(totalAmount) * growthRatePerRound;
 

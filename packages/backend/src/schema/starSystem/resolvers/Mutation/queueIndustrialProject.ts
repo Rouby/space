@@ -113,6 +113,7 @@ export const queueIndustrialProject: NonNullable<
 		workRequired: definition.workRequired,
 		workDone: 0,
 		completionIndustryBonus: definition.completionIndustryBonus,
+		maintenanceCost: definition.maintenanceCost,
 		queuePosition: (queuePositionResult?.maxQueuePosition ?? 0) + 1,
 		queuedAtTurn: game.turnNumber,
 	});

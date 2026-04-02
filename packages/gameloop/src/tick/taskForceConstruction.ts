@@ -29,11 +29,14 @@ export async function tickTaskForceConstruction(
 		.select({
 			id: starSystems.id,
 			industry: starSystems.industry,
+			constructionCostModifier: starSystems.constructionCostModifier,
 		})
 		.from(starSystems)
 		.where(eq(starSystems.gameId, gameId));
 
 	for (const system of systemsWithIndustry) {
+		const costModifier = Number(system.constructionCostModifier ?? "0");
+
 		const forcesInSystem = allTaskForces.filter(
 			(tf) =>
 				tf.constructionStarSystemId === system.id &&
@@ -58,7 +61,9 @@ export async function tickTaskForceConstruction(
 
 		for (const taskForce of forcesInSystem) {
 			const done = Number(taskForce.constructionDone ?? "0");
-			const total = Number(taskForce.constructionTotal ?? "0");
+			const rawTotal = Number(taskForce.constructionTotal ?? "0");
+			// Apply construction cost reduction from Fleet Drydock
+			const total = Math.max(Math.ceil(rawTotal * (1 - costModifier)), 1);
 
 			let industryApplied = perShip + (remainder > 0 ? 1 : 0);
 			if (remainder > 0) remainder--;

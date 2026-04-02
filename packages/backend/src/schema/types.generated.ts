@@ -115,11 +115,14 @@ export type GameturnReportsArgs = {
 
 export type IndustrialProject = {
   __typename?: 'IndustrialProject';
+  category: Scalars['String']['output'];
   completedAtTurn?: Maybe<Scalars['Int']['output']>;
   completionIndustryBonus: Scalars['Int']['output'];
+  description: Scalars['String']['output'];
   etaTurns: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   industryPerTurn: Scalars['Int']['output'];
+  maintenanceCost: Scalars['Int']['output'];
   projectType: IndustrialProjectType;
   queuePosition: Scalars['Int']['output'];
   queuedAtTurn: Scalars['Int']['output'];
@@ -131,8 +134,13 @@ export type IndustrialProject = {
 
 export type IndustrialProjectType =
   | 'automation_hub'
+  | 'deep_core_scanner'
   | 'factory_expansion'
-  | 'orbital_foundry';
+  | 'fleet_drydock'
+  | 'gravity_well_spire'
+  | 'habitation_dome'
+  | 'orbital_foundry'
+  | 'xenoarchaeology_lab';
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -858,7 +866,7 @@ export type ResolversTypes = {
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
   IndustrialProject: ResolverTypeWrapper<Omit<IndustrialProject, 'projectType'> & { projectType: ResolversTypes['IndustrialProjectType'] }>;
-  IndustrialProjectType: ResolverTypeWrapper<'factory_expansion' | 'automation_hub' | 'orbital_foundry'>;
+  IndustrialProjectType: ResolverTypeWrapper<'factory_expansion' | 'automation_hub' | 'orbital_foundry' | 'deep_core_scanner' | 'xenoarchaeology_lab' | 'habitation_dome' | 'gravity_well_spire' | 'fleet_drydock'>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   Player: ResolverTypeWrapper<PlayerMapper>;
@@ -1063,11 +1071,14 @@ export type GameResolvers<ContextType = Context, ParentType extends ResolversPar
 };
 
 export type IndustrialProjectResolvers<ContextType = Context, ParentType extends ResolversParentTypes['IndustrialProject'] = ResolversParentTypes['IndustrialProject']> = {
+  category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   completedAtTurn?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   completionIndustryBonus?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   etaTurns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   industryPerTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  maintenanceCost?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   projectType?: Resolver<ResolversTypes['IndustrialProjectType'], ParentType, ContextType>;
   queuePosition?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   queuedAtTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1077,7 +1088,7 @@ export type IndustrialProjectResolvers<ContextType = Context, ParentType extends
   workRequired?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
 
-export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_hub?: any, factory_expansion?: any, orbital_foundry?: any }, ResolversTypes['IndustrialProjectType']>;
+export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_hub?: any, deep_core_scanner?: any, factory_expansion?: any, fleet_drydock?: any, gravity_well_spire?: any, habitation_dome?: any, orbital_foundry?: any, xenoarchaeology_lab?: any }, ResolversTypes['IndustrialProjectType']>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   configureTaskForceCombatDeck?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconfigureTaskForceCombatDeckArgs, 'input'>>;

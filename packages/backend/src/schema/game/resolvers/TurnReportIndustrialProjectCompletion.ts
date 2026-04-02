@@ -1,3 +1,4 @@
+import { isIndustrialProjectType } from "@space/data/functions";
 import { eq, starSystems } from "@space/data/schema";
 import type { TurnReportIndustrialProjectCompletionResolvers } from "./../../types.generated.ts";
 
@@ -7,11 +8,7 @@ export const TurnReportIndustrialProjectCompletion: TurnReportIndustrialProjectC
 			return parent.industryBonus;
 		},
 		projectType: async (parent, _arg, _ctx) => {
-			if (
-				parent.projectType !== "factory_expansion" &&
-				parent.projectType !== "automation_hub" &&
-				parent.projectType !== "orbital_foundry"
-			) {
+			if (!isIndustrialProjectType(parent.projectType)) {
 				throw new Error("Invalid industrial project type in turn report");
 			}
 

@@ -537,6 +537,17 @@
         "name": "IndustrialProject",
         "fields": [
           {
+            "name": "category",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "completedAtTurn",
             "type": {
               "kind": "SCALAR",
@@ -546,6 +557,17 @@
           },
           {
             "name": "completionIndustryBonus",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "description",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -579,6 +601,17 @@
           },
           {
             "name": "industryPerTurn",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "maintenanceCost",
             "type": {
               "kind": "NON_NULL",
               "ofType": {

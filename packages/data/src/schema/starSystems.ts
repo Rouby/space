@@ -20,6 +20,11 @@ export const industrialProjectTypes = [
 	"factory_expansion",
 	"automation_hub",
 	"orbital_foundry",
+	"deep_core_scanner",
+	"xenoarchaeology_lab",
+	"habitation_dome",
+	"gravity_well_spire",
+	"fleet_drydock",
 ] as const;
 
 export type IndustrialProjectType = (typeof industrialProjectTypes)[number];
@@ -39,6 +44,12 @@ export const starSystems = pgTable("starSystems", {
 	industry: integer().notNull().default(0),
 	discoverySlots: integer().notNull().default(0),
 	discoveryProgress: decimal({ precision: 10, scale: 9 })
+		.notNull()
+		.default("0"),
+	populationGrowthBonus: decimal({ precision: 10, scale: 6 })
+		.notNull()
+		.default("0"),
+	constructionCostModifier: decimal({ precision: 10, scale: 6 })
 		.notNull()
 		.default("0"),
 });
@@ -75,6 +86,7 @@ export const starSystemIndustrialProjects = pgTable(
 		workRequired: integer().notNull(),
 		workDone: integer().notNull().default(0),
 		completionIndustryBonus: integer().notNull(),
+		maintenanceCost: integer().notNull().default(0),
 		queuePosition: integer().notNull(),
 		queuedAtTurn: integer().notNull(),
 		startedAtTurn: integer(),

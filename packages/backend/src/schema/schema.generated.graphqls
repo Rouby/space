@@ -79,11 +79,14 @@ type Game {
 }
 
 type IndustrialProject {
+	category: String!
 	completedAtTurn: Int
 	completionIndustryBonus: Int!
+	description: String!
 	etaTurns: Int!
 	id: ID!
 	industryPerTurn: Int!
+	maintenanceCost: Int!
 	projectType: IndustrialProjectType!
 	queuePosition: Int!
 	queuedAtTurn: Int!
@@ -95,8 +98,13 @@ type IndustrialProject {
 
 enum IndustrialProjectType {
 	automation_hub
+	deep_core_scanner
 	factory_expansion
+	fleet_drydock
+	gravity_well_spire
+	habitation_dome
 	orbital_foundry
+	xenoarchaeology_lab
 }
 
 type Mutation {

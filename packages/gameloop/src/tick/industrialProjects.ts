@@ -1,7 +1,10 @@
+import { industrialProjectCatalog } from "@space/data/functions";
 import {
 	and,
 	eq,
+	sql,
 	starSystemIndustrialProjects,
+	starSystemPopulations,
 	starSystems,
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
@@ -28,9 +31,11 @@ export async function tickIndustrialProjects(
 			workDone: starSystemIndustrialProjects.workDone,
 			completionIndustryBonus:
 				starSystemIndustrialProjects.completionIndustryBonus,
+			maintenanceCost: starSystemIndustrialProjects.maintenanceCost,
 			queuePosition: starSystemIndustrialProjects.queuePosition,
 			startedAtTurn: starSystemIndustrialProjects.startedAtTurn,
 			completedAtTurn: starSystemIndustrialProjects.completedAtTurn,
+			playerId: starSystemIndustrialProjects.playerId,
 		})
 		.from(starSystemIndustrialProjects)
 		.where(eq(starSystemIndustrialProjects.gameId, gameId));
@@ -39,11 +44,22 @@ export async function tickIndustrialProjects(
 		.select({
 			id: starSystems.id,
 			industry: starSystems.industry,
+			ownerId: starSystems.ownerId,
 		})
 		.from(starSystems)
 		.where(eq(starSystems.gameId, gameId));
 
 	for (const system of systemsWithIndustry) {
+		// Calculate maintenance drain from completed projects in this system
+		const completedProjects = projects.filter(
+			(project) =>
+				project.starSystemId === system.id && project.completedAtTurn !== null,
+		);
+		const totalMaintenanceCost = completedProjects.reduce(
+			(acc, project) => acc + project.maintenanceCost,
+			0,
+		);
+
 		const queue = projects
 			.filter(
 				(project) =>
@@ -54,14 +70,23 @@ export async function tickIndustrialProjects(
 			.sort((a, b) => a.queuePosition - b.queuePosition);
 
 		if (queue.length === 0) {
+			if (totalMaintenanceCost > 0) {
+				ctx.addIndustryChange({
+					starSystemId: system.id,
+					industryTotal: system.industry,
+					industryUtilized: totalMaintenanceCost,
+				});
+			}
 			continue;
 		}
 
 		let availableIndustry = Math.max(
-			system.industry - (ctx.getIndustryUtilized?.(system.id) ?? 0),
+			system.industry -
+				(ctx.getIndustryUtilized?.(system.id) ?? 0) -
+				totalMaintenanceCost,
 			0,
 		);
-		let utilizedIndustry = 0;
+		let utilizedIndustry = totalMaintenanceCost;
 		let industryTotal = system.industry;
 
 		for (const project of queue) {
@@ -111,14 +136,19 @@ export async function tickIndustrialProjects(
 			});
 
 			if (completed) {
-				industryTotal += project.completionIndustryBonus;
+				// Apply completion effect based on project type
+				await applyCompletionEffect(tx, project, system);
 
-				await tx
-					.update(starSystems)
-					.set({
-						industry: industryTotal,
-					})
-					.where(eq(starSystems.id, project.starSystemId));
+				if (project.completionIndustryBonus > 0) {
+					industryTotal += project.completionIndustryBonus;
+
+					await tx
+						.update(starSystems)
+						.set({
+							industry: industryTotal,
+						})
+						.where(eq(starSystems.id, project.starSystemId));
+				}
 
 				ctx.addIndustrialProjectCompletion?.({
 					starSystemId: project.starSystemId,
@@ -144,5 +174,92 @@ export async function tickIndustrialProjects(
 				industryUtilized: utilizedIndustry,
 			});
 		}
+	}
+}
+
+async function applyCompletionEffect(
+	tx: Transaction,
+	project: {
+		projectType: string;
+		starSystemId: string;
+		playerId: string;
+	},
+	system: { id: string; ownerId: string | null },
+) {
+	const definition =
+		industrialProjectCatalog[
+			project.projectType as keyof typeof industrialProjectCatalog
+		];
+	if (!definition) return;
+
+	if (definition.discoveryProgressBoost) {
+		await tx
+			.update(starSystems)
+			.set({
+				discoveryProgress: sql`${starSystems.discoveryProgress} + ${definition.discoveryProgressBoost}::numeric`,
+			})
+			.where(eq(starSystems.id, project.starSystemId));
+	}
+
+	if (definition.discoverySlotBonus) {
+		await tx
+			.update(starSystems)
+			.set({
+				discoverySlots: sql`${starSystems.discoverySlots} + ${definition.discoverySlotBonus}`,
+			})
+			.where(eq(starSystems.id, project.starSystemId));
+	}
+
+	if (definition.populationSeed && system.ownerId) {
+		// Seed population for the system owner
+		const playerId = system.ownerId;
+		const existing = await tx
+			.select({ amount: starSystemPopulations.amount })
+			.from(starSystemPopulations)
+			.where(
+				and(
+					eq(starSystemPopulations.starSystemId, project.starSystemId),
+					eq(starSystemPopulations.allegianceToPlayerId, playerId),
+				),
+			);
+
+		if (existing.length > 0) {
+			await tx
+				.update(starSystemPopulations)
+				.set({
+					amount: sql`${starSystemPopulations.amount} + ${definition.populationSeed.toString()}`,
+				})
+				.where(
+					and(
+						eq(starSystemPopulations.starSystemId, project.starSystemId),
+						eq(starSystemPopulations.allegianceToPlayerId, playerId),
+					),
+				);
+		} else {
+			await tx.insert(starSystemPopulations).values({
+				starSystemId: project.starSystemId,
+				allegianceToPlayerId: playerId,
+				amount: definition.populationSeed,
+				growthLeftover: "0",
+			});
+		}
+	}
+
+	if (definition.populationGrowthBonus) {
+		await tx
+			.update(starSystems)
+			.set({
+				populationGrowthBonus: sql`${starSystems.populationGrowthBonus} + ${definition.populationGrowthBonus}::numeric`,
+			})
+			.where(eq(starSystems.id, project.starSystemId));
+	}
+
+	if (definition.constructionCostModifier) {
+		await tx
+			.update(starSystems)
+			.set({
+				constructionCostModifier: sql`${starSystems.constructionCostModifier} + ${definition.constructionCostModifier}::numeric`,
+			})
+			.where(eq(starSystems.id, project.starSystemId));
 	}
 }
