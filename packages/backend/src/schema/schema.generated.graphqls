@@ -21,9 +21,15 @@ input ConfigureTaskForceCombatDeckInput {
 }
 
 input ConstructTaskForceInput {
+	mission: TaskForceMission!
 	name: String!
-	shipDesignIds: [ID!]!
+	shipDesigns: [ConstructTaskForceShipDesignInput!]!
 	starSystemId: ID!
+}
+
+input ConstructTaskForceShipDesignInput {
+	quantity: Int!
+	shipDesignId: ID!
 }
 
 scalar DateTime
@@ -108,6 +114,10 @@ enum IndustrialProjectType {
 }
 
 type Mutation {
+	assignTaskForceMission(
+		mission: TaskForceMission!
+		taskForceId: ID!
+	): TaskForce!
 	configureTaskForceCombatDeck(
 		input: ConfigureTaskForceCombatDeckInput!
 	): TaskForce!
@@ -272,12 +282,10 @@ type ShipDesign {
 type ShipDesignComponent {
 	component: ShipComponent!
 	id: ID!
-	position: Vector!
 }
 
 input ShipDesignComponentInput {
 	componentId: ID!
-	gridPosition: Vector!
 }
 
 input ShipDesignInput {
@@ -346,13 +354,14 @@ type TaskForce implements Positionable {
 	id: ID!
 	isVisible: Boolean!
 	lastUpdate: DateTime
+	mission: TaskForceMission!
 	movementVector: Vector
 	name: String!
 	orders: [TaskForceOrder!]
 	owner: Player
 	position: Vector!
 	sensorRange: Float
-	shipDesigns: [ShipDesign!]!
+	shipDesigns: [TaskForceShipDesign!]!
 }
 
 type TaskForceColonizeOrder implements TaskForceOrder {
@@ -412,6 +421,14 @@ input TaskForceFollowOrderInput {
 	taskForceId: ID!
 }
 
+enum TaskForceMission {
+	intercept
+	manual
+	patrol
+	scout
+	siege
+}
+
 type TaskForceMoveOrder implements TaskForceOrder {
 	destination: Vector!
 	id: ID!
@@ -429,6 +446,11 @@ input TaskForceOrderInput {
 	colonize: Boolean
 	follow: TaskForceFollowOrderInput
 	move: TaskForceMoveOrderInput
+}
+
+type TaskForceShipDesign {
+	design: ShipDesign!
+	quantity: Int!
 }
 
 enum TaskForceShipRole {

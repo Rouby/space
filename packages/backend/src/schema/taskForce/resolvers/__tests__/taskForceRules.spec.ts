@@ -60,8 +60,9 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignIds: ["sd-1"],
+						shipDesigns: [{ shipDesignId: "sd-1", quantity: 1 }],
 						name: "New Fleet",
+						mission: "manual",
 					},
 				},
 				ctx as never,
@@ -107,8 +108,9 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignIds: ["sd-1"],
+						shipDesigns: [{ shipDesignId: "sd-1", quantity: 1 }],
 						name: "New Fleet",
+						mission: "manual",
 					},
 				},
 				ctx as never,
@@ -161,8 +163,9 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignIds: ["sd-1"],
+						shipDesigns: [{ shipDesignId: "sd-1", quantity: 1 }],
 						name: "New Fleet",
+						mission: "manual",
 					},
 				},
 				ctx as never,
@@ -228,8 +231,9 @@ describe("task force construction and movement rules", () => {
 				{
 					input: {
 						starSystemId: "ss-1",
-						shipDesignIds: ["sd-1"],
+						shipDesigns: [{ shipDesignId: "sd-1", quantity: 1 }],
 						name: "Alpha Fleet",
+						mission: "manual",
 					},
 				},
 				ctx as never,

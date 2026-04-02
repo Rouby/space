@@ -1200,8 +1200,6 @@ test("constructs a fleet and applies move orders on turn resolution", async ({
 	await api.seed("shipDesignComponent", {
 		shipDesignId,
 		shipComponentId,
-		column: 0,
-		row: 0,
 	});
 
 	await api.login(hostId);
@@ -1545,8 +1543,6 @@ test("runs a deterministic multi-turn MVP loop with telemetry checkpoints", asyn
 	await api.seed("shipDesignComponent", {
 		shipDesignId,
 		shipComponentId,
-		column: 0,
-		row: 0,
 	});
 
 	const { id: hostBattleTaskForceId } = await game.add("taskForce", {

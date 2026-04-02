@@ -2,7 +2,6 @@ import { eq, relations, sql } from "drizzle-orm";
 import {
 	boolean,
 	index,
-	integer,
 	pgTable,
 	pgView,
 	text,
@@ -35,16 +34,15 @@ export const shipDesignsRelations = relations(shipDesigns, ({ one, many }) => ({
 export const shipDesignComponents = pgTable(
 	"shipDesignComponents",
 	{
+		id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
 		shipDesignId: uuid()
 			.notNull()
 			.references(() => shipDesigns.id, { onDelete: "cascade" }),
 		shipComponentId: uuid()
 			.notNull()
 			.references(() => shipComponents.id, { onDelete: "cascade" }),
-		column: integer().notNull(),
-		row: integer().notNull(),
 	},
-	(table) => [index().on(table.shipDesignId, table.column, table.row)],
+	(table) => [index().on(table.shipDesignId)],
 );
 
 export const shipDesignComponentsRelations = relations(

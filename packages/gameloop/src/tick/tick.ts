@@ -35,6 +35,7 @@ import { tickStarSystemPopulation } from "./starSystemPopulation.ts";
 import { tickTaskForceCombat } from "./taskForceCombat.ts";
 import type { IndustryTurnChange } from "./taskForceConstruction.ts";
 import { tickTaskForceConstruction } from "./taskForceConstruction.ts";
+import { tickTaskForceMissions } from "./taskForceMissions.ts";
 import { tickTaskForceMovement } from "./taskForceMovement.ts";
 
 type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
@@ -113,6 +114,8 @@ export async function tick() {
 		await tickTaskForceConstruction(tx, ctx);
 
 		await tickIndustrialProjects(tx, ctx);
+
+		await tickTaskForceMissions(tx, ctx);
 
 		await tickTaskForceMovement(tx, ctx);
 

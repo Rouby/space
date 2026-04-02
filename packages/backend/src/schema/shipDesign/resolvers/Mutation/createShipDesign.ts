@@ -22,8 +22,6 @@ export const createShipDesign: NonNullable<
 			await tx.insert(shipDesignComponents).values({
 				shipDesignId: shipDesign.id,
 				shipComponentId: shipComponent.componentId,
-				column: shipComponent.gridPosition.x,
-				row: shipComponent.gridPosition.y,
 			});
 		}
 

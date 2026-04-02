@@ -41,6 +41,7 @@ export const TaskForceFollowOrder: TaskForceFollowOrderResolvers = {
 
 				name: possiblyHidden(taskForces.name).as("name"),
 				position: knownOrLastKnown(taskForces.position).as("position"),
+				mission: possiblyHidden(taskForces.mission).as("mission"),
 				orders: possiblyHidden(taskForces.orders).as("orders"),
 				combatDeck: possiblyHidden(taskForces.combatDeck).as("combatDeck"),
 				movementVector: possiblyHidden(taskForces.movementVector).as(

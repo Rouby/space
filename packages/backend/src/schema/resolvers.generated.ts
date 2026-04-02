@@ -6,6 +6,7 @@ import    { games as Query_games } from './game/resolvers/Query/games.js';
 import    { me as Query_me } from './user/resolvers/Query/me.js';
 import    { starSystem as Query_starSystem } from './starSystem/resolvers/Query/starSystem.js';
 import    { taskForceEngagement as Query_taskForceEngagement } from './taskForce/resolvers/Query/taskForceEngagement.js';
+import    { assignTaskForceMission as Mutation_assignTaskForceMission } from './taskForce/resolvers/Mutation/assignTaskForceMission.js';
 import    { configureTaskForceCombatDeck as Mutation_configureTaskForceCombatDeck } from './taskForce/resolvers/Mutation/configureTaskForceCombatDeck.js';
 import    { constructTaskForce as Mutation_constructTaskForce } from './taskForce/resolvers/Mutation/constructTaskForce.js';
 import    { createGame as Mutation_createGame } from './game/resolvers/Mutation/createGame.js';
@@ -68,6 +69,7 @@ import    { TaskForceEngagementParticipantState } from './taskForce/resolvers/Ta
 import    { TaskForceEngagementRoundLogEntry } from './taskForce/resolvers/TaskForceEngagementRoundLogEntry.js';
 import    { TaskForceFollowOrder } from './taskForce/resolvers/TaskForceFollowOrder.js';
 import    { TaskForceMoveOrder } from './taskForce/resolvers/TaskForceMoveOrder.js';
+import    { TaskForceShipDesign } from './taskForce/resolvers/TaskForceShipDesign.js';
 import    { TurnEndedEvent } from './game/resolvers/TurnEndedEvent.js';
 import    { TurnReport } from './game/resolvers/TurnReport.js';
 import    { TurnReportColonizationCompleted } from './game/resolvers/TurnReportColonizationCompleted.js';
@@ -92,7 +94,7 @@ import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.j
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement },
-      Mutation: { configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Mutation: { assignTaskForceMission: Mutation_assignTaskForceMission,configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
       CombatProfile: CombatProfile,
 DevelopmentStanceProjection: DevelopmentStanceProjection,
@@ -124,6 +126,7 @@ TaskForceEngagementParticipantState: TaskForceEngagementParticipantState,
 TaskForceEngagementRoundLogEntry: TaskForceEngagementRoundLogEntry,
 TaskForceFollowOrder: TaskForceFollowOrder,
 TaskForceMoveOrder: TaskForceMoveOrder,
+TaskForceShipDesign: TaskForceShipDesign,
 TurnEndedEvent: TurnEndedEvent,
 TurnReport: TurnReport,
 TurnReportColonizationCompleted: TurnReportColonizationCompleted,

@@ -21,6 +21,9 @@ export const TaskForce: TaskForceResolvers = {
 			? Number(parent.sensorRange)
 			: 0;
 	},
+	mission: (parent) => {
+		return (parent.mission as any) ?? "manual";
+	},
 	combatDeck: (parent) => parent.combatDeck ?? [],
 	constructionDone: (parent) =>
 		parent.constructionDone !== null && parent.constructionDone !== undefined
@@ -37,17 +40,29 @@ export const TaskForce: TaskForceResolvers = {
 			: null,
 	shipDesigns: async (parent, _arg, ctx) => {
 		const links = await ctx.drizzle
-			.select({ shipDesignId: taskForceShipDesigns.shipDesignId })
+			.select({
+				shipDesignId: taskForceShipDesigns.shipDesignId,
+				quantity: taskForceShipDesigns.quantity,
+			})
 			.from(taskForceShipDesigns)
 			.where(eq(taskForceShipDesigns.taskForceId, parent.id));
 
 		if (links.length === 0) return [];
 
-		return ctx.drizzle.query.shipDesigns.findMany({
+		const designs = await ctx.drizzle.query.shipDesigns.findMany({
 			where: inArray(
 				shipDesigns.id,
 				links.map((l) => l.shipDesignId),
 			),
+		});
+
+		return links.map((link) => {
+			const design = designs.find((d) => d.id === link.shipDesignId);
+			if (!design) throw new Error("Design not found");
+			return {
+				design,
+				quantity: link.quantity,
+			};
 		});
 	},
 	combatProfile: async (parent, _arg, ctx) => {

@@ -1,9 +1,16 @@
-import { Button, Center, Progress, Stack, Text } from "@mantine/core";
-import { useQuery, useSubscription } from "urql";
-import { formatNumber } from "../../format/formatNumber";
-import { graphql } from "../../gql";
+import {
+	Button,
+	Center,
+	NativeSelect,
+	Progress,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { useNavigate } from "@tanstack/react-router";
 import { useStyles } from "tss-react";
+import { useMutation, useQuery, useSubscription } from "urql";
+import { formatNumber } from "../../format/formatNumber";
+import { graphql } from "../../gql";
 
 const DECK_SIZE = 12;
 
@@ -54,6 +61,7 @@ export function TaskForcesPanel({
 				taskForces {
 					id
 					name
+					mission
 					combatDeck
 					constructionDone
 					constructionTotal
@@ -61,6 +69,12 @@ export function TaskForcesPanel({
 					owner {
 						id
 						name
+					}
+					shipDesigns {
+						quantity
+						design {
+							name
+						}
 					}
 				}
 			}
@@ -77,6 +91,7 @@ export function TaskForcesPanel({
 						taskForces {
 							id
 							name
+							mission
 							combatDeck
 							constructionDone
 							constructionTotal
@@ -84,6 +99,12 @@ export function TaskForcesPanel({
 							owner {
 								id
 								name
+							}
+							shipDesigns {
+								quantity
+								design {
+									name
+								}
 							}
 						}
 					}
@@ -99,6 +120,15 @@ export function TaskForcesPanel({
 			: data?.starSystem;
 
 	const currentPlayerId = commissionContext?.game.me?.id ?? null;
+
+	const [, assignMission] = useMutation(
+		graphql(`mutation AssignTaskForceMission($taskForceId: ID!, $mission: TaskForceMission!) {
+			assignTaskForceMission(taskForceId: $taskForceId, mission: $mission) {
+				id
+				mission
+			}
+		}`),
+	);
 
 	const formatReadiness = (
 		constructionDone: number | null | undefined,
@@ -150,9 +180,36 @@ export function TaskForcesPanel({
 						})}
 					>
 						<Center>{tf.name}</Center>
+						{tf.shipDesigns && tf.shipDesigns.length > 0 && (
+							<Text size="xs" c="dimmed" ta="center">
+								Fleet:{" "}
+								{tf.shipDesigns
+									.map((sd: any) => `${sd.quantity}x ${sd.design.name}`)
+									.join(", ")}
+							</Text>
+						)}
 						<Text size="xs" c="dimmed" ta="center">
 							Combat deck: {(tf.combatDeck ?? []).length} / {DECK_SIZE} cards
 						</Text>
+						{tf.owner?.id === currentPlayerId && (
+							<NativeSelect
+								size="xs"
+								data={[
+									{ value: "manual", label: "Mission: Manual" },
+									{ value: "patrol", label: "Mission: Patrol" },
+									{ value: "scout", label: "Mission: Scout" },
+									{ value: "siege", label: "Mission: Siege" },
+									{ value: "intercept", label: "Mission: Intercept" },
+								]}
+								value={tf.mission as string}
+								onChange={(e) => {
+									assignMission({
+										taskForceId: tf.id,
+										mission: e.currentTarget.value as any,
+									});
+								}}
+							/>
+						)}
 						<Text size="xs" c="dimmed">
 							{(tf.combatDeck ?? []).length > 0
 								? (tf.combatDeck ?? [])

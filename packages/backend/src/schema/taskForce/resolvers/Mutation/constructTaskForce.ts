@@ -67,7 +67,7 @@ export const constructTaskForce: NonNullable<
 		});
 	}
 
-	if (!input.shipDesignIds || input.shipDesignIds.length === 0) {
+	if (!input.shipDesigns || input.shipDesigns.length === 0) {
 		throw createGraphQLError("At least one ship design is required", {
 			extensions: {
 				code: "INVALID_CONSTRUCTION_ORDER",
@@ -78,21 +78,26 @@ export const constructTaskForce: NonNullable<
 
 	const resolvedDesigns = await ctx.drizzle.query.shipDesigns.findMany({
 		where: and(
-			inArray(shipDesigns.id, input.shipDesignIds),
+			inArray(
+				shipDesigns.id,
+				input.shipDesigns.map((d) => d.shipDesignId),
+			),
 			eq(shipDesigns.gameId, originSystem.gameId),
 			eq(shipDesigns.ownerId, context.userId),
 		),
 	});
 
 	// Verify every requested ID was found and is not decommissioned
-	for (const designId of input.shipDesignIds) {
-		const found = resolvedDesigns.find((d) => d.id === designId);
+	for (const designInput of input.shipDesigns) {
+		const found = resolvedDesigns.find(
+			(d) => d.id === designInput.shipDesignId,
+		);
 		if (!found || found.decommissioned) {
 			throw createGraphQLError("Ship design is not available", {
 				extensions: {
 					code: "INVALID_CONSTRUCTION_ORDER",
 					violation: "SHIP_DESIGN_UNAVAILABLE",
-					shipDesignId: designId,
+					shipDesignId: designInput.shipDesignId,
 				},
 			});
 		}
@@ -114,8 +119,11 @@ export const constructTaskForce: NonNullable<
 	}
 
 	// Aggregate costs across all ship designs
-	const costs = await ctx.drizzle
+	const uniqueDesignIds = input.shipDesigns.map((d) => d.shipDesignId);
+
+	const costPerDesign = await ctx.drizzle
 		.select({
+			shipDesignId: shipDesignComponents.shipDesignId,
 			resourceId: shipComponentResourceCosts.resourceId,
 			quantity:
 				sql<string>`sum(${shipComponentResourceCosts.quantity})::text`.as(
@@ -130,14 +138,18 @@ export const constructTaskForce: NonNullable<
 				shipDesignComponents.shipComponentId,
 			),
 		)
-		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds))
-		.groupBy(shipComponentResourceCosts.resourceId);
+		.where(inArray(shipDesignComponents.shipDesignId, uniqueDesignIds))
+		.groupBy(
+			shipDesignComponents.shipDesignId,
+			shipComponentResourceCosts.resourceId,
+		);
 
-	const [{ constructionTotal: constructionTotalRaw }] = await ctx.drizzle
+	const constructionCostPerDesign = await ctx.drizzle
 		.select({
-			constructionTotal:
+			shipDesignId: shipDesignComponents.shipDesignId,
+			constructionCost:
 				sql<string>`coalesce(sum(${shipComponents.constructionCost}), 0)::text`.as(
-					"constructionTotal",
+					"constructionCost",
 				),
 		})
 		.from(shipDesignComponents)
@@ -145,9 +157,38 @@ export const constructTaskForce: NonNullable<
 			shipComponents,
 			eq(shipComponents.id, shipDesignComponents.shipComponentId),
 		)
-		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds));
+		.where(inArray(shipDesignComponents.shipDesignId, uniqueDesignIds))
+		.groupBy(shipDesignComponents.shipDesignId);
 
-	const constructionTotal = Math.max(1, Number(constructionTotalRaw ?? "0"));
+	// Now aggregate them using input.shipDesigns quantity
+	const totalCosts = new Map<string, number>();
+	let constructionTotalRaw = 0;
+
+	for (const inputDesign of input.shipDesigns) {
+		const designCosts = costPerDesign.filter(
+			(c) => c.shipDesignId === inputDesign.shipDesignId,
+		);
+		for (const cost of designCosts) {
+			totalCosts.set(
+				cost.resourceId,
+				(totalCosts.get(cost.resourceId) ?? 0) +
+					Number(cost.quantity) * inputDesign.quantity,
+			);
+		}
+
+		const designConstructionCost = constructionCostPerDesign.find(
+			(c) => c.shipDesignId === inputDesign.shipDesignId,
+		);
+		if (designConstructionCost) {
+			constructionTotalRaw +=
+				Number(designConstructionCost.constructionCost) * inputDesign.quantity;
+		}
+	}
+
+	const costs = Array.from(totalCosts.entries()).map(
+		([resourceId, quantity]) => ({ resourceId, quantity }),
+	);
+	const constructionTotal = Math.max(1, constructionTotalRaw);
 
 	const depots = await ctx.drizzle
 		.select({
@@ -206,7 +247,12 @@ export const constructTaskForce: NonNullable<
 			shipComponents,
 			eq(shipComponents.id, shipDesignComponents.shipComponentId),
 		)
-		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds));
+		.where(
+			inArray(
+				shipDesignComponents.shipDesignId,
+				input.shipDesigns.map((d) => d.shipDesignId),
+			),
+		);
 
 	const [strategicStats] = await ctx.drizzle
 		.select({
@@ -222,7 +268,12 @@ export const constructTaskForce: NonNullable<
 			shipComponents,
 			eq(shipComponents.id, shipDesignComponents.shipComponentId),
 		)
-		.where(inArray(shipDesignComponents.shipDesignId, input.shipDesignIds));
+		.where(
+			inArray(
+				shipDesignComponents.shipDesignId,
+				input.shipDesigns.map((d) => d.shipDesignId),
+			),
+		);
 
 	const profile = deriveCombatProfile(allComponents);
 	const starterDeck = buildStarterDeck(profile);
@@ -262,6 +313,7 @@ export const constructTaskForce: NonNullable<
 				gameId: originSystem.gameId,
 				ownerId: context.userId,
 				name: input.name,
+				mission: input.mission,
 				position: originSystem.position,
 				movementVector: null,
 				constructionStarSystemId: originSystem.id,
@@ -277,9 +329,10 @@ export const constructTaskForce: NonNullable<
 
 		// Link assigned ship designs via junction table
 		await tx.insert(taskForceShipDesigns).values(
-			input.shipDesignIds.map((shipDesignId) => ({
+			input.shipDesigns.map((designInput) => ({
 				taskForceId: tf.id,
-				shipDesignId,
+				shipDesignId: designInput.shipDesignId,
+				quantity: designInput.quantity,
 			})),
 		);
 

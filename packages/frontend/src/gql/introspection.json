@@ -703,6 +703,39 @@
         "name": "Mutation",
         "fields": [
           {
+            "name": "assignTaskForceMission",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "TaskForce",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "mission",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              },
+              {
+                "name": "taskForceId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
             "name": "configureTaskForceCombatDeck",
             "type": {
               "kind": "NON_NULL",
@@ -2272,17 +2305,6 @@
               }
             },
             "args": []
-          },
-          {
-            "name": "position",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Any"
-              }
-            },
-            "args": []
           }
         ],
         "interfaces": []
@@ -2780,6 +2802,17 @@
             "args": []
           },
           {
+            "name": "mission",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          },
+          {
             "name": "movementVector",
             "type": {
               "kind": "SCALAR",
@@ -2851,7 +2884,7 @@
                   "kind": "NON_NULL",
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "ShipDesign",
+                    "name": "TaskForceShipDesign",
                     "ofType": null
                   }
                 }
@@ -3410,6 +3443,36 @@
             "name": "TaskForceMoveOrder"
           }
         ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "TaskForceShipDesign",
+        "fields": [
+          {
+            "name": "design",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ShipDesign",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "quantity",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Any"
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "UNION",

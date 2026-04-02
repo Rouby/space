@@ -1,0 +1,1148 @@
+packages/ai/src/chats/index.ts(1,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/ai/src/index.ts(1,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/ai/src/index.ts(2,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/ai/src/index.ts(3,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/ai/src/index.ts(4,26): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/ai/src/prompts/index.ts(1,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/ai/src/prompts/index.ts(2,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/ai/src/prompts/index.ts(3,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/context.ts(6,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/main.ts(18,31): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/main.ts(19,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/main.ts(20,26): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/main.ts(21,42): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/observables/__tests__/taskForceMovements.spec.ts(3,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/observables/__tests__/taskForceMovements.spec.ts(4,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/observables/starSystems.ts(10,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/observables/taskForceEngagement.ts(2,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/observables/taskForceEngagements.ts(10,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/observables/taskForces.ts(14,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/base/resolvers/Subscription/trackGalaxy.ts(13,30): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/base/resolvers/Subscription/trackGalaxy.ts(14,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/base/resolvers/Subscription/trackGalaxy.ts(15,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/base/resolvers/Subscription/trackGalaxy.ts(16,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/base/resolvers/Subscription/trackStarSystem.ts(5,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/dilemma/resolvers/Mutation/makeDilemmaChoice.ts(4,30): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/Subscription/trackGame.ts(5,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/Subscription/trackGame.ts(6,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/authorization.spec.ts(3,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/authorization.spec.ts(4,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/authorization.spec.ts(5,22): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/authorization.spec.ts(6,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/authorization.spec.ts(7,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/lifecycle.spec.ts(3,28): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/lifecycle.spec.ts(4,25): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/lifecycle.spec.ts(5,26): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/lifecycle.spec.ts(6,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/game/resolvers/__tests__/lifecycle.spec.ts(7,36): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/starSystem/resolvers/__tests__/trackStarSystem.spec.ts(4,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/Mutation/assignTaskForceMission.ts(6,20): error TS2339: Property 'assignTaskForceMission' does not exist on type 'MutationResolvers'.
+packages/backend/src/schema/taskForce/resolvers/Mutation/assignTaskForceMission.ts(7,12): error TS7006: Parameter '_parent' implicitly has an 'any' type.
+packages/backend/src/schema/taskForce/resolvers/Mutation/assignTaskForceMission.ts(7,23): error TS7031: Binding element 'taskForceId' implicitly has an 'any' type.
+packages/backend/src/schema/taskForce/resolvers/Mutation/assignTaskForceMission.ts(7,36): error TS7031: Binding element 'mission' implicitly has an 'any' type.
+packages/backend/src/schema/taskForce/resolvers/Mutation/assignTaskForceMission.ts(7,47): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+packages/backend/src/schema/taskForce/resolvers/Mutation/configureTaskForceCombatDeck.ts(19,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/Mutation/constructTaskForce.ts(23,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/Mutation/submitTaskForceEngagementAction.ts(16,31): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/Mutation/submitTaskForceEngagementAction.ts(26,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/Subscription/trackTaskForceEngagement.ts(5,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/Subscription/trackTaskForceEngagement.ts(6,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/TaskForce.ts(14,54): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/TaskForceEngagement.ts(4,56): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/__tests__/combatProfileLogic.spec.ts(8,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts(3,46): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts(4,36): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts(5,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts(61,6): error TS2741: Property 'mission' is missing in type '{ starSystemId: string; shipDesigns: { shipDesignId: string; quantity: number; }[]; name: string; }' but required in type 'ConstructTaskForceInput'.
+packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts(108,6): error TS2741: Property 'mission' is missing in type '{ starSystemId: string; shipDesigns: { shipDesignId: string; quantity: number; }[]; name: string; }' but required in type 'ConstructTaskForceInput'.
+packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts(162,6): error TS2741: Property 'mission' is missing in type '{ starSystemId: string; shipDesigns: { shipDesignId: string; quantity: number; }[]; name: string; }' but required in type 'ConstructTaskForceInput'.
+packages/backend/src/schema/taskForce/resolvers/__tests__/taskForceRules.spec.ts(229,6): error TS2741: Property 'mission' is missing in type '{ starSystemId: string; shipDesigns: { shipDesignId: string; quantity: number; }[]; name: string; }' but required in type 'ConstructTaskForceInput'.
+packages/backend/src/schema/user/resolvers/Mutation/loginWithPassword.ts(8,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/user/resolvers/Mutation/loginWithPassword.ts(10,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/user/resolvers/Mutation/loginWithRefreshToken.ts(6,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/user/resolvers/Mutation/loginWithRefreshToken.ts(8,40): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/user/resolvers/Mutation/registerWithPassword.ts(8,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/backend/src/schema/user/resolvers/Mutation/registerWithPassword.ts(10,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/functions/index.ts(1,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/functions/index.ts(2,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/functions/index.ts(3,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/functions/industrialProjects.ts(4,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/functions/vision.ts(2,42): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/gameMigrations/index.ts(2,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/index.ts(3,25): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/migrate.ts(4,43): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(34,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(35,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(36,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(37,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(38,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(39,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(40,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(41,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(42,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(43,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(44,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema.ts(45,15): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/dilemmas.ts(11,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/dilemmas.ts(12,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/games.ts(11,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/lastKnownStates.ts(17,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/lastKnownStates.ts(18,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/lastKnownStates.ts(19,28): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/resources.ts(11,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/shipComponents.ts(12,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/shipComponents.ts(13,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/shipComponents.ts(14,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/shipDesigns.ts(11,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/shipDesigns.ts(12,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/shipDesigns.ts(13,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/starSystems.ts(15,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/starSystems.ts(16,27): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/starSystems.ts(17,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/taskForceEngagements.ts(12,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/taskForceEngagements.ts(13,28): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/taskForceEngagements.ts(14,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/taskForces.ts(13,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/taskForces.ts(14,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/taskForces.ts(15,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/taskForces.ts(16,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/turnReports.ts(10,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/turnReports.ts(11,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/visibility.ts(3,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/data/src/schema/visibility.ts(4,28): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/frontend/src/App.tsx(5,39): error TS6142: Module './Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/App.tsx(6,24): error TS6142: Module './router' was resolved to '/home/rouby/space/packages/frontend/src/router.tsx', but '--jsx' is not set.
+packages/frontend/src/App.tsx(12,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/App.tsx(13,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/App.tsx(14,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/App.tsx(15,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/App.tsx(25,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/Auth.tsx(48,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx(21,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx(30,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/components/DetailsModal/DetailsModal.tsx(20,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/components/DetailsModal/DetailsModal.tsx(27,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/components/LinkButton/LinkButton.tsx(12,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(4,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(7,34): error TS6142: Module './CombatPlayerHand' was resolved to '/home/rouby/space/packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx', but '--jsx' is not set.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(8,40): error TS6142: Module './CombatTaskForceSummary' was resolved to '/home/rouby/space/packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx', but '--jsx' is not set.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(9,32): error TS6142: Module './CombatTimeline' was resolved to '/home/rouby/space/packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx', but '--jsx' is not set.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(148,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(153,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(161,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(182,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(183,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(184,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(185,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(186,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(187,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(191,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(193,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(199,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx(202,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(37,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(38,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(39,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(50,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(82,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(90,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(103,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(117,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(127,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(140,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(154,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(161,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(168,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(176,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(177,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatPlayerHand.tsx(217,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(14,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(15,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(16,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(17,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(18,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(19,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(23,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(32,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(35,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(42,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(43,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(44,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(45,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(46,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(50,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(59,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTaskForceSummary.tsx(62,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(59,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(60,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(61,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(62,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(67,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(72,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(73,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(75,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(78,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(79,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(85,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(86,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(87,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(94,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(95,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(96,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(99,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(105,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(113,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(117,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(122,18): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(132,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(136,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(147,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(154,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(155,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(156,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(159,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(165,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(173,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(177,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(182,18): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(192,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CombatEngagementPanel/CombatTimeline.tsx(196,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CreateGame/CreateGame.tsx(19,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CreateGame/CreateGame.tsx(20,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CreateGame/CreateGame.tsx(21,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CreateGame/CreateGame.tsx(24,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CreateGame/CreateGame.tsx(25,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CreateGame/CreateGame.tsx(41,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/CreateGame/CreateGame.tsx(48,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(153,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(154,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(155,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(157,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(158,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(159,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(165,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(166,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(169,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(170,22): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(174,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(184,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(235,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(236,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(237,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(239,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx(244,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(4,28): error TS6142: Module '../../components/LinkButton/LinkButton' was resolved to '/home/rouby/space/packages/frontend/src/components/LinkButton/LinkButton.tsx', but '--jsx' is not set.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(43,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(44,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(45,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(46,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(47,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(48,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(49,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(50,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(53,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(60,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(61,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(62,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(63,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(64,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(68,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(70,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(72,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(75,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/DilemmasList/DilemmasList.tsx(76,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(83,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(84,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(85,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(86,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(91,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(93,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(94,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(96,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(105,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(113,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(114,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(115,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(125,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(126,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(133,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(134,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(135,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(138,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(142,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(143,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(144,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(155,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(156,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(157,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(160,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(164,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(165,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx(174,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Dilemma.tsx(21,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Dilemma.tsx(22,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(9,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(11,25): error TS6142: Module './Dilemma' was resolved to '/home/rouby/space/packages/frontend/src/features/GalaxyView/Dilemma.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(12,25): error TS6142: Module './Sensors' was resolved to '/home/rouby/space/packages/frontend/src/features/GalaxyView/Sensors.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(13,28): error TS6142: Module './StarSystem' was resolved to '/home/rouby/space/packages/frontend/src/features/GalaxyView/StarSystem.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(14,27): error TS6142: Module './TaskForce' was resolved to '/home/rouby/space/packages/frontend/src/features/GalaxyView/TaskForce.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(15,26): error TS6142: Module './Viewport' was resolved to '/home/rouby/space/packages/frontend/src/features/GalaxyView/Viewport.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(277,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(281,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(287,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(288,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(334,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(391,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(408,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(431,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(462,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(502,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(521,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(522,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(523,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(526,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(527,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(529,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(531,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(535,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(556,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(586,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/GalaxyView.tsx(613,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Sensors.tsx(12,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Sensors.tsx(22,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/StarSystem.tsx(66,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/StarSystem.tsx(67,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/StarSystem.tsx(75,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/TaskForce.tsx(66,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/TaskForce.tsx(67,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/TaskForce.tsx(86,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Viewport.tsx(76,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Viewport.tsx(167,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Viewport.tsx(173,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GalaxyView/Viewport.tsx(174,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(17,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(89,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(90,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(92,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(94,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(95,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(96,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(107,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(109,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(110,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(114,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(131,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(133,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(134,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(146,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(147,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(149,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(152,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(154,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(213,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GameLobby/GameLobby.tsx(215,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(4,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/GamesList/GamesList.tsx(58,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(59,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(60,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(61,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(63,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(64,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(68,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(69,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(71,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(72,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(73,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(74,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(75,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(87,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(89,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(90,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(91,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(99,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(109,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(110,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(112,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(113,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(114,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(115,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(116,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(117,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(128,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(141,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(143,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(144,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(145,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/GamesList/GamesList.tsx(153,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(45,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(47,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(61,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(62,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(63,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(68,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(69,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/FeatureList.tsx(72,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(22,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/Header/Header.tsx(24,28): error TS6142: Module '../UserButton/UserButton' was resolved to '/home/rouby/space/packages/frontend/src/features/UserButton/UserButton.tsx', but '--jsx' is not set.
+packages/frontend/src/features/Header/Header.tsx(25,29): error TS6142: Module './FeatureList' was resolved to '/home/rouby/space/packages/frontend/src/features/Header/FeatureList.tsx', but '--jsx' is not set.
+packages/frontend/src/features/Header/Header.tsx(26,22): error TS6142: Module './Link' was resolved to '/home/rouby/space/packages/frontend/src/features/Header/Link.tsx', but '--jsx' is not set.
+packages/frontend/src/features/Header/Header.tsx(38,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(39,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(47,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(49,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(51,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(52,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(54,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(56,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(63,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(64,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(65,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(66,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(69,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(77,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(78,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(79,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(80,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(85,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(87,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(88,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(91,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(100,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(101,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(102,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(105,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(109,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(121,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(125,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(127,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(128,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(131,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(137,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(145,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(154,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(155,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(157,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(159,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(161,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(183,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(184,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(187,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(193,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(194,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(197,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(199,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(201,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(202,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Header.tsx(205,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Header/Link.tsx(14,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(30,28): error TS6142: Module '../UserButton/UserButton' was resolved to '/home/rouby/space/packages/frontend/src/features/UserButton/UserButton.tsx', but '--jsx' is not set.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(97,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(110,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(111,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(114,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(115,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(116,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(120,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(130,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(134,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(144,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(145,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(155,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(184,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(194,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(208,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(417,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(419,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(420,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(424,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(425,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(433,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(441,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(469,18): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/InGameMenu/InGameMenu.tsx(471,26): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(21,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(22,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(24,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(28,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(29,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(36,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(43,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(93,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(94,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(95,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(97,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Features.tsx(100,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(20,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(31,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(45,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(46,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(47,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(56,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(58,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(59,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(60,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(65,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(66,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(71,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Footer.tsx(72,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(7,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(8,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(9,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(14,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(16,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(17,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(19,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(29,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(36,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(37,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/Landing/Hero.tsx(47,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(56,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(57,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(58,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(59,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(61,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(70,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(77,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(78,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(79,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(87,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(88,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(89,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(95,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(96,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(97,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(103,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(108,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(109,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(112,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(117,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(126,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(127,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(128,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(131,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(135,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(136,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/LearnPage/LearnPage.tsx(145,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(19,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(247,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(270,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(272,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(273,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(279,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(285,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(288,20): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(296,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(298,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(299,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(301,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(302,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(303,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(304,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(306,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(307,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(309,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(316,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(317,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(318,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(322,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(323,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(328,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(333,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(344,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(345,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(346,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(347,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(348,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(349,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(354,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(355,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(362,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(369,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(370,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(371,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(374,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(376,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(381,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(387,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(392,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(399,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(412,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(413,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(414,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(415,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(418,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(419,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(422,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(427,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(428,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(431,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(438,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(439,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(443,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(444,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(447,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(456,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(457,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(460,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(469,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(471,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(472,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(475,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(479,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(480,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(483,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(489,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(490,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(493,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(494,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(497,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(501,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(502,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(505,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(511,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(512,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx(515,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(35,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(36,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(37,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(38,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(39,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(40,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(41,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(43,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(46,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(48,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(49,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(50,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(62,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(63,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(71,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx(72,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(3,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(26,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(27,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(28,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(50,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(56,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(61,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(62,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(65,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignInForm/SignInForm.tsx(69,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(3,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(26,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(27,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(28,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(53,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(60,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(66,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(67,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(68,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(71,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/SignUpForm/SignUpForm.tsx(75,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(208,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(209,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(217,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(232,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(233,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(234,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(237,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(240,20): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(248,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(250,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(255,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(256,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(265,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(275,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(281,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(290,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(291,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(292,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(293,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(296,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(300,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(301,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(304,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(308,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(309,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(312,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(324,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(358,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(363,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx(368,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(168,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(182,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(183,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(187,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(194,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(206,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(210,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(234,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(239,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(246,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(249,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx(312,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(254,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(257,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(266,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(267,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(268,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(272,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(281,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(282,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(285,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(298,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(299,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(300,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(301,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(302,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(307,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(309,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(310,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(315,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(324,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(330,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(331,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(334,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(346,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(352,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(358,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(365,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(366,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(369,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(370,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(372,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(375,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(383,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(384,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(386,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(396,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(406,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(407,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(411,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(412,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(418,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(421,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(422,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(425,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(429,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(449,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(450,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(453,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(458,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(459,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(460,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(461,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(465,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(467,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(472,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(476,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx(486,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(8,39): error TS6142: Module './StarSystemDiscoveries' was resolved to '/home/rouby/space/packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx', but '--jsx' is not set.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(9,38): error TS6142: Module './StarSystemManagement' was resolved to '/home/rouby/space/packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx', but '--jsx' is not set.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(164,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(165,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(168,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(169,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(170,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(171,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(172,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(176,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(177,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(178,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(189,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(190,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(191,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(197,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(198,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(199,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(205,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx(216,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(96,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(103,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(104,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(108,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(120,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(121,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(122,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(128,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(143,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(144,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(145,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(148,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(158,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(159,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(160,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(163,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(167,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(168,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(171,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(179,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(181,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(186,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(200,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(212,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(213,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(221,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(228,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(231,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(241,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(242,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(243,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(246,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemDiscoveries.tsx(250,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(97,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(98,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(99,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(102,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(103,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(106,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(107,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(108,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(113,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(125,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(133,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(141,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(142,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(145,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(149,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(176,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(184,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(185,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(186,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(189,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(190,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(217,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(231,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(237,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(238,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(249,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/StarSystemManagement.tsx(264,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(45,3): error TS2322: Type 'unknown' is not assignable to type 'DocumentInput<any, { gameId: string; }>'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(57,3): error TS2322: Type 'unknown' is not assignable to type 'DocumentInput<any, { id: string; }>'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(85,3): error TS2322: Type 'unknown' is not assignable to type 'DocumentInput<any, { id: string; }>'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(124,3): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'DocumentInput<any, AnyVariables>'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(155,11): error TS2304: Cannot find name 'formatNumber'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(155,35): error TS2304: Cannot find name 'formatNumber'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(156,11): error TS2304: Cannot find name 'formatNumber'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(156,35): error TS2304: Cannot find name 'formatNumber'.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(162,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(163,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(170,35): error TS7006: Parameter 'tf' implicitly has an 'any' type.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(171,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(181,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(183,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(190,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(194,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(212,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(231,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(232,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(235,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(238,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(247,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx(269,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(151,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(152,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(153,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(154,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(155,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(161,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(172,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(173,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(176,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(177,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(178,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(179,8): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(180,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(181,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(182,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(187,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(191,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(195,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(196,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(197,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(198,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(199,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(200,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(201,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(204,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(206,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(207,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(208,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(211,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(214,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(221,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(223,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(227,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(231,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(232,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(233,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(234,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(235,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(236,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(237,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(240,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(242,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(245,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(246,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(249,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(250,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(257,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(259,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(263,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(267,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(268,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(269,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(270,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(271,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(272,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(273,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(274,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(277,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(279,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(282,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(283,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(284,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(287,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(290,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(299,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(301,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(305,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(309,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(310,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(311,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(312,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(313,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(314,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(317,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(319,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(320,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(321,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(322,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(329,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(331,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(335,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(339,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(340,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(341,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(342,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(343,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(344,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(347,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(350,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(353,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(354,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(357,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(367,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(369,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(373,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(377,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(378,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(379,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(380,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(381,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(382,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(383,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(384,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(387,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(398,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(401,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(402,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(403,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(407,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(410,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(423,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(425,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(429,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(433,10): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(434,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(435,12): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(436,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(437,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(438,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(439,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(442,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(444,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(445,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(446,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(447,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(448,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(451,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(452,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(467,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(471,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(482,14): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx(494,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/UserButton/UserButton.tsx(5,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/features/UserButton/UserButton.tsx(31,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/UserButton/UserButton.tsx(41,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/UserButton/UserButton.tsx(42,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/UserButton/UserButton.tsx(47,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/UserButton/UserButton.tsx(48,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/UserButton/UserButton.tsx(52,6): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/features/UserButton/UserButton.tsx(57,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/main.tsx(5,21): error TS6142: Module './App' was resolved to '/home/rouby/space/packages/frontend/src/App.tsx', but '--jsx' is not set.
+packages/frontend/src/main.tsx(16,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/main.tsx(18,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/__root.tsx(18,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/__root.tsx(19,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/__root.tsx(21,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard.tsx(3,24): error TS6142: Module '../features/Header/Header' was resolved to '/home/rouby/space/packages/frontend/src/features/Header/Header.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard.tsx(4,24): error TS6142: Module '../features/Landing/Footer' was resolved to '/home/rouby/space/packages/frontend/src/features/Landing/Footer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard.tsx(7,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard.tsx(12,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard.tsx(13,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard.tsx(15,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard.tsx(16,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard.tsx(19,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/_authenticated.games/index.tsx(3,28): error TS6142: Module '../../../features/CreateGame/CreateGame' was resolved to '/home/rouby/space/packages/frontend/src/features/CreateGame/CreateGame.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/_authenticated.games/index.tsx(4,27): error TS6142: Module '../../../features/GamesList/GamesList' was resolved to '/home/rouby/space/packages/frontend/src/features/GamesList/GamesList.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/_authenticated.games/index.tsx(7,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/_authenticated.games/index.tsx(12,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/_authenticated.games/index.tsx(13,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/_authenticated.games/index.tsx(14,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/_authenticated.games/index.tsx(15,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/_authenticated.games/lobby.$id.tsx(3,27): error TS6142: Module '../../../features/GameLobby/GameLobby' was resolved to '/home/rouby/space/packages/frontend/src/features/GameLobby/GameLobby.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/_authenticated.games/lobby.$id.tsx(9,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/_authenticated.games/lobby.$id.tsx(10,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/features.tsx(2,30): error TS6142: Module '../../features/FeaturesPage/FeaturesPage' was resolved to '/home/rouby/space/packages/frontend/src/features/FeaturesPage/FeaturesPage.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/index.tsx(2,26): error TS6142: Module '../../features/Landing/Features' was resolved to '/home/rouby/space/packages/frontend/src/features/Landing/Features.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/index.tsx(3,22): error TS6142: Module '../../features/Landing/Hero' was resolved to '/home/rouby/space/packages/frontend/src/features/Landing/Hero.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/index.tsx(7,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/index.tsx(8,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/index.tsx(10,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/learn.tsx(2,27): error TS6142: Module '../../features/LearnPage/LearnPage' was resolved to '/home/rouby/space/packages/frontend/src/features/LearnPage/LearnPage.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/signin.tsx(4,25): error TS6142: Module '../../Auth' was resolved to '/home/rouby/space/packages/frontend/src/Auth.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/signin.tsx(5,28): error TS6142: Module '../../features/SignInForm/SignInForm' was resolved to '/home/rouby/space/packages/frontend/src/features/SignInForm/SignInForm.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/signin.tsx(6,28): error TS6142: Module '../../features/SignUpForm/SignUpForm' was resolved to '/home/rouby/space/packages/frontend/src/features/SignUpForm/SignUpForm.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/_dashboard/signin.tsx(9,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/signin.tsx(33,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/signin.tsx(35,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/_dashboard/signin.tsx(44,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(4,28): error TS6142: Module '../../features/GalaxyView/GalaxyView' was resolved to '/home/rouby/space/packages/frontend/src/features/GalaxyView/GalaxyView.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(5,28): error TS6142: Module '../../features/InGameMenu/InGameMenu' was resolved to '/home/rouby/space/packages/frontend/src/features/InGameMenu/InGameMenu.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(9,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(16,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(27,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(29,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(30,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id.lazy.tsx(32,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.$dilemmaId.lazy.tsx(2,30): error TS6142: Module '../../../components/DetailsModal/DetailsModal' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsModal/DetailsModal.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.$dilemmaId.lazy.tsx(3,31): error TS6142: Module '../../../features/DilemmaChoice/DilemmaChoice' was resolved to '/home/rouby/space/packages/frontend/src/features/DilemmaChoice/DilemmaChoice.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.$dilemmaId.lazy.tsx(16,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.$dilemmaId.lazy.tsx(17,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.$dilemmaId.lazy.tsx(22,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.$dilemmaId.lazy.tsx(43,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.index.lazy.tsx(2,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.index.lazy.tsx(3,30): error TS6142: Module '../../../features/DilemmasList/DilemmasList' was resolved to '/home/rouby/space/packages/frontend/src/features/DilemmasList/DilemmasList.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.index.lazy.tsx(15,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.index.lazy.tsx(16,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.index.lazy.tsx(17,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/dilemmas.index.lazy.tsx(20,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/engagement.$engagementId.lazy.tsx(2,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/engagement.$engagementId.lazy.tsx(3,39): error TS6142: Module '../../../features/CombatEngagementPanel/CombatEngagementPanel' was resolved to '/home/rouby/space/packages/frontend/src/features/CombatEngagementPanel/CombatEngagementPanel.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/engagement.$engagementId.lazy.tsx(8,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/engagement.$engagementId.lazy.tsx(16,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/engagement.$engagementId.lazy.tsx(17,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/engagement.$engagementId.lazy.tsx(18,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/engagement.$engagementId.lazy.tsx(21,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.lazy.tsx(2,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.lazy.tsx(3,29): error TS6142: Module '../../../features/ShipDesigns/ShipDesigns' was resolved to '/home/rouby/space/packages/frontend/src/features/ShipDesigns/ShipDesigns.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.lazy.tsx(8,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.lazy.tsx(15,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.lazy.tsx(16,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.lazy.tsx(17,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.lazy.tsx(20,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.new.lazy.tsx(2,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.new.lazy.tsx(3,30): error TS6142: Module '../../../features/ShipDesigns/ShipDesigner' was resolved to '/home/rouby/space/packages/frontend/src/features/ShipDesigns/ShipDesigner.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.new.lazy.tsx(8,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.new.lazy.tsx(16,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.new.lazy.tsx(17,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.new.lazy.tsx(18,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/ship-designs.new.lazy.tsx(21,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.commission-task-force.lazy.tsx(2,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.commission-task-force.lazy.tsx(3,42): error TS6142: Module '../../../features/StarSystemDetails/CommissionTaskForcePanel' was resolved to '/home/rouby/space/packages/frontend/src/features/StarSystemDetails/CommissionTaskForcePanel.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.commission-task-force.lazy.tsx(17,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.commission-task-force.lazy.tsx(26,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.commission-task-force.lazy.tsx(29,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.industrial-projects.lazy.tsx(3,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.industrial-projects.lazy.tsx(4,41): error TS6142: Module '../../../features/StarSystemDetails/IndustrialProjectsPanel' was resolved to '/home/rouby/space/packages/frontend/src/features/StarSystemDetails/IndustrialProjectsPanel.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.industrial-projects.lazy.tsx(17,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.industrial-projects.lazy.tsx(21,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.industrial-projects.lazy.tsx(24,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx(2,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx(3,35): error TS6142: Module '../../../features/StarSystemDetails/StarSystemDetails' was resolved to '/home/rouby/space/packages/frontend/src/features/StarSystemDetails/StarSystemDetails.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx(8,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx(16,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx(17,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx(18,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.lazy.tsx(21,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.$taskForceId.lazy.tsx(3,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.$taskForceId.lazy.tsx(4,40): error TS6142: Module '../../../features/StarSystemDetails/DeckConfigurationPanel' was resolved to '/home/rouby/space/packages/frontend/src/features/StarSystemDetails/DeckConfigurationPanel.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.$taskForceId.lazy.tsx(17,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.$taskForceId.lazy.tsx(21,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.$taskForceId.lazy.tsx(24,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.lazy.tsx(3,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.lazy.tsx(4,33): error TS6142: Module '../../../features/StarSystemDetails/TaskForcesPanel' was resolved to '/home/rouby/space/packages/frontend/src/features/StarSystemDetails/TaskForcesPanel.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.lazy.tsx(17,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.lazy.tsx(18,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.lazy.tsx(22,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.lazy.tsx(25,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/star-system.$starSystemId.task-forces.lazy.tsx(28,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/turn-reports.lazy.tsx(2,31): error TS6142: Module '../../../components/DetailsDrawer/DetailsDrawer' was resolved to '/home/rouby/space/packages/frontend/src/components/DetailsDrawer/DetailsDrawer.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/turn-reports.lazy.tsx(3,36): error TS6142: Module '../../../features/TurnReportsDetails/TurnReportsDetails' was resolved to '/home/rouby/space/packages/frontend/src/features/TurnReportsDetails/TurnReportsDetails.tsx', but '--jsx' is not set.
+packages/frontend/src/routes/games/_authenticated.$id/turn-reports.lazy.tsx(8,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/turn-reports.lazy.tsx(15,3): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/turn-reports.lazy.tsx(16,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/turn-reports.lazy.tsx(17,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/frontend/src/routes/games/_authenticated.$id/turn-reports.lazy.tsx(20,4): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+packages/gameloop/src/__tests__/colonization.spec.ts(3,34): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/__tests__/developmentStance.spec.ts(2,40): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/__tests__/populationMigration.spec.ts(2,42): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/__tests__/something.spec.ts(12,25): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/__tests__/taskForceCombat.spec.ts(2,37): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/__tests__/taskForceConstruction.spec.ts(2,43): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/main.ts(4,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/main.ts(5,25): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/main.ts(6,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/main.ts(7,23): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/main.ts(8,22): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/react/dilemmaChoice.ts(2,25): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/react/dilemmaChoice.ts(3,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/react/react.ts(1,36): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/components.ts(2,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/components.ts(3,38): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/galaxy.ts(2,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/resources.ts(2,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/resources.ts(3,41): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/setup.ts(3,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/setup.ts(4,25): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/setup.ts(5,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/setup.ts(6,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/setup.ts(7,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/setup.ts(8,41): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/startingConditions.ts(10,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/setup/startingConditions.ts(11,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/colonization.ts(12,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/developmentStance.ts(13,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/discoveries.ts(12,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/industrialProjects.ts(10,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/populationMigration.ts(9,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/starSystemEconomy.ts(11,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/starSystemEconomy.ts(12,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/starSystemPopulation.ts(9,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/starSystemPopulation.ts(10,49): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/taskForceCombat.ts(12,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/taskForceConstruction.ts(2,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/taskForceMovement.ts(2,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(23,24): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(24,25): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(25,34): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(26,40): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(27,33): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(29,40): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(30,41): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(32,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(34,42): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(35,37): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(37,43): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+packages/gameloop/src/tick/tick.ts(38,39): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.

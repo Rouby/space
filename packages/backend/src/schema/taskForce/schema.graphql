@@ -4,6 +4,19 @@ enum TaskForceShipRole {
 	support
 }
 
+enum TaskForceMission {
+	manual
+	patrol
+	siege
+	scout
+	intercept
+}
+
+type TaskForceShipDesign {
+	design: ShipDesign!
+	quantity: Int!
+}
+
 type TaskForce implements Positionable {
 	id: ID!
 	name: String!
@@ -19,7 +32,8 @@ type TaskForce implements Positionable {
 	isVisible: Boolean!
 	lastUpdate: DateTime
 	sensorRange: Float
-	shipDesigns: [ShipDesign!]!
+	mission: TaskForceMission!
+	shipDesigns: [TaskForceShipDesign!]!
 	combatProfile: CombatProfile!
 }
 
@@ -118,10 +132,16 @@ type CombatProfile {
 	eligibleCardIds: [String!]!
 }
 
+input ConstructTaskForceShipDesignInput {
+	shipDesignId: ID!
+	quantity: Int!
+}
+
 input ConstructTaskForceInput {
 	starSystemId: ID!
-	shipDesignIds: [ID!]!
+	shipDesigns: [ConstructTaskForceShipDesignInput!]!
 	name: String!
+	mission: TaskForceMission!
 }
 
 input ConfigureTaskForceCombatDeckInput {
@@ -144,6 +164,10 @@ extend type Query {
 }
 
 type Mutation {
+	assignTaskForceMission(
+		taskForceId: ID!
+		mission: TaskForceMission!
+	): TaskForce!
 	orderTaskForce(
 		id: ID!
 		orders: [TaskForceOrderInput!]!

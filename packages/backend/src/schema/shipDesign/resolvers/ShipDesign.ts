@@ -47,12 +47,8 @@ export const ShipDesign: ShipDesignResolvers = {
 			.where(eq(shipDesignComponents.shipDesignId, parent.id))
 			.then((rows) =>
 				rows.map((row) => ({
-					id: row.shipDesignComponents.shipComponentId,
+					id: row.shipDesignComponents.id,
 					component: row.shipComponents,
-					position: {
-						x: row.shipDesignComponents.column,
-						y: row.shipDesignComponents.row,
-					},
 				})),
 			);
 	},

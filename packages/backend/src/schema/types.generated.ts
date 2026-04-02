@@ -1,7 +1,7 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
 import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportColonizationCompletedMapper, TurnReportColonizationPressureChangeMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportPopulationMigrationMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
-import { PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
+import { IndustrialProjectMapper, PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
 import { ShipDesignMapper } from './shipDesign/schema.mappers.js';
@@ -50,9 +50,15 @@ export type ConfigureTaskForceCombatDeckInput = {
 };
 
 export type ConstructTaskForceInput = {
+  mission: TaskForceMission;
   name: Scalars['String']['input'];
-  shipDesignIds: Array<Scalars['ID']['input']>;
+  shipDesigns: Array<ConstructTaskForceShipDesignInput>;
   starSystemId: Scalars['ID']['input'];
+};
+
+export type ConstructTaskForceShipDesignInput = {
+  quantity: Scalars['Int']['input'];
+  shipDesignId: Scalars['ID']['input'];
 };
 
 export type DevelopmentStance =
@@ -144,6 +150,7 @@ export type IndustrialProjectType =
 
 export type Mutation = {
   __typename?: 'Mutation';
+  assignTaskForceMission: TaskForce;
   configureTaskForceCombatDeck: TaskForce;
   constructTaskForce: TaskForce;
   createGame: Game;
@@ -162,6 +169,12 @@ export type Mutation = {
   submitTaskForceEngagementAction: TaskForceEngagement;
   updateGameSettings: Game;
   updatePlayer: Player;
+};
+
+
+export type MutationassignTaskForceMissionArgs = {
+  mission: TaskForceMission;
+  taskForceId: Scalars['ID']['input'];
 };
 
 
@@ -424,12 +437,10 @@ export type ShipDesignComponent = {
   __typename?: 'ShipDesignComponent';
   component: ShipComponent;
   id: Scalars['ID']['output'];
-  position: Scalars['Vector']['output'];
 };
 
 export type ShipDesignComponentInput = {
   componentId: Scalars['ID']['input'];
-  gridPosition: Scalars['Vector']['input'];
 };
 
 export type ShipDesignInput = {
@@ -522,13 +533,14 @@ export type TaskForce = Positionable & {
   id: Scalars['ID']['output'];
   isVisible: Scalars['Boolean']['output'];
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
+  mission: TaskForceMission;
   movementVector?: Maybe<Scalars['Vector']['output']>;
   name: Scalars['String']['output'];
   orders?: Maybe<Array<TaskForceOrder>>;
   owner?: Maybe<Player>;
   position: Scalars['Vector']['output'];
   sensorRange?: Maybe<Scalars['Float']['output']>;
-  shipDesigns: Array<ShipDesign>;
+  shipDesigns: Array<TaskForceShipDesign>;
 };
 
 export type TaskForceColonizeOrder = TaskForceOrder & {
@@ -593,6 +605,13 @@ export type TaskForceFollowOrderInput = {
   taskForceId: Scalars['ID']['input'];
 };
 
+export type TaskForceMission =
+  | 'intercept'
+  | 'manual'
+  | 'patrol'
+  | 'scout'
+  | 'siege';
+
 export type TaskForceMoveOrder = TaskForceOrder & {
   __typename?: 'TaskForceMoveOrder';
   destination: Scalars['Vector']['output'];
@@ -611,6 +630,12 @@ export type TaskForceOrderInput = {
   colonize?: InputMaybe<Scalars['Boolean']['input']>;
   follow?: InputMaybe<TaskForceFollowOrderInput>;
   move?: InputMaybe<TaskForceMoveOrderInput>;
+};
+
+export type TaskForceShipDesign = {
+  __typename?: 'TaskForceShipDesign';
+  design: ShipDesign;
+  quantity: Scalars['Int']['output'];
 };
 
 export type TaskForceShipRole =
@@ -866,15 +891,16 @@ export type ResolversTypes = {
   ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   ConstructTaskForceInput: ConstructTaskForceInput;
+  ConstructTaskForceShipDesignInput: ConstructTaskForceShipDesignInput;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DevelopmentStance: ResolverTypeWrapper<'industrialize' | 'balance' | 'grow_population'>;
   DevelopmentStanceProjection: ResolverTypeWrapper<DevelopmentStanceProjection>;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Dilemma: ResolverTypeWrapper<DilemmaMapper>;
   DilemmaChoice: ResolverTypeWrapper<DilemmaChoice>;
   Discovery: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Discovery']>;
   Game: ResolverTypeWrapper<GameMapper>;
-  IndustrialProject: ResolverTypeWrapper<Omit<IndustrialProject, 'projectType'> & { projectType: ResolversTypes['IndustrialProjectType'] }>;
+  IndustrialProject: ResolverTypeWrapper<IndustrialProjectMapper>;
   IndustrialProjectType: ResolverTypeWrapper<'factory_expansion' | 'automation_hub' | 'orbital_foundry' | 'deep_core_scanner' | 'xenoarchaeology_lab' | 'habitation_dome' | 'gravity_well_spire' | 'fleet_drydock'>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
@@ -910,10 +936,12 @@ export type ResolversTypes = {
   TaskForceEngagementRoundLogEntry: ResolverTypeWrapper<TaskForceEngagementRoundLogEntryMapper>;
   TaskForceFollowOrder: ResolverTypeWrapper<TaskForceFollowOrderMapper>;
   TaskForceFollowOrderInput: TaskForceFollowOrderInput;
+  TaskForceMission: ResolverTypeWrapper<'manual' | 'patrol' | 'siege' | 'scout' | 'intercept'>;
   TaskForceMoveOrder: ResolverTypeWrapper<TaskForceMoveOrderMapper>;
   TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: ResolverTypeWrapper<TaskForceOrderMapper>;
   TaskForceOrderInput: TaskForceOrderInput;
+  TaskForceShipDesign: ResolverTypeWrapper<Omit<TaskForceShipDesign, 'design'> & { design: ResolversTypes['ShipDesign'] }>;
   TaskForceShipRole: ResolverTypeWrapper<'capital' | 'screen' | 'support'>;
   TrackGalaxyEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGalaxyEvent']>;
   TrackGameEvent: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TrackGameEvent']>;
@@ -946,14 +974,15 @@ export type ResolversParentTypes = {
   ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
   ID: Scalars['ID']['output'];
   ConstructTaskForceInput: ConstructTaskForceInput;
+  ConstructTaskForceShipDesignInput: ConstructTaskForceShipDesignInput;
+  Int: Scalars['Int']['output'];
   DateTime: Scalars['DateTime']['output'];
   DevelopmentStanceProjection: DevelopmentStanceProjection;
-  Int: Scalars['Int']['output'];
   Dilemma: DilemmaMapper;
   DilemmaChoice: DilemmaChoice;
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
-  IndustrialProject: IndustrialProject;
+  IndustrialProject: IndustrialProjectMapper;
   Mutation: Record<PropertyKey, never>;
   NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   Player: PlayerMapper;
@@ -991,6 +1020,7 @@ export type ResolversParentTypes = {
   TaskForceMoveOrderInput: TaskForceMoveOrderInput;
   TaskForceOrder: TaskForceOrderMapper;
   TaskForceOrderInput: TaskForceOrderInput;
+  TaskForceShipDesign: Omit<TaskForceShipDesign, 'design'> & { design: ResolversParentTypes['ShipDesign'] };
   TrackGalaxyEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGalaxyEvent'];
   TrackGameEvent: ResolversUnionTypes<ResolversParentTypes>['TrackGameEvent'];
   TrackStarSystemEvent: ResolversUnionTypes<ResolversParentTypes>['TrackStarSystemEvent'];
@@ -1102,6 +1132,7 @@ export type IndustrialProjectResolvers<ContextType = Context, ParentType extends
 export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_hub?: any, deep_core_scanner?: any, factory_expansion?: any, fleet_drydock?: any, gravity_well_spire?: any, habitation_dome?: any, orbital_foundry?: any, xenoarchaeology_lab?: any }, ResolversTypes['IndustrialProjectType']>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  assignTaskForceMission?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationassignTaskForceMissionArgs, 'mission' | 'taskForceId'>>;
   configureTaskForceCombatDeck?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconfigureTaskForceCombatDeckArgs, 'input'>>;
   constructTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconstructTaskForceArgs, 'input'>>;
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
@@ -1255,7 +1286,6 @@ export type ShipDesignResolvers<ContextType = Context, ParentType extends Resolv
 export type ShipDesignComponentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ShipDesignComponent'] = ResolversParentTypes['ShipDesignComponent']> = {
   component?: Resolver<ResolversTypes['ShipComponent'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
 };
 
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
@@ -1312,13 +1342,14 @@ export type TaskForceResolvers<ContextType = Context, ParentType extends Resolve
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  mission?: Resolver<ResolversTypes['TaskForceMission'], ParentType, ContextType>;
   movementVector?: Resolver<Maybe<ResolversTypes['Vector']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   orders?: Resolver<Maybe<Array<ResolversTypes['TaskForceOrder']>>, ParentType, ContextType>;
   owner?: Resolver<Maybe<ResolversTypes['Player']>, ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   sensorRange?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
+  shipDesigns?: Resolver<Array<ResolversTypes['TaskForceShipDesign']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1378,6 +1409,8 @@ export type TaskForceFollowOrderResolvers<ContextType = Context, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TaskForceMissionResolvers = EnumResolverSignature<{ intercept?: any, manual?: any, patrol?: any, scout?: any, siege?: any }, ResolversTypes['TaskForceMission']>;
+
 export type TaskForceMoveOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceMoveOrder'] = ResolversParentTypes['TaskForceMoveOrder']> = {
   destination?: Resolver<ResolversTypes['Vector'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1386,6 +1419,11 @@ export type TaskForceMoveOrderResolvers<ContextType = Context, ParentType extend
 
 export type TaskForceOrderResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceOrder'] = ResolversParentTypes['TaskForceOrder']> = {
   __resolveType?: TypeResolveFn<'TaskForceColonizeOrder' | 'TaskForceFollowOrder' | 'TaskForceMoveOrder', ParentType, ContextType>;
+};
+
+export type TaskForceShipDesignResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TaskForceShipDesign'] = ResolversParentTypes['TaskForceShipDesign']> = {
+  design?: Resolver<ResolversTypes['ShipDesign'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
 
 export type TaskForceShipRoleResolvers = EnumResolverSignature<{ capital?: any, screen?: any, support?: any }, ResolversTypes['TaskForceShipRole']>;
@@ -1550,8 +1588,10 @@ export type Resolvers<ContextType = Context> = {
   TaskForceEngagementParticipantState?: TaskForceEngagementParticipantStateResolvers<ContextType>;
   TaskForceEngagementRoundLogEntry?: TaskForceEngagementRoundLogEntryResolvers<ContextType>;
   TaskForceFollowOrder?: TaskForceFollowOrderResolvers<ContextType>;
+  TaskForceMission?: TaskForceMissionResolvers;
   TaskForceMoveOrder?: TaskForceMoveOrderResolvers<ContextType>;
   TaskForceOrder?: TaskForceOrderResolvers<ContextType>;
+  TaskForceShipDesign?: TaskForceShipDesignResolvers<ContextType>;
   TaskForceShipRole?: TaskForceShipRoleResolvers;
   TrackGalaxyEvent?: TrackGalaxyEventResolvers<ContextType>;
   TrackGameEvent?: TrackGameEventResolvers<ContextType>;

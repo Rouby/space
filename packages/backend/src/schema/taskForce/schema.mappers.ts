@@ -16,6 +16,7 @@ export type TaskForceMapper = {
 	lastUpdate: Date | null;
 	ownerId: string | null;
 	gameId: string;
+	mission: string | null;
 };
 export type TaskForceOrderMapper =
 	| {

@@ -39,3 +39,31 @@ export type StarSystemColonizationMapper = {
 	dueTurn: number;
 	startedAt: Date;
 };
+
+export type IndustrialProjectMapper = {
+	id: string | number;
+	gameId: string;
+	starSystemId: string;
+	playerId: string;
+	projectType:
+		| "factory_expansion"
+		| "automation_hub"
+		| "orbital_foundry"
+		| "deep_core_scanner"
+		| "xenoarchaeology_lab"
+		| "habitation_dome"
+		| "gravity_well_spire"
+		| "fleet_drydock";
+	industryPerTurn: number;
+	workRequired: number;
+	workDone: number;
+	completionIndustryBonus: number;
+	maintenanceCost: number;
+	queuePosition: number;
+	queuedAtTurn: number;
+	startedAtTurn: number | null;
+	completedAtTurn: number | null;
+	createdAt: Date;
+	turnsRemaining: number;
+	etaTurns: number;
+};

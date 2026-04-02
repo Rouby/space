@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
 	decimal,
+	integer,
 	json,
 	pgTable,
 	point,
@@ -35,6 +36,7 @@ export const taskForces = pgTable("taskForces", {
 		>()
 		.default([]),
 	combatDeck: json().notNull().$type<string[]>().default([]),
+	mission: varchar({ length: 32 }).notNull().default("manual"),
 	movementVector: point({ mode: "xy" }),
 	constructionStarSystemId: uuid().references(() => starSystems.id, {
 		onDelete: "set null",
@@ -64,6 +66,7 @@ export const taskForceShipDesigns = pgTable(
 		shipDesignId: uuid()
 			.notNull()
 			.references(() => shipDesigns.id, { onDelete: "restrict" }),
+		quantity: integer().notNull().default(1),
 	},
 	(table) => [primaryKey({ columns: [table.taskForceId, table.shipDesignId] })],
 );
