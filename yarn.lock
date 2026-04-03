@@ -3922,6 +3922,7 @@ __metadata:
     "@tabler/icons-react": "npm:3.40.0"
     "@tanstack/react-router": "npm:1.167.0"
     "@tanstack/react-router-devtools": "npm:1.166.7"
+    "@tanstack/router-core": "npm:1.167.0"
     "@tanstack/router-plugin": "npm:1.166.9"
     "@tiptap/core": "npm:3.20.1"
     "@tiptap/extension-link": "npm:3.20.1"
@@ -3947,6 +3948,7 @@ __metadata:
     postcss-simple-vars: "npm:7.0.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
+    react-is: "npm:19.2.4"
     recharts: "npm:3.8.0"
     tss-react: "npm:4.9.20"
     typescript: "npm:5.9.3"
@@ -10296,6 +10298,13 @@ __metadata:
   peerDependencies:
     react: ^19.2.4
   checksum: 10c0/f0c63f1794dedb154136d4d0f59af00b41907f4859571c155940296808f4b94bf9c0c20633db75b5b2112ec13d8d7dd4f9bf57362ed48782f317b11d05a44f35
+  languageName: node
+  linkType: hard
+
+"react-is@npm:19.2.4":
+  version: 19.2.4
+  resolution: "react-is@npm:19.2.4"
+  checksum: 10c0/477a7cfc900f24194606e315fa353856a3a13487ea8eca841678817cad4daef64339ea0d1e84e58459fc75dbe0d9ba00bb0cc626db3d07e0cf31edc64cb4fa37
   languageName: node
   linkType: hard
 

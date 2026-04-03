@@ -3166,7 +3166,7 @@ const RAW_RUNTIME_STATE =
     ],\
     [\
       "react-is",\
-      "npm:16.13.1"\
+      "npm:19.2.4"\
     ],\
     [\
       "react-number-format",\
@@ -9366,6 +9366,7 @@ const RAW_RUNTIME_STATE =
           ["@tabler/icons-react", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:3.40.0"],\
           ["@tanstack/react-router", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:1.167.0"],\
           ["@tanstack/react-router-devtools", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:1.166.7"],\
+          ["@tanstack/router-core", "npm:1.167.0"],\
           ["@tanstack/router-plugin", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:1.166.9"],\
           ["@tiptap/core", "virtual:217f2a2e10cd0fd32c8c403a6f4aff1f9b006ec557441b04d6ac623ff51bdcf5886e92f016bd8162040868f91f971174c2d5f53e56a3ce00131ff095e22c6e1a#npm:3.20.1"],\
           ["@tiptap/extension-link", "virtual:217f2a2e10cd0fd32c8c403a6f4aff1f9b006ec557441b04d6ac623ff51bdcf5886e92f016bd8162040868f91f971174c2d5f53e56a3ce00131ff095e22c6e1a#npm:3.20.1"],\
@@ -9391,6 +9392,7 @@ const RAW_RUNTIME_STATE =
           ["postcss-simple-vars", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:7.0.1"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:19.2.4"],\
+          ["react-is", "npm:19.2.4"],\
           ["recharts", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:3.8.0"],\
           ["tss-react", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:4.9.20"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
@@ -9989,7 +9991,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@tanstack/react-router-devtools", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:1.166.7"],\
           ["@tanstack/react-router", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:1.167.0"],\
-          ["@tanstack/router-core", null],\
+          ["@tanstack/router-core", "npm:1.167.0"],\
           ["@tanstack/router-devtools-core", "virtual:7386cc74602385d916d9568b89b7257a2c6b656a6ea0baf3b50c8c25fa712c21666f0bd6b4ac55c9cba69733c8e535e4eecd1f126d9fa8997dd6f7c1501dc5e8#npm:1.166.7"],\
           ["@types/react", "npm:19.2.14"],\
           ["@types/react-dom", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:19.2.3"],\
@@ -10067,7 +10069,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/__virtual__/@tanstack-router-devtools-core-virtual-9caad11870/0/cache/@tanstack-router-devtools-core-npm-1.166.7-52d5d32890-8cf38822ca.zip/node_modules/@tanstack/router-devtools-core/",\
         "packageDependencies": [\
           ["@tanstack/router-devtools-core", "virtual:7386cc74602385d916d9568b89b7257a2c6b656a6ea0baf3b50c8c25fa712c21666f0bd6b4ac55c9cba69733c8e535e4eecd1f126d9fa8997dd6f7c1501dc5e8#npm:1.166.7"],\
-          ["@tanstack/router-core", null],\
+          ["@tanstack/router-core", "npm:1.167.0"],\
           ["@types/csstype", null],\
           ["@types/tanstack__router-core", null],\
           ["clsx", "npm:2.1.1"],\
@@ -17234,6 +17236,13 @@ const RAW_RUNTIME_STATE =
           ["react-is", "npm:16.13.1"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:19.2.4", {\
+        "packageLocation": "./.yarn/cache/react-is-npm-19.2.4-9fb594121c-477a7cfc90.zip/node_modules/react-is/",\
+        "packageDependencies": [\
+          ["react-is", "npm:19.2.4"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["react-number-format", [\
@@ -17490,7 +17499,7 @@ const RAW_RUNTIME_STATE =
           ["immer", "npm:10.2.0"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:19.2.4"],\
-          ["react-is", null],\
+          ["react-is", "npm:19.2.4"],\
           ["react-redux", "virtual:81de8c047a266b5bbe53af0075c44f95beca1ae8f55c33890de662cc2d0c3e7ff2acf91a82f2675a1043f7ae35c4ca5ea87164f8d10f0a47c469b9965badaf8b#npm:9.2.0"],\
           ["reselect", "npm:5.1.1"],\
           ["tiny-invariant", "npm:1.3.3"],\
