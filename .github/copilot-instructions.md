@@ -91,9 +91,9 @@ yarn workspace @space/frontend build   # Vite production build → packages/fron
 - **Workers:** `workers.ts` — spawns one Node.js Worker Thread per active game; communicates via message passing.
 - **Import style:** Use explicit `.ts` extension on all imports in backend/data/gameloop (enforced by Biome `useImportExtensions`).
 
-### AI (`packages/ai/src/`)
+### Generative (`packages/generative/src/`)
 
-- Shared utility package for AI interactions and prompt templates.
+- Shared utility package for Generative interactions and prompt templates.
 - Key entry points: `createChat.ts`, `createCompletion.ts`, prompt files in `prompts/`, and scenario helpers in `chats/`.
 - Imported by `@space/gameloop` via workspace dependency.
 
