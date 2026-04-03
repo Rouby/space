@@ -1,4 +1,5 @@
 import {
+	ActionIcon,
 	Badge,
 	Card,
 	Group,
@@ -215,6 +216,17 @@ export function IndustrialProjectsPanel({
 			queueIndustrialProject(starSystemId: $starSystemId, projectType: $projectType) {
 				id
 				industrialProjects {
+					id
+				}
+			}
+		}`),
+	);
+
+	const [abandonIndustrialProjectState, abandonIndustrialProject] = useMutation(
+		graphql(`mutation AbandonIndustrialProject($projectId: ID!) {
+			abandonIndustrialProject(projectId: $projectId) {
+				id
+				completedIndustrialProjects {
 					id
 				}
 			}
@@ -476,6 +488,22 @@ export function IndustrialProjectsPanel({
 										<Text size="xs" c="dimmed">
 											Turn {project.completedAtTurn}
 										</Text>
+										{isOwnedByMe && (
+											<Tooltip label="Abandon project to free maintenance capacity (effects already applied)">
+												<ActionIcon
+													size="xs"
+													variant="subtle"
+													color="red"
+													loading={abandonIndustrialProjectState.fetching}
+													onClick={() =>
+														abandonIndustrialProject({ projectId: project.id })
+													}
+													aria-label="Abandon project"
+												>
+													✕
+												</ActionIcon>
+											</Tooltip>
+										)}
 									</Group>
 								</Group>
 							);

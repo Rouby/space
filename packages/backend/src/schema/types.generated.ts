@@ -159,6 +159,7 @@ export type IndustryBreakdown = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  abandonIndustrialProject: StarSystem;
   assignTaskForceMission: TaskForce;
   chooseResearchOutcome: Player;
   configureTaskForceCombatDeck: TaskForce;
@@ -180,6 +181,11 @@ export type Mutation = {
   submitTaskForceEngagementAction: TaskForceEngagement;
   updateGameSettings: Game;
   updatePlayer: Player;
+};
+
+
+export type MutationabandonIndustrialProjectArgs = {
+  projectId: Scalars['ID']['input'];
 };
 
 
@@ -1270,6 +1276,7 @@ export type IndustryBreakdownResolvers<ContextType = Context, ParentType extends
 };
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  abandonIndustrialProject?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationabandonIndustrialProjectArgs, 'projectId'>>;
   assignTaskForceMission?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationassignTaskForceMissionArgs, 'mission' | 'taskForceId'>>;
   chooseResearchOutcome?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationchooseResearchOutcomeArgs, 'category' | 'gameId' | 'outcomeKey' | 'outcomeMode'>>;
   configureTaskForceCombatDeck?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconfigureTaskForceCombatDeckArgs, 'input'>>;

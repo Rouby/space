@@ -25,7 +25,8 @@
 		"watch": [
 			"src/*.ts",
 			"src/schema/**/*.ts",
-			"../gameloop/src/**/*.ts"
+			"../gameloop/src/**/*.ts",
+			"../data/src/functions/**/*.ts"
 		],
 		"ext": "ts,tsx",
 		"signal": "SIGHUP",

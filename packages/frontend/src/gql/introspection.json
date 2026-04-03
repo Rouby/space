@@ -765,6 +765,29 @@
         "name": "Mutation",
         "fields": [
           {
+            "name": "abandonIndustrialProject",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "StarSystem",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "projectId",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
             "name": "assignTaskForceMission",
             "type": {
               "kind": "NON_NULL",

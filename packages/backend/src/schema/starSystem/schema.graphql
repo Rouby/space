@@ -115,6 +115,7 @@ extend type Mutation {
 		starSystemId: ID!
 		governance: ColonizationGovernance
 	): StarSystem!
+	abandonIndustrialProject(projectId: ID!): StarSystem!
 	queueIndustrialProject(
 		starSystemId: ID!
 		projectType: IndustrialProjectType!

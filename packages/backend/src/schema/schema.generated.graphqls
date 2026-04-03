@@ -122,6 +122,7 @@ type IndustryBreakdown {
 }
 
 type Mutation {
+	abandonIndustrialProject(projectId: ID!): StarSystem!
 	assignTaskForceMission(
 		mission: TaskForceMission!
 		taskForceId: ID!
