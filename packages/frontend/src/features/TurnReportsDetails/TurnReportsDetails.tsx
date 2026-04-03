@@ -1,20 +1,24 @@
 import {
-	Anchor,
+	Accordion,
 	Card,
-	Divider,
 	Group,
 	Pagination,
 	ScrollArea,
 	Stack,
-	Table,
 	Text,
 	Title,
 } from "@mantine/core";
-import { Link, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useHotkeys } from "@mantine/hooks";
+import { useParams } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { useQuery } from "urql";
-import { formatInteger, formatUnit } from "../../format/formatNumber";
 import { graphql } from "../../gql";
+import { EconomySection } from "./components/EconomySection";
+import { MilitarySection } from "./components/MilitarySection";
+import { PopulationSection } from "./components/PopulationSection";
+import { ReportSummaryCard } from "./components/ReportSummaryCard";
+import { ResearchColonizationSection } from "./components/ResearchColonizationSection";
+import type { TurnReportSummary } from "./types";
 
 export function TurnReportsDetails() {
 	const { id: gameId } = useParams({ from: "/games/_authenticated/$id" });
@@ -150,29 +154,74 @@ export function TurnReportsDetails() {
 	const reports = data?.game.turnReports ?? [];
 	const [activePage, setActivePage] = useState(1);
 
-	const formatProjectType = (projectType: string) =>
-		projectType
-			.split("_")
-			.map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-			.join(" ");
-
-	// Ensure the active page isn't out of bounds if the reports change
 	const validPage =
 		reports.length > 0 ? Math.min(activePage, reports.length) : 1;
 	const report = reports[validPage - 1];
 
+	const goToPreviousReport = () => {
+		if (reports.length <= 1) {
+			return;
+		}
+		setActivePage((current) => Math.max(1, current - 1));
+	};
+
+	const goToNextReport = () => {
+		if (reports.length <= 1) {
+			return;
+		}
+		setActivePage((current) => Math.min(reports.length, current + 1));
+	};
+
+	useHotkeys([
+		["ArrowLeft", goToPreviousReport],
+		["ArrowRight", goToNextReport],
+	]);
+
+	const summary = useMemo<TurnReportSummary | null>(() => {
+		if (!report) {
+			return null;
+		}
+
+		const totalGrowth = report.populationChanges.reduce(
+			(total, change) => total + change.growth,
+			0,
+		);
+		const totalMigrations = report.populationMigrations.reduce(
+			(total, migration) => total + migration.amount,
+			0,
+		);
+		const totalMined = report.miningChanges.reduce(
+			(total, change) => total + change.mined,
+			0,
+		);
+		const activeEngagements = report.taskForceEngagements.filter(
+			(engagement) => engagement.status !== "resolved",
+		).length;
+
+		return {
+			totalGrowth,
+			totalMigrations,
+			totalMined,
+			activeEngagements,
+		};
+	}, [report]);
+
 	return (
 		<Stack p="md" gap="md" h="100%" mah="100%" style={{ overflow: "hidden" }}>
-			<Group justify="space-between">
-				<div>
+			<Group justify="space-between" align="flex-start">
+				<Stack gap={2}>
 					<Title order={3}>Turn Reports</Title>
 					<Text size="sm" c="dimmed">
-						Detailed end-of-turn summaries for population, mining, industry,
-						migration, industrial projects, research, and task force
-						construction.
+						End-of-turn intelligence for empire growth, production, military
+						pressure, and research momentum.
 					</Text>
-				</div>
-				{reports.length > 1 && (
+					{reports.length > 1 ? (
+						<Text size="xs" c="dimmed">
+							Use Left and Right Arrow keys to move between reports.
+						</Text>
+					) : null}
+				</Stack>
+				{reports.length > 1 ? (
 					<Pagination
 						total={reports.length}
 						value={validPage}
@@ -180,418 +229,34 @@ export function TurnReportsDetails() {
 						size="sm"
 						withEdges
 					/>
-				)}
+				) : null}
 			</Group>
 
-			{reports.length === 0 || !report ? (
+			{reports.length === 0 || !report || !summary ? (
 				<Card withBorder>
 					<Text>No reports available yet. End a turn to generate one.</Text>
 				</Card>
 			) : (
 				<ScrollArea h="100%" type="always">
 					<Stack gap="sm" pr="sm">
-						<Card key={report.id} withBorder>
-							<Stack gap="xs">
-								<Group justify="space-between" align="baseline">
-									<Title order={5}>Turn {report.turnNumber}</Title>
-									<Text size="xs" c="dimmed">
-										{new Date(report.createdAt).toLocaleString()}
-									</Text>
-								</Group>
+						<ReportSummaryCard
+							report={report}
+							reportIndex={validPage}
+							totalReports={reports.length}
+							summary={summary}
+						/>
 
-								<Text size="sm" fw={500}>
-									Population Changes
-								</Text>
-								{report.populationChanges.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No population changes.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Star System</Table.Th>
-												<Table.Th>Growth</Table.Th>
-												<Table.Th>Previous</Table.Th>
-												<Table.Th>New</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.populationChanges.map((change) => (
-												<Table.Tr key={change.population.id}>
-													<Table.Td>{change.starSystem.name}</Table.Td>
-													<Table.Td c="green">
-														+{formatInteger(change.growth)}
-													</Table.Td>
-													<Table.Td c="dimmed">
-														{formatInteger(change.previousAmount)}
-													</Table.Td>
-													<Table.Td>{formatInteger(change.newAmount)}</Table.Td>
-												</Table.Tr>
-											))}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Population Migration
-								</Text>
-								{report.populationMigrations.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No migration changes.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>From</Table.Th>
-												<Table.Th>To</Table.Th>
-												<Table.Th>Allegiance</Table.Th>
-												<Table.Th>Migrated</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.populationMigrations.map((migration, idx) => (
-												<Table.Tr
-													key={`${migration.sourceStarSystem.id}:${migration.destinationStarSystem.id}:${migration.allegiancePlayer.id}:${idx}`}
-												>
-													<Table.Td>{migration.sourceStarSystem.name}</Table.Td>
-													<Table.Td>
-														{migration.destinationStarSystem.name}
-													</Table.Td>
-													<Table.Td>{migration.allegiancePlayer.name}</Table.Td>
-													<Table.Td>{formatInteger(migration.amount)}</Table.Td>
-												</Table.Tr>
-											))}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Mining Changes
-								</Text>
-								{report.miningChanges.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No mining changes.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Star System</Table.Th>
-												<Table.Th>Resource</Table.Th>
-												<Table.Th>Mined</Table.Th>
-												<Table.Th>Depot Qty</Table.Th>
-												<Table.Th>Remaining</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.miningChanges.map((change) => (
-												<Table.Tr
-													key={`${change.starSystem.id}:${change.resource.id}`}
-												>
-													<Table.Td>{change.starSystem.name}</Table.Td>
-													<Table.Td>{change.resource.name}</Table.Td>
-													<Table.Td c="green">
-														+{formatUnit(change.mined)}
-													</Table.Td>
-													<Table.Td>
-														{formatUnit(change.depotQuantity)}
-													</Table.Td>
-													<Table.Td c="dimmed">
-														{formatUnit(change.remainingDeposits)}
-													</Table.Td>
-												</Table.Tr>
-											))}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Industry Output
-								</Text>
-								{report.industryChanges.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No industry capability.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Star System</Table.Th>
-												<Table.Th>Utilized</Table.Th>
-												<Table.Th>Capacity</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.industryChanges.map((change) => (
-												<Table.Tr key={change.starSystem.id}>
-													<Table.Td>{change.starSystem.name}</Table.Td>
-													<Table.Td>{change.industryUtilized}</Table.Td>
-													<Table.Td>{change.industryTotal}</Table.Td>
-												</Table.Tr>
-											))}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Industrial Projects Completed
-								</Text>
-								{report.industrialProjectCompletions.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No industrial projects completed this turn.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Star System</Table.Th>
-												<Table.Th>Project</Table.Th>
-												<Table.Th>Added Industry</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.industrialProjectCompletions.map(
-												(completion, idx) => (
-													<Table.Tr
-														key={`${completion.starSystem.id}:${completion.projectType}:${idx}`}
-													>
-														<Table.Td>{completion.starSystem.name}</Table.Td>
-														<Table.Td>
-															{formatProjectType(completion.projectType)}
-														</Table.Td>
-														<Table.Td c="green">
-															+{formatInteger(completion.industryBonus)}
-														</Table.Td>
-													</Table.Tr>
-												),
-											)}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Task Force Construction
-								</Text>
-								{report.taskForceConstructionChanges.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No task force construction progress this turn.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Task Force</Table.Th>
-												<Table.Th>Star System</Table.Th>
-												<Table.Th>Progress</Table.Th>
-												<Table.Th>This Turn</Table.Th>
-												<Table.Th>Status</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.taskForceConstructionChanges.map(
-												(change, idx) => {
-													const percent =
-														change.total > 0
-															? Math.floor(
-																	(change.newDone / change.total) * 100,
-																)
-															: 0;
-
-													return (
-														<Table.Tr
-															key={`${change.taskForce.id}:${change.starSystem.id}:${idx}`}
-														>
-															<Table.Td>{change.taskForce.name}</Table.Td>
-															<Table.Td>{change.starSystem.name}</Table.Td>
-															<Table.Td>
-																{formatInteger(change.newDone)} /{" "}
-																{formatInteger(change.total)} ({percent}%)
-															</Table.Td>
-															<Table.Td c="green">
-																+{formatInteger(change.perTick)}
-															</Table.Td>
-															<Table.Td
-																c={change.completed ? "green" : "yellow"}
-															>
-																{change.completed ? "Completed" : "In progress"}
-															</Table.Td>
-														</Table.Tr>
-													);
-												},
-											)}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Task Force Engagements
-								</Text>
-								{report.taskForceEngagements.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No task force engagements active or resolved this turn.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Engagement</Table.Th>
-												<Table.Th>Location</Table.Th>
-												<Table.Th>Status</Table.Th>
-												<Table.Th>Winner</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.taskForceEngagements.map((engagement) => (
-												<Table.Tr key={engagement.engagementId}>
-													<Table.Td>
-														<Group gap="xs">
-															<Text fw={500}>{engagement.taskForceAName}</Text>
-															<Text size="xs" c="dimmed">
-																vs
-															</Text>
-															<Text fw={500}>{engagement.taskForceBName}</Text>
-															<Anchor
-																component={Link}
-																to="/games/$id/engagement/$engagementId"
-																params={
-																	{
-																		id: gameId,
-																		engagementId: engagement.engagementId,
-																	} as never
-																}
-																size="xs"
-															>
-																Open
-															</Anchor>
-														</Group>
-													</Table.Td>
-													<Table.Td c="dimmed">
-														({formatInteger(engagement.location.x)},{" "}
-														{formatInteger(engagement.location.y)})
-													</Table.Td>
-													<Table.Td
-														c={
-															engagement.status === "resolved"
-																? "blue"
-																: "yellow"
-														}
-													>
-														{engagement.status === "resolved"
-															? "Resolved"
-															: "Unresolved"}
-													</Table.Td>
-													<Table.Td>
-														{engagement.status === "resolved" ? (
-															engagement.winnerTaskForceId ===
-															engagement.taskForceAId ? (
-																engagement.taskForceAName
-															) : engagement.winnerTaskForceId ===
-																engagement.taskForceBId ? (
-																engagement.taskForceBName
-															) : (
-																"Draw"
-															)
-														) : (
-															<Text size="sm" c="dimmed">
-																N/A
-															</Text>
-														)}
-													</Table.Td>
-												</Table.Tr>
-											))}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Research Progress
-								</Text>
-								{report.researchProgressChanges.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No research progress updates this turn.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Category</Table.Th>
-												<Table.Th>Momentum</Table.Th>
-												<Table.Th>Total</Table.Th>
-												<Table.Th>Phase</Table.Th>
-												<Table.Th>Changed</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.researchProgressChanges.map((change, idx) => (
-												<Table.Tr key={`${change.category}:${idx}`}>
-													<Table.Td>{change.category}</Table.Td>
-													<Table.Td c="green">
-														+{change.momentumGained}
-													</Table.Td>
-													<Table.Td>{change.totalMomentum}</Table.Td>
-													<Table.Td>{change.phase}</Table.Td>
-													<Table.Td>
-														{change.phaseChanged ? "Yes" : "No"}
-													</Table.Td>
-												</Table.Tr>
-											))}
-										</Table.Tbody>
-									</Table>
-								)}
-
-								<Divider my="xs" />
-
-								<Text size="sm" fw={500}>
-									Research Breakthroughs
-								</Text>
-								{report.researchBreakthroughs.length === 0 ? (
-									<Text size="sm" c="dimmed">
-										No breakthroughs this turn.
-									</Text>
-								) : (
-									<Table striped withTableBorder withColumnBorders>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Th>Category</Table.Th>
-												<Table.Th>Outcome</Table.Th>
-												<Table.Th>Mode</Table.Th>
-												<Table.Th>Stat</Table.Th>
-												<Table.Th>Modifier</Table.Th>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{report.researchBreakthroughs.map((breakthrough, idx) => (
-												<Table.Tr
-													key={`${breakthrough.category}:${breakthrough.outcomeKey}:${idx}`}
-												>
-													<Table.Td>{breakthrough.category}</Table.Td>
-													<Table.Td>{breakthrough.outcomeKey}</Table.Td>
-													<Table.Td>{breakthrough.outcomeMode}</Table.Td>
-													<Table.Td>{breakthrough.stat}</Table.Td>
-													<Table.Td>{breakthrough.modifier}</Table.Td>
-												</Table.Tr>
-											))}
-										</Table.Tbody>
-									</Table>
-								)}
-							</Stack>
-						</Card>
+						<Accordion
+							variant="contained"
+							radius="md"
+							defaultValue={["population", "economy"]}
+							multiple
+						>
+							<PopulationSection report={report} />
+							<EconomySection report={report} />
+							<MilitarySection report={report} gameId={gameId} />
+							<ResearchColonizationSection report={report} />
+						</Accordion>
 					</Stack>
 				</ScrollArea>
 			)}
