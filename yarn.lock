@@ -3860,15 +3860,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@space/ai@workspace:packages/ai":
-  version: 0.0.0-use.local
-  resolution: "@space/ai@workspace:packages/ai"
-  dependencies:
-    typescript: "npm:5.9.3"
-    zod: "npm:4.3.6"
-  languageName: unknown
-  linkType: soft
-
 "@space/backend@workspace:packages/backend":
   version: 0.0.0-use.local
   resolution: "@space/backend@workspace:packages/backend"
@@ -3973,6 +3964,15 @@ __metadata:
     "@space/data": "workspace:*"
     typescript: "npm:5.9.3"
     vitest: "npm:4.1.0"
+  languageName: unknown
+  linkType: soft
+
+"@space/generative@workspace:packages/generative":
+  version: 0.0.0-use.local
+  resolution: "@space/generative@workspace:packages/generative"
+  dependencies:
+    typescript: "npm:5.9.3"
+    zod: "npm:4.3.6"
   languageName: unknown
   linkType: soft
 

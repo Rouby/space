@@ -1,5 +1,5 @@
 {
-	"name": "@space/ai",
+	"name": "@space/generative",
 	"type": "module",
 	"scripts": {
 		"typecheck": "tsc --noEmit"

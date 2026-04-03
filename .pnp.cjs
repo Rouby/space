@@ -15,10 +15,6 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:."\
     },\
     {\
-      "name": "@space/ai",\
-      "reference": "workspace:packages/ai"\
-    },\
-    {\
       "name": "@space/backend",\
       "reference": "workspace:packages/backend"\
     },\
@@ -33,6 +29,10 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "@space/gameloop",\
       "reference": "workspace:packages/gameloop"\
+    },\
+    {\
+      "name": "@space/generative",\
+      "reference": "workspace:packages/generative"\
     },\
     {\
       "name": "@space/integration",\
@@ -977,10 +977,6 @@ const RAW_RUNTIME_STATE =
       "npm:5.6.0"\
     ],\
     [\
-      "@space/ai",\
-      "workspace:packages/ai"\
-    ],\
-    [\
       "@space/backend",\
       "workspace:packages/backend"\
     ],\
@@ -995,6 +991,10 @@ const RAW_RUNTIME_STATE =
     [\
       "@space/gameloop",\
       "workspace:packages/gameloop"\
+    ],\
+    [\
+      "@space/generative",\
+      "workspace:packages/generative"\
     ],\
     [\
       "@space/integration",\
@@ -9299,17 +9299,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["@space/ai", [\
-      ["workspace:packages/ai", {\
-        "packageLocation": "./packages/ai/",\
-        "packageDependencies": [\
-          ["@space/ai", "workspace:packages/ai"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
-          ["zod", "npm:4.3.6"]\
-        ],\
-        "linkType": "SOFT"\
-      }]\
-    ]],\
     ["@space/backend", [\
       ["workspace:packages/backend", {\
         "packageLocation": "./packages/backend/",\
@@ -9421,6 +9410,17 @@ const RAW_RUNTIME_STATE =
           ["@space/data", "workspace:packages/data"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
           ["vitest", "virtual:9a323c05a09e7b355c1d12a5bc9133f9f2f79fcd76611abaabb5c8ae35991383bb3297643fdf1220d1ebcee106d2dc021578252519a1835c0eea5d59ecd5e9a8#npm:4.1.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@space/generative", [\
+      ["workspace:packages/generative", {\
+        "packageLocation": "./packages/generative/",\
+        "packageDependencies": [\
+          ["@space/generative", "workspace:packages/generative"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
+          ["zod", "npm:4.3.6"]\
         ],\
         "linkType": "SOFT"\
       }]\
