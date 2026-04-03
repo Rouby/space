@@ -84,7 +84,7 @@ export function GamesList() {
 								</Group>
 							</Card.Section>
 
-							<Grid mt="sm" gutter="sm">
+							<Grid mt="sm" gap="sm">
 								{game.players.map((player) => (
 									<Grid.Col key={player.id} span={6}>
 										<Group gap="xs" wrap="nowrap">
@@ -138,7 +138,7 @@ export function GamesList() {
 								</Group>
 							</Card.Section>
 
-							<Grid mt="sm" gutter="sm">
+							<Grid mt="sm" gap="sm">
 								{game.players.map((player) => (
 									<Grid.Col key={player.id} span={6}>
 										<Group gap="xs" wrap="nowrap">

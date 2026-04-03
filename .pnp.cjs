@@ -3600,7 +3600,7 @@ const RAW_RUNTIME_STATE =
     ],\
     [\
       "typescript",\
-      "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"\
+      "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"\
     ],\
     [\
       "uc.micro",\
@@ -3797,7 +3797,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@biomejs/biome", "npm:2.4.6"],\
           ["esprima", "npm:4.0.1"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -9294,7 +9294,7 @@ const RAW_RUNTIME_STATE =
           ["nodemon", "npm:3.1.14"],\
           ["rxjs", "npm:7.8.2"],\
           ["tsx", "npm:4.21.0"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"],\
           ["vitest", "virtual:f03c1cbe6ef4a372abf25b7726afc7290a0ac83de87afcffac064917ad45216150aa2e3bc960a96991aee6ec13484ae86f66ed95fe4c6e61c34d7b0fb337e51a#npm:4.1.2"]\
         ],\
         "linkType": "SOFT"\
@@ -9309,7 +9309,7 @@ const RAW_RUNTIME_STATE =
           ["drizzle-kit", "npm:0.31.9"],\
           ["drizzle-orm", "virtual:b247d93090cc7ee445bac8d54c0fafab5bdc03b582f06c48317cf10cd2497e05caaa7ce21671e8eb0995a529a5addeca30eeb49fae926013f333d7ea4e81f3e3#npm:0.45.1"],\
           ["pg", "virtual:b247d93090cc7ee445bac8d54c0fafab5bdc03b582f06c48317cf10cd2497e05caaa7ce21671e8eb0995a529a5addeca30eeb49fae926013f333d7ea4e81f3e3#npm:8.20.0"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -9365,7 +9365,7 @@ const RAW_RUNTIME_STATE =
           ["react-is", "npm:19.2.4"],\
           ["recharts", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:3.8.0"],\
           ["tss-react", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:4.9.20"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"],\
           ["urql", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:5.0.1"],\
           ["vite", "virtual:6eda7b325d7b97f4b1b7df7bed8148cb65b124a7925a0f34bb354e95ba4361024a6741195a2423ca77d92f77956862e0c282e93882d74cbd9ff64d4bafe1baf7#npm:8.0.3"],\
           ["vite-plugin-graphql-codegen", "virtual:70a7e1ac831270f16e9523c2ff5aeaddca1e880345c94194133da290240bd9221437f10b0e8592a306656a655974a6fe7f835b6f75fa7a8523d94f3439723a65#npm:3.8.0"],\
@@ -9380,7 +9380,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@space/gameloop", "workspace:packages/gameloop"],\
           ["@space/data", "workspace:packages/data"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"],\
           ["vitest", "virtual:9a323c05a09e7b355c1d12a5bc9133f9f2f79fcd76611abaabb5c8ae35991383bb3297643fdf1220d1ebcee106d2dc021578252519a1835c0eea5d59ecd5e9a8#npm:4.1.2"]\
         ],\
         "linkType": "SOFT"\
@@ -9391,7 +9391,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/generative/",\
         "packageDependencies": [\
           ["@space/generative", "workspace:packages/generative"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"],\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"],\
           ["zod", "npm:4.3.6"]\
         ],\
         "linkType": "SOFT"\
@@ -18065,7 +18065,7 @@ const RAW_RUNTIME_STATE =
           ["space", "workspace:."],\
           ["@biomejs/biome", "npm:2.4.6"],\
           ["esprima", "npm:4.0.1"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -18659,10 +18659,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["typescript", [\
-      ["patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5", {\
-        "packageLocation": "./.yarn/cache/typescript-patch-6fda4d02cf-ad09fdf7a7.zip/node_modules/typescript/",\
+      ["patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5", {\
+        "packageLocation": "./.yarn/cache/typescript-patch-a9c0baa67b-49f0b84fc6.zip/node_modules/typescript/",\
         "packageDependencies": [\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+          ["typescript", "patch:typescript@npm%3A6.0.2#optional!builtin<compat/typescript>::version=6.0.2&hash=5786d5"]\
         ],\
         "linkType": "HARD"\
       }]\

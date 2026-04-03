@@ -190,7 +190,7 @@ export function Header() {
 							/>
 						</Center>
 					</UnstyledButton>
-					<Collapse in={linksOpened}>
+					<Collapse expanded={linksOpened}>
 						<FeatureList />
 					</Collapse>
 

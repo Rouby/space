@@ -143,7 +143,7 @@ export function GameLobby() {
 					]}
 				/>
 
-				<Collapse in={autoTurn !== "disabled"}>
+				<Collapse expanded={autoTurn !== "disabled"}>
 					<Box>
 						{autoTurn === "inactivity" && (
 							<Text>Auto end turn after hours of inactivity:</Text>

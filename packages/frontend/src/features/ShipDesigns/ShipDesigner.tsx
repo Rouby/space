@@ -319,10 +319,10 @@ export function ShipDesigner({
 				</Group>
 
 				{/* Two columns: Components Selection & Stats Preview */}
-				<Grid gutter="xl">
+				<Grid gap="xl">
 					{/* Left Column: Component Selection */}
 					<Grid.Col span={8}>
-						<Grid gutter="md">
+						<Grid gap="md">
 							{/* Available Pool */}
 							<Grid.Col span={6}>
 								<Card shadow="sm" radius="md" withBorder>
