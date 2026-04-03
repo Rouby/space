@@ -66,4 +66,5 @@ export type IndustrialProjectMapper = {
 	createdAt: Date;
 	turnsRemaining: number;
 	etaTurns: number;
+	effectiveMaintenanceCost?: number;
 };

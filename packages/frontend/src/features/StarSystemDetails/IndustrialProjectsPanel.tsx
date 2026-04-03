@@ -44,7 +44,7 @@ const projectOptions: ProjectOption[] = [
 		description: "Expand surface-level manufacturing lines.",
 		workRequired: 12,
 		industryPerTurn: 3,
-		maintenanceCost: 0,
+		maintenanceCost: 1,
 		effectSummary: "+2 industry",
 	},
 	{
@@ -54,7 +54,7 @@ const projectOptions: ProjectOption[] = [
 		description: "Deploy automated production drones.",
 		workRequired: 18,
 		industryPerTurn: 4,
-		maintenanceCost: 0,
+		maintenanceCost: 2,
 		effectSummary: "+3 industry",
 	},
 	{
@@ -64,7 +64,7 @@ const projectOptions: ProjectOption[] = [
 		description: "Zero-gravity mega-forge in orbit.",
 		workRequired: 30,
 		industryPerTurn: 6,
-		maintenanceCost: 0,
+		maintenanceCost: 3,
 		effectSummary: "+5 industry",
 	},
 	{

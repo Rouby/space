@@ -113,6 +113,14 @@ enum IndustrialProjectType {
 	xenoarchaeology_lab
 }
 
+type IndustryBreakdown {
+	cappedIndustry: Int!
+	maintenance: Int!
+	netIndustry: Int!
+	populationCap: Int!
+	rawIndustry: Int!
+}
+
 type Mutation {
 	assignTaskForceMission(
 		mission: TaskForceMission!
@@ -375,6 +383,7 @@ type StarSystem implements Positionable {
 	id: ID!
 	industrialProjects: [IndustrialProject!]!
 	industry: Int
+	industryBreakdown: IndustryBreakdown
 	isVisible: Boolean!
 	lastUpdate: DateTime
 	name: String!

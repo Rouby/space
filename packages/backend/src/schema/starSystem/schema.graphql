@@ -5,6 +5,7 @@ type StarSystem implements Positionable {
 	owner: Player
 	industrialProjects: [IndustrialProject!]!
 	completedIndustrialProjects: [IndustrialProject!]!
+	industryBreakdown: IndustryBreakdown
 	currentDevelopmentStance: DevelopmentStance
 	nextTurnStanceProjection: DevelopmentStanceProjection
 	colonization: StarSystemColonizationPressure
@@ -16,6 +17,14 @@ type StarSystem implements Positionable {
 	industry: Int
 	isVisible: Boolean!
 	lastUpdate: DateTime
+}
+
+type IndustryBreakdown {
+	rawIndustry: Int!
+	populationCap: Int!
+	cappedIndustry: Int!
+	maintenance: Int!
+	netIndustry: Int!
 }
 
 type StarSystemColonizationPressure {

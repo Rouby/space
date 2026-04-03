@@ -16,4 +16,7 @@ export const IndustrialProject: IndustrialProjectResolvers = {
 			];
 		return definition?.description ?? "";
 	},
+	maintenanceCost: (parent) => {
+		return parent.effectiveMaintenanceCost ?? parent.maintenanceCost;
+	},
 };

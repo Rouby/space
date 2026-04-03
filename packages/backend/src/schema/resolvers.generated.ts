@@ -43,6 +43,7 @@ import    { Game as shipComponent_Game } from './shipComponent/resolvers/Game.js
 import    { Game as shipDesign_Game } from './shipDesign/resolvers/Game.js';
 import    { Game as starSystem_Game } from './starSystem/resolvers/Game.js';
 import    { IndustrialProject } from './starSystem/resolvers/IndustrialProject.js';
+import    { IndustryBreakdown } from './starSystem/resolvers/IndustryBreakdown.js';
 import    { NewTurnCalculatedEvent } from './game/resolvers/NewTurnCalculatedEvent.js';
 import    { Player as game_Player } from './game/resolvers/Player.js';
 import    { Player as resource_Player } from './resource/resolvers/Player.js';
@@ -110,6 +111,7 @@ Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,
 Game: { ...taskForce_Game,...game_Game,...dilemma_Game,...resource_Game,...shipComponent_Game,...shipDesign_Game,...starSystem_Game },
 IndustrialProject: IndustrialProject,
+IndustryBreakdown: IndustryBreakdown,
 NewTurnCalculatedEvent: NewTurnCalculatedEvent,
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
 PlayerResearchDirective: PlayerResearchDirective,

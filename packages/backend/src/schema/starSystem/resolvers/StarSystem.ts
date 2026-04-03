@@ -1,7 +1,9 @@
 import {
 	computeDevelopmentStanceProjection,
 	defaultDevelopmentStance,
-	getPopulationCappedIndustry,
+	getEffectiveCompletedProjectMaintenance,
+	getIndustryBreakdown,
+	getTotalCompletedProjectMaintenance,
 } from "@space/data/functions";
 import {
 	and,
@@ -17,7 +19,43 @@ import {
 	starSystems,
 } from "@space/data/schema";
 import { desc } from "drizzle-orm";
+import type { Context } from "../../../context.ts";
 import type { StarSystemResolvers } from "./../../types.generated.js";
+
+async function getResolvedIndustryBreakdown(
+	parent: { id: string; gameId: string; industry?: number | null },
+	ctx: Context,
+) {
+	if (parent.industry === null || parent.industry === undefined) {
+		return null;
+	}
+
+	const [populations, projects] = await Promise.all([
+		ctx.drizzle
+			.select({ amount: starSystemPopulations.amount })
+			.from(starSystemPopulations)
+			.where(eq(starSystemPopulations.starSystemId, parent.id)),
+		ctx.drizzle.query.starSystemIndustrialProjects.findMany({
+			where: and(
+				eq(starSystemIndustrialProjects.starSystemId, parent.id),
+				eq(starSystemIndustrialProjects.gameId, parent.gameId),
+			),
+			columns: {
+				projectType: true,
+				maintenanceCost: true,
+				completedAtTurn: true,
+			},
+		}),
+	]);
+
+	const totalPopulation = populations.reduce(
+		(acc, population) => acc + population.amount,
+		0n,
+	);
+	const maintenance = getTotalCompletedProjectMaintenance(projects);
+
+	return getIndustryBreakdown(parent.industry, totalPopulation, maintenance);
+}
 
 function withProjectEta<
 	T extends { workRequired: number; workDone: number; industryPerTurn: number },
@@ -49,6 +87,7 @@ export const StarSystem: Pick<
 	| "id"
 	| "industrialProjects"
 	| "industry"
+	| "industryBreakdown"
 	| "isVisible"
 	| "lastUpdate"
 	| "name"
@@ -199,21 +238,11 @@ export const StarSystem: Pick<
 		return governance?.governance ?? null;
 	},
 	industry: async (parent, _arg, ctx) => {
-		if (parent.industry === null || parent.industry === undefined) {
-			return null;
-		}
-
-		const populations = await ctx.drizzle
-			.select({ amount: starSystemPopulations.amount })
-			.from(starSystemPopulations)
-			.where(eq(starSystemPopulations.starSystemId, parent.id));
-
-		const totalPopulation = populations.reduce(
-			(acc, population) => acc + population.amount,
-			0n,
-		);
-
-		return getPopulationCappedIndustry(parent.industry, totalPopulation);
+		const breakdown = await getResolvedIndustryBreakdown(parent, ctx);
+		return breakdown?.cappedIndustry ?? null;
+	},
+	industryBreakdown: async (parent, _arg, ctx) => {
+		return getResolvedIndustryBreakdown(parent, ctx);
 	},
 	industrialProjects: async (parent, _arg, ctx) => {
 		if (parent.industry === null) {
@@ -255,7 +284,7 @@ export const StarSystem: Pick<
 			(project) => project.completedAtTurn !== null,
 		);
 
-		return finished.map((project) => ({
+		return getEffectiveCompletedProjectMaintenance(finished).map((project) => ({
 			...project,
 			turnsRemaining: 0,
 			etaTurns: 0,

@@ -1,6 +1,6 @@
 import {
-	getDuplicateProjectMaintenanceCost,
 	getPopulationCappedIndustry,
+	getTotalCompletedProjectMaintenance,
 	industrialProjectCatalog,
 } from "@space/data/functions";
 import {
@@ -74,27 +74,9 @@ export async function tickIndustrialProjects(
 			system.industry,
 			totalPopulation,
 		);
-		// Calculate maintenance drain from completed projects in this system
-		const completedProjects = projects.filter(
-			(project) =>
-				project.starSystemId === system.id && project.completedAtTurn !== null,
+		const totalMaintenanceCost = getTotalCompletedProjectMaintenance(
+			projects.filter((project) => project.starSystemId === system.id),
 		);
-		const completedProjectCopies = new Map<string, number>();
-		const totalMaintenanceCost = completedProjects.reduce((acc, project) => {
-			const copyIndex =
-				(completedProjectCopies.get(project.projectType) ?? 0) + 1;
-			completedProjectCopies.set(project.projectType, copyIndex);
-
-			const definition = industrialProjectCatalog[project.projectType];
-			const baseMaintenance = Math.max(
-				project.maintenanceCost,
-				definition?.maintenanceCost ?? project.maintenanceCost,
-			);
-
-			return (
-				acc + getDuplicateProjectMaintenanceCost(baseMaintenance, copyIndex)
-			);
-		}, 0);
 		const alreadyUtilized = ctx.getIndustryUtilized?.(system.id) ?? 0;
 		const remainingIndustryAfterEarlierUsage = Math.max(
 			effectiveIndustryTotal - alreadyUtilized,

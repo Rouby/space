@@ -148,6 +148,15 @@ export type IndustrialProjectType =
   | 'orbital_foundry'
   | 'xenoarchaeology_lab';
 
+export type IndustryBreakdown = {
+  __typename?: 'IndustryBreakdown';
+  cappedIndustry: Scalars['Int']['output'];
+  maintenance: Scalars['Int']['output'];
+  netIndustry: Scalars['Int']['output'];
+  populationCap: Scalars['Int']['output'];
+  rawIndustry: Scalars['Int']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   assignTaskForceMission: TaskForce;
@@ -543,6 +552,7 @@ export type StarSystem = Positionable & {
   id: Scalars['ID']['output'];
   industrialProjects: Array<IndustrialProject>;
   industry?: Maybe<Scalars['Int']['output']>;
+  industryBreakdown?: Maybe<IndustryBreakdown>;
   isVisible: Scalars['Boolean']['output'];
   lastUpdate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
@@ -1005,6 +1015,7 @@ export type ResolversTypes = {
   Game: ResolverTypeWrapper<GameMapper>;
   IndustrialProject: ResolverTypeWrapper<IndustrialProjectMapper>;
   IndustrialProjectType: ResolverTypeWrapper<'factory_expansion' | 'automation_hub' | 'orbital_foundry' | 'deep_core_scanner' | 'xenoarchaeology_lab' | 'habitation_dome' | 'gravity_well_spire' | 'fleet_drydock'>;
+  IndustryBreakdown: ResolverTypeWrapper<IndustryBreakdown>;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   Player: ResolverTypeWrapper<PlayerMapper>;
@@ -1095,6 +1106,7 @@ export type ResolversParentTypes = {
   Discovery: ResolversUnionTypes<ResolversParentTypes>['Discovery'];
   Game: GameMapper;
   IndustrialProject: IndustrialProjectMapper;
+  IndustryBreakdown: IndustryBreakdown;
   Mutation: Record<PropertyKey, never>;
   NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   Player: PlayerMapper;
@@ -1248,6 +1260,14 @@ export type IndustrialProjectResolvers<ContextType = Context, ParentType extends
 };
 
 export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_hub?: any, deep_core_scanner?: any, factory_expansion?: any, fleet_drydock?: any, gravity_well_spire?: any, habitation_dome?: any, orbital_foundry?: any, xenoarchaeology_lab?: any }, ResolversTypes['IndustrialProjectType']>;
+
+export type IndustryBreakdownResolvers<ContextType = Context, ParentType extends ResolversParentTypes['IndustryBreakdown'] = ResolversParentTypes['IndustryBreakdown']> = {
+  cappedIndustry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  maintenance?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  netIndustry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  populationCap?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  rawIndustry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   assignTaskForceMission?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationassignTaskForceMissionArgs, 'mission' | 'taskForceId'>>;
@@ -1464,6 +1484,7 @@ export type StarSystemResolvers<ContextType = Context, ParentType extends Resolv
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   industrialProjects?: Resolver<Array<ResolversTypes['IndustrialProject']>, ParentType, ContextType>;
   industry?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  industryBreakdown?: Resolver<Maybe<ResolversTypes['IndustryBreakdown']>, ParentType, ContextType>;
   isVisible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1743,6 +1764,7 @@ export type Resolvers<ContextType = Context> = {
   Game?: GameResolvers<ContextType>;
   IndustrialProject?: IndustrialProjectResolvers<ContextType>;
   IndustrialProjectType?: IndustrialProjectTypeResolvers;
+  IndustryBreakdown?: IndustryBreakdownResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NewTurnCalculatedEvent?: NewTurnCalculatedEventResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;

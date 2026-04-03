@@ -20,6 +20,13 @@ export function StarSystemDetails({
 			starSystem(id: $id) {
 				id
 				name
+				industryBreakdown {
+					rawIndustry
+					populationCap
+					cappedIndustry
+					maintenance
+					netIndustry
+				}
 				colonizationGovernance
 				currentDevelopmentStance
 				nextTurnStanceProjection {
@@ -95,6 +102,13 @@ export function StarSystemDetails({
 					subject {
 						id
 						name
+						industryBreakdown {
+							rawIndustry
+							populationCap
+							cappedIndustry
+							maintenance
+							netIndustry
+						}
 						colonizationGovernance
 						currentDevelopmentStance
 						nextTurnStanceProjection {
@@ -159,6 +173,7 @@ export function StarSystemDetails({
 			: data?.starSystem;
 
 	const currentPlayerId = meContext?.game.me?.id ?? null;
+	const industryBreakdown = starSystem?.industryBreakdown;
 
 	return (
 		<>
@@ -188,11 +203,33 @@ export function StarSystemDetails({
 					</Card>
 					<Card>
 						<Text variant="gradient">Industry</Text>
-						<Text>
-							{starSystem?.industry === null
-								? "Our scanners could not pick up information about industrial capabilities."
-								: `${formatInteger(starSystem?.industry ?? 0)} / turn`}
-						</Text>
+						{industryBreakdown === null || industryBreakdown === undefined ? (
+							<Text>
+								{starSystem?.industry === null
+									? "Our scanners could not pick up information about industrial capabilities."
+									: `${formatInteger(starSystem?.industry ?? 0)} / turn`}
+							</Text>
+						) : (
+							<Stack gap={2}>
+								<Text>
+									{formatInteger(industryBreakdown.netIndustry)} / turn net
+								</Text>
+								<Text size="sm" c="dimmed">
+									Infrastructure: {formatInteger(industryBreakdown.rawIndustry)}
+								</Text>
+								<Text size="sm" c="dimmed">
+									Population cap:{" "}
+									{formatInteger(industryBreakdown.populationCap)}
+								</Text>
+								<Text size="sm" c="dimmed">
+									Usable before upkeep:{" "}
+									{formatInteger(industryBreakdown.cappedIndustry)}
+								</Text>
+								<Text size="sm" c="dimmed">
+									Maintenance: -{formatInteger(industryBreakdown.maintenance)}
+								</Text>
+							</Stack>
+						)}
 					</Card>
 					<Card>
 						<Text variant="gradient">Discoveries</Text>
