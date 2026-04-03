@@ -45,6 +45,7 @@ export const Game: Pick<
 				mission: possiblyHidden(taskForces.mission).as("mission"),
 				orders: possiblyHidden(taskForces.orders).as("orders"),
 				combatDeck: possiblyHidden(taskForces.combatDeck).as("combatDeck"),
+				sensorRange: possiblyHidden(taskForces.sensorRange).as("sensorRange"),
 				movementVector: possiblyHidden(taskForces.movementVector).as(
 					"movementVector",
 				),
