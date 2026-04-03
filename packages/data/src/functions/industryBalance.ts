@@ -11,6 +11,7 @@ export type IndustryBreakdown = {
 	populationCap: number;
 	cappedIndustry: number;
 	maintenance: number;
+	colonizationAllocated: number;
 	netIndustry: number;
 };
 
@@ -55,17 +56,23 @@ export function getIndustryBreakdown(
 	rawIndustry: number,
 	totalPopulation: bigint | number,
 	maintenance = 0,
+	colonizationAllocated = 0,
 ): IndustryBreakdown {
 	const populationCap = getIndustryCapacityForPopulation(totalPopulation);
 	const cappedIndustry = Math.min(Math.max(rawIndustry, 0), populationCap);
 	const appliedMaintenance = Math.max(maintenance, 0);
+	const appliedColonizationAllocated = Math.max(colonizationAllocated, 0);
 
 	return {
 		rawIndustry: Math.max(rawIndustry, 0),
 		populationCap,
 		cappedIndustry,
 		maintenance: appliedMaintenance,
-		netIndustry: Math.max(cappedIndustry - appliedMaintenance, 0),
+		colonizationAllocated: appliedColonizationAllocated,
+		netIndustry: Math.max(
+			cappedIndustry - appliedMaintenance - appliedColonizationAllocated,
+			0,
+		),
 	};
 }
 

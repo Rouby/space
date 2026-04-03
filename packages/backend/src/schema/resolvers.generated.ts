@@ -22,6 +22,7 @@ import    { orderTaskForce as Mutation_orderTaskForce } from './taskForce/resolv
 import    { queueIndustrialProject as Mutation_queueIndustrialProject } from './starSystem/resolvers/Mutation/queueIndustrialProject.js';
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
 import    { setColonizationGovernance as Mutation_setColonizationGovernance } from './starSystem/resolvers/Mutation/setColonizationGovernance.js';
+import    { setColonizationPressureAllocation as Mutation_setColonizationPressureAllocation } from './starSystem/resolvers/Mutation/setColonizationPressureAllocation.js';
 import    { setDevelopmentStance as Mutation_setDevelopmentStance } from './starSystem/resolvers/Mutation/setDevelopmentStance.js';
 import    { setResearchFocus as Mutation_setResearchFocus } from './game/resolvers/Mutation/setResearchFocus.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
@@ -32,6 +33,7 @@ import    { trackGalaxy as Subscription_trackGalaxy } from './base/resolvers/Sub
 import    { trackGame as Subscription_trackGame } from './game/resolvers/Subscription/trackGame.js';
 import    { trackStarSystem as Subscription_trackStarSystem } from './base/resolvers/Subscription/trackStarSystem.js';
 import    { trackTaskForceEngagement as Subscription_trackTaskForceEngagement } from './taskForce/resolvers/Subscription/trackTaskForceEngagement.js';
+import    { ColonizationPressureSourceOption } from './starSystem/resolvers/ColonizationPressureSourceOption.js';
 import    { CombatProfile } from './taskForce/resolvers/CombatProfile.js';
 import    { DevelopmentStanceProjection } from './starSystem/resolvers/DevelopmentStanceProjection.js';
 import    { Dilemma } from './dilemma/resolvers/Dilemma.js';
@@ -104,9 +106,10 @@ import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.j
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement },
-      Mutation: { abandonIndustrialProject: Mutation_abandonIndustrialProject,assignTaskForceMission: Mutation_assignTaskForceMission,chooseResearchOutcome: Mutation_chooseResearchOutcome,configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,setResearchFocus: Mutation_setResearchFocus,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Mutation: { abandonIndustrialProject: Mutation_abandonIndustrialProject,assignTaskForceMission: Mutation_assignTaskForceMission,chooseResearchOutcome: Mutation_chooseResearchOutcome,configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setColonizationPressureAllocation: Mutation_setColonizationPressureAllocation,setDevelopmentStance: Mutation_setDevelopmentStance,setResearchFocus: Mutation_setResearchFocus,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
-      CombatProfile: CombatProfile,
+      ColonizationPressureSourceOption: ColonizationPressureSourceOption,
+CombatProfile: CombatProfile,
 DevelopmentStanceProjection: DevelopmentStanceProjection,
 Dilemma: Dilemma,
 DilemmaChoice: DilemmaChoice,

@@ -33,6 +33,24 @@ export type ColonizationGovernance =
   | 'focus'
   | 'forbid';
 
+export type ColonizationPressureAllocationInput = {
+  industryCommitted: Scalars['Int']['input'];
+  sourceStarSystemId: Scalars['ID']['input'];
+};
+
+export type ColonizationPressureSourceOption = {
+  __typename?: 'ColonizationPressureSourceOption';
+  allocatedIndustry: Scalars['Int']['output'];
+  availableIndustry: Scalars['Int']['output'];
+  distance: Scalars['Float']['output'];
+  distanceFactor: Scalars['Float']['output'];
+  population: Scalars['BigInt']['output'];
+  populationFactor: Scalars['Float']['output'];
+  projectedPressurePerTurn: Scalars['Float']['output'];
+  sourceStarSystemId: Scalars['ID']['output'];
+  sourceStarSystemName: Scalars['String']['output'];
+};
+
 export type CombatProfile = {
   __typename?: 'CombatProfile';
   eligibleCardIds: Array<Scalars['String']['output']>;
@@ -151,6 +169,7 @@ export type IndustrialProjectType =
 export type IndustryBreakdown = {
   __typename?: 'IndustryBreakdown';
   cappedIndustry: Scalars['Int']['output'];
+  colonizationAllocated: Scalars['Int']['output'];
   maintenance: Scalars['Int']['output'];
   netIndustry: Scalars['Int']['output'];
   populationCap: Scalars['Int']['output'];
@@ -175,6 +194,7 @@ export type Mutation = {
   queueIndustrialProject: StarSystem;
   registerWithPassword: User;
   setColonizationGovernance: StarSystem;
+  setColonizationPressureAllocation: StarSystem;
   setDevelopmentStance: StarSystem;
   setResearchFocus: Player;
   startGame: Game;
@@ -270,6 +290,12 @@ export type MutationregisterWithPasswordArgs = {
 export type MutationsetColonizationGovernanceArgs = {
   governance?: InputMaybe<ColonizationGovernance>;
   starSystemId: Scalars['ID']['input'];
+};
+
+
+export type MutationsetColonizationPressureAllocationArgs = {
+  allocations: Array<ColonizationPressureAllocationInput>;
+  targetStarSystemId: Scalars['ID']['input'];
 };
 
 
@@ -551,6 +577,7 @@ export type StarSystem = Positionable & {
   __typename?: 'StarSystem';
   colonization?: Maybe<StarSystemColonizationPressure>;
   colonizationGovernance?: Maybe<ColonizationGovernance>;
+  colonizationPressureSources: Array<ColonizationPressureSourceOption>;
   completedIndustrialProjects: Array<IndustrialProject>;
   currentDevelopmentStance?: Maybe<DevelopmentStance>;
   discoveries?: Maybe<Array<Discovery>>;
@@ -1004,14 +1031,17 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 export type ResolversTypes = {
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
   ColonizationGovernance: ResolverTypeWrapper<'focus' | 'forbid'>;
-  CombatProfile: ResolverTypeWrapper<CombatProfile>;
+  ColonizationPressureAllocationInput: ColonizationPressureAllocationInput;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  ColonizationPressureSourceOption: ResolverTypeWrapper<ColonizationPressureSourceOption>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  CombatProfile: ResolverTypeWrapper<CombatProfile>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
-  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   ConstructTaskForceInput: ConstructTaskForceInput;
   ConstructTaskForceShipDesignInput: ConstructTaskForceShipDesignInput;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DevelopmentStance: ResolverTypeWrapper<'industrialize' | 'balance' | 'grow_population'>;
   DevelopmentStanceProjection: ResolverTypeWrapper<DevelopmentStanceProjection>;
@@ -1027,7 +1057,6 @@ export type ResolversTypes = {
   Player: ResolverTypeWrapper<PlayerMapper>;
   PlayerResearchDirective: ResolverTypeWrapper<PlayerResearchDirectiveMapper>;
   PlayerResearchOutcome: ResolverTypeWrapper<PlayerResearchOutcomeMapper>;
-  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   PlayerResearchState: ResolverTypeWrapper<PlayerResearchStateMapper>;
   Population: ResolverTypeWrapper<PopulationMapper>;
   Positionable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Positionable']>;
@@ -1097,14 +1126,17 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   BigInt: Scalars['BigInt']['output'];
-  CombatProfile: CombatProfile;
+  ColonizationPressureAllocationInput: ColonizationPressureAllocationInput;
+  Int: Scalars['Int']['output'];
+  ID: Scalars['ID']['output'];
+  ColonizationPressureSourceOption: ColonizationPressureSourceOption;
+  Float: Scalars['Float']['output'];
   String: Scalars['String']['output'];
+  CombatProfile: CombatProfile;
   Boolean: Scalars['Boolean']['output'];
   ConfigureTaskForceCombatDeckInput: ConfigureTaskForceCombatDeckInput;
-  ID: Scalars['ID']['output'];
   ConstructTaskForceInput: ConstructTaskForceInput;
   ConstructTaskForceShipDesignInput: ConstructTaskForceShipDesignInput;
-  Int: Scalars['Int']['output'];
   DateTime: Scalars['DateTime']['output'];
   DevelopmentStanceProjection: DevelopmentStanceProjection;
   Dilemma: DilemmaMapper;
@@ -1118,7 +1150,6 @@ export type ResolversParentTypes = {
   Player: PlayerMapper;
   PlayerResearchDirective: PlayerResearchDirectiveMapper;
   PlayerResearchOutcome: PlayerResearchOutcomeMapper;
-  Float: Scalars['Float']['output'];
   PlayerResearchState: PlayerResearchStateMapper;
   Population: PopulationMapper;
   Positionable: ResolversInterfaceTypes<ResolversParentTypes>['Positionable'];
@@ -1183,6 +1214,18 @@ export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type ColonizationGovernanceResolvers = EnumResolverSignature<{ focus?: any, forbid?: any }, ResolversTypes['ColonizationGovernance']>;
+
+export type ColonizationPressureSourceOptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ColonizationPressureSourceOption'] = ResolversParentTypes['ColonizationPressureSourceOption']> = {
+  allocatedIndustry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  availableIndustry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  distance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  distanceFactor?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  population?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  populationFactor?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  projectedPressurePerTurn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  sourceStarSystemId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  sourceStarSystemName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
 
 export type CombatProfileResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CombatProfile'] = ResolversParentTypes['CombatProfile']> = {
   eligibleCardIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1269,6 +1312,7 @@ export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_
 
 export type IndustryBreakdownResolvers<ContextType = Context, ParentType extends ResolversParentTypes['IndustryBreakdown'] = ResolversParentTypes['IndustryBreakdown']> = {
   cappedIndustry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  colonizationAllocated?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   maintenance?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   netIndustry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   populationCap?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1292,6 +1336,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   queueIndustrialProject?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationqueueIndustrialProjectArgs, 'projectType' | 'starSystemId'>>;
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   setColonizationGovernance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetColonizationGovernanceArgs, 'starSystemId'>>;
+  setColonizationPressureAllocation?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetColonizationPressureAllocationArgs, 'allocations' | 'targetStarSystemId'>>;
   setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
   setResearchFocus?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationsetResearchFocusArgs, 'gameId' | 'methodology' | 'primaryCategory' | 'secondaryCategory'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
@@ -1484,6 +1529,7 @@ export type ShipDesignComponentResolvers<ContextType = Context, ParentType exten
 export type StarSystemResolvers<ContextType = Context, ParentType extends ResolversParentTypes['StarSystem'] = ResolversParentTypes['StarSystem']> = {
   colonization?: Resolver<Maybe<ResolversTypes['StarSystemColonizationPressure']>, ParentType, ContextType>;
   colonizationGovernance?: Resolver<Maybe<ResolversTypes['ColonizationGovernance']>, ParentType, ContextType>;
+  colonizationPressureSources?: Resolver<Array<ResolversTypes['ColonizationPressureSourceOption']>, ParentType, ContextType>;
   completedIndustrialProjects?: Resolver<Array<ResolversTypes['IndustrialProject']>, ParentType, ContextType>;
   currentDevelopmentStance?: Resolver<Maybe<ResolversTypes['DevelopmentStance']>, ParentType, ContextType>;
   discoveries?: Resolver<Maybe<Array<ResolversTypes['Discovery']>>, ParentType, ContextType>;
@@ -1761,6 +1807,7 @@ export type WeaponDeliveryTypeResolvers = EnumResolverSignature<{ beam?: any, in
 export type Resolvers<ContextType = Context> = {
   BigInt?: GraphQLScalarType;
   ColonizationGovernance?: ColonizationGovernanceResolvers;
+  ColonizationPressureSourceOption?: ColonizationPressureSourceOptionResolvers<ContextType>;
   CombatProfile?: CombatProfileResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DevelopmentStance?: DevelopmentStanceResolvers;

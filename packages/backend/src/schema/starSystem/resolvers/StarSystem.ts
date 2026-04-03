@@ -9,7 +9,9 @@ import {
 	and,
 	eq,
 	games,
+	inArray,
 	playerColonizationGovernances,
+	playerColonizationPressureAllocations,
 	players,
 	starSystemColonizationPressures,
 	starSystemDevelopmentStances,
@@ -23,14 +25,19 @@ import type { Context } from "../../../context.ts";
 import type { StarSystemResolvers } from "./../../types.generated.js";
 
 async function getResolvedIndustryBreakdown(
-	parent: { id: string; gameId: string; industry?: number | null },
+	parent: {
+		id: string;
+		gameId: string;
+		industry?: number | null;
+		ownerId?: string | null;
+	},
 	ctx: Context,
 ) {
 	if (parent.industry === null || parent.industry === undefined) {
 		return null;
 	}
 
-	const [populations, projects] = await Promise.all([
+	const [populations, projects, colonizationAllocations] = await Promise.all([
 		ctx.drizzle
 			.select({ amount: starSystemPopulations.amount })
 			.from(starSystemPopulations)
@@ -46,6 +53,24 @@ async function getResolvedIndustryBreakdown(
 				completedAtTurn: true,
 			},
 		}),
+		parent.ownerId
+			? ctx.drizzle
+					.select({
+						industryCommitted:
+							playerColonizationPressureAllocations.industryCommitted,
+					})
+					.from(playerColonizationPressureAllocations)
+					.where(
+						and(
+							eq(playerColonizationPressureAllocations.gameId, parent.gameId),
+							eq(playerColonizationPressureAllocations.ownerId, parent.ownerId),
+							eq(
+								playerColonizationPressureAllocations.sourceStarSystemId,
+								parent.id,
+							),
+						),
+					)
+			: Promise.resolve([]),
 	]);
 
 	const totalPopulation = populations.reduce(
@@ -53,8 +78,17 @@ async function getResolvedIndustryBreakdown(
 		0n,
 	);
 	const maintenance = getTotalCompletedProjectMaintenance(projects);
+	const colonizationAllocated = colonizationAllocations.reduce(
+		(acc, allocation) => acc + allocation.industryCommitted,
+		0,
+	);
 
-	return getIndustryBreakdown(parent.industry, totalPopulation, maintenance);
+	return getIndustryBreakdown(
+		parent.industry,
+		totalPopulation,
+		maintenance,
+		colonizationAllocated,
+	);
 }
 
 function withProjectEta<
@@ -80,6 +114,7 @@ export const StarSystem: Pick<
 	StarSystemResolvers,
 	| "colonization"
 	| "colonizationGovernance"
+	| "colonizationPressureSources"
 	| "completedIndustrialProjects"
 	| "currentDevelopmentStance"
 	| "discoveries"
@@ -236,6 +271,164 @@ export const StarSystem: Pick<
 			});
 
 		return governance?.governance ?? null;
+	},
+	colonizationPressureSources: async (parent, _arg, ctx) => {
+		if (!ctx.userId || parent.ownerId) {
+			return [];
+		}
+
+		const sourceSystems = await ctx.drizzle.query.starSystems.findMany({
+			where: and(
+				eq(starSystems.gameId, parent.gameId),
+				eq(starSystems.ownerId, ctx.userId),
+			),
+			columns: {
+				id: true,
+				name: true,
+				position: true,
+				industry: true,
+			},
+		});
+
+		if (sourceSystems.length === 0) {
+			return [];
+		}
+
+		const sourceIds = sourceSystems.map((sourceSystem) => sourceSystem.id);
+
+		const [populationRows, completedProjectRows, allocationRows] =
+			await Promise.all([
+				ctx.drizzle
+					.select({
+						starSystemId: starSystemPopulations.starSystemId,
+						amount: starSystemPopulations.amount,
+					})
+					.from(starSystemPopulations)
+					.where(
+						and(
+							eq(starSystemPopulations.allegianceToPlayerId, ctx.userId),
+							inArray(starSystemPopulations.starSystemId, sourceIds),
+						),
+					),
+				ctx.drizzle
+					.select({
+						starSystemId: starSystemIndustrialProjects.starSystemId,
+						id: starSystemIndustrialProjects.id,
+						projectType: starSystemIndustrialProjects.projectType,
+						maintenanceCost: starSystemIndustrialProjects.maintenanceCost,
+						completedAtTurn: starSystemIndustrialProjects.completedAtTurn,
+						queuePosition: starSystemIndustrialProjects.queuePosition,
+					})
+					.from(starSystemIndustrialProjects)
+					.where(
+						and(
+							eq(starSystemIndustrialProjects.gameId, parent.gameId),
+							inArray(starSystemIndustrialProjects.starSystemId, sourceIds),
+						),
+					),
+				ctx.drizzle
+					.select({
+						sourceStarSystemId:
+							playerColonizationPressureAllocations.sourceStarSystemId,
+						targetStarSystemId:
+							playerColonizationPressureAllocations.targetStarSystemId,
+						industryCommitted:
+							playerColonizationPressureAllocations.industryCommitted,
+					})
+					.from(playerColonizationPressureAllocations)
+					.where(
+						and(
+							eq(playerColonizationPressureAllocations.gameId, parent.gameId),
+							eq(playerColonizationPressureAllocations.ownerId, ctx.userId),
+							inArray(
+								playerColonizationPressureAllocations.sourceStarSystemId,
+								sourceIds,
+							),
+						),
+					),
+			]);
+
+		const populationBySourceId = new Map<string, bigint>();
+		for (const row of populationRows) {
+			populationBySourceId.set(
+				row.starSystemId,
+				(populationBySourceId.get(row.starSystemId) ?? 0n) + row.amount,
+			);
+		}
+
+		const projectsBySourceId = new Map<string, typeof completedProjectRows>();
+		for (const row of completedProjectRows) {
+			const existing = projectsBySourceId.get(row.starSystemId) ?? [];
+			existing.push(row);
+			projectsBySourceId.set(row.starSystemId, existing);
+		}
+
+		const allocationBySourceId = new Map<string, number>();
+		const allocationElsewhereBySourceId = new Map<string, number>();
+		for (const row of allocationRows) {
+			if (row.targetStarSystemId === parent.id) {
+				allocationBySourceId.set(
+					row.sourceStarSystemId,
+					(allocationBySourceId.get(row.sourceStarSystemId) ?? 0) +
+						row.industryCommitted,
+				);
+				continue;
+			}
+
+			allocationElsewhereBySourceId.set(
+				row.sourceStarSystemId,
+				(allocationElsewhereBySourceId.get(row.sourceStarSystemId) ?? 0) +
+					row.industryCommitted,
+			);
+		}
+
+		return sourceSystems
+			.map((sourceSystem) => {
+				const totalPopulation = populationBySourceId.get(sourceSystem.id) ?? 0n;
+				const maintenance = getTotalCompletedProjectMaintenance(
+					projectsBySourceId.get(sourceSystem.id) ?? [],
+				);
+				const availableIndustryBeforeAllocations = getIndustryBreakdown(
+					sourceSystem.industry,
+					totalPopulation,
+					maintenance,
+				).netIndustry;
+
+				const dx = sourceSystem.position.x - parent.position.x;
+				const dy = sourceSystem.position.y - parent.position.y;
+				const distance = Math.sqrt(dx * dx + dy * dy);
+				const populationFactor = Math.min(
+					Number(totalPopulation) / 1_000_000_000,
+					1,
+				);
+				const distanceFactor = 1 / (1 + distance / 200);
+				const allocatedIndustry =
+					allocationBySourceId.get(sourceSystem.id) ?? 0;
+				const allocatedElsewhere =
+					allocationElsewhereBySourceId.get(sourceSystem.id) ?? 0;
+				const availableIndustry = Math.max(
+					availableIndustryBeforeAllocations - allocatedElsewhere,
+					0,
+				);
+				const effectiveIndustry = Math.min(
+					allocatedIndustry,
+					availableIndustry,
+				);
+
+				return {
+					sourceStarSystemId: sourceSystem.id,
+					sourceStarSystemName: sourceSystem.name,
+					distance,
+					population: totalPopulation,
+					availableIndustry,
+					allocatedIndustry,
+					populationFactor,
+					distanceFactor,
+					projectedPressurePerTurn:
+						effectiveIndustry * populationFactor * distanceFactor,
+				};
+			})
+			.sort((a, b) => a.distance - b.distance);
 	},
 	industry: async (parent, _arg, ctx) => {
 		const breakdown = await getResolvedIndustryBreakdown(parent, ctx);

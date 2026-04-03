@@ -10,20 +10,33 @@ describe("tickColonization", () => {
 			}),
 		};
 
+		const selectAllocations = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
+			}),
+		};
+
 		const selectChain1 = {
 			from: vi.fn().mockReturnValue({
-				innerJoin: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						groupBy: vi.fn().mockResolvedValue([
 							{
 								id: "sys-source",
 								ownerId: "player-1",
 								position: { x: 0, y: 0 },
+								industry: 5,
 								totalPopulation: 500_000_000, // < 1 Billion
 							},
 						]),
 					}),
 				}),
+			}),
+		};
+
+		const selectCompletedProjects = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
 			}),
 		};
 
@@ -43,8 +56,10 @@ describe("tickColonization", () => {
 			select: vi
 				.fn()
 				.mockReturnValueOnce(selectGovernances)
+				.mockReturnValueOnce(selectAllocations)
 				.mockReturnValueOnce(selectChain1)
 				.mockReturnValueOnce(selectTargets)
+				.mockReturnValueOnce(selectCompletedProjects)
 				.mockReturnValueOnce(selectPressures),
 			update: vi.fn(),
 			delete: vi.fn(),
@@ -72,20 +87,33 @@ describe("tickColonization", () => {
 			}),
 		};
 
+		const selectAllocations = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
+			}),
+		};
+
 		const selectPopulated = {
 			from: vi.fn().mockReturnValue({
-				innerJoin: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						groupBy: vi.fn().mockResolvedValue([
 							{
 								id: "sys-source",
 								ownerId: "player-1",
 								position: { x: 0, y: 0 },
+								industry: 6,
 								totalPopulation: 2_000_000_000, // 2 Billion -> 2 pressure
 							},
 						]),
 					}),
 				}),
+			}),
+		};
+
+		const selectCompletedProjects = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
 			}),
 		};
 
@@ -119,8 +147,10 @@ describe("tickColonization", () => {
 			select: vi
 				.fn()
 				.mockReturnValueOnce(selectGovernances)
+				.mockReturnValueOnce(selectAllocations)
 				.mockReturnValueOnce(selectPopulated)
 				.mockReturnValueOnce(selectTargets)
+				.mockReturnValueOnce(selectCompletedProjects)
 				.mockReturnValueOnce(selectPressures),
 			insert: vi.fn().mockReturnValue({
 				values: vi.fn().mockReturnValue({ onConflictDoUpdate: vi.fn() }),
@@ -159,20 +189,33 @@ describe("tickColonization", () => {
 			}),
 		};
 
+		const selectAllocations = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
+			}),
+		};
+
 		const selectPopulated = {
 			from: vi.fn().mockReturnValue({
-				innerJoin: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						groupBy: vi.fn().mockResolvedValue([
 							{
 								id: "sys-source",
 								ownerId: "player-1",
 								position: { x: 0, y: 0 },
+								industry: 6,
 								totalPopulation: 2_000_000_000, // 2 Billion -> 2 pressure outflow
 							},
 						]),
 					}),
 				}),
+			}),
+		};
+
+		const selectCompletedProjects = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
 			}),
 		};
 
@@ -219,8 +262,10 @@ describe("tickColonization", () => {
 			select: vi
 				.fn()
 				.mockReturnValueOnce(selectGovernances)
+				.mockReturnValueOnce(selectAllocations)
 				.mockReturnValueOnce(selectPopulated)
 				.mockReturnValueOnce(selectTargets)
+				.mockReturnValueOnce(selectCompletedProjects)
 				.mockReturnValueOnce(selectPressures),
 			update: vi.fn().mockReturnValue({ set: updateSet }),
 			delete: vi.fn().mockReturnValue({ where: vi.fn() }),
@@ -292,20 +337,33 @@ describe("tickColonization", () => {
 			}),
 		};
 
+		const selectAllocations = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
+			}),
+		};
+
 		const selectPopulated = {
 			from: vi.fn().mockReturnValue({
-				innerJoin: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						groupBy: vi.fn().mockResolvedValue([
 							{
 								id: "sys-source",
 								ownerId: "player-1",
 								position: { x: 0, y: 0 },
+								industry: 4,
 								totalPopulation: 2_000_000_000,
 							},
 						]),
 					}),
 				}),
+			}),
+		};
+
+		const selectCompletedProjects = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
 			}),
 		};
 
@@ -325,8 +383,10 @@ describe("tickColonization", () => {
 			select: vi
 				.fn()
 				.mockReturnValueOnce(selectGovernances)
+				.mockReturnValueOnce(selectAllocations)
 				.mockReturnValueOnce(selectPopulated)
-				.mockReturnValueOnce(selectTargets),
+				.mockReturnValueOnce(selectTargets)
+				.mockReturnValueOnce(selectCompletedProjects),
 			insert: vi.fn(),
 			update: vi.fn(),
 			delete: vi.fn(),
@@ -359,20 +419,33 @@ describe("tickColonization", () => {
 			}),
 		};
 
+		const selectAllocations = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
+			}),
+		};
+
 		const selectPopulated = {
 			from: vi.fn().mockReturnValue({
-				innerJoin: vi.fn().mockReturnValue({
+				leftJoin: vi.fn().mockReturnValue({
 					where: vi.fn().mockReturnValue({
 						groupBy: vi.fn().mockResolvedValue([
 							{
 								id: "sys-source",
 								ownerId: "player-1",
 								position: { x: 0, y: 0 },
+								industry: 8,
 								totalPopulation: 6_000_000_000,
 							},
 						]),
 					}),
 				}),
+			}),
+		};
+
+		const selectCompletedProjects = {
+			from: vi.fn().mockReturnValue({
+				where: vi.fn().mockResolvedValue([]),
 			}),
 		};
 
@@ -406,8 +479,10 @@ describe("tickColonization", () => {
 			select: vi
 				.fn()
 				.mockReturnValueOnce(selectGovernances)
+				.mockReturnValueOnce(selectAllocations)
 				.mockReturnValueOnce(selectPopulated)
 				.mockReturnValueOnce(selectTargets)
+				.mockReturnValueOnce(selectCompletedProjects)
 				.mockReturnValueOnce(selectPressures),
 			insert: vi.fn().mockReturnValue({ values }),
 			update: vi.fn(),

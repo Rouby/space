@@ -58,6 +58,12 @@ export const starSystemsRelations = relations(starSystems, ({ one, many }) => ({
 	game: one(games, { fields: [starSystems.gameId], references: [games.id] }),
 	owner: one(users, { fields: [starSystems.ownerId], references: [users.id] }),
 	colonizationGovernances: many(playerColonizationGovernances),
+	colonizationPressureAllocationsAsTarget: many(
+		playerColonizationPressureAllocations,
+	),
+	colonizationPressureAllocationsAsSource: many(
+		playerColonizationPressureAllocations,
+	),
 	developmentStances: many(starSystemDevelopmentStances),
 	industrialProjects: many(starSystemIndustrialProjects),
 	resourceDiscoveries: many(starSystemResourceDiscoveries),
@@ -314,6 +320,72 @@ export const playerColonizationGovernancesRelations = relations(
 		}),
 		starSystem: one(starSystems, {
 			fields: [playerColonizationGovernances.starSystemId],
+			references: [starSystems.id],
+		}),
+	}),
+);
+
+export const playerColonizationPressureAllocations = pgTable(
+	"playerColonizationPressureAllocations",
+	{
+		gameId: uuid()
+			.notNull()
+			.references(() => games.id, { onDelete: "cascade" }),
+		ownerId: uuid()
+			.notNull()
+			.references(() => users.id, { onDelete: "restrict" }),
+		targetStarSystemId: uuid()
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "cascade" }),
+		sourceStarSystemId: uuid()
+			.notNull()
+			.references(() => starSystems.id, { onDelete: "cascade" }),
+		industryCommitted: integer().notNull(),
+	},
+	(table) => [
+		primaryKey({
+			name: "playerColonizationPressureAllocations_pk",
+			columns: [
+				table.gameId,
+				table.ownerId,
+				table.targetStarSystemId,
+				table.sourceStarSystemId,
+			],
+		}),
+		index("playerColPressureAlloc_target_idx").on(
+			table.gameId,
+			table.ownerId,
+			table.targetStarSystemId,
+		),
+		index("playerColPressureAlloc_source_idx").on(
+			table.gameId,
+			table.ownerId,
+			table.sourceStarSystemId,
+		),
+		index("playerColPressureAlloc_game_target_idx").on(
+			table.gameId,
+			table.targetStarSystemId,
+		),
+	],
+);
+
+export const playerColonizationPressureAllocationsRelations = relations(
+	playerColonizationPressureAllocations,
+	({ one }) => ({
+		game: one(games, {
+			fields: [playerColonizationPressureAllocations.gameId],
+			references: [games.id],
+		}),
+		owner: one(users, {
+			fields: [playerColonizationPressureAllocations.ownerId],
+			references: [users.id],
+		}),
+		targetStarSystem: one(starSystems, {
+			fields: [playerColonizationPressureAllocations.targetStarSystemId],
+			references: [starSystems.id],
+		}),
+		sourceStarSystem: one(starSystems, {
+			fields: [playerColonizationPressureAllocations.sourceStarSystemId],
 			references: [starSystems.id],
 		}),
 	}),

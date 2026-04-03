@@ -5,6 +5,23 @@ enum ColonizationGovernance {
 	forbid
 }
 
+input ColonizationPressureAllocationInput {
+	industryCommitted: Int!
+	sourceStarSystemId: ID!
+}
+
+type ColonizationPressureSourceOption {
+	allocatedIndustry: Int!
+	availableIndustry: Int!
+	distance: Float!
+	distanceFactor: Float!
+	population: BigInt!
+	populationFactor: Float!
+	projectedPressurePerTurn: Float!
+	sourceStarSystemId: ID!
+	sourceStarSystemName: String!
+}
+
 type CombatProfile {
 	eligibleCardIds: [String!]!
 	hasCrew: Boolean!
@@ -115,6 +132,7 @@ enum IndustrialProjectType {
 
 type IndustryBreakdown {
 	cappedIndustry: Int!
+	colonizationAllocated: Int!
 	maintenance: Int!
 	netIndustry: Int!
 	populationCap: Int!
@@ -157,6 +175,10 @@ type Mutation {
 	setColonizationGovernance(
 		governance: ColonizationGovernance
 		starSystemId: ID!
+	): StarSystem!
+	setColonizationPressureAllocation(
+		allocations: [ColonizationPressureAllocationInput!]!
+		targetStarSystemId: ID!
 	): StarSystem!
 	setDevelopmentStance(
 		stance: DevelopmentStance!
@@ -377,6 +399,7 @@ input ShipDesignInput {
 type StarSystem implements Positionable {
 	colonization: StarSystemColonizationPressure
 	colonizationGovernance: ColonizationGovernance
+	colonizationPressureSources: [ColonizationPressureSourceOption!]!
 	completedIndustrialProjects: [IndustrialProject!]!
 	currentDevelopmentStance: DevelopmentStance
 	discoveries: [Discovery!]

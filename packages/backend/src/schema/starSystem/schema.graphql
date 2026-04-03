@@ -10,6 +10,7 @@ type StarSystem implements Positionable {
 	nextTurnStanceProjection: DevelopmentStanceProjection
 	colonization: StarSystemColonizationPressure
 	colonizationGovernance: ColonizationGovernance
+	colonizationPressureSources: [ColonizationPressureSourceOption!]!
 	sensorRange: Float
 	discoveries: [Discovery!]
 	discoveryProgress: Float
@@ -24,6 +25,7 @@ type IndustryBreakdown {
 	populationCap: Int!
 	cappedIndustry: Int!
 	maintenance: Int!
+	colonizationAllocated: Int!
 	netIndustry: Int!
 }
 
@@ -33,6 +35,23 @@ type StarSystemColonizationPressure {
 	threshold: Float!
 	pressurePerTurn: Float!
 	etaTurns: Int!
+}
+
+type ColonizationPressureSourceOption {
+	sourceStarSystemId: ID!
+	sourceStarSystemName: String!
+	distance: Float!
+	population: BigInt!
+	availableIndustry: Int!
+	allocatedIndustry: Int!
+	populationFactor: Float!
+	distanceFactor: Float!
+	projectedPressurePerTurn: Float!
+}
+
+input ColonizationPressureAllocationInput {
+	sourceStarSystemId: ID!
+	industryCommitted: Int!
 }
 
 union Discovery = ResourceDiscovery | UnknownDiscovery
@@ -114,6 +133,10 @@ extend type Mutation {
 	setColonizationGovernance(
 		starSystemId: ID!
 		governance: ColonizationGovernance
+	): StarSystem!
+	setColonizationPressureAllocation(
+		targetStarSystemId: ID!
+		allocations: [ColonizationPressureAllocationInput!]!
 	): StarSystem!
 	abandonIndustrialProject(projectId: ID!): StarSystem!
 	queueIndustrialProject(

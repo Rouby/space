@@ -20,11 +20,23 @@ export function StarSystemDetails({
 			starSystem(id: $id) {
 				id
 				name
+				colonizationPressureSources {
+					sourceStarSystemId
+					sourceStarSystemName
+					distance
+					population
+					availableIndustry
+					allocatedIndustry
+					populationFactor
+					distanceFactor
+					projectedPressurePerTurn
+				}
 				industryBreakdown {
 					rawIndustry
 					populationCap
 					cappedIndustry
 					maintenance
+					colonizationAllocated
 					netIndustry
 				}
 				colonizationGovernance
@@ -102,11 +114,23 @@ export function StarSystemDetails({
 					subject {
 						id
 						name
+						colonizationPressureSources {
+							sourceStarSystemId
+							sourceStarSystemName
+							distance
+							population
+							availableIndustry
+							allocatedIndustry
+							populationFactor
+							distanceFactor
+							projectedPressurePerTurn
+						}
 						industryBreakdown {
 							rawIndustry
 							populationCap
 							cappedIndustry
 							maintenance
+							colonizationAllocated
 							netIndustry
 						}
 						colonizationGovernance
@@ -227,6 +251,10 @@ export function StarSystemDetails({
 								</Text>
 								<Text size="sm" c="dimmed">
 									Maintenance: -{formatInteger(industryBreakdown.maintenance)}
+								</Text>
+								<Text size="sm" c="dimmed">
+									Colonization allocations: -
+									{formatInteger(industryBreakdown.colonizationAllocated)}
 								</Text>
 							</Stack>
 						)}
