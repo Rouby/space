@@ -22,6 +22,7 @@ import {
 	lte,
 	or,
 	playerResearchDirectives,
+	playerResearchMiniGameActions,
 	playerResearchStates,
 	players,
 	sql,
@@ -143,9 +144,44 @@ export async function tickResearch(
 		.from(playerResearchStates)
 		.where(eq(playerResearchStates.gameId, gameId));
 
+	const miniGameActions = await tx
+		.select({
+			playerId: playerResearchMiniGameActions.playerId,
+			targetCategory: playerResearchMiniGameActions.targetCategory,
+			bonus: playerResearchMiniGameActions.bonus,
+		})
+		.from(playerResearchMiniGameActions)
+		.where(
+			and(
+				eq(playerResearchMiniGameActions.gameId, gameId),
+				eq(playerResearchMiniGameActions.turnNumber, ctx.turn),
+			),
+		);
+
 	const stateByPlayerAndCategory = new Map(
 		researchStates.map((row) => [`${row.playerId}:${row.category}`, row]),
 	);
+	const miniGameByPlayerAndCategory = new Map(
+		miniGameActions.map((action) => [
+			`${action.playerId}:${action.targetCategory}`,
+			toNumber(action.bonus),
+		]),
+	);
+	const breakthroughsByPlayer = new Map<string, number>();
+	for (const state of researchStates) {
+		const current = breakthroughsByPlayer.get(state.playerId) ?? 0;
+		breakthroughsByPlayer.set(
+			state.playerId,
+			current + state.breakthroughCount,
+		);
+	}
+	const breakthroughValues = [...breakthroughsByPlayer.values()].sort(
+		(a, b) => a - b,
+	);
+	const medianBreakthroughs =
+		breakthroughValues.length === 0
+			? 0
+			: (breakthroughValues[Math.floor(breakthroughValues.length / 2)] ?? 0);
 
 	const ownedPopulation = await tx
 		.select({
@@ -318,7 +354,15 @@ export async function tickResearch(
 				evidence,
 				fatigue,
 			});
-			const momentumGained = Math.max(0, rawMomentumGained);
+			const miniGameBonus =
+				miniGameByPlayerAndCategory.get(`${playerId}:${category}`) ?? 0;
+			const playerBreakthroughs = breakthroughsByPlayer.get(playerId) ?? 0;
+			const catchupBonus =
+				medianBreakthroughs - playerBreakthroughs >= 2 ? 0.5 : 0;
+			const momentumGained = Math.max(
+				0,
+				rawMomentumGained + miniGameBonus + catchupBonus,
+			);
 
 			let phase = state.phase;
 			let phaseChanged = false;

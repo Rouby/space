@@ -1,6 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
-import { GameMapper, PlayerMapper, PlayerResearchDirectiveMapper, PlayerResearchOutcomeMapper, PlayerResearchStateMapper, TurnReportMapper, TurnReportColonizationCompletedMapper, TurnReportColonizationPressureChangeMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportPopulationMigrationMapper, TurnReportResearchBreakthroughMapper, TurnReportResearchProgressChangeMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
+import { GameMapper, PlayerMapper, PlayerResearchDirectiveMapper, PlayerResearchOutcomeMapper, PlayerResearchStateMapper, ResearchMiniGameCardMapper, ResearchMiniGameIncidentStepMapper, ResearchMiniGamePromptMapper, TurnReportMapper, TurnReportColonizationCompletedMapper, TurnReportColonizationPressureChangeMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportPopulationMigrationMapper, TurnReportResearchBreakthroughMapper, TurnReportResearchProgressChangeMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
 import { IndustrialProjectMapper, PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
@@ -198,6 +198,7 @@ export type Mutation = {
   setDevelopmentStance: StarSystem;
   setResearchFocus: Player;
   startGame: Game;
+  submitResearchMiniGameAction: Player;
   submitTaskForceEngagementAction: TaskForceEngagement;
   updateGameSettings: Game;
   updatePlayer: Player;
@@ -318,6 +319,19 @@ export type MutationstartGameArgs = {
 };
 
 
+export type MutationsubmitResearchMiniGameActionArgs = {
+  gameId: Scalars['ID']['input'];
+  incidentStepOneRisky?: InputMaybe<Scalars['Boolean']['input']>;
+  incidentStepThreeRisky?: InputMaybe<Scalars['Boolean']['input']>;
+  incidentStepTwoRisky?: InputMaybe<Scalars['Boolean']['input']>;
+  miniGameType: ResearchMiniGameType;
+  targetCategory: ResearchCategory;
+  triangulationConflictCardId?: InputMaybe<Scalars['String']['input']>;
+  triangulationControlCardId?: InputMaybe<Scalars['String']['input']>;
+  triangulationSupportCardId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationsubmitTaskForceEngagementActionArgs = {
   input: SubmitTaskForceEngagementActionInput;
 };
@@ -345,6 +359,7 @@ export type Player = {
   currentResearchDirective?: Maybe<PlayerResearchDirective>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  researchMiniGamePrompt?: Maybe<ResearchMiniGamePrompt>;
   researchOutcomes: Array<PlayerResearchOutcome>;
   researchStates: Array<PlayerResearchState>;
   resources: Array<Resource>;
@@ -460,6 +475,47 @@ export type ResearchMethodology =
   | 'bold'
   | 'opportunistic'
   | 'stable';
+
+export type ResearchMiniGameCard = {
+  __typename?: 'ResearchMiniGameCard';
+  id: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+  relevance: Scalars['Float']['output'];
+  tag: Scalars['String']['output'];
+};
+
+export type ResearchMiniGameIncidentStep = {
+  __typename?: 'ResearchMiniGameIncidentStep';
+  riskySuccessChance: Scalars['Float']['output'];
+  safeSuccessChance: Scalars['Float']['output'];
+  step: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type ResearchMiniGamePrompt = {
+  __typename?: 'ResearchMiniGamePrompt';
+  incidentSteps: Array<ResearchMiniGameIncidentStep>;
+  miniGameType: ResearchMiniGameType;
+  promptDescription: Scalars['String']['output'];
+  promptSeed: Scalars['Int']['output'];
+  promptTitle: Scalars['String']['output'];
+  submitted: Scalars['Boolean']['output'];
+  submittedBonus?: Maybe<Scalars['Float']['output']>;
+  submittedConfidenceScore?: Maybe<Scalars['Float']['output']>;
+  submittedQualityScore?: Maybe<Scalars['Float']['output']>;
+  submittedRiskTag?: Maybe<ResearchMiniGameRiskTag>;
+  targetCategory: ResearchCategory;
+  triangulationCards: Array<ResearchMiniGameCard>;
+};
+
+export type ResearchMiniGameRiskTag =
+  | 'balanced'
+  | 'risky'
+  | 'safe';
+
+export type ResearchMiniGameType =
+  | 'breakthrough_incident'
+  | 'evidence_triangulation';
 
 export type ResearchOutcomeChoice = {
   __typename?: 'ResearchOutcomeChoice';
@@ -1067,6 +1123,11 @@ export type ResolversTypes = {
   Reference: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Reference']>;
   ResearchCategory: ResolverTypeWrapper<'military' | 'industry' | 'expansion' | 'discovery'>;
   ResearchMethodology: ResolverTypeWrapper<'stable' | 'bold' | 'opportunistic'>;
+  ResearchMiniGameCard: ResolverTypeWrapper<ResearchMiniGameCardMapper>;
+  ResearchMiniGameIncidentStep: ResolverTypeWrapper<ResearchMiniGameIncidentStepMapper>;
+  ResearchMiniGamePrompt: ResolverTypeWrapper<ResearchMiniGamePromptMapper>;
+  ResearchMiniGameRiskTag: ResolverTypeWrapper<'safe' | 'balanced' | 'risky'>;
+  ResearchMiniGameType: ResolverTypeWrapper<'evidence_triangulation' | 'breakthrough_incident'>;
   ResearchOutcomeChoice: ResolverTypeWrapper<ResearchOutcomeChoice>;
   ResearchPhase: ResolverTypeWrapper<'hypothesis' | 'fieldwork' | 'synthesis'>;
   Resource: ResolverTypeWrapper<ResourceMapper>;
@@ -1158,6 +1219,9 @@ export type ResolversParentTypes = {
   PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   Query: Record<PropertyKey, never>;
   Reference: ResolversUnionTypes<ResolversParentTypes>['Reference'];
+  ResearchMiniGameCard: ResearchMiniGameCardMapper;
+  ResearchMiniGameIncidentStep: ResearchMiniGameIncidentStepMapper;
+  ResearchMiniGamePrompt: ResearchMiniGamePromptMapper;
   ResearchOutcomeChoice: ResearchOutcomeChoice;
   Resource: ResourceMapper;
   ResourceCost: ResourceCostMapper;
@@ -1340,6 +1404,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
   setResearchFocus?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationsetResearchFocusArgs, 'gameId' | 'methodology' | 'primaryCategory' | 'secondaryCategory'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
+  submitResearchMiniGameAction?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationsubmitResearchMiniGameActionArgs, 'gameId' | 'miniGameType' | 'targetCategory'>>;
   submitTaskForceEngagementAction?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType, RequireFields<MutationsubmitTaskForceEngagementActionArgs, 'input'>>;
   updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
   updatePlayer?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationupdatePlayerArgs, 'gameId' | 'input'>>;
@@ -1355,6 +1420,7 @@ export type PlayerResolvers<ContextType = Context, ParentType extends ResolversP
   currentResearchDirective?: Resolver<Maybe<ResolversTypes['PlayerResearchDirective']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  researchMiniGamePrompt?: Resolver<Maybe<ResolversTypes['ResearchMiniGamePrompt']>, ParentType, ContextType>;
   researchOutcomes?: Resolver<Array<ResolversTypes['PlayerResearchOutcome']>, ParentType, ContextType, RequireFields<PlayerresearchOutcomesArgs, 'limit'>>;
   researchStates?: Resolver<Array<ResolversTypes['PlayerResearchState']>, ParentType, ContextType>;
   resources?: Resolver<Array<ResolversTypes['Resource']>, ParentType, ContextType>;
@@ -1434,6 +1500,39 @@ export type ReferenceResolvers<ContextType = Context, ParentType extends Resolve
 export type ResearchCategoryResolvers = EnumResolverSignature<{ discovery?: any, expansion?: any, industry?: any, military?: any }, ResolversTypes['ResearchCategory']>;
 
 export type ResearchMethodologyResolvers = EnumResolverSignature<{ bold?: any, opportunistic?: any, stable?: any }, ResolversTypes['ResearchMethodology']>;
+
+export type ResearchMiniGameCardResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResearchMiniGameCard'] = ResolversParentTypes['ResearchMiniGameCard']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  relevance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  tag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ResearchMiniGameIncidentStepResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResearchMiniGameIncidentStep'] = ResolversParentTypes['ResearchMiniGameIncidentStep']> = {
+  riskySuccessChance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  safeSuccessChance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  step?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type ResearchMiniGamePromptResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResearchMiniGamePrompt'] = ResolversParentTypes['ResearchMiniGamePrompt']> = {
+  incidentSteps?: Resolver<Array<ResolversTypes['ResearchMiniGameIncidentStep']>, ParentType, ContextType>;
+  miniGameType?: Resolver<ResolversTypes['ResearchMiniGameType'], ParentType, ContextType>;
+  promptDescription?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  promptSeed?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  promptTitle?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  submitted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  submittedBonus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  submittedConfidenceScore?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  submittedQualityScore?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  submittedRiskTag?: Resolver<Maybe<ResolversTypes['ResearchMiniGameRiskTag']>, ParentType, ContextType>;
+  targetCategory?: Resolver<ResolversTypes['ResearchCategory'], ParentType, ContextType>;
+  triangulationCards?: Resolver<Array<ResolversTypes['ResearchMiniGameCard']>, ParentType, ContextType>;
+};
+
+export type ResearchMiniGameRiskTagResolvers = EnumResolverSignature<{ balanced?: any, risky?: any, safe?: any }, ResolversTypes['ResearchMiniGameRiskTag']>;
+
+export type ResearchMiniGameTypeResolvers = EnumResolverSignature<{ breakthrough_incident?: any, evidence_triangulation?: any }, ResolversTypes['ResearchMiniGameType']>;
 
 export type ResearchOutcomeChoiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResearchOutcomeChoice'] = ResolversParentTypes['ResearchOutcomeChoice']> = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1834,6 +1933,11 @@ export type Resolvers<ContextType = Context> = {
   Reference?: ReferenceResolvers<ContextType>;
   ResearchCategory?: ResearchCategoryResolvers;
   ResearchMethodology?: ResearchMethodologyResolvers;
+  ResearchMiniGameCard?: ResearchMiniGameCardResolvers<ContextType>;
+  ResearchMiniGameIncidentStep?: ResearchMiniGameIncidentStepResolvers<ContextType>;
+  ResearchMiniGamePrompt?: ResearchMiniGamePromptResolvers<ContextType>;
+  ResearchMiniGameRiskTag?: ResearchMiniGameRiskTagResolvers;
+  ResearchMiniGameType?: ResearchMiniGameTypeResolvers;
   ResearchOutcomeChoice?: ResearchOutcomeChoiceResolvers<ContextType>;
   ResearchPhase?: ResearchPhaseResolvers;
   Resource?: ResourceResolvers<ContextType>;

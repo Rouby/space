@@ -11,6 +11,38 @@ Each player submits one research directive per turn:
 - `secondaryCategory`: supporting direction (must differ from primary)
 - `methodology`: `stable` | `bold` | `opportunistic`
 
+## Per-Turn Active Mini-Game
+Each player also receives one adaptive mini-game prompt each turn tied to a target category.
+
+Mini-game types:
+- `evidence_triangulation`: choose support, conflict, and control cards from the current prompt set.
+- `breakthrough_incident`: resolve a 3-step chain with safe/risky choices per step.
+
+Prompt selection:
+- `breakthrough_incident` is prioritized when a category in synthesis reaches at least 80% of synthesis threshold.
+- Otherwise `evidence_triangulation` is presented for the highest fieldwork evidence deficit.
+
+Mini-game output:
+- quality score `q` in `[-1, 1]`
+- confidence score `r` in `[0, 1]`
+- risk tag `safe | balanced | risky`
+- momentum bonus `B` in `[-2, 4]`
+
+Bonus formula:
+
+$$
+B = clamp(2.5q + 1.5r + M_{method} + P_{risk}, -2, 4)
+$$
+
+Where:
+- $M_{method}=0.4$ for `bold`, $0.2$ for `opportunistic`, $0$ for `stable`
+- $P_{risk}=+0.8$ for successful risky chain, $-0.8$ if risky choices fail, else $0$
+
+Submission rules:
+- At most one mini-game submission per player per turn.
+- Re-submission in the same turn replaces the prior submission.
+- If skipped, no penalty is applied (`B=0`).
+
 ### Categories
 - `military`: combat and ship performance
 - `industry`: economy, projects, and construction efficiency
@@ -47,6 +79,15 @@ Category momentum gain:
 $$
 M_{c,t} = K_t \cdot w_c \cdot m(\text{methodology}) + E_{c,t} - F_{c,t}
 $$
+
+With mini-game integration, the target category receives:
+
+$$
+M'_{c,t} = K_t \cdot w_c \cdot m(\text{methodology}) + E_{c,t} - F_{c,t} + B_{c,t}
+$$
+
+Catch-up modifier:
+- If a player's total breakthroughs are behind the median by at least 2, add `+0.5` to that turn's mini-game-adjusted momentum.
 
 Where:
 - $m(\text{stable}) = 0.95$

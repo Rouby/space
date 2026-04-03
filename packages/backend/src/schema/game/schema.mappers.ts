@@ -45,3 +45,32 @@ export type PlayerResearchStateMapper =
 	typeof playerResearchStates.$inferSelect;
 export type PlayerResearchOutcomeMapper =
 	typeof playerResearchOutcomes.$inferSelect;
+
+export type ResearchMiniGameCardMapper = {
+	id: string;
+	label: string;
+	relevance: number;
+	tag: string;
+};
+
+export type ResearchMiniGameIncidentStepMapper = {
+	step: number;
+	title: string;
+	safeSuccessChance: number;
+	riskySuccessChance: number;
+};
+
+export type ResearchMiniGamePromptMapper = {
+	miniGameType: "evidence_triangulation" | "breakthrough_incident";
+	targetCategory: "military" | "industry" | "expansion" | "discovery";
+	promptSeed: number;
+	promptTitle: string;
+	promptDescription: string;
+	triangulationCards: ResearchMiniGameCardMapper[];
+	incidentSteps: ResearchMiniGameIncidentStepMapper[];
+	submitted: boolean;
+	submittedBonus: number | null;
+	submittedQualityScore: number | null;
+	submittedConfidenceScore: number | null;
+	submittedRiskTag: "safe" | "balanced" | "risky" | null;
+};

@@ -35,6 +35,7 @@ export * from "./schema/dilemmas.ts";
 export * from "./schema/games.ts";
 export * from "./schema/lastKnownStates.ts";
 export * from "./schema/research.ts";
+export * from "./schema/researchMiniGame.ts";
 export * from "./schema/resources.ts";
 export * from "./schema/shipComponents.ts";
 export * from "./schema/shipDesigns.ts";

@@ -191,6 +191,17 @@ type Mutation {
 		secondaryCategory: ResearchCategory!
 	): Player!
 	startGame(id: ID!): Game!
+	submitResearchMiniGameAction(
+		gameId: ID!
+		incidentStepOneRisky: Boolean
+		incidentStepThreeRisky: Boolean
+		incidentStepTwoRisky: Boolean
+		miniGameType: ResearchMiniGameType!
+		targetCategory: ResearchCategory!
+		triangulationConflictCardId: String
+		triangulationControlCardId: String
+		triangulationSupportCardId: String
+	): Player!
 	submitTaskForceEngagementAction(
 		input: SubmitTaskForceEngagementActionInput!
 	): TaskForceEngagement!
@@ -207,6 +218,7 @@ type Player {
 	currentResearchDirective: PlayerResearchDirective
 	id: ID!
 	name: String!
+	researchMiniGamePrompt: ResearchMiniGamePrompt
 	researchOutcomes(limit: Int = 20): [PlayerResearchOutcome!]!
 	researchStates: [PlayerResearchState!]!
 	resources: [Resource!]!
@@ -290,6 +302,46 @@ enum ResearchMethodology {
 	bold
 	opportunistic
 	stable
+}
+
+type ResearchMiniGameCard {
+	id: String!
+	label: String!
+	relevance: Float!
+	tag: String!
+}
+
+type ResearchMiniGameIncidentStep {
+	riskySuccessChance: Float!
+	safeSuccessChance: Float!
+	step: Int!
+	title: String!
+}
+
+type ResearchMiniGamePrompt {
+	incidentSteps: [ResearchMiniGameIncidentStep!]!
+	miniGameType: ResearchMiniGameType!
+	promptDescription: String!
+	promptSeed: Int!
+	promptTitle: String!
+	submitted: Boolean!
+	submittedBonus: Float
+	submittedConfidenceScore: Float
+	submittedQualityScore: Float
+	submittedRiskTag: ResearchMiniGameRiskTag
+	targetCategory: ResearchCategory!
+	triangulationCards: [ResearchMiniGameCard!]!
+}
+
+enum ResearchMiniGameRiskTag {
+	balanced
+	risky
+	safe
+}
+
+enum ResearchMiniGameType {
+	breakthrough_incident
+	evidence_triangulation
 }
 
 type ResearchOutcomeChoice {
