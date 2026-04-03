@@ -6,13 +6,11 @@ import {
 	defaultResearchMethodology,
 	defaultResearchPrimaryCategory,
 	defaultResearchSecondaryCategory,
-	effectiveBonus,
 	fieldworkThreshold,
 	hypothesisThreshold,
 	type ResearchCategory,
 	type ResearchMethodology,
 	researchCategories,
-	resolveOutcomeCandidates,
 	synthesisThreshold,
 } from "@space/data/functions";
 import {
@@ -24,7 +22,6 @@ import {
 	lte,
 	or,
 	playerResearchDirectives,
-	playerResearchOutcomes,
 	playerResearchStates,
 	players,
 	sql,
@@ -36,16 +33,6 @@ import {
 } from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
-
-function deterministicHash(input: string): number {
-	let hash = 2166136261;
-	for (let i = 0; i < input.length; i += 1) {
-		hash ^= input.charCodeAt(i);
-		hash = Math.imul(hash, 16777619);
-	}
-
-	return Math.abs(hash >>> 0);
-}
 
 function toNumber(value: string | number | null | undefined) {
 	if (value == null) {
@@ -251,20 +238,6 @@ export async function tickResearch(
 		ownedSystems.map((system) => [system.id, system.ownerId ?? ""]),
 	);
 
-	const existingOutcomes = await tx
-		.select({
-			playerId: playerResearchOutcomes.playerId,
-			outcomeKey: playerResearchOutcomes.outcomeKey,
-		})
-		.from(playerResearchOutcomes)
-		.where(eq(playerResearchOutcomes.gameId, gameId));
-	const outcomeKeysByPlayer = existingOutcomes.reduce((acc, outcome) => {
-		const keys = acc.get(outcome.playerId) ?? new Set<string>();
-		keys.add(outcome.outcomeKey);
-		acc.set(outcome.playerId, keys);
-		return acc;
-	}, new Map<string, Set<string>>());
-
 	for (const { playerId } of gamePlayers) {
 		const directive = directiveByPlayer.get(playerId);
 		const primaryCategory =
@@ -349,13 +322,13 @@ export async function tickResearch(
 
 			let phase = state.phase;
 			let phaseChanged = false;
-			let cumulativeMomentum = Math.max(
+			const cumulativeMomentum = Math.max(
 				0,
 				toNumber(state.cumulativeMomentum) + momentumGained,
 			);
-			let recentEvidence = toNumber(state.recentEvidence) * 0.6 + evidence;
+			const recentEvidence = toNumber(state.recentEvidence) * 0.6 + evidence;
 			let synthesisProgress = toNumber(state.synthesisProgress);
-			let breakthroughCount = state.breakthroughCount;
+			const breakthroughCount = state.breakthroughCount;
 
 			if (
 				phase === "hypothesis" &&
@@ -376,65 +349,10 @@ export async function tickResearch(
 
 			if (phase === "synthesis") {
 				synthesisProgress += Math.max(0, momentumGained);
-				if (synthesisProgress >= synthesisThreshold(breakthroughCount)) {
-					const candidates = resolveOutcomeCandidates(
-						category,
-						secondaryCategory,
-					)
-						.map((candidate) => {
-							const owned = outcomeKeysByPlayer.get(playerId);
-							const novelty = owned?.has(candidate.key) ? 0.7 : 1;
-							const antiDuplicate = owned?.has(candidate.key) ? 0.6 : 1;
-							return {
-								...candidate,
-								score: candidate.baseWeight * novelty * antiDuplicate,
-							};
-						})
-						.sort((a, b) => b.score - a.score);
-
-					if (candidates.length > 0) {
-						const top = candidates.slice(0, 2);
-						const hash = deterministicHash(
-							`${gameId}:${ctx.turn}:${playerId}:${category}:${breakthroughCount}`,
-						);
-						const picked = top[hash % top.length];
-						const pickedMode = picked.modes[hash % picked.modes.length];
-						const normalizedModifier =
-							effectiveBonus(Math.abs(pickedMode.modifier)) *
-							Math.sign(pickedMode.modifier || 1);
-
-						await tx.insert(playerResearchOutcomes).values({
-							gameId,
-							playerId,
-							category,
-							turnNumber: ctx.turn,
-							outcomeKey: picked.key,
-							outcomeMode: pickedMode.mode,
-							stat: pickedMode.stat,
-							modifier: normalizedModifier.toFixed(6),
-						});
-
-						ctx.addResearchBreakthrough?.({
-							playerId,
-							category,
-							outcomeKey: picked.key,
-							outcomeMode: pickedMode.mode,
-							stat: pickedMode.stat,
-							modifier: normalizedModifier.toFixed(6),
-						});
-
-						const owned =
-							outcomeKeysByPlayer.get(playerId) ?? new Set<string>();
-						owned.add(picked.key);
-						outcomeKeysByPlayer.set(playerId, owned);
-					}
-
-					breakthroughCount += 1;
-					phase = "hypothesis";
-					phaseChanged = true;
-					cumulativeMomentum = 0;
-					recentEvidence = Math.max(0, recentEvidence * 0.5);
-					synthesisProgress = 0;
+				const completionThreshold = synthesisThreshold(breakthroughCount);
+				if (synthesisProgress >= completionThreshold) {
+					// Synthesis completed; pause progression until player chooses an outcome.
+					synthesisProgress = completionThreshold;
 				}
 			}
 

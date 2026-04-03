@@ -1,3 +1,4 @@
+import { synthesisThreshold } from "@space/data/functions";
 import {
 	and,
 	dilemmas,
@@ -5,6 +6,7 @@ import {
 	games,
 	isNull,
 	or,
+	playerResearchStates,
 	players,
 	taskForceEngagements,
 } from "@space/data/schema";
@@ -113,6 +115,38 @@ export const endTurn: NonNullable<MutationResolvers["endTurn"]> = async (
 			"You cannot end your turn while there are unresolved engagements",
 			{
 				extensions: { code: "UNRESOLVED_ENGAGEMENTS", blockers },
+			},
+		);
+	}
+
+	const researchStates = await ctx.drizzle.query.playerResearchStates.findMany({
+		where: and(
+			eq(playerResearchStates.gameId, gameId),
+			eq(playerResearchStates.playerId, context.userId),
+			eq(playerResearchStates.phase, "synthesis"),
+		),
+		columns: {
+			category: true,
+			synthesisProgress: true,
+			breakthroughCount: true,
+		},
+	});
+
+	const pendingResearchChoices = researchStates.filter((state) => {
+		const progress = Number(state.synthesisProgress ?? 0);
+		return progress >= synthesisThreshold(state.breakthroughCount);
+	});
+
+	if (pendingResearchChoices.length > 0) {
+		const blockers = pendingResearchChoices.map((state) => ({
+			type: "research_outcome",
+			category: state.category,
+		}));
+
+		throw createGraphQLError(
+			"You cannot end your turn while synthesized research outcomes are still pending choices",
+			{
+				extensions: { code: "PENDING_RESEARCH_OUTCOMES", blockers },
 			},
 		);
 	}

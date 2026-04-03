@@ -118,6 +118,12 @@ type Mutation {
 		mission: TaskForceMission!
 		taskForceId: ID!
 	): TaskForce!
+	chooseResearchOutcome(
+		category: ResearchCategory!
+		gameId: ID!
+		outcomeKey: String!
+		outcomeMode: String!
+	): Player!
 	configureTaskForceCombatDeck(
 		input: ConfigureTaskForceCombatDeckInput!
 	): TaskForce!
@@ -202,6 +208,7 @@ type PlayerResearchState {
 	consecutivePrimary: Int!
 	cumulativeMomentum: Float!
 	lastUpdatedTurn: Int!
+	pendingOutcomeChoices: [ResearchOutcomeChoice!]!
 	phase: ResearchPhase!
 	recentEvidence: Float!
 	synthesisProgress: Float!
@@ -252,6 +259,14 @@ enum ResearchMethodology {
 	bold
 	opportunistic
 	stable
+}
+
+type ResearchOutcomeChoice {
+	displayName: String!
+	modifier: Float!
+	outcomeKey: String!
+	outcomeMode: String!
+	stat: String!
 }
 
 enum ResearchPhase {

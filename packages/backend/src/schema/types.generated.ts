@@ -151,6 +151,7 @@ export type IndustrialProjectType =
 export type Mutation = {
   __typename?: 'Mutation';
   assignTaskForceMission: TaskForce;
+  chooseResearchOutcome: Player;
   configureTaskForceCombatDeck: TaskForce;
   constructTaskForce: TaskForce;
   createGame: Game;
@@ -176,6 +177,14 @@ export type Mutation = {
 export type MutationassignTaskForceMissionArgs = {
   mission: TaskForceMission;
   taskForceId: Scalars['ID']['input'];
+};
+
+
+export type MutationchooseResearchOutcomeArgs = {
+  category: ResearchCategory;
+  gameId: Scalars['ID']['input'];
+  outcomeKey: Scalars['String']['input'];
+  outcomeMode: Scalars['String']['input'];
 };
 
 
@@ -335,6 +344,7 @@ export type PlayerResearchState = {
   consecutivePrimary: Scalars['Int']['output'];
   cumulativeMomentum: Scalars['Float']['output'];
   lastUpdatedTurn: Scalars['Int']['output'];
+  pendingOutcomeChoices: Array<ResearchOutcomeChoice>;
   phase: ResearchPhase;
   recentEvidence: Scalars['Float']['output'];
   synthesisProgress: Scalars['Float']['output'];
@@ -409,6 +419,15 @@ export type ResearchMethodology =
   | 'bold'
   | 'opportunistic'
   | 'stable';
+
+export type ResearchOutcomeChoice = {
+  __typename?: 'ResearchOutcomeChoice';
+  displayName: Scalars['String']['output'];
+  modifier: Scalars['Float']['output'];
+  outcomeKey: Scalars['String']['output'];
+  outcomeMode: Scalars['String']['output'];
+  stat: Scalars['String']['output'];
+};
 
 export type ResearchPhase =
   | 'fieldwork'
@@ -1002,6 +1021,7 @@ export type ResolversTypes = {
   Reference: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Reference']>;
   ResearchCategory: ResolverTypeWrapper<'military' | 'industry' | 'expansion' | 'discovery'>;
   ResearchMethodology: ResolverTypeWrapper<'stable' | 'bold' | 'opportunistic'>;
+  ResearchOutcomeChoice: ResolverTypeWrapper<ResearchOutcomeChoice>;
   ResearchPhase: ResolverTypeWrapper<'hypothesis' | 'fieldwork' | 'synthesis'>;
   Resource: ResolverTypeWrapper<ResourceMapper>;
   ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
@@ -1089,6 +1109,7 @@ export type ResolversParentTypes = {
   PositionableMovesEvent: Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
   Query: Record<PropertyKey, never>;
   Reference: ResolversUnionTypes<ResolversParentTypes>['Reference'];
+  ResearchOutcomeChoice: ResearchOutcomeChoice;
   Resource: ResourceMapper;
   ResourceCost: ResourceCostMapper;
   ResourceDiscovery: ResourceDiscoveryMapper;
@@ -1230,6 +1251,7 @@ export type IndustrialProjectTypeResolvers = EnumResolverSignature<{ automation_
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   assignTaskForceMission?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationassignTaskForceMissionArgs, 'mission' | 'taskForceId'>>;
+  chooseResearchOutcome?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationchooseResearchOutcomeArgs, 'category' | 'gameId' | 'outcomeKey' | 'outcomeMode'>>;
   configureTaskForceCombatDeck?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconfigureTaskForceCombatDeckArgs, 'input'>>;
   constructTaskForce?: Resolver<ResolversTypes['TaskForce'], ParentType, ContextType, RequireFields<MutationconstructTaskForceArgs, 'input'>>;
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationcreateGameArgs, 'name'>>;
@@ -1293,6 +1315,7 @@ export type PlayerResearchStateResolvers<ContextType = Context, ParentType exten
   consecutivePrimary?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   cumulativeMomentum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   lastUpdatedTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pendingOutcomeChoices?: Resolver<Array<ResolversTypes['ResearchOutcomeChoice']>, ParentType, ContextType>;
   phase?: Resolver<ResolversTypes['ResearchPhase'], ParentType, ContextType>;
   recentEvidence?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   synthesisProgress?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1339,6 +1362,14 @@ export type ReferenceResolvers<ContextType = Context, ParentType extends Resolve
 export type ResearchCategoryResolvers = EnumResolverSignature<{ discovery?: any, expansion?: any, industry?: any, military?: any }, ResolversTypes['ResearchCategory']>;
 
 export type ResearchMethodologyResolvers = EnumResolverSignature<{ bold?: any, opportunistic?: any, stable?: any }, ResolversTypes['ResearchMethodology']>;
+
+export type ResearchOutcomeChoiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ResearchOutcomeChoice'] = ResolversParentTypes['ResearchOutcomeChoice']> = {
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  modifier?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  outcomeKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  outcomeMode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  stat?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
 
 export type ResearchPhaseResolvers = EnumResolverSignature<{ fieldwork?: any, hypothesis?: any, synthesis?: any }, ResolversTypes['ResearchPhase']>;
 
@@ -1727,6 +1758,7 @@ export type Resolvers<ContextType = Context> = {
   Reference?: ReferenceResolvers<ContextType>;
   ResearchCategory?: ResearchCategoryResolvers;
   ResearchMethodology?: ResearchMethodologyResolvers;
+  ResearchOutcomeChoice?: ResearchOutcomeChoiceResolvers<ContextType>;
   ResearchPhase?: ResearchPhaseResolvers;
   Resource?: ResourceResolvers<ContextType>;
   ResourceCost?: ResourceCostResolvers<ContextType>;

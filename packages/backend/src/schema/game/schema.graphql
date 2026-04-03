@@ -68,6 +68,15 @@ type PlayerResearchState {
 	synthesisProgress: Float!
 	consecutivePrimary: Int!
 	lastUpdatedTurn: Int!
+	pendingOutcomeChoices: [ResearchOutcomeChoice!]!
+}
+
+type ResearchOutcomeChoice {
+	outcomeKey: String!
+	displayName: String!
+	outcomeMode: String!
+	stat: String!
+	modifier: Float!
 }
 
 type PlayerResearchOutcome {
@@ -203,6 +212,12 @@ type Mutation {
 		primaryCategory: ResearchCategory!
 		secondaryCategory: ResearchCategory!
 		methodology: ResearchMethodology!
+	): Player!
+	chooseResearchOutcome(
+		gameId: ID!
+		category: ResearchCategory!
+		outcomeKey: String!
+		outcomeMode: String!
 	): Player!
 }
 

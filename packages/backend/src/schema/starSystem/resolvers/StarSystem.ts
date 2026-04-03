@@ -234,7 +234,6 @@ export const StarSystem: Pick<
 					desc(starSystemIndustrialProjects.completedAtTurn),
 					desc(starSystemIndustrialProjects.queuePosition),
 				],
-				limit: 5,
 			});
 
 		const finished = completedProjects.filter(

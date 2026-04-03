@@ -7,6 +7,7 @@ import    { me as Query_me } from './user/resolvers/Query/me.js';
 import    { starSystem as Query_starSystem } from './starSystem/resolvers/Query/starSystem.js';
 import    { taskForceEngagement as Query_taskForceEngagement } from './taskForce/resolvers/Query/taskForceEngagement.js';
 import    { assignTaskForceMission as Mutation_assignTaskForceMission } from './taskForce/resolvers/Mutation/assignTaskForceMission.js';
+import    { chooseResearchOutcome as Mutation_chooseResearchOutcome } from './game/resolvers/Mutation/chooseResearchOutcome.js';
 import    { configureTaskForceCombatDeck as Mutation_configureTaskForceCombatDeck } from './taskForce/resolvers/Mutation/configureTaskForceCombatDeck.js';
 import    { constructTaskForce as Mutation_constructTaskForce } from './taskForce/resolvers/Mutation/constructTaskForce.js';
 import    { createGame as Mutation_createGame } from './game/resolvers/Mutation/createGame.js';
@@ -54,6 +55,7 @@ import    { Population } from './starSystem/resolvers/Population.js';
 import    { PositionableApppearsEvent } from './base/resolvers/PositionableApppearsEvent.js';
 import    { PositionableDisappearsEvent } from './base/resolvers/PositionableDisappearsEvent.js';
 import    { PositionableMovesEvent } from './base/resolvers/PositionableMovesEvent.js';
+import    { ResearchOutcomeChoice } from './game/resolvers/ResearchOutcomeChoice.js';
 import    { Resource } from './resource/resolvers/Resource.js';
 import    { ResourceCost } from './resource/resolvers/ResourceCost.js';
 import    { ResourceDiscovery } from './starSystem/resolvers/ResourceDiscovery.js';
@@ -100,7 +102,7 @@ import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.j
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement },
-      Mutation: { assignTaskForceMission: Mutation_assignTaskForceMission,configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,setResearchFocus: Mutation_setResearchFocus,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Mutation: { assignTaskForceMission: Mutation_assignTaskForceMission,chooseResearchOutcome: Mutation_chooseResearchOutcome,configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,setResearchFocus: Mutation_setResearchFocus,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
       CombatProfile: CombatProfile,
 DevelopmentStanceProjection: DevelopmentStanceProjection,
@@ -117,6 +119,7 @@ Population: Population,
 PositionableApppearsEvent: PositionableApppearsEvent,
 PositionableDisappearsEvent: PositionableDisappearsEvent,
 PositionableMovesEvent: PositionableMovesEvent,
+ResearchOutcomeChoice: ResearchOutcomeChoice,
 Resource: Resource,
 ResourceCost: ResourceCost,
 ResourceDiscovery: ResourceDiscovery,
