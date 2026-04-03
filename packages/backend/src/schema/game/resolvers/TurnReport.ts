@@ -1,3 +1,4 @@
+import { and, eq, inArray, starSystems } from "@space/data/schema";
 import type { TurnReportResolvers } from "./../../types.generated.ts";
 
 export const TurnReport: TurnReportResolvers = {
@@ -11,7 +12,25 @@ export const TurnReport: TurnReportResolvers = {
 		return parent.summary.miningChanges || [];
 	},
 	industryChanges: async (parent, _arg, _ctx) => {
-		return parent.summary.industryChanges || [];
+		const changes = parent.summary.industryChanges || [];
+		if (changes.length === 0) {
+			return [];
+		}
+
+		const ownedSystems = await _ctx.drizzle.query.starSystems.findMany({
+			columns: { id: true },
+			where: and(
+				eq(starSystems.gameId, parent.gameId),
+				eq(starSystems.ownerId, parent.ownerId),
+				inArray(
+					starSystems.id,
+					changes.map((change) => change.starSystemId),
+				),
+			),
+		});
+
+		const ownedSystemIds = new Set(ownedSystems.map((system) => system.id));
+		return changes.filter((change) => ownedSystemIds.has(change.starSystemId));
 	},
 	industrialProjectCompletions: async (parent, _arg, _ctx) => {
 		return parent.summary.industrialProjectCompletions || [];
