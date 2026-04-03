@@ -65,7 +65,7 @@ export const taskForceShipDesigns = pgTable(
 			.references(() => taskForces.id, { onDelete: "cascade" }),
 		shipDesignId: uuid()
 			.notNull()
-			.references(() => shipDesigns.id, { onDelete: "restrict" }),
+			.references(() => shipDesigns.id, { onDelete: "cascade" }),
 		quantity: integer().notNull().default(1),
 	},
 	(table) => [primaryKey({ columns: [table.taskForceId, table.shipDesignId] })],

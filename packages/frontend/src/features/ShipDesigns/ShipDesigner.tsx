@@ -14,7 +14,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { IconDeviceFloppy, IconPlus, IconTrash } from "@tabler/icons-react";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery } from "urql";
 import { useAuth } from "../../Auth";
 import { graphql } from "../../gql";
@@ -243,6 +243,27 @@ export function ShipDesigner({
 
 	const availableComponents = data?.game.me?.shipComponents ?? [];
 
+	const hasPower =
+		stats.powerGeneration > 0 && stats.powerGeneration >= stats.powerNeed;
+	const hasCrew =
+		stats.crewCapacity > 0 && stats.crewCapacity >= stats.crewNeed;
+	const hasDrive =
+		stats.ftlSpeed !== Number.POSITIVE_INFINITY ||
+		stats.thruster !== Number.POSITIVE_INFINITY;
+	const isValid =
+		selectedComponents.length > 0 && hasPower && hasCrew && hasDrive;
+
+	let validationMessage = "";
+	if (selectedComponents.length === 0) {
+		validationMessage = "Add components to design your ship.";
+	} else if (!hasPower) {
+		validationMessage = "Ship needs sufficient power generation.";
+	} else if (!hasCrew) {
+		validationMessage = "Ship needs sufficient crew quarters.";
+	} else if (!hasDrive) {
+		validationMessage = "Ship needs a drive component.";
+	}
+
 	return (
 		<form
 			ref={formRef}
@@ -282,14 +303,19 @@ export function ShipDesigner({
 						label="Design Description"
 						placeholder="Ex: Lightweight escort with heavy shields"
 					/>
-					<Button
-						type="submit"
-						loading={fetching}
-						leftSection={<IconDeviceFloppy size={16} />}
-						mt={24}
-					>
-						Save Ship Design
-					</Button>
+					<Tooltip label={validationMessage} disabled={isValid}>
+						<div style={{ display: "inline-block", marginTop: 24 }}>
+							<Button
+								type="submit"
+								loading={fetching}
+								disabled={!isValid}
+								leftSection={<IconDeviceFloppy size={16} />}
+								style={{ pointerEvents: !isValid ? "none" : "auto" }}
+							>
+								Save Ship Design
+							</Button>
+						</div>
+					</Tooltip>
 				</Group>
 
 				{/* Two columns: Components Selection & Stats Preview */}

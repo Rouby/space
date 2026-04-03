@@ -26,7 +26,7 @@ At game creation, every player receives their own independent copy of all defaul
 
 ### Categories
 
-The `layout` field on each component serves as its category identifier, determining where it can be placed in the Ship Designer grid.
+The `layout` field on each component serves as its category identifier, determining its primary role.
 
 | Category | `layout` value | Role |
 |---|---|---|
@@ -111,7 +111,8 @@ Combat card eligibility (`packages/backend/src/schema/taskForce/resolvers/combat
 - **Component unlocking mechanics** — tech tree or research integration TBD
 
 ## Ship Designs (`packages/data/src/schema/shipDesigns.ts`)
-When a player creates a ship, they place components on a grid (tracked via `column` and `row` in `shipDesignComponents`).
+When a player creates a ship design, they assign components using a **Slot & Capacity** model.
+This lists out components (`shipDesignComponents`) modularly rather than mapping them to a rigid 2D grid. The resulting structure dynamically computes resource constraints and aggregates stats to prevent over-capacity.
 
 ### The `shipDesignsWithStats` View
 To evaluate a ship's actual power without doing a massive JOIN in code, the game relies on the Postgres View `shipDesignsWithStats`. 
