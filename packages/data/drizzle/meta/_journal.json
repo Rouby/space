@@ -169,6 +169,20 @@
       "when": 1775209656350,
       "tag": "0023_yellow_guardian",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1775223941581,
+      "tag": "0024_spooky_glorian",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1775224366956,
+      "tag": "0025_material_captain_britain",
+      "breakpoints": true
     }
   ]
 }

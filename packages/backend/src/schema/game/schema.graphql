@@ -29,6 +29,55 @@ type TurnReport {
 	taskForceEngagements: [TurnReportTaskForceEngagement!]!
 	colonizationPressureChanges: [TurnReportColonizationPressureChange!]!
 	colonizationCompleted: [TurnReportColonizationCompleted!]!
+	researchProgressChanges: [TurnReportResearchProgressChange!]!
+	researchBreakthroughs: [TurnReportResearchBreakthrough!]!
+}
+
+enum ResearchCategory {
+	military
+	industry
+	expansion
+	discovery
+}
+
+enum ResearchMethodology {
+	stable
+	bold
+	opportunistic
+}
+
+enum ResearchPhase {
+	hypothesis
+	fieldwork
+	synthesis
+}
+
+type PlayerResearchDirective {
+	primaryCategory: ResearchCategory!
+	secondaryCategory: ResearchCategory!
+	methodology: ResearchMethodology!
+	turnNumber: Int!
+}
+
+type PlayerResearchState {
+	category: ResearchCategory!
+	breakthroughCount: Int!
+	phase: ResearchPhase!
+	cumulativeMomentum: Float!
+	recentEvidence: Float!
+	synthesisProgress: Float!
+	consecutivePrimary: Int!
+	lastUpdatedTurn: Int!
+}
+
+type PlayerResearchOutcome {
+	id: ID!
+	category: ResearchCategory!
+	turnNumber: Int!
+	outcomeKey: String!
+	outcomeMode: String!
+	stat: String!
+	modifier: Float!
 }
 
 type TurnReportPopulationMigration {
@@ -60,6 +109,22 @@ type TurnReportColonizationCompleted {
 	starSystem: StarSystem!
 	accumulatedPressure: String!
 	pressureThreshold: String!
+}
+
+type TurnReportResearchProgressChange {
+	category: ResearchCategory!
+	momentumGained: String!
+	totalMomentum: String!
+	phase: ResearchPhase!
+	phaseChanged: Boolean!
+}
+
+type TurnReportResearchBreakthrough {
+	category: ResearchCategory!
+	outcomeKey: String!
+	outcomeMode: String!
+	stat: String!
+	modifier: String!
 }
 
 type TurnReportPopulationChange {
@@ -106,6 +171,9 @@ type Player {
 	color: String!
 	user: User!
 	turnEnded: Boolean
+	currentResearchDirective: PlayerResearchDirective
+	researchStates: [PlayerResearchState!]!
+	researchOutcomes(limit: Int = 20): [PlayerResearchOutcome!]!
 }
 
 input UpdatePlayerInput {
@@ -130,6 +198,12 @@ type Mutation {
 	updateGameSettings(gameId: ID!, input: UpdateGameSettingsInput!): Game!
 
 	endTurn(gameId: ID!, expectedTurnNumber: Int!): Game!
+	setResearchFocus(
+		gameId: ID!
+		primaryCategory: ResearchCategory!
+		secondaryCategory: ResearchCategory!
+		methodology: ResearchMethodology!
+	): Player!
 }
 
 union TrackGameEvent = TurnEndedEvent | NewTurnCalculatedEvent

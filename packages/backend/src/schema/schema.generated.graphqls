@@ -147,6 +147,12 @@ type Mutation {
 		stance: DevelopmentStance!
 		starSystemId: ID!
 	): StarSystem!
+	setResearchFocus(
+		gameId: ID!
+		methodology: ResearchMethodology!
+		primaryCategory: ResearchCategory!
+		secondaryCategory: ResearchCategory!
+	): Player!
 	startGame(id: ID!): Game!
 	submitTaskForceEngagementAction(
 		input: SubmitTaskForceEngagementActionInput!
@@ -161,13 +167,44 @@ type NewTurnCalculatedEvent {
 
 type Player {
 	color: String!
+	currentResearchDirective: PlayerResearchDirective
 	id: ID!
 	name: String!
+	researchOutcomes(limit: Int = 20): [PlayerResearchOutcome!]!
+	researchStates: [PlayerResearchState!]!
 	resources: [Resource!]!
 	shipComponents: [ShipComponent!]!
 	shipDesigns: [ShipDesign!]!
 	turnEnded: Boolean
 	user: User!
+}
+
+type PlayerResearchDirective {
+	methodology: ResearchMethodology!
+	primaryCategory: ResearchCategory!
+	secondaryCategory: ResearchCategory!
+	turnNumber: Int!
+}
+
+type PlayerResearchOutcome {
+	category: ResearchCategory!
+	id: ID!
+	modifier: Float!
+	outcomeKey: String!
+	outcomeMode: String!
+	stat: String!
+	turnNumber: Int!
+}
+
+type PlayerResearchState {
+	breakthroughCount: Int!
+	category: ResearchCategory!
+	consecutivePrimary: Int!
+	cumulativeMomentum: Float!
+	lastUpdatedTurn: Int!
+	phase: ResearchPhase!
+	recentEvidence: Float!
+	synthesisProgress: Float!
 }
 
 type Population {
@@ -203,6 +240,25 @@ type Query {
 }
 
 union Reference = Dilemma | StarSystem
+
+enum ResearchCategory {
+	discovery
+	expansion
+	industry
+	military
+}
+
+enum ResearchMethodology {
+	bold
+	opportunistic
+	stable
+}
+
+enum ResearchPhase {
+	fieldwork
+	hypothesis
+	synthesis
+}
 
 type Resource {
 	description: String!
@@ -483,6 +539,8 @@ type TurnReport {
 	miningChanges: [TurnReportMiningChange!]!
 	populationChanges: [TurnReportPopulationChange!]!
 	populationMigrations: [TurnReportPopulationMigration!]!
+	researchBreakthroughs: [TurnReportResearchBreakthrough!]!
+	researchProgressChanges: [TurnReportResearchProgressChange!]!
 	taskForceConstructionChanges: [TurnReportTaskForceConstructionChange!]!
 	taskForceEngagements: [TurnReportTaskForceEngagement!]!
 	turnNumber: Int!
@@ -534,6 +592,22 @@ type TurnReportPopulationMigration {
 	amount: BigInt!
 	destinationStarSystem: StarSystem!
 	sourceStarSystem: StarSystem!
+}
+
+type TurnReportResearchBreakthrough {
+	category: ResearchCategory!
+	modifier: String!
+	outcomeKey: String!
+	outcomeMode: String!
+	stat: String!
+}
+
+type TurnReportResearchProgressChange {
+	category: ResearchCategory!
+	momentumGained: String!
+	phase: ResearchPhase!
+	phaseChanged: Boolean!
+	totalMomentum: String!
 }
 
 type TurnReportTaskForceConstructionChange {

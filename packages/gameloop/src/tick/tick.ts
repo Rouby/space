@@ -13,6 +13,8 @@ import {
 	type TurnReportColonizationCompleted,
 	type TurnReportColonizationPressureChange,
 	type TurnReportPopulationMigration,
+	type TurnReportResearchBreakthrough,
+	type TurnReportResearchProgressChange,
 	type TurnReportTaskForceConstructionChange,
 	taskForceEngagements,
 	taskForces,
@@ -28,6 +30,7 @@ import { tickDiscoveries } from "./discoveries.ts";
 import type { IndustrialProjectCompletionChange } from "./industrialProjects.ts";
 import { tickIndustrialProjects } from "./industrialProjects.ts";
 import { tickPopulationMigration } from "./populationMigration.ts";
+import { tickResearch } from "./research.ts";
 import type { MiningTurnChange } from "./starSystemEconomy.ts";
 import { tickStarSystemEconomy } from "./starSystemEconomy.ts";
 import type { PopulationTurnChange } from "./starSystemPopulation.ts";
@@ -42,6 +45,12 @@ type FirstArgument<T> = T extends (arg: infer U) => unknown ? U : never;
 export type Transaction = FirstArgument<
 	FirstArgument<(typeof drizzle)["transaction"]>
 >;
+export type ResearchProgressChangeEvent = TurnReportResearchProgressChange & {
+	playerId: string;
+};
+export type ResearchBreakthroughEvent = TurnReportResearchBreakthrough & {
+	playerId: string;
+};
 export type Context = {
 	postMessage: (event: GameEvent) => void;
 	turn: number;
@@ -62,6 +71,14 @@ export type Context = {
 	addPopulationMigrationChange?: (
 		change: TurnReportPopulationMigration,
 	) => void;
+	addResearchProgressChange?: (change: ResearchProgressChangeEvent) => void;
+	addResearchBreakthrough?: (change: ResearchBreakthroughEvent) => void;
+	getMiningChanges?: () => MiningTurnChange[];
+	getIndustryChanges?: () => IndustryTurnChange[];
+	getIndustrialProjectCompletions?: () => IndustrialProjectCompletionChange[];
+	getColonizationPressureChanges?: () => TurnReportColonizationPressureChange[];
+	getColonizationCompleted?: () => TurnReportColonizationCompleted[];
+	getPopulationMigrations?: () => TurnReportPopulationMigration[];
 };
 
 export async function tick() {
@@ -76,6 +93,8 @@ export async function tick() {
 		[];
 	const colonizationCompleted: TurnReportColonizationCompleted[] = [];
 	const populationMigrations: TurnReportPopulationMigration[] = [];
+	const researchProgressChanges: ResearchProgressChangeEvent[] = [];
+	const researchBreakthroughs: ResearchBreakthroughEvent[] = [];
 
 	const ctx: Context = {
 		postMessage: (event) => messages.push(event),
@@ -100,6 +119,14 @@ export async function tick() {
 			colonizationPressureChanges.push(change),
 		addColonizationCompleted: (change) => colonizationCompleted.push(change),
 		addPopulationMigrationChange: (change) => populationMigrations.push(change),
+		addResearchProgressChange: (change) => researchProgressChanges.push(change),
+		addResearchBreakthrough: (change) => researchBreakthroughs.push(change),
+		getMiningChanges: () => [...miningChanges],
+		getIndustryChanges: () => [...industryChanges],
+		getIndustrialProjectCompletions: () => [...industrialProjectCompletions],
+		getColonizationPressureChanges: () => [...colonizationPressureChanges],
+		getColonizationCompleted: () => [...colonizationCompleted],
+		getPopulationMigrations: () => [...populationMigrations],
 	};
 
 	await drizzle.transaction(async (tx) => {
@@ -126,6 +153,8 @@ export async function tick() {
 		await tickStarSystemPopulation(tx, ctx);
 
 		await tickStarSystemEconomy(tx, ctx);
+
+		await tickResearch(tx, ctx);
 
 		await tickDevelopmentStances(tx, ctx);
 
@@ -206,6 +235,9 @@ export async function tick() {
 
 		const consolidatedIndustrialProjectCompletions =
 			industrialProjectCompletions;
+
+		const consolidatedResearchProgressChanges = researchProgressChanges;
+		const consolidatedResearchBreakthroughs = researchBreakthroughs;
 
 		const consolidatedTaskForceConstructionChanges =
 			taskForceConstructionChanges;
@@ -312,6 +344,12 @@ export async function tick() {
 					colonizationCompleted: colonizationCompleted.filter((c) =>
 						visibleSystemIds.has(c.starSystemId),
 					),
+					researchProgressChanges: consolidatedResearchProgressChanges
+						.filter((change) => change.playerId === p.userId)
+						.map(({ playerId, ...rest }) => rest),
+					researchBreakthroughs: consolidatedResearchBreakthroughs
+						.filter((change) => change.playerId === p.userId)
+						.map(({ playerId, ...rest }) => rest),
 				},
 			};
 		});

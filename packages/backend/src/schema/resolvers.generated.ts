@@ -21,6 +21,7 @@ import    { queueIndustrialProject as Mutation_queueIndustrialProject } from './
 import    { registerWithPassword as Mutation_registerWithPassword } from './user/resolvers/Mutation/registerWithPassword.js';
 import    { setColonizationGovernance as Mutation_setColonizationGovernance } from './starSystem/resolvers/Mutation/setColonizationGovernance.js';
 import    { setDevelopmentStance as Mutation_setDevelopmentStance } from './starSystem/resolvers/Mutation/setDevelopmentStance.js';
+import    { setResearchFocus as Mutation_setResearchFocus } from './game/resolvers/Mutation/setResearchFocus.js';
 import    { startGame as Mutation_startGame } from './game/resolvers/Mutation/startGame.js';
 import    { submitTaskForceEngagementAction as Mutation_submitTaskForceEngagementAction } from './taskForce/resolvers/Mutation/submitTaskForceEngagementAction.js';
 import    { updateGameSettings as Mutation_updateGameSettings } from './game/resolvers/Mutation/updateGameSettings.js';
@@ -46,6 +47,9 @@ import    { Player as game_Player } from './game/resolvers/Player.js';
 import    { Player as resource_Player } from './resource/resolvers/Player.js';
 import    { Player as shipComponent_Player } from './shipComponent/resolvers/Player.js';
 import    { Player as shipDesign_Player } from './shipDesign/resolvers/Player.js';
+import    { PlayerResearchDirective } from './game/resolvers/PlayerResearchDirective.js';
+import    { PlayerResearchOutcome } from './game/resolvers/PlayerResearchOutcome.js';
+import    { PlayerResearchState } from './game/resolvers/PlayerResearchState.js';
 import    { Population } from './starSystem/resolvers/Population.js';
 import    { PositionableApppearsEvent } from './base/resolvers/PositionableApppearsEvent.js';
 import    { PositionableDisappearsEvent } from './base/resolvers/PositionableDisappearsEvent.js';
@@ -79,6 +83,8 @@ import    { TurnReportIndustryChange } from './game/resolvers/TurnReportIndustry
 import    { TurnReportMiningChange } from './game/resolvers/TurnReportMiningChange.js';
 import    { TurnReportPopulationChange } from './game/resolvers/TurnReportPopulationChange.js';
 import    { TurnReportPopulationMigration } from './game/resolvers/TurnReportPopulationMigration.js';
+import    { TurnReportResearchBreakthrough } from './game/resolvers/TurnReportResearchBreakthrough.js';
+import    { TurnReportResearchProgressChange } from './game/resolvers/TurnReportResearchProgressChange.js';
 import    { TurnReportTaskForceConstructionChange } from './game/resolvers/TurnReportTaskForceConstructionChange.js';
 import    { TurnReportTaskForceEngagement } from './game/resolvers/TurnReportTaskForceEngagement.js';
 import    { UnknownDiscovery } from './starSystem/resolvers/UnknownDiscovery.js';
@@ -94,7 +100,7 @@ import    { TrackStarSystemEvent } from './base/resolvers/TrackStarSystemEvent.j
 import    { BigIntResolver,DateTimeResolver } from 'graphql-scalars';
     export const resolvers: Resolvers = {
       Query: { dilemma: Query_dilemma,game: Query_game,games: Query_games,me: Query_me,starSystem: Query_starSystem,taskForceEngagement: Query_taskForceEngagement },
-      Mutation: { assignTaskForceMission: Mutation_assignTaskForceMission,configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
+      Mutation: { assignTaskForceMission: Mutation_assignTaskForceMission,configureTaskForceCombatDeck: Mutation_configureTaskForceCombatDeck,constructTaskForce: Mutation_constructTaskForce,createGame: Mutation_createGame,createShipDesign: Mutation_createShipDesign,endTurn: Mutation_endTurn,joinGame: Mutation_joinGame,loginWithPassword: Mutation_loginWithPassword,loginWithRefreshToken: Mutation_loginWithRefreshToken,makeDilemmaChoice: Mutation_makeDilemmaChoice,orderTaskForce: Mutation_orderTaskForce,queueIndustrialProject: Mutation_queueIndustrialProject,registerWithPassword: Mutation_registerWithPassword,setColonizationGovernance: Mutation_setColonizationGovernance,setDevelopmentStance: Mutation_setDevelopmentStance,setResearchFocus: Mutation_setResearchFocus,startGame: Mutation_startGame,submitTaskForceEngagementAction: Mutation_submitTaskForceEngagementAction,updateGameSettings: Mutation_updateGameSettings,updatePlayer: Mutation_updatePlayer },
       Subscription: { trackGalaxy: Subscription_trackGalaxy,trackGame: Subscription_trackGame,trackStarSystem: Subscription_trackStarSystem,trackTaskForceEngagement: Subscription_trackTaskForceEngagement },
       CombatProfile: CombatProfile,
 DevelopmentStanceProjection: DevelopmentStanceProjection,
@@ -104,6 +110,9 @@ Game: { ...taskForce_Game,...game_Game,...dilemma_Game,...resource_Game,...shipC
 IndustrialProject: IndustrialProject,
 NewTurnCalculatedEvent: NewTurnCalculatedEvent,
 Player: { ...game_Player,...resource_Player,...shipComponent_Player,...shipDesign_Player },
+PlayerResearchDirective: PlayerResearchDirective,
+PlayerResearchOutcome: PlayerResearchOutcome,
+PlayerResearchState: PlayerResearchState,
 Population: Population,
 PositionableApppearsEvent: PositionableApppearsEvent,
 PositionableDisappearsEvent: PositionableDisappearsEvent,
@@ -136,6 +145,8 @@ TurnReportIndustryChange: TurnReportIndustryChange,
 TurnReportMiningChange: TurnReportMiningChange,
 TurnReportPopulationChange: TurnReportPopulationChange,
 TurnReportPopulationMigration: TurnReportPopulationMigration,
+TurnReportResearchBreakthrough: TurnReportResearchBreakthrough,
+TurnReportResearchProgressChange: TurnReportResearchProgressChange,
 TurnReportTaskForceConstructionChange: TurnReportTaskForceConstructionChange,
 TurnReportTaskForceEngagement: TurnReportTaskForceEngagement,
 UnknownDiscovery: UnknownDiscovery,

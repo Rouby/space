@@ -1,6 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { DilemmaMapper } from './dilemma/schema.mappers.js';
-import { GameMapper, PlayerMapper, TurnReportMapper, TurnReportColonizationCompletedMapper, TurnReportColonizationPressureChangeMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportPopulationMigrationMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
+import { GameMapper, PlayerMapper, PlayerResearchDirectiveMapper, PlayerResearchOutcomeMapper, PlayerResearchStateMapper, TurnReportMapper, TurnReportColonizationCompletedMapper, TurnReportColonizationPressureChangeMapper, TurnReportIndustrialProjectCompletionMapper, TurnReportIndustryChangeMapper, TurnReportMiningChangeMapper, TurnReportPopulationChangeMapper, TurnReportPopulationMigrationMapper, TurnReportResearchBreakthroughMapper, TurnReportResearchProgressChangeMapper, TurnReportTaskForceConstructionChangeMapper } from './game/schema.mappers.js';
 import { IndustrialProjectMapper, PopulationMapper, ResourceDiscoveryMapper, StarSystemMapper } from './starSystem/schema.mappers.js';
 import { ResourceMapper, ResourceCostMapper } from './resource/schema.mappers.js';
 import { ShipComponentMapper } from './shipComponent/schema.mappers.js';
@@ -165,6 +165,7 @@ export type Mutation = {
   registerWithPassword: User;
   setColonizationGovernance: StarSystem;
   setDevelopmentStance: StarSystem;
+  setResearchFocus: Player;
   startGame: Game;
   submitTaskForceEngagementAction: TaskForceEngagement;
   updateGameSettings: Game;
@@ -254,6 +255,14 @@ export type MutationsetDevelopmentStanceArgs = {
 };
 
 
+export type MutationsetResearchFocusArgs = {
+  gameId: Scalars['ID']['input'];
+  methodology: ResearchMethodology;
+  primaryCategory: ResearchCategory;
+  secondaryCategory: ResearchCategory;
+};
+
+
 export type MutationstartGameArgs = {
   id: Scalars['ID']['input'];
 };
@@ -283,13 +292,52 @@ export type NewTurnCalculatedEvent = {
 export type Player = {
   __typename?: 'Player';
   color: Scalars['String']['output'];
+  currentResearchDirective?: Maybe<PlayerResearchDirective>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  researchOutcomes: Array<PlayerResearchOutcome>;
+  researchStates: Array<PlayerResearchState>;
   resources: Array<Resource>;
   shipComponents: Array<ShipComponent>;
   shipDesigns: Array<ShipDesign>;
   turnEnded?: Maybe<Scalars['Boolean']['output']>;
   user: User;
+};
+
+
+export type PlayerresearchOutcomesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type PlayerResearchDirective = {
+  __typename?: 'PlayerResearchDirective';
+  methodology: ResearchMethodology;
+  primaryCategory: ResearchCategory;
+  secondaryCategory: ResearchCategory;
+  turnNumber: Scalars['Int']['output'];
+};
+
+export type PlayerResearchOutcome = {
+  __typename?: 'PlayerResearchOutcome';
+  category: ResearchCategory;
+  id: Scalars['ID']['output'];
+  modifier: Scalars['Float']['output'];
+  outcomeKey: Scalars['String']['output'];
+  outcomeMode: Scalars['String']['output'];
+  stat: Scalars['String']['output'];
+  turnNumber: Scalars['Int']['output'];
+};
+
+export type PlayerResearchState = {
+  __typename?: 'PlayerResearchState';
+  breakthroughCount: Scalars['Int']['output'];
+  category: ResearchCategory;
+  consecutivePrimary: Scalars['Int']['output'];
+  cumulativeMomentum: Scalars['Float']['output'];
+  lastUpdatedTurn: Scalars['Int']['output'];
+  phase: ResearchPhase;
+  recentEvidence: Scalars['Float']['output'];
+  synthesisProgress: Scalars['Float']['output'];
 };
 
 export type Population = {
@@ -350,6 +398,22 @@ export type QuerytaskForceEngagementArgs = {
 };
 
 export type Reference = Dilemma | StarSystem;
+
+export type ResearchCategory =
+  | 'discovery'
+  | 'expansion'
+  | 'industry'
+  | 'military';
+
+export type ResearchMethodology =
+  | 'bold'
+  | 'opportunistic'
+  | 'stable';
+
+export type ResearchPhase =
+  | 'fieldwork'
+  | 'hypothesis'
+  | 'synthesis';
 
 export type Resource = {
   __typename?: 'Resource';
@@ -665,6 +729,8 @@ export type TurnReport = {
   miningChanges: Array<TurnReportMiningChange>;
   populationChanges: Array<TurnReportPopulationChange>;
   populationMigrations: Array<TurnReportPopulationMigration>;
+  researchBreakthroughs: Array<TurnReportResearchBreakthrough>;
+  researchProgressChanges: Array<TurnReportResearchProgressChange>;
   taskForceConstructionChanges: Array<TurnReportTaskForceConstructionChange>;
   taskForceEngagements: Array<TurnReportTaskForceEngagement>;
   turnNumber: Scalars['Int']['output'];
@@ -723,6 +789,24 @@ export type TurnReportPopulationMigration = {
   amount: Scalars['BigInt']['output'];
   destinationStarSystem: StarSystem;
   sourceStarSystem: StarSystem;
+};
+
+export type TurnReportResearchBreakthrough = {
+  __typename?: 'TurnReportResearchBreakthrough';
+  category: ResearchCategory;
+  modifier: Scalars['String']['output'];
+  outcomeKey: Scalars['String']['output'];
+  outcomeMode: Scalars['String']['output'];
+  stat: Scalars['String']['output'];
+};
+
+export type TurnReportResearchProgressChange = {
+  __typename?: 'TurnReportResearchProgressChange';
+  category: ResearchCategory;
+  momentumGained: Scalars['String']['output'];
+  phase: ResearchPhase;
+  phaseChanged: Scalars['Boolean']['output'];
+  totalMomentum: Scalars['String']['output'];
 };
 
 export type TurnReportTaskForceConstructionChange = {
@@ -905,6 +989,10 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   NewTurnCalculatedEvent: ResolverTypeWrapper<Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversTypes['Game'] }>;
   Player: ResolverTypeWrapper<PlayerMapper>;
+  PlayerResearchDirective: ResolverTypeWrapper<PlayerResearchDirectiveMapper>;
+  PlayerResearchOutcome: ResolverTypeWrapper<PlayerResearchOutcomeMapper>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  PlayerResearchState: ResolverTypeWrapper<PlayerResearchStateMapper>;
   Population: ResolverTypeWrapper<PopulationMapper>;
   Positionable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Positionable']>;
   PositionableApppearsEvent: ResolverTypeWrapper<Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
@@ -912,9 +1000,11 @@ export type ResolversTypes = {
   PositionableMovesEvent: ResolverTypeWrapper<Omit<PositionableMovesEvent, 'subject'> & { subject: ResolversTypes['Positionable'] }>;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   Reference: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['Reference']>;
+  ResearchCategory: ResolverTypeWrapper<'military' | 'industry' | 'expansion' | 'discovery'>;
+  ResearchMethodology: ResolverTypeWrapper<'stable' | 'bold' | 'opportunistic'>;
+  ResearchPhase: ResolverTypeWrapper<'hypothesis' | 'fieldwork' | 'synthesis'>;
   Resource: ResolverTypeWrapper<ResourceMapper>;
   ResourceCost: ResolverTypeWrapper<ResourceCostMapper>;
-  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ResourceDiscovery: ResolverTypeWrapper<ResourceDiscoveryMapper>;
   ResourceStatBonus: ResolverTypeWrapper<ResourceStatBonus>;
   ShipComponent: ResolverTypeWrapper<ShipComponentMapper>;
@@ -955,6 +1045,8 @@ export type ResolversTypes = {
   TurnReportMiningChange: ResolverTypeWrapper<TurnReportMiningChangeMapper>;
   TurnReportPopulationChange: ResolverTypeWrapper<TurnReportPopulationChangeMapper>;
   TurnReportPopulationMigration: ResolverTypeWrapper<TurnReportPopulationMigrationMapper>;
+  TurnReportResearchBreakthrough: ResolverTypeWrapper<TurnReportResearchBreakthroughMapper>;
+  TurnReportResearchProgressChange: ResolverTypeWrapper<TurnReportResearchProgressChangeMapper>;
   TurnReportTaskForceConstructionChange: ResolverTypeWrapper<TurnReportTaskForceConstructionChangeMapper>;
   TurnReportTaskForceEngagement: ResolverTypeWrapper<TurnReportTaskForceEngagement>;
   UnknownDiscovery: ResolverTypeWrapper<UnknownDiscovery>;
@@ -986,6 +1078,10 @@ export type ResolversParentTypes = {
   Mutation: Record<PropertyKey, never>;
   NewTurnCalculatedEvent: Omit<NewTurnCalculatedEvent, 'game'> & { game: ResolversParentTypes['Game'] };
   Player: PlayerMapper;
+  PlayerResearchDirective: PlayerResearchDirectiveMapper;
+  PlayerResearchOutcome: PlayerResearchOutcomeMapper;
+  Float: Scalars['Float']['output'];
+  PlayerResearchState: PlayerResearchStateMapper;
   Population: PopulationMapper;
   Positionable: ResolversInterfaceTypes<ResolversParentTypes>['Positionable'];
   PositionableApppearsEvent: Omit<PositionableApppearsEvent, 'subject'> & { subject: ResolversParentTypes['Positionable'] };
@@ -995,7 +1091,6 @@ export type ResolversParentTypes = {
   Reference: ResolversUnionTypes<ResolversParentTypes>['Reference'];
   Resource: ResourceMapper;
   ResourceCost: ResourceCostMapper;
-  Float: Scalars['Float']['output'];
   ResourceDiscovery: ResourceDiscoveryMapper;
   ResourceStatBonus: ResourceStatBonus;
   ShipComponent: ShipComponentMapper;
@@ -1033,6 +1128,8 @@ export type ResolversParentTypes = {
   TurnReportMiningChange: TurnReportMiningChangeMapper;
   TurnReportPopulationChange: TurnReportPopulationChangeMapper;
   TurnReportPopulationMigration: TurnReportPopulationMigrationMapper;
+  TurnReportResearchBreakthrough: TurnReportResearchBreakthroughMapper;
+  TurnReportResearchProgressChange: TurnReportResearchProgressChangeMapper;
   TurnReportTaskForceConstructionChange: TurnReportTaskForceConstructionChangeMapper;
   TurnReportTaskForceEngagement: TurnReportTaskForceEngagement;
   UnknownDiscovery: UnknownDiscovery;
@@ -1147,6 +1244,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   registerWithPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationregisterWithPasswordArgs, 'email' | 'name' | 'password'>>;
   setColonizationGovernance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetColonizationGovernanceArgs, 'starSystemId'>>;
   setDevelopmentStance?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType, RequireFields<MutationsetDevelopmentStanceArgs, 'stance' | 'starSystemId'>>;
+  setResearchFocus?: Resolver<ResolversTypes['Player'], ParentType, ContextType, RequireFields<MutationsetResearchFocusArgs, 'gameId' | 'methodology' | 'primaryCategory' | 'secondaryCategory'>>;
   startGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationstartGameArgs, 'id'>>;
   submitTaskForceEngagementAction?: Resolver<ResolversTypes['TaskForceEngagement'], ParentType, ContextType, RequireFields<MutationsubmitTaskForceEngagementActionArgs, 'input'>>;
   updateGameSettings?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationupdateGameSettingsArgs, 'gameId' | 'input'>>;
@@ -1160,13 +1258,44 @@ export type NewTurnCalculatedEventResolvers<ContextType = Context, ParentType ex
 
 export type PlayerResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
   color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  currentResearchDirective?: Resolver<Maybe<ResolversTypes['PlayerResearchDirective']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  researchOutcomes?: Resolver<Array<ResolversTypes['PlayerResearchOutcome']>, ParentType, ContextType, RequireFields<PlayerresearchOutcomesArgs, 'limit'>>;
+  researchStates?: Resolver<Array<ResolversTypes['PlayerResearchState']>, ParentType, ContextType>;
   resources?: Resolver<Array<ResolversTypes['Resource']>, ParentType, ContextType>;
   shipComponents?: Resolver<Array<ResolversTypes['ShipComponent']>, ParentType, ContextType>;
   shipDesigns?: Resolver<Array<ResolversTypes['ShipDesign']>, ParentType, ContextType>;
   turnEnded?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+};
+
+export type PlayerResearchDirectiveResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PlayerResearchDirective'] = ResolversParentTypes['PlayerResearchDirective']> = {
+  methodology?: Resolver<ResolversTypes['ResearchMethodology'], ParentType, ContextType>;
+  primaryCategory?: Resolver<ResolversTypes['ResearchCategory'], ParentType, ContextType>;
+  secondaryCategory?: Resolver<ResolversTypes['ResearchCategory'], ParentType, ContextType>;
+  turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type PlayerResearchOutcomeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PlayerResearchOutcome'] = ResolversParentTypes['PlayerResearchOutcome']> = {
+  category?: Resolver<ResolversTypes['ResearchCategory'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  modifier?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  outcomeKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  outcomeMode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  stat?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type PlayerResearchStateResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PlayerResearchState'] = ResolversParentTypes['PlayerResearchState']> = {
+  breakthroughCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  category?: Resolver<ResolversTypes['ResearchCategory'], ParentType, ContextType>;
+  consecutivePrimary?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  cumulativeMomentum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  lastUpdatedTurn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  phase?: Resolver<ResolversTypes['ResearchPhase'], ParentType, ContextType>;
+  recentEvidence?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  synthesisProgress?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
 };
 
 export type PopulationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Population'] = ResolversParentTypes['Population']> = {
@@ -1206,6 +1335,12 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 export type ReferenceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Reference'] = ResolversParentTypes['Reference']> = {
   __resolveType?: TypeResolveFn<'Dilemma' | 'StarSystem', ParentType, ContextType>;
 };
+
+export type ResearchCategoryResolvers = EnumResolverSignature<{ discovery?: any, expansion?: any, industry?: any, military?: any }, ResolversTypes['ResearchCategory']>;
+
+export type ResearchMethodologyResolvers = EnumResolverSignature<{ bold?: any, opportunistic?: any, stable?: any }, ResolversTypes['ResearchMethodology']>;
+
+export type ResearchPhaseResolvers = EnumResolverSignature<{ fieldwork?: any, hypothesis?: any, synthesis?: any }, ResolversTypes['ResearchPhase']>;
 
 export type ResourceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = {
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1455,6 +1590,8 @@ export type TurnReportResolvers<ContextType = Context, ParentType extends Resolv
   miningChanges?: Resolver<Array<ResolversTypes['TurnReportMiningChange']>, ParentType, ContextType>;
   populationChanges?: Resolver<Array<ResolversTypes['TurnReportPopulationChange']>, ParentType, ContextType>;
   populationMigrations?: Resolver<Array<ResolversTypes['TurnReportPopulationMigration']>, ParentType, ContextType>;
+  researchBreakthroughs?: Resolver<Array<ResolversTypes['TurnReportResearchBreakthrough']>, ParentType, ContextType>;
+  researchProgressChanges?: Resolver<Array<ResolversTypes['TurnReportResearchProgressChange']>, ParentType, ContextType>;
   taskForceConstructionChanges?: Resolver<Array<ResolversTypes['TurnReportTaskForceConstructionChange']>, ParentType, ContextType>;
   taskForceEngagements?: Resolver<Array<ResolversTypes['TurnReportTaskForceEngagement']>, ParentType, ContextType>;
   turnNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1506,6 +1643,22 @@ export type TurnReportPopulationMigrationResolvers<ContextType = Context, Parent
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   destinationStarSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
   sourceStarSystem?: Resolver<ResolversTypes['StarSystem'], ParentType, ContextType>;
+};
+
+export type TurnReportResearchBreakthroughResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportResearchBreakthrough'] = ResolversParentTypes['TurnReportResearchBreakthrough']> = {
+  category?: Resolver<ResolversTypes['ResearchCategory'], ParentType, ContextType>;
+  modifier?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  outcomeKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  outcomeMode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  stat?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type TurnReportResearchProgressChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportResearchProgressChange'] = ResolversParentTypes['TurnReportResearchProgressChange']> = {
+  category?: Resolver<ResolversTypes['ResearchCategory'], ParentType, ContextType>;
+  momentumGained?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  phase?: Resolver<ResolversTypes['ResearchPhase'], ParentType, ContextType>;
+  phaseChanged?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  totalMomentum?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type TurnReportTaskForceConstructionChangeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['TurnReportTaskForceConstructionChange'] = ResolversParentTypes['TurnReportTaskForceConstructionChange']> = {
@@ -1562,6 +1715,9 @@ export type Resolvers<ContextType = Context> = {
   Mutation?: MutationResolvers<ContextType>;
   NewTurnCalculatedEvent?: NewTurnCalculatedEventResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
+  PlayerResearchDirective?: PlayerResearchDirectiveResolvers<ContextType>;
+  PlayerResearchOutcome?: PlayerResearchOutcomeResolvers<ContextType>;
+  PlayerResearchState?: PlayerResearchStateResolvers<ContextType>;
   Population?: PopulationResolvers<ContextType>;
   Positionable?: PositionableResolvers<ContextType>;
   PositionableApppearsEvent?: PositionableApppearsEventResolvers<ContextType>;
@@ -1569,6 +1725,9 @@ export type Resolvers<ContextType = Context> = {
   PositionableMovesEvent?: PositionableMovesEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Reference?: ReferenceResolvers<ContextType>;
+  ResearchCategory?: ResearchCategoryResolvers;
+  ResearchMethodology?: ResearchMethodologyResolvers;
+  ResearchPhase?: ResearchPhaseResolvers;
   Resource?: ResourceResolvers<ContextType>;
   ResourceCost?: ResourceCostResolvers<ContextType>;
   ResourceDiscovery?: ResourceDiscoveryResolvers<ContextType>;
@@ -1605,6 +1764,8 @@ export type Resolvers<ContextType = Context> = {
   TurnReportMiningChange?: TurnReportMiningChangeResolvers<ContextType>;
   TurnReportPopulationChange?: TurnReportPopulationChangeResolvers<ContextType>;
   TurnReportPopulationMigration?: TurnReportPopulationMigrationResolvers<ContextType>;
+  TurnReportResearchBreakthrough?: TurnReportResearchBreakthroughResolvers<ContextType>;
+  TurnReportResearchProgressChange?: TurnReportResearchProgressChangeResolvers<ContextType>;
   TurnReportTaskForceConstructionChange?: TurnReportTaskForceConstructionChangeResolvers<ContextType>;
   TurnReportTaskForceEngagement?: TurnReportTaskForceEngagementResolvers<ContextType>;
   UnknownDiscovery?: UnknownDiscoveryResolvers<ContextType>;

@@ -8,6 +8,7 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
+import type { ResearchCategory, ResearchPhase } from "./research.ts";
 import { users } from "./users.ts";
 
 export type TurnReportPopulationChange = {
@@ -81,6 +82,22 @@ export type TurnReportColonizationCompleted = {
 	pressureThreshold: string;
 };
 
+export type TurnReportResearchProgressChange = {
+	category: ResearchCategory;
+	momentumGained: string;
+	totalMomentum: string;
+	phase: ResearchPhase;
+	phaseChanged: boolean;
+};
+
+export type TurnReportResearchBreakthrough = {
+	category: ResearchCategory;
+	outcomeKey: string;
+	outcomeMode: string;
+	stat: string;
+	modifier: string;
+};
+
 export type TurnReportSummary = {
 	populationChanges: TurnReportPopulationChange[];
 	populationMigrations?: TurnReportPopulationMigration[];
@@ -91,6 +108,8 @@ export type TurnReportSummary = {
 	taskForceEngagements: TurnReportTaskForceEngagement[];
 	colonizationPressureChanges?: TurnReportColonizationPressureChange[];
 	colonizationCompleted?: TurnReportColonizationCompleted[];
+	researchProgressChanges?: TurnReportResearchProgressChange[];
+	researchBreakthroughs?: TurnReportResearchBreakthrough[];
 };
 
 export const turnReports = pgTable(

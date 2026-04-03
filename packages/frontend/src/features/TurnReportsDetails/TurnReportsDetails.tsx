@@ -126,6 +126,20 @@ export function TurnReportsDetails() {
 							accumulatedPressure
 							pressureThreshold
 						}
+						researchProgressChanges {
+							category
+							momentumGained
+							totalMomentum
+							phase
+							phaseChanged
+						}
+						researchBreakthroughs {
+							category
+							outcomeKey
+							outcomeMode
+							stat
+							modifier
+						}
 					}
 				}
 			}
@@ -154,7 +168,8 @@ export function TurnReportsDetails() {
 					<Title order={3}>Turn Reports</Title>
 					<Text size="sm" c="dimmed">
 						Detailed end-of-turn summaries for population, mining, industry,
-						migration, industrial projects, and task force construction.
+						migration, industrial projects, research, and task force
+						construction.
 					</Text>
 				</div>
 				{reports.length > 1 && (
@@ -496,6 +511,80 @@ export function TurnReportsDetails() {
 															</Text>
 														)}
 													</Table.Td>
+												</Table.Tr>
+											))}
+										</Table.Tbody>
+									</Table>
+								)}
+
+								<Divider my="xs" />
+
+								<Text size="sm" fw={500}>
+									Research Progress
+								</Text>
+								{report.researchProgressChanges.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No research progress updates this turn.
+									</Text>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Category</Table.Th>
+												<Table.Th>Momentum</Table.Th>
+												<Table.Th>Total</Table.Th>
+												<Table.Th>Phase</Table.Th>
+												<Table.Th>Changed</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.researchProgressChanges.map((change, idx) => (
+												<Table.Tr key={`${change.category}:${idx}`}>
+													<Table.Td>{change.category}</Table.Td>
+													<Table.Td c="green">
+														+{change.momentumGained}
+													</Table.Td>
+													<Table.Td>{change.totalMomentum}</Table.Td>
+													<Table.Td>{change.phase}</Table.Td>
+													<Table.Td>
+														{change.phaseChanged ? "Yes" : "No"}
+													</Table.Td>
+												</Table.Tr>
+											))}
+										</Table.Tbody>
+									</Table>
+								)}
+
+								<Divider my="xs" />
+
+								<Text size="sm" fw={500}>
+									Research Breakthroughs
+								</Text>
+								{report.researchBreakthroughs.length === 0 ? (
+									<Text size="sm" c="dimmed">
+										No breakthroughs this turn.
+									</Text>
+								) : (
+									<Table striped withTableBorder withColumnBorders>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Category</Table.Th>
+												<Table.Th>Outcome</Table.Th>
+												<Table.Th>Mode</Table.Th>
+												<Table.Th>Stat</Table.Th>
+												<Table.Th>Modifier</Table.Th>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
+											{report.researchBreakthroughs.map((breakthrough, idx) => (
+												<Table.Tr
+													key={`${breakthrough.category}:${breakthrough.outcomeKey}:${idx}`}
+												>
+													<Table.Td>{breakthrough.category}</Table.Td>
+													<Table.Td>{breakthrough.outcomeKey}</Table.Td>
+													<Table.Td>{breakthrough.outcomeMode}</Table.Td>
+													<Table.Td>{breakthrough.stat}</Table.Td>
+													<Table.Td>{breakthrough.modifier}</Table.Td>
 												</Table.Tr>
 											))}
 										</Table.Tbody>

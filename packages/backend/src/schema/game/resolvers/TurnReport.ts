@@ -37,4 +37,10 @@ export const TurnReport: TurnReportResolvers = {
 	colonizationCompleted: async (parent, _arg, _ctx) => {
 		return parent.summary.colonizationCompleted || [];
 	},
+	researchProgressChanges: async (parent, _arg, _ctx) => {
+		return parent.summary.researchProgressChanges || [];
+	},
+	researchBreakthroughs: async (parent, _arg, _ctx) => {
+		return parent.summary.researchBreakthroughs || [];
+	},
 };

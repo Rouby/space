@@ -1,5 +1,8 @@
 import type {
 	games,
+	playerResearchDirectives,
+	playerResearchOutcomes,
+	playerResearchStates,
 	players,
 	TurnReportColonizationCompleted,
 	TurnReportColonizationPressureChange,
@@ -8,6 +11,8 @@ import type {
 	TurnReportMiningChange,
 	TurnReportPopulationChange,
 	TurnReportPopulationMigration,
+	TurnReportResearchBreakthrough,
+	TurnReportResearchProgressChange,
 	TurnReportTaskForceConstructionChange,
 	turnReports,
 	users,
@@ -25,8 +30,18 @@ export type TurnReportIndustrialProjectCompletionMapper =
 	TurnReportIndustrialProjectCompletion;
 export type TurnReportTaskForceConstructionChangeMapper =
 	TurnReportTaskForceConstructionChange;
+export type TurnReportResearchProgressChangeMapper =
+	TurnReportResearchProgressChange;
+export type TurnReportResearchBreakthroughMapper =
+	TurnReportResearchBreakthrough;
 export type TurnReportColonizationPressureChangeMapper =
 	TurnReportColonizationPressureChange;
 export type TurnReportColonizationCompletedMapper =
 	TurnReportColonizationCompleted;
 export type TurnReportPopulationMigrationMapper = TurnReportPopulationMigration;
+export type PlayerResearchDirectiveMapper =
+	typeof playerResearchDirectives.$inferSelect;
+export type PlayerResearchStateMapper =
+	typeof playerResearchStates.$inferSelect;
+export type PlayerResearchOutcomeMapper =
+	typeof playerResearchOutcomes.$inferSelect;

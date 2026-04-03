@@ -15,5 +15,6 @@ Welcome to the autonomous GDD for **Space**. This directory is structured to pro
 ### 3. Mechanics
 - [Combat Resolution](./mechanics/combat.md) - The deck-building tactical combat phase.
 - [Colonization & Population](./mechanics/colonization.md) - Colonization pressure, migration, and growth rules.
+- [Research Focus & Emergent Outcomes](./mechanics/research.md) - Directional research with emergent breakthroughs.
 
 > **AI Instruction:** When tasked with a feature, only read the specific files related to your domain. For database schema references, check `packages/data/src/schema/`.

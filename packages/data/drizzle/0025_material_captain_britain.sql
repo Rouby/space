@@ -1,0 +1,2 @@
+DROP INDEX "playerResearchDirectives_gameId_playerId_turnNumber_index";--> statement-breakpoint
+CREATE UNIQUE INDEX "playerResearchDirectives_gameId_playerId_turnNumber_index" ON "playerResearchDirectives" USING btree ("gameId","playerId","turnNumber");

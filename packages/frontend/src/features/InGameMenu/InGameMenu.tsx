@@ -10,6 +10,7 @@ import {
 	type Icon,
 	IconAd,
 	IconFileDescription,
+	IconFlask2,
 	IconHourglass,
 	IconLicense,
 	IconPlayerPlay,
@@ -137,6 +138,10 @@ export function InGameMenu() {
 						icon={IconFileDescription}
 					>
 						Turn Reports
+					</NavLink>
+
+					<NavLink from="/games/$id" to="./research" icon={IconFlask2}>
+						Research
 					</NavLink>
 				</div>
 			</Section>
