@@ -10,7 +10,7 @@ describe("tickDevelopmentStances", () => {
 			.mockResolvedValueOnce([
 				{
 					allegianceToPlayerId: "player-1",
-					amount: 1000n,
+					amount: 10_000_000_000n,
 					growthLeftover: "0",
 				},
 			]);
@@ -44,7 +44,11 @@ describe("tickDevelopmentStances", () => {
 				industryUtilized: 0,
 			},
 		]);
-		expect(populationChanges).toHaveLength(0);
+		expect(populationChanges).toHaveLength(1);
+		expect(populationChanges[0]).toMatchObject({
+			starSystemId: "ss-1",
+			growth: 4_000_000n,
+		});
 	});
 
 	it("applies explicit grow_population stance and emits population growth changes", async () => {
@@ -88,5 +92,50 @@ describe("tickDevelopmentStances", () => {
 			starSystemId: "ss-1",
 			growth: 1200n,
 		});
+	});
+
+	it("reports capped industry growth when a stance pushes above population support", async () => {
+		const whereSelect = vi
+			.fn()
+			.mockResolvedValueOnce([{ id: "ss-1", industry: 20 }])
+			.mockResolvedValueOnce([
+				{ starSystemId: "ss-1", stance: "industrialize" },
+			])
+			.mockResolvedValueOnce([
+				{
+					allegianceToPlayerId: "player-1",
+					amount: 10_000_000_000n,
+					growthLeftover: "0",
+				},
+			]);
+
+		const tx = {
+			select: vi.fn().mockReturnValue({
+				from: vi.fn().mockReturnValue({ where: whereSelect }),
+			}),
+			update: vi.fn().mockReturnValue({
+				set: vi
+					.fn()
+					.mockReturnValue({ where: vi.fn().mockResolvedValue(undefined) }),
+			}),
+		};
+
+		const industryChanges: unknown[] = [];
+
+		await tickDevelopmentStances(tx as never, {
+			turn: 5,
+			postMessage: vi.fn(),
+			addMiningChange: vi.fn(),
+			addPopulationChange: vi.fn(),
+			addIndustryChange: (change) => industryChanges.push(change),
+		});
+
+		expect(industryChanges).toEqual([
+			{
+				starSystemId: "ss-1",
+				industryTotal: 13,
+				industryUtilized: 0,
+			},
+		]);
 	});
 });

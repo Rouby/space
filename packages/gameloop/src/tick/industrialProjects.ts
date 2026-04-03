@@ -1,4 +1,8 @@
-import { industrialProjectCatalog } from "@space/data/functions";
+import {
+	getDuplicateProjectMaintenanceCost,
+	getPopulationCappedIndustry,
+	industrialProjectCatalog,
+} from "@space/data/functions";
 import {
 	and,
 	eq,
@@ -49,15 +53,56 @@ export async function tickIndustrialProjects(
 		.from(starSystems)
 		.where(eq(starSystems.gameId, gameId));
 
+	const populations = await tx
+		.select({
+			starSystemId: starSystemPopulations.starSystemId,
+			amount: starSystemPopulations.amount,
+		})
+		.from(starSystemPopulations);
+
+	const totalPopulationBySystem = populations.reduce((acc, population) => {
+		acc.set(
+			population.starSystemId,
+			(acc.get(population.starSystemId) ?? 0) + Number(population.amount),
+		);
+		return acc;
+	}, new Map<string, number>());
+
 	for (const system of systemsWithIndustry) {
+		const totalPopulation = totalPopulationBySystem.get(system.id) ?? 0;
+		const effectiveIndustryTotal = getPopulationCappedIndustry(
+			system.industry,
+			totalPopulation,
+		);
 		// Calculate maintenance drain from completed projects in this system
 		const completedProjects = projects.filter(
 			(project) =>
 				project.starSystemId === system.id && project.completedAtTurn !== null,
 		);
-		const totalMaintenanceCost = completedProjects.reduce(
-			(acc, project) => acc + project.maintenanceCost,
+		const completedProjectCopies = new Map<string, number>();
+		const totalMaintenanceCost = completedProjects.reduce((acc, project) => {
+			const copyIndex =
+				(completedProjectCopies.get(project.projectType) ?? 0) + 1;
+			completedProjectCopies.set(project.projectType, copyIndex);
+
+			const definition = industrialProjectCatalog[project.projectType];
+			const baseMaintenance = Math.max(
+				project.maintenanceCost,
+				definition?.maintenanceCost ?? project.maintenanceCost,
+			);
+
+			return (
+				acc + getDuplicateProjectMaintenanceCost(baseMaintenance, copyIndex)
+			);
+		}, 0);
+		const alreadyUtilized = ctx.getIndustryUtilized?.(system.id) ?? 0;
+		const remainingIndustryAfterEarlierUsage = Math.max(
+			effectiveIndustryTotal - alreadyUtilized,
 			0,
+		);
+		const appliedMaintenance = Math.min(
+			totalMaintenanceCost,
+			remainingIndustryAfterEarlierUsage,
 		);
 
 		const queue = projects
@@ -70,24 +115,23 @@ export async function tickIndustrialProjects(
 			.sort((a, b) => a.queuePosition - b.queuePosition);
 
 		if (queue.length === 0) {
-			if (totalMaintenanceCost > 0) {
+			if (appliedMaintenance > 0) {
 				ctx.addIndustryChange({
 					starSystemId: system.id,
-					industryTotal: system.industry,
-					industryUtilized: totalMaintenanceCost,
+					industryTotal: effectiveIndustryTotal,
+					industryUtilized: appliedMaintenance,
 				});
 			}
 			continue;
 		}
 
 		let availableIndustry = Math.max(
-			system.industry -
-				(ctx.getIndustryUtilized?.(system.id) ?? 0) -
-				totalMaintenanceCost,
+			remainingIndustryAfterEarlierUsage - appliedMaintenance,
 			0,
 		);
-		let utilizedIndustry = totalMaintenanceCost;
+		let utilizedIndustry = appliedMaintenance;
 		let industryTotal = system.industry;
+		let effectiveIndustryForReport = effectiveIndustryTotal;
 
 		for (const project of queue) {
 			if (availableIndustry <= 0) {
@@ -141,6 +185,10 @@ export async function tickIndustrialProjects(
 
 				if (project.completionIndustryBonus > 0) {
 					industryTotal += project.completionIndustryBonus;
+					effectiveIndustryForReport = getPopulationCappedIndustry(
+						industryTotal,
+						totalPopulation,
+					);
 
 					await tx
 						.update(starSystems)
@@ -170,7 +218,7 @@ export async function tickIndustrialProjects(
 		if (utilizedIndustry > 0) {
 			ctx.addIndustryChange({
 				starSystemId: system.id,
-				industryTotal,
+				industryTotal: effectiveIndustryForReport,
 				industryUtilized: utilizedIndustry,
 			});
 		}

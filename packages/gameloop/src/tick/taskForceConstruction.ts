@@ -1,4 +1,12 @@
-import { and, eq, isNull, starSystems, taskForces } from "@space/data/schema";
+import { getPopulationCappedIndustry } from "@space/data/functions";
+import {
+	and,
+	eq,
+	isNull,
+	starSystemPopulations,
+	starSystems,
+	taskForces,
+} from "@space/data/schema";
 import { gameId } from "../config.ts";
 import type { Context, Transaction } from "./tick.ts";
 
@@ -34,8 +42,27 @@ export async function tickTaskForceConstruction(
 		.from(starSystems)
 		.where(eq(starSystems.gameId, gameId));
 
+	const populations = await tx
+		.select({
+			starSystemId: starSystemPopulations.starSystemId,
+			amount: starSystemPopulations.amount,
+		})
+		.from(starSystemPopulations);
+
+	const totalPopulationBySystem = populations.reduce((acc, population) => {
+		acc.set(
+			population.starSystemId,
+			(acc.get(population.starSystemId) ?? 0) + Number(population.amount),
+		);
+		return acc;
+	}, new Map<string, number>());
+
 	for (const system of systemsWithIndustry) {
 		const costModifier = Number(system.constructionCostModifier ?? "0");
+		const effectiveIndustryTotal = getPopulationCappedIndustry(
+			system.industry,
+			totalPopulationBySystem.get(system.id) ?? 0,
+		);
 
 		const forcesInSystem = allTaskForces.filter(
 			(tf) =>
@@ -47,13 +74,13 @@ export async function tickTaskForceConstruction(
 		if (forcesInSystem.length === 0) {
 			ctx.addIndustryChange({
 				starSystemId: system.id,
-				industryTotal: system.industry,
+				industryTotal: effectiveIndustryTotal,
 				industryUtilized: 0,
 			});
 			continue;
 		}
 
-		const availableIndustry = system.industry;
+		const availableIndustry = effectiveIndustryTotal;
 		let utilizedIndustry = 0;
 
 		const perShip = Math.floor(availableIndustry / forcesInSystem.length);
@@ -116,7 +143,7 @@ export async function tickTaskForceConstruction(
 
 		ctx.addIndustryChange({
 			starSystemId: system.id,
-			industryTotal: system.industry,
+			industryTotal: effectiveIndustryTotal,
 			industryUtilized: utilizedIndustry,
 		});
 	}

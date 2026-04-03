@@ -38,7 +38,7 @@ export const industrialProjectCatalog: Record<
 		industryPerTurn: 3,
 		workRequired: 12,
 		completionIndustryBonus: 2,
-		maintenanceCost: 0,
+		maintenanceCost: 1,
 	},
 	automation_hub: {
 		type: "automation_hub",
@@ -49,7 +49,7 @@ export const industrialProjectCatalog: Record<
 		industryPerTurn: 4,
 		workRequired: 18,
 		completionIndustryBonus: 3,
-		maintenanceCost: 0,
+		maintenanceCost: 2,
 	},
 	orbital_foundry: {
 		type: "orbital_foundry",
@@ -60,7 +60,7 @@ export const industrialProjectCatalog: Record<
 		industryPerTurn: 6,
 		workRequired: 30,
 		completionIndustryBonus: 5,
-		maintenanceCost: 0,
+		maintenanceCost: 3,
 	},
 	deep_core_scanner: {
 		type: "deep_core_scanner",

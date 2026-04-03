@@ -1,6 +1,7 @@
 import {
 	computeDevelopmentStanceProjection,
 	defaultDevelopmentStance,
+	getPopulationCappedIndustry,
 } from "@space/data/functions";
 import {
 	and,
@@ -197,8 +198,22 @@ export const StarSystem: Pick<
 
 		return governance?.governance ?? null;
 	},
-	industry: async (parent, _arg, _ctx) => {
-		return parent.industry;
+	industry: async (parent, _arg, ctx) => {
+		if (parent.industry === null || parent.industry === undefined) {
+			return null;
+		}
+
+		const populations = await ctx.drizzle
+			.select({ amount: starSystemPopulations.amount })
+			.from(starSystemPopulations)
+			.where(eq(starSystemPopulations.starSystemId, parent.id));
+
+		const totalPopulation = populations.reduce(
+			(acc, population) => acc + population.amount,
+			0n,
+		);
+
+		return getPopulationCappedIndustry(parent.industry, totalPopulation);
 	},
 	industrialProjects: async (parent, _arg, ctx) => {
 		if (parent.industry === null) {
@@ -307,6 +322,7 @@ export const StarSystem: Pick<
 		return computeDevelopmentStanceProjection(
 			currentStance?.stance ?? defaultDevelopmentStance,
 			populations,
+			parent.industry,
 		);
 	},
 };

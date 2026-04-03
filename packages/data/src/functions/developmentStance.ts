@@ -1,3 +1,5 @@
+import { getPopulationCappedIndustry } from "./industryBalance.ts";
+
 export const developmentStances = [
 	"industrialize",
 	"balance",
@@ -53,24 +55,31 @@ type PopulationInput = {
 export function computeDevelopmentStanceProjection(
 	stance: DevelopmentStance,
 	populations: PopulationInput[],
+	currentIndustry?: number | null,
 ): DevelopmentStanceProjection {
 	const { industryDelta, populationBonusRate } =
 		getDevelopmentStanceEffect(stance);
-
-	if (populationBonusRate <= 0 || populations.length === 0) {
-		return { industryDelta, populationDelta: 0n };
-	}
-
 	const normalized = populations.map((pop) => {
 		const amount =
 			typeof pop.amount === "bigint" ? pop.amount : BigInt(pop.amount);
 		const growthLeftover = Number(pop.growthLeftover ?? 0);
 		return { amount, growthLeftover };
 	});
-
 	const totalAmount = normalized.reduce((acc, pop) => acc + pop.amount, 0n);
+	const projectedIndustryDelta =
+		currentIndustry === null || currentIndustry === undefined
+			? industryDelta
+			: getPopulationCappedIndustry(
+					currentIndustry + industryDelta,
+					totalAmount,
+				) - getPopulationCappedIndustry(currentIndustry, totalAmount);
+
+	if (populationBonusRate <= 0 || normalized.length === 0) {
+		return { industryDelta: projectedIndustryDelta, populationDelta: 0n };
+	}
+
 	if (totalAmount <= 0n) {
-		return { industryDelta, populationDelta: 0n };
+		return { industryDelta: projectedIndustryDelta, populationDelta: 0n };
 	}
 
 	const totalAmountNumber = Number(totalAmount);
@@ -86,7 +95,7 @@ export function computeDevelopmentStanceProjection(
 	}
 
 	return {
-		industryDelta,
+		industryDelta: projectedIndustryDelta,
 		populationDelta: totalPopulationDelta,
 	};
 }

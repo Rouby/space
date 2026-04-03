@@ -1,6 +1,7 @@
 import {
 	defaultDevelopmentStance,
 	getDevelopmentStanceEffect,
+	getPopulationCappedIndustry,
 } from "@space/data/functions";
 import {
 	and,
@@ -49,6 +50,30 @@ export async function tickDevelopmentStances(
 	for (const system of systems) {
 		const stance = stanceBySystemId.get(system.id) ?? defaultDevelopmentStance;
 		const effect = getDevelopmentStanceEffect(stance);
+		let totalPopulation = 0;
+		let populations:
+			| {
+					allegianceToPlayerId: string;
+					amount: bigint;
+					growthLeftover: string;
+			  }[]
+			| null = null;
+
+		if (effect.industryDelta !== 0 || effect.populationBonusRate > 0) {
+			populations = await tx
+				.select({
+					allegianceToPlayerId: starSystemPopulations.allegianceToPlayerId,
+					amount: starSystemPopulations.amount,
+					growthLeftover: starSystemPopulations.growthLeftover,
+				})
+				.from(starSystemPopulations)
+				.where(eq(starSystemPopulations.starSystemId, system.id));
+
+			totalPopulation = populations.reduce(
+				(acc, pop) => acc + Number(pop.amount),
+				0,
+			);
+		}
 
 		if (effect.industryDelta !== 0) {
 			await tx
@@ -58,7 +83,10 @@ export async function tickDevelopmentStances(
 
 			ctx.addIndustryChange({
 				starSystemId: system.id,
-				industryTotal: system.industry + effect.industryDelta,
+				industryTotal: getPopulationCappedIndustry(
+					system.industry + effect.industryDelta,
+					totalPopulation,
+				),
 				industryUtilized: 0,
 			});
 		}
@@ -67,16 +95,7 @@ export async function tickDevelopmentStances(
 			continue;
 		}
 
-		const populations = await tx
-			.select({
-				allegianceToPlayerId: starSystemPopulations.allegianceToPlayerId,
-				amount: starSystemPopulations.amount,
-				growthLeftover: starSystemPopulations.growthLeftover,
-			})
-			.from(starSystemPopulations)
-			.where(eq(starSystemPopulations.starSystemId, system.id));
-
-		if (populations.length === 0) {
+		if (!populations || populations.length === 0) {
 			continue;
 		}
 
