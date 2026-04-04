@@ -107,6 +107,8 @@ describe("submitResearchMiniGameAction mutation", () => {
 			})),
 		});
 
+		if (!prompt) throw new Error("Prompt generation failed in test setup");
+
 		const cards = prompt.triangulationCards;
 		const onConflictDoUpdate = vi.fn().mockResolvedValue(undefined);
 		const values = vi.fn().mockReturnValue({ onConflictDoUpdate });
