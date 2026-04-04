@@ -19,8 +19,11 @@ export const client = createClient({
 		cacheExchange({
 			schema,
 			keys: {
+				DevelopmentStanceProjection: () => null,
+				IndustryBreakdown: () => null,
 				ResourceCost: () => null,
-				StarSystemColonization: () => null,
+				ResourceStatBonus: () => null,
+				StarSystemColonizationPressure: () => null,
 				TurnReportIndustrialProjectCompletion: () => null,
 				TurnReportMiningChange: () => null,
 				TurnReportPopulationChange: () => null,
