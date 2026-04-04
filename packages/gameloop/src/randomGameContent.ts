@@ -1,14 +1,13 @@
+import type { ChoiceEffect, DilemmaPromptName } from "@space/data/schema";
+
 type ResourceKind = "metal" | "crystal" | "gas" | "liquid" | "biological";
 
-type DilemmaPromptName =
-	| "startingDilemmaFollowUp1"
-	| "startingDilemmaFollowUp2"
-	| undefined;
+type StartingDilemmaPromptName = DilemmaPromptName | undefined;
 
 interface DilemmaChoiceTemplate {
 	title: string;
 	description: string;
-	effectScript: string;
+	effects: ChoiceEffect[];
 }
 
 interface DilemmaTemplate {
@@ -35,20 +34,35 @@ const ORIGIN_DILEMMAS: DilemmaTemplate[] = [
 			{
 				title: "Duty Above Self",
 				description: "Collective obligation became sacred law.",
-				effectScript:
-					"+10% population growth in core colonies. -8% individual productivity from strict social obligations.",
+				effects: [
+					{ type: "modifyHomePopulation", params: { delta: "400000000" } },
+					{
+						type: "modifyHomeSystem",
+						params: { populationGrowthBonusDelta: "0.05" },
+					},
+				],
 			},
 			{
 				title: "Reciprocal Houses",
 				description: "Mutual aid remained voluntary, enforced by honor.",
-				effectScript:
-					"+8% influence generation from civic trust. -6% crisis response speed due to negotiation delays.",
+				effects: [
+					{ type: "modifyHomePopulation", params: { delta: "250000000" } },
+					{
+						type: "modifyHomeSystem",
+						params: { constructionCostModifierDelta: "-0.04" },
+					},
+				],
 			},
 			{
 				title: "Iron Rationing",
 				description: "Scarcity planning became a permanent institution.",
-				effectScript:
-					"+12% stability during shortages. -5% research output from conservative planning.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "industry", delta: "2" },
+					},
+				],
 			},
 		],
 	},
@@ -61,14 +75,30 @@ const ORIGIN_DILEMMAS: DilemmaTemplate[] = [
 			{
 				title: "Gift of Discipline",
 				description: "The trait was cultivated as a virtue.",
-				effectScript:
-					"+10% administrative efficiency. -7% cultural output from restrained expression.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "industry", delta: "2" },
+					},
+					{
+						type: "modifyHomeSystem",
+						params: { constructionCostModifierDelta: "-0.03" },
+					},
+				],
 			},
 			{
 				title: "Spark of Defiance",
 				description: "Citizens were taught to resist emotional conformity.",
-				effectScript:
-					"+9% research creativity. -6% public order in newly settled systems.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "3" },
+					},
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "1" },
+					},
+				],
 			},
 		],
 	},
@@ -81,14 +111,57 @@ const ORIGIN_DILEMMAS: DilemmaTemplate[] = [
 			{
 				title: "Public Liturgies",
 				description: "State decisions remained ceremonial and transparent.",
-				effectScript:
-					"+12% population cohesion. -5% response speed when rapid decisions are required.",
+				effects: [
+					{ type: "modifyHomePopulation", params: { delta: "500000000" } },
+					{
+						type: "modifyHomeSystem",
+						params: { populationGrowthBonusDelta: "0.04" },
+					},
+				],
 			},
 			{
 				title: "Hidden Choruses",
 				description: "Real policy moved behind closed councils.",
-				effectScript:
-					"+10% strategic flexibility. -8% public trust after major setbacks.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "2" },
+					},
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 1 } },
+				],
+			},
+		],
+	},
+	{
+		title: "Embers of Consensus",
+		description:
+			"Your earliest federations only survived by forcing rival city-states into shared councils that could not disband during crisis. Debate slowed decisions, but it prevented blood-feud collapse.\n\nModern governance still inherits that patient, grinding machinery.",
+		question: "What survived from that era of forced consensus?",
+		choices: [
+			{
+				title: "Deliberative Patience",
+				description: "You trust process, even when speed is costly.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "industry", delta: "1" },
+					},
+				],
+			},
+			{
+				title: "Emergency Mandates",
+				description: "Councils learned to hand power to crisis cadres.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "3" },
+					},
+					{
+						type: "modifyHomeSystem",
+						params: { populationGrowthBonusDelta: "-0.02" },
+					},
+				],
 			},
 		],
 	},
@@ -104,14 +177,21 @@ const CRUCIBLE_DILEMMAS: DilemmaTemplate[] = [
 			{
 				title: "Permanent Command",
 				description: "Emergency command structures became normal governance.",
-				effectScript:
-					"Home system starts with fortified infrastructure. -10% diplomatic goodwill from authoritarian reputation.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 2 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "2" },
+					},
+				],
 			},
 			{
 				title: "Civilian Restoration",
 				description: "Powers were returned quickly to public institutions.",
-				effectScript:
-					"Home system starts with higher civilian prosperity. -8% military readiness in early conflicts.",
+				effects: [
+					{ type: "modifyHomePopulation", params: { delta: "700000000" } },
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 1 } },
+				],
 			},
 		],
 	},
@@ -124,20 +204,68 @@ const CRUCIBLE_DILEMMAS: DilemmaTemplate[] = [
 			{
 				title: "Redundant Truth",
 				description: "Knowledge was duplicated endlessly across institutions.",
-				effectScript:
-					"Starts with robust research backups and +1 early technology option. -5% industry output due to heavy compliance overhead.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "4" },
+					},
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "industry", delta: "1" },
+					},
+				],
 			},
 			{
 				title: "Trusted Custodians",
 				description: "A small technocratic order controlled validation.",
-				effectScript:
-					"Starts with advanced scientific governance. -10% faction harmony from elite gatekeeping.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "3" },
+					},
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "2" },
+					},
+				],
 			},
 			{
 				title: "Open Reconstruction",
 				description: "Rebuilding was crowd-sourced across the population.",
-				effectScript:
-					"Starts with rapid civic development momentum. -7% research reliability during high-pressure crises.",
+				effects: [
+					{ type: "modifyHomePopulation", params: { delta: "500000000" } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "expansion", delta: "2" },
+					},
+				],
+			},
+		],
+	},
+	{
+		title: "The Carbon Schism",
+		description:
+			"Your atmosphere projects split the world between megacity preservation and biosphere restoration. Neither side could fully win, so your civilization became expert at governing compromise under existential deadlines.\n\nThat political memory still shapes public appetite for risk.",
+		question: "Which legacy defined your transition into the space age?",
+		choices: [
+			{
+				title: "Urban Continuity",
+				description: "Industry remained sacred even during ecological stress.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 2 } },
+					{
+						type: "modifyHomeSystem",
+						params: { populationGrowthBonusDelta: "-0.02" },
+					},
+				],
+			},
+			{
+				title: "Living Recovery",
+				description: "Planetary healing became the center of state doctrine.",
+				effects: [
+					{ type: "modifyHomePopulation", params: { delta: "900000000" } },
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 1 } },
+				],
 			},
 		],
 	},
@@ -153,14 +281,24 @@ const LAUNCH_DILEMMAS: DilemmaTemplate[] = [
 			{
 				title: "Bulwark Convoys",
 				description: "Safe lanes and armored logistics were prioritized.",
-				effectScript:
-					"Start with extra defensive fleet tonnage and protected supply lines. -10% exploration speed in the opening phase.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "2" },
+					},
+				],
 			},
 			{
 				title: "Spearhead Leap",
 				description: "Speed and territorial reach were prioritized.",
-				effectScript:
-					"Start with additional scout and strike craft. -8% fleet durability for the first campaigns.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 2 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "expansion", delta: "3" },
+					},
+				],
 			},
 		],
 	},
@@ -174,20 +312,234 @@ const LAUNCH_DILEMMAS: DilemmaTemplate[] = [
 				title: "Sign the Pact",
 				description:
 					"You traded cohesion for immediate technological acceleration.",
-				effectScript:
-					"Start with prototype drive advantages and bonus rare resource stock. -12% political stability from coalition rivalries.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "3" },
+					},
+					{
+						type: "modifyHomeSystem",
+						params: { constructionCostModifierDelta: "0.03" },
+					},
+				],
 			},
 			{
 				title: "Stand Alone",
 				description: "You preserved unified command at the cost of speed.",
-				effectScript:
-					"Start with stronger command integrity and morale bonuses. -1 initial expansion opportunity from delayed launch windows.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "2" },
+					},
+				],
 			},
 			{
 				title: "Controlled Exchange",
 				description: "You accepted limited cooperation under strict review.",
-				effectScript:
-					"Start with balanced fleet upgrades and moderate diplomatic leverage. Slightly higher maintenance complexity for mixed doctrine assets.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 1 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "industry", delta: "1" },
+					},
+				],
+			},
+		],
+	},
+	{
+		title: "Last Orbital Window",
+		description:
+			"A narrowing debris corridor gave your species one final launch window before orbital industry would be delayed by decades. Command circles split between building a hardened convoy and risking a lean, high-speed exodus.\n\nWhat you chose defined the rhythm of your expansion doctrine.",
+		question: "How did your first interstellar expedition leave home?",
+		choices: [
+			{
+				title: "Shielded Exodus",
+				description: "Reliability first, even if it slows expansion tempo.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 2 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "expansion", delta: "1" },
+					},
+				],
+			},
+			{
+				title: "Needle Window",
+				description: "Speed and audacity over long-term redundancy.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 2 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "expansion", delta: "3" },
+					},
+				],
+			},
+		],
+	},
+];
+
+const MIDGAME_FRONTIER_DILEMMAS: DilemmaTemplate[] = [
+	{
+		title: "The Empty Corridor",
+		description:
+			"Long-range scouts map a chain of systems with no immediate rivals but fragile logistics. Expansion planners want a rapid leap, while administrators warn of overextension.\n\nYour court demands a doctrine before the window closes.",
+		question: "How should your empire answer the frontier opening?",
+		choices: [
+			{
+				title: "Leap the Gap",
+				description: "Push fast expansion before competitors react.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 1 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "expansion", delta: "2" },
+					},
+				],
+			},
+			{
+				title: "Secure the Spine",
+				description: "Consolidate and harden the core first.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+					{ type: "modifyHomePopulation", params: { delta: "300000000" } },
+				],
+			},
+		],
+	},
+	{
+		title: "Cartographer's Petition",
+		description:
+			"Exploration guilds petition for direct state backing of deep-range mapping expeditions. The treasury can support only one strategic emphasis this cycle.\n\nYour decision will steer what your captains prioritize in unknown space.",
+		question: "What mandate do your cartographers receive?",
+		choices: [
+			{
+				title: "Resource Survey First",
+				description: "Map extractive value before territorial claims.",
+				effects: [
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 1 } },
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "2" },
+					},
+				],
+			},
+			{
+				title: "Defensive Charts",
+				description: "Prioritize chokepoints and fleet lanes.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "2" },
+					},
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+				],
+			},
+		],
+	},
+];
+
+const MIDGAME_CRISIS_DILEMMAS: DilemmaTemplate[] = [
+	{
+		title: "War Exhaustion Hearings",
+		description:
+			"Recent conflict losses trigger public hearings on command failures and supply doctrine. Reformers demand restraint while admirals demand full retaliation planning.\n\nYour ruling circle must set the post-crisis line.",
+		question: "How does your empire respond to wartime strain?",
+		choices: [
+			{
+				title: "Rebuild Quietly",
+				description: "Stabilize population and industry before new offensives.",
+				effects: [
+					{ type: "modifyHomePopulation", params: { delta: "450000000" } },
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+				],
+			},
+			{
+				title: "Retaliatory Doctrine",
+				description: "Double down on military adaptation and pressure.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "military", delta: "3" },
+					},
+					{
+						type: "modifyHomeSystem",
+						params: { populationGrowthBonusDelta: "-0.01" },
+					},
+				],
+			},
+		],
+	},
+];
+
+const MIDGAME_DOCTRINE_DILEMMAS: DilemmaTemplate[] = [
+	{
+		title: "Bureau of Futures",
+		description:
+			"A coalition of planners proposes a permanent strategic bureau to align research, industry, and expansion goals across ministries. Opponents call it overcentralization.\n\nYou must decide whether to formalize doctrine at empire scale.",
+		question: "Do you centralize long-range planning?",
+		choices: [
+			{
+				title: "Formalize the Bureau",
+				description: "Gain coordinated momentum at the cost of flexibility.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "industry", delta: "2" },
+					},
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "1" },
+					},
+				],
+			},
+			{
+				title: "Keep Distributed Command",
+				description: "Retain adaptive local doctrine and frontier autonomy.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "expansion", delta: "2" },
+					},
+					{ type: "modifyHomeSystem", params: { discoverySlotsDelta: 1 } },
+				],
+			},
+		],
+	},
+];
+
+const MIDGAME_ANOMALY_DILEMMAS: DilemmaTemplate[] = [
+	{
+		title: "Signal Beneath the Noise",
+		description:
+			"Deep-array listeners isolate a repeating pattern buried in cosmic background interference. Decoding it requires diverting analysts from current programs.\n\nScholars insist the signal might rewrite your strategic assumptions.",
+		question: "How do you handle the anomalous signal?",
+		choices: [
+			{
+				title: "Full Decode Effort",
+				description: "Commit heavily to discovery and speculative analysis.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "4" },
+					},
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "industry", delta: "-1" },
+					},
+				],
+			},
+			{
+				title: "Controlled Study",
+				description:
+					"Investigate cautiously while protecting current priorities.",
+				effects: [
+					{
+						type: "modifyResearchMomentum",
+						params: { category: "discovery", delta: "2" },
+					},
+					{ type: "modifyHomeSystem", params: { industryDelta: 1 } },
+				],
 			},
 		],
 	},
@@ -628,7 +980,7 @@ function slugify(value: string) {
 		.replace(/^_+|_+$/g, "");
 }
 
-function resolveDilemmaPool(promptName: DilemmaPromptName) {
+function resolveDilemmaPool(promptName: StartingDilemmaPromptName) {
 	switch (promptName) {
 		case "startingDilemmaFollowUp1":
 			return CRUCIBLE_DILEMMAS;
@@ -651,7 +1003,42 @@ export function generateRandomDilemma(promptName?: DilemmaPromptName) {
 				id: `${slugify(choice.title)}_${index + 1}_${randomInt(100, 999)}`,
 				title: choice.title,
 				description: choice.description,
-				effectScript: choice.effectScript,
+				effects: choice.effects,
+			})),
+		},
+	};
+}
+
+function resolveMidGamePool(
+	kind: "frontier" | "crisis" | "doctrine" | "anomaly",
+) {
+	switch (kind) {
+		case "frontier":
+			return MIDGAME_FRONTIER_DILEMMAS;
+		case "crisis":
+			return MIDGAME_CRISIS_DILEMMAS;
+		case "doctrine":
+			return MIDGAME_DOCTRINE_DILEMMAS;
+		case "anomaly":
+			return MIDGAME_ANOMALY_DILEMMAS;
+	}
+}
+
+export function generateRandomMidGameDilemma(
+	kind: "frontier" | "crisis" | "doctrine" | "anomaly",
+) {
+	const template = pickRandom(resolveMidGamePool(kind));
+
+	return {
+		dilemma: {
+			title: template.title,
+			description: template.description,
+			question: template.question,
+			choices: template.choices.map((choice, index) => ({
+				id: `${slugify(choice.title)}_${index + 1}_${randomInt(100, 999)}`,
+				title: choice.title,
+				description: choice.description,
+				effects: choice.effects,
 			})),
 		},
 	};

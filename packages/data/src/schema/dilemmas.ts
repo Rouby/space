@@ -9,7 +9,25 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { games } from "./games.ts";
+import type { ResearchCategory } from "./research.ts";
 import { users } from "./users.ts";
+
+export const dilemmaPromptNames = [
+	"startingDilemmaFollowUp1",
+	"startingDilemmaFollowUp2",
+] as const;
+
+export type DilemmaPromptName = (typeof dilemmaPromptNames)[number];
+
+export const dilemmaTriggers = [
+	"opening",
+	"colonizationCompleted",
+	"researchBreakthrough",
+	"battleResolved",
+	"inactivity",
+] as const;
+
+export type DilemmaTrigger = (typeof dilemmaTriggers)[number];
 
 const reference = customType<{
 	data: { id: string; origin: "dilemmas" | "starSystems" };
@@ -47,11 +65,40 @@ export const dilemmas = pgTable("dilemmas", {
 	causation: reference(),
 });
 
-type ChoiceEffect = GenerateDilemmaEffect;
+export type ChoiceEffect =
+	| GenerateDilemmaEffect
+	| ModifyHomeSystemEffect
+	| ModifyResearchMomentumEffect
+	| ModifyHomePopulationEffect;
 
-interface GenerateDilemmaEffect {
+export interface GenerateDilemmaEffect {
 	type: "generateDilemma";
 	params: {
-		promptName: string;
+		promptName: DilemmaPromptName;
+	};
+}
+
+export interface ModifyHomeSystemEffect {
+	type: "modifyHomeSystem";
+	params: {
+		industryDelta?: number;
+		discoverySlotsDelta?: number;
+		populationGrowthBonusDelta?: string;
+		constructionCostModifierDelta?: string;
+	};
+}
+
+export interface ModifyResearchMomentumEffect {
+	type: "modifyResearchMomentum";
+	params: {
+		category: ResearchCategory;
+		delta: string;
+	};
+}
+
+export interface ModifyHomePopulationEffect {
+	type: "modifyHomePopulation";
+	params: {
+		delta: string;
 	};
 }

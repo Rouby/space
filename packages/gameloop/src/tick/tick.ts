@@ -26,6 +26,7 @@ import { gameId } from "../config.ts";
 import { drizzle } from "../db.ts";
 import { tickColonization } from "./colonization.ts";
 import { tickDevelopmentStances } from "./developmentStance.ts";
+import { tickDilemmas } from "./dilemmas.ts";
 import { tickDiscoveries } from "./discoveries.ts";
 import type { IndustrialProjectCompletionChange } from "./industrialProjects.ts";
 import { tickIndustrialProjects } from "./industrialProjects.ts";
@@ -289,6 +290,20 @@ export async function tick() {
 			ownerIdA: e.ownerIdA,
 			ownerIdB: e.ownerIdB,
 		}));
+
+		await tickDilemmas(tx, ctx, {
+			colonizationCompletedSystemIds: colonizationCompleted.map(
+				(change) => change.starSystemId,
+			),
+			researchBreakthroughOwnerIds: consolidatedResearchBreakthroughs.map(
+				(change) => change.playerId,
+			),
+			resolvedEngagements: activeAndResolvedEngagements.map((engagement) => ({
+				ownerIdA: engagement.ownerIdA,
+				ownerIdB: engagement.ownerIdB,
+				resolvedAtTurn: engagement.resolvedAtTurn,
+			})),
+		});
 
 		const reportsToInsert = playersInGame.map((p) => {
 			const visibleSystemIds = new Set(

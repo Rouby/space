@@ -72,20 +72,18 @@ export async function setupStartingConditions(tx: Transaction, ctx: Context) {
 					id: generatedSystems[playerStar].id,
 				},
 				...generated.dilemma,
-				choices: generated.dilemma.choices.map(
-					({ effectScript, ...choice }) => ({
-						...choice,
-						effects: [
-							{
-								type: "generateDilemma",
-								params: {
-									promptName: "startingDilemmaFollowUp1",
-								},
+				choices: generated.dilemma.choices.map((choice) => ({
+					...choice,
+					effects: [
+						...choice.effects,
+						{
+							type: "generateDilemma",
+							params: {
+								promptName: "startingDilemmaFollowUp1",
 							},
-							// TODO: add effectScript as effect
-						],
-					}),
-				),
+						},
+					],
+				})),
 			});
 
 			break;
