@@ -1,0 +1,10 @@
+{
+  "permission": {
+    "read": {
+      "/home/rouby/space/.opencode/get-shit-done/*": "allow"
+    },
+    "external_directory": {
+      "/home/rouby/space/.opencode/get-shit-done/*": "allow"
+    }
+  }
+}
